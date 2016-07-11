@@ -76,10 +76,10 @@ class Cf7_2_Post_Admin {
   */
   public function check_plugin_dependency() {
     //if either the polylang for the cf7 plugin is not active anymore, deactive this extension
-    if(is_plugin_active("cf7-polylang/cf7-polylang.php") &&
-        (!is_plugin_active("contact-form-7/wp-contact-form-7.php") || !is_plugin_active("polylang/polylang.php") ) ){
-        deactivate_plugins( "cf7-polylang/cf7-polylang.php" );
-        wp_die( '<strong>CF7 Polylang Module Extension</strong> requires both <strong>CfF7 & Polylang</strong> and has been deactivated!' );
+    if(is_plugin_active("post-my-contact-form-7/cf7-2-post.php") &&
+      !is_plugin_active("contact-form-7/wp-contact-form-7.php") ){
+        deactivate_plugins( "post-my-contact-form-7/cf7-2-post.php" );
+        wp_die( '<strong>CF7 Polylang Module Extension</strong> requires <strong>CfF7</strong> and has been deactivated!' );
         debug_msg("Deactivating CF7 Polylang Module Enxtension");
     }
 
