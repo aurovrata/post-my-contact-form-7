@@ -69,7 +69,7 @@ class Cf7_2_Post {
 	public function __construct() {
 
 		$this->plugin_name = 'post-my-contact-form-7';
-		$this->version = '1.0.0';
+		$this->version = '1.1.0';
 
 		$this->load_dependencies();
 		$this->set_locale();

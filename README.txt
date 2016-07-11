@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post
 Requires at least: 3.0.1
 Tested up to: 4.5.3
-Stable tag: 1.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,9 @@ If you have a query, please drop me a message in the support forum.
 3. The CF7 table list shows an exra column with the status of the form mapping.
 
 == Changelog ==
+
+= 1.1.0 =
+* Auto deactivation of extension if CF7 plugin is deactivated
 
 = 1.0 =
 * Allows for mapping of any CF7 form to a custom post
