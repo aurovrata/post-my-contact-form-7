@@ -164,6 +164,7 @@
          global $submenu;
          // Enable the next line to see all menu orders
          //echo '<pre>'.print_r($submenu,true).'</pre>';
+         if( is_network_admin() ) return;
          $arr = array();
          foreach($submenu['wpcf7'] as $menu){
            switch($menu[2]){
@@ -221,17 +222,21 @@
          		$output = sprintf( '<strong>%s</strong>', $output );
 
          		if ( function_exists('wpcf7_validate_configuration') && wpcf7_validate_configuration()
-           		&& current_user_can( 'wpcf7_edit_contact_form', $form->id() )
-           		&& $config_errors = $form->get_config_errors() ) {
-           			$error_notice = sprintf(_n(
+          		&& current_user_can( 'wpcf7_edit_contact_form', $form->id() ) ) {
+                $config_validator = new WPCF7_ConfigValidator( $form );
+
+          			if ( $count_errors = $config_validator->count_errors() ) {
+          				$error_notice = sprintf(
+          					_n(
            					'%s configuration error found',
            					'%s configuration errors found',
-           					count( $config_errors ), 'contact-form-7' ),
-           				number_format_i18n( count( $config_errors ) ) );
-           			$output .= sprintf(
-           				'<div class="config-error">%s</div>',
-           				$error_notice );
-           	}
+          						$count_errors, 'contact-form-7' ),
+          					number_format_i18n( $count_errors ) );
+           			  $output .= sprintf(
+           				   '<div class="config-error">%s</div>',
+           				    $error_notice );
+           	    }
+          	}
 
              echo $output;
          		//$output .= $this->row_actions( $actions );

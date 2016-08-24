@@ -106,7 +106,7 @@ class Cf7_2_Post_Public {
   * @param Array $cf7_form_data  data posted from teh cf7 form
   */
   public function save_cf7_2_post($cf7_form_data){
-    debug_msg($cf7_form_data, 'cf7 form posted');
+    //debug_msg($cf7_form_data, 'cf7 form posted');
     //load the form factory
     if(isset($cf7_form_data['_wpcf7'])){
       $cf7_post_id = $cf7_form_data['_wpcf7'];

@@ -21,7 +21,7 @@ switch($factory_mapping->get('map')){
     break;
 }
 
-$default_post_fields = '<div class="post-meta-field cf7-2-post-field"><label class="cf7-2-post-map-labels" for="cf7_2_post_map-%2$s">%1$s</label>';
+$default_post_fields = '<div class="post-meta-field cf7-2-post-field"><label class="cf7-2-post-map-labels" for="cf7_2_post_map-%2$s"><strong>%1$s</strong></label>';
 $default_post_fields .= '<select '.($is_new_mapping ? '':'disabled').' name="cf7_2_post_map-%2$s" class="field-options post-options">';
 $default_post_fields .= '%3$s';
 $default_post_fields .= '</select></div>';
@@ -174,8 +174,71 @@ $default_post_fields .= '<div class="clear"></div>';
                     <p class="cf7-post-error-msg"></p>
                     <div class="clear"></div>
                   </div>
+                  <p>Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>.</p>
+                  <h2>Custom Taxonomy  (no spaces allowed)</h2>
+                  <div id="post_taxonomy_map">
+                    <?php
+                      $mapped_taxonomy = $factory_mapping->get_mapped_taxonomy();
+
+                      if(!empty($mapped_taxonomy)){
+                        foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ){
+                          $taxonomy = $factory_mapping->get_taxonomy($post_taxonomy);
+                          //debug_msg($taxonomy, " taxonomy... ");
+                    ?>
+                    <div class="custom-taxonomy-field cf7-2-post-field">
+                      <label class="taxonomy-label-field cf7-2-post-map-labels">
+                        <span class="taxonomy-name"><strong><?php echo $taxonomy['name'];?></strong></span>&nbsp;(<span class="enabled link-button">Edit</span>)
+                      </label>
+                        <select <?php $factory_mapping->is_published('select');?> class="field-options" name="cf7_2_post_map_taxonomy_value-<?php echo $post_taxonomy;?>">
+                            <?php echo $factory_mapping->get_taxonomy_select_options($post_taxonomy);?>
+                        </select>
+                        <?php if($is_new_mapping):?>
+                        <span class="dashicons dashicons-minus remove-field"></span>
+                      <?php endif;?>
+                    </div>
+                    <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
+                    <div class="clear"></div>
+                    <div class="custom-taxonomy-input-fields hide-if-js">
+                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>"><strong>Plural Name</strong></label>
+                      <input class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['name'];?>">
+                      <label for="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>"><strong>Singular Name</strong></label>
+                      <input class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['singular_name'];?>">
+                      <label for="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>"><strong>Slug</strong></label>
+                      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>" value="<?php echo $post_taxonomy;?>" />
+                      <button type="button" class="button-link close-details" aria-expanded="true">
+                        <span class="screen-reader-text">Toggle panel: Taxonomy details</span>
+                        <span class="wp-core-ui button" aria-hidden="true">Save</span>
+                      </button>
+                    </div>
+                    <?php
+                      }
+                    }
+                    $taxonomy_slug = sanitize_title( $factory_mapping->get('singular_name') ).'_categories';
+                    ?>
+                    <div class="custom-taxonomy-field cf7-2-post-field">
+                      <label class="taxonomy-label-field cf7-2-post-map-labels">
+                        <span class="taxonomy-name"><strong>Categories</strong></span>&nbsp;(<span class="disabled link-button">Edit</span>)
+                      </label>
+                      <select disabled="disabled" name="cf7_2_post_map_taxonomy_value-<?php echo $taxonomy_slug;?>" class="field-options">
+                          <?php echo $factory_mapping->get_taxonomy_select_options();?>
+                      </select>
+                      <span class="dashicons dashicons-plus add-more-field"></span>
+                    </div>
+                    <p class="cf7-post-error-msg"></p>
+                    <div class="clear"></div>
+                    <div class="custom-taxonomy-input-fields hide-if-js">
+                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>"><strong>Plural Name</strong></label>
+                      <input disabled="disabled" class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>" value="Categories">
+                      <label for="cf7_2_post_map_taxonomy_name-<?php echo $taxonomy_slug;?>"><strong>Singular Name</strong></label>
+                      <input disabled="disabled" class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?php echo $taxonomy_slug;?>" value="Category">
+                      <label for="cf7_2_post_map_taxonomy_slug-<?php echo $taxonomy_slug;?>"><strong>Slug</strong></label>
+                      <input disabled="disabled" class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?php echo $taxonomy_slug;?>" value="<?php echo $taxonomy_slug;?>" />
+                      <button type="button" class="button-link close-details" aria-expanded="true">
+                        <span class="wp-core-ui button" aria-hidden="true">Save</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <p>Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>.</p>
               </div><!-- .inside end -->
             </div>
           </div>

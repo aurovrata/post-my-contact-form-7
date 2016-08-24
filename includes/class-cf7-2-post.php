@@ -168,7 +168,8 @@ class Cf7_2_Post {
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
-
+    //override the cf7 shortcodes
+    $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'override_cf7_shortcode',20);
     //reset the cf7 admin table
     $cf7_admin = Cf7_WP_Post_Table::set_table();
     if(!$cf7_admin->hooks()){

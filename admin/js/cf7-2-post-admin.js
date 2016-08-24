@@ -10,17 +10,45 @@
   $(document).ready(function() {
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
+    var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
+    var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
 
-    //bind event handlers for div.post-meta-field
-    $('div.post-meta-field select.post-options').on('change',optionSelected);
-    $('.add-more-field').on('click',createNewField);
+    //functions
+    function createNewTaxonomy(){
+      parent = $(this).parent();
 
-    //side metabox edit link
-    $('a.edit-post-type').on('click',function(){
-      $(this).addClass('hide-if-js');
-      $('#post-type-select').removeClass('hide-if-js');
-    });
+      //enable the new field
+      var postType = $('input#mapped_post_type').val();
+      var button = parent.find('.taxonomy-label-field span.link-button');
+      //enable input fiedls in the details section
+      button.removeClass('disabled');
+      button.addClass('enabled');
+      //taxonomy details
+      var details = parent.nextAll('div.custom-taxonomy-input-fields').eq(0);
+      details.find('input').prop('disabled',false);;
+      var fieldName = details.find('input.taxonomy-slug').attr('name');
+      //alert(fieldName);
+      var slug = fieldName.replace('cf7_2_post_map_taxonomy_slug-','')
+      //details.find('input[name='+fieldName+']').prop('disabled',false);
+      //fieldName = fieldName.replace('cf7_2_post_map_taxonomy_names','cf7_2_post_map_taxonomy_name')
+      //details.find('input[name='+fieldName+']').prop('disabled',false);
+      parent.find('select option.filter-option').val('cf7_2_post_filter-'+slug);
+      parent.find('select').prop('disabled',false);
 
+      //add new field
+      var cloneField = newTaxonomy.clone();
+      var cloneDetails = newTaxonomyDetails.clone();
+      parent.parent().append(cloneField).append(errorBox).append(cloneDetails);
+      //bind event handlers
+      cloneField.find('.add-more-field').on('click',createNewTaxonomy);
+      //}
+      $(this).css('display','none'); //hide the add button
+      //add remove button
+      parent.append(removeButton);
+      //bind event handlers
+      parent.activateTaxonomy();
+      //find('.remove-field').on('click',removeField);
+    }
     function createNewField(){
       parent = $(this).parent();
       var keyName = parent.find('.cf7-2-post-map-labels').val();
@@ -62,6 +90,33 @@
         });
         return this;
     };
+    //function to activate taxonomy
+    $.fn.activateTaxonomy = function() {
+        this.filter( 'div.custom-taxonomy-field' ).each(function() {
+          $(this).find('.remove-field').on('click',removeField);
+          $(this).find('select').on('change',optionSelected);
+          $(this).find('span.link-button.enabled').on('click', function(){
+            var details = $(this).parents('div.custom-taxonomy-field').nextAll('div.custom-taxonomy-input-fields').eq(0);
+            details.removeClass('hide-if-js');
+            var parent = $(this).parents('div.custom-taxonomy-field');
+            parent.hide();
+            parent.next('p.cf7-post-error-msg').hide();
+          });
+          $(this).nextAll('div.custom-taxonomy-input-fields').eq(0).each(function(){
+            $(this).find('button.close-details').on('click', closeDetails);
+            $(this).find('input.taxonomy-slug').on('change', taxonomySlug);
+            $(this).find('input.plural-name').on('change', pluralName);
+          });
+        });
+        return this;
+    };
+    function closeDetails(){
+      $(this).parent().addClass('hide-if-js');
+      $(this).parent().prevAll('p.cf7-post-error-msg').eq(0).show();
+      $(this).parent().prevAll('div.custom-taxonomy-field').eq(0).show();
+
+    }
+
     //function to update selected hook messages
     $.fn.hookMessages = function(highlight) {
         this.filter( 'option.filter-option:selected' ).each(function() {
@@ -72,10 +127,8 @@
         });
         return this;
     };
-    //bind event handlers for div.custom-meta-field
-    $('div.custom-meta-field').activateField();
-    //update hook messages
-    $('option.filter-option').hookMessages(false);
+
+    //when the select dropdown changes
     function optionSelected(){
       var selected = $(this);
       var isDuplicate = false;
@@ -109,8 +162,10 @@
     function removeField(){
       parent = $(this).parent();
       var error = parent.next('p.cf7-post-error-msg');
+      var details = parent.nextAll('div.custom-taxonomy-input-fields').eq(0); //if taxonomy
       parent.remove();
       error.remove();
+      if(details.length) details.remove();
     }
     function metaKeyChange(){
       var name = $(this).val();
@@ -125,6 +180,26 @@
         $(this).parent().next('p.cf7-post-error-msg').append('filter: <span class="code">'+option.attr("value")+'</span>');
         $(this).parent().next('p.cf7-post-error-msg').addClass('animate-color');
       }
+    }
+    //change in slug of taxonomy
+    function taxonomySlug(){
+      var taxonmyField = $(this).parent().prevAll('div.custom-taxonomy-field').eq(0);
+      var slug = $(this).val();
+      taxonmyField.find('select').attr('name','cf7_2_post_map_taxonomy_value-'+slug);
+      //reset the select box
+      taxonmyField.find('select').prop('selectedIndex',0);
+      var option = taxonmyField.find('select').find('option.filter-option');
+      option.attr('value','cf7_2_post_filter-'+slug);
+      //reset the msg box
+      taxonmyField.next('p.cf7-post-error-msg').empty();
+      //change the other input names
+      $(this).parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
+      $(this).parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
+    }
+    //function called when the taxonomy name changes
+    function pluralName(){
+      var taxonomyName = $(this).val();
+      $(this).parent().prevAll('div.custom-taxonomy-field').eq(0).find('span.taxonomy-name strong').text(taxonomyName);
     }
     //post_type rename event
     $('div#post-type-select input#mapped_post_type').on('change',function(){
@@ -143,7 +218,28 @@
       //update hook messages
       $('option.filter-option').hookMessages(true);
     });
+    //bind event handlers for div.post-meta-field
+    $('div.post-meta-field select.post-options').on('change',optionSelected);
+    $('div.custom-meta-field .add-more-field').on('click',createNewField);
+    $('div.custom-taxonomy-field .add-more-field').on('click',createNewTaxonomy);
 
+    //side metabox edit link
+    $('a.edit-post-type').on('click',function(){
+      $(this).addClass('hide-if-js');
+      $('#post-type-select').removeClass('hide-if-js');
+    });
+    //taxonomy details
+    // $('span.link-button.enabled').on('click',function(){
+    //   $(this).parents('.custom-taxonomy-field').siblings('.custom-taxonomy-input-fields').removeClass('hide-if-js');
+    // });
+    // $('.custom-taxonomy-input-fields button').on('click',function(){
+    //   $(this).parent('.custom-taxonomy-input-fields').addClass('hide-if-js');
+    // });
+    //bind event handlers for div.custom-meta-field
+    $('div.custom-meta-field').activateField();
+    $('div.custom-taxonomy-field').activateTaxonomy();
+    //update hook messages
+    $('option.filter-option').hookMessages(false);
 
     //AJAX Submission
     //submit button

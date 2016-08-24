@@ -3,6 +3,9 @@
  * included in this file.
  */
  /*hide the extra submenu*/
+ label{
+   cursor: default;
+ }
  #adminmenu ul.wp-submenu li a[href="admin.php?page=cf7_post"] {
     display: none;
 }
@@ -58,7 +61,8 @@ form#cf7-post-mapping-form .cf7-post-error-msg{
   margin: 0 5px;
   width: auto;
 }
-form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg{
+form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
+form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
   width: auto;
   margin-left: 0;
   vertical-align: middle;
@@ -67,12 +71,22 @@ form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg{
 .field-options.post-options{
   min-width: calc(100% - 165px);
 }
-.custom-meta-field, .post-meta-field{
+.custom-meta-field, .post-meta-field, .custom-taxonomy-field{
   display: inline-block;
   box-sizing: border-box;
 }
-form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field{
+form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
+form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
   width: auto;
+}
+form#cf7-post-mapping-form .custom-taxonomy-input-fields input {
+  width: 100px;
+}
+orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
+    width: 170px;
+}
+.custom-taxonomy-input-fields label {
+    margin: 0 5px;
 }
 .misc-pub-section.misc-pub-post-type label[for="post_type"]::before{
   font-family: "dashicons";
@@ -137,4 +151,16 @@ p.cf7-post-error-msg.animate-color{
   0% { background-color: red; }
   50% { background-color: inherit; }
   100% { background-color: red; }
+}
+span.link-button.disabled{
+  color: grey;
+  cursor: not-allowed;
+}
+span.link-button.enabled{
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+button.button-link.close-details {
+    vertical-align: middle;
 }
