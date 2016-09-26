@@ -20,6 +20,7 @@
 #ajax-response{
   display: inline-block;
   padding: 0 5px;
+  width: 57%;
 }
 #save-draft-action {
     margin-top: 4px;
@@ -163,4 +164,7 @@ span.link-button.enabled{
 }
 button.button-link.close-details {
     vertical-align: middle;
+}
+.error-msg{
+  color:red;
 }

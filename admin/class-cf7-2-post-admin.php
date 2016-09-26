@@ -209,43 +209,45 @@ class Cf7_2_Post_Admin {
     //cehck the nonce security
     //wp_verify_nonce( $nonce, $action );
     //
+    debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
       wp_send_json_error("Security failed, try to reload the page");
     }
-
-    $create_or_update = false;
-    $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');;
-    switch(true){
-      case isset($_POST['save_draft']):
-        $create_or_update = false;
-        $json_data = array('msg'=>'Saved draft', 'post'=>'saved');
-        break;
-      case isset($_POST['update_post']):
-        $create_or_update = true;
-        $json_data = array('msg'=>'Updated post', 'post'=>'created');
-        break;
-      case isset($_POST['save_post']):
-        $create_or_update = true;
-        $json_data = array('msg'=>'Created post', 'post'=>'created');
-        break;
-    }
-
     if( isset( $_POST['cf7_post_id'] ) ){
+
       $cf7_post_id = $_POST['cf7_post_id'];
-      if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
-        $result = $this->post_mapping_factory->save($_POST, $create_or_update);
-      }else{
-        $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-        $result = $this->post_mapping_factory->save($_POST, $create_or_update);
+      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+
+      $create_or_update = false;
+      $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');;
+      switch(true){
+        case isset($_POST['save_draft']):
+          $create_or_update = false;
+          $result = $this->post_mapping_factory->save($_POST, $create_or_update);
+          $json_data = array('msg'=>'Saved draft', 'post'=>'saved');
+          break;
+        case isset($_POST['update_post']):
+          $create_or_update = true;
+          $result = $this->post_mapping_factory->update($_POST);
+          $json_data = array('msg'=>'Updated post', 'post'=>'created');
+          break;
+        case isset($_POST['save_post']):
+          $create_or_update = true;
+          $result = $this->post_mapping_factory->save($_POST, $create_or_update);
+          $json_data = array('msg'=>'Created post', 'post'=>'created');
+          break;
       }
+
       if($result){
         //wp_send_json_success( $data );
         wp_send_json_success( $json_data );
       }else{
-        wp_send_json_error("Something is wrong, try to reload the page");
+        $json_data = array('msg'=>'Something is wrong, try to reload the page',);
+        wp_send_json_error($json_data);
       }
     }else{
-      wp_send_json_error("Something is wrong, try to reload the page");
+      $json_data = array('msg'=>'No CF7 post ID, try to reload the page',);
+      wp_send_json_error($json_data);
     }
     die();
   }
@@ -264,7 +266,7 @@ class Cf7_2_Post_Admin {
   */
   public function override_cf7_shortcode(){
     remove_shortcode('contact-form-7');
-    remove_shortcode('contact-form-7');
+    remove_shortcode('contact-forms');
     //override
     add_shortcode( 'contact-form-7', array(&$this, 'cf7_shortcode_output') );
   	add_shortcode( 'contact-form', array(&$this, 'cf7_shortcode_output') );
@@ -308,11 +310,11 @@ class Cf7_2_Post_Admin {
   	}
 
   	$html = $contact_form->form_html( $atts );
-    
+
     if(Cf7_2_Post_Factory::is_mapped($id)){
       //now lets map our additional code at the end of the form
       $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($id);
-      debug_msg("Pre-fill ".$id);
+      //debug_msg("Pre-fill ".$id);
       $html .= $this->post_mapping_factory->inject_form_script();
     }
     return $html;

@@ -267,10 +267,12 @@
           $('.spinner.'+buttonID).css('visibility','hidden');
           $('div#ajax-response').text(data.data.msg);
           if('created'==data.data.post) location.reload();
+          $('div#ajax-response').removeClass('error-msg');
         },
         error:function(data){
           $('.spinner.'+buttonID).css('visibility','hidden');
           $('div#ajax-response').text(data.data.msg);
+          $('div#ajax-response').addClass('error-msg');
         }
       });
     });

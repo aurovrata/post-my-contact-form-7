@@ -62,7 +62,7 @@ $default_post_fields .= '<div class="clear"></div>';
                           <label for="mapped_post_type" class="post_type_labels">Post type</label>
                           <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
                           <input name="mapped_post_type_source" id="mapped_post_type" value="<?php echo $factory_mapping->get('type_source');?>" type="hidden">
-                          <input name="cf7_post_id" id="cf7_post_id" <?php $factory_mapping->is_published();?>  value="<?php echo $cf7_post_id;?>" type="hidden">
+                          <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
                           <label for="mapped_post_singular_name" class="post_type_labels">Singular name</label>
                           <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
                           <label for="mapped_post_plural_name" class="post_type_labels">Plural name</label>
@@ -103,7 +103,7 @@ $default_post_fields .= '<div class="clear"></div>';
                     <div id="ajax-response"></div>
                     <div id="creation-action">
                       <span class="spinner save_post"></span>
-                      <input name="submit" onclick="this.form.submited=this.id;" id="save_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
+                      <input name="submit" onclick="this.form.submited=this.id;" id="<?php echo ($is_new_mapping ? 'save': 'update');?>_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
                     </div>
                     <div class="clear"></div>
                   </div>
@@ -200,11 +200,11 @@ $default_post_fields .= '<div class="clear"></div>';
                     <div class="clear"></div>
                     <div class="custom-taxonomy-input-fields hide-if-js">
                       <label for="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>"><strong>Plural Name</strong></label>
-                      <input class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['name'];?>">
+                      <input class="cf7-2-post-map-labels plural-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['name'];?>">
                       <label for="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>"><strong>Singular Name</strong></label>
-                      <input class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['singular_name'];?>">
+                      <input class="cf7-2-post-map-labels singular-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['singular_name'];?>">
                       <label for="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>"><strong>Slug</strong></label>
-                      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>" value="<?php echo $post_taxonomy;?>" />
+                      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>" value="<?php echo $post_taxonomy;?>" />
                       <button type="button" class="button-link close-details" aria-expanded="true">
                         <span class="screen-reader-text">Toggle panel: Taxonomy details</span>
                         <span class="wp-core-ui button" aria-hidden="true">Save</span>

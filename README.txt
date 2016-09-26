@@ -19,9 +19,9 @@ This plugin enables the mapping of each form field to a post field.   Each forms
 In addition to mapping your form fields to post fields you are also given a custom filter for that specific form field.  The filter option allows you to custom fill the post created for the submitted form, for example if a form requests the date of birth, you may want to create an additional post field for the age, so you can filter the date field in your `functions.php` file and calculate the age and save it to a custom post meta field.  The custom filters are created using the following nomenclature, `cf7_2_post_filter-<post_type>-<post-field>`.  For example if you have created a custom post type `quick-contact`, which as a meta field `age`, you could filter it with,
 `
 add_filter('cf7_2_post_filter-quick-contact-age','filter_date_to_age',10,2);
-function filter_date_to_age($value, $cf7_form_id, $form_data){
+function filter_date_to_age($value, $post_id, $form_data){
   //$value is the post field value to return, by default it is empty
-  //$cf7_form_id is the CF7 form ID
+  //$post_id is the ID of the post to which the form values are being mapped to
   // $form_data is the submitted form data as an array of field-name=>value pairs
   if(isset($form_data['date-of-birth']){
     //calculate the age
