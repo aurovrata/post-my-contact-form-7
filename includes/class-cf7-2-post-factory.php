@@ -304,36 +304,7 @@ class Cf7_2_Post_Factory {
           $this->post_map_meta_fields[$value]=substr($field,$len_cf7_2_post_map_meta);
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
-          /*
-        case (0 === strpos($field,'cf7_2_post_map_taxonomy_names-') ): //taxonomy mapping
-          $slug = substr($field,$len_cf7_2_post_taxonomy_names);
-          if( !isset($this->taxonomy_properties[$slug]) ){
-            $this->taxonomy_properties[$slug] =  array();
-          }
-          $this->taxonomy_properties[$slug]['name'] = $value;
-          //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
-          break;
-        case (0 === strpos($field,'cf7_2_post_map_taxonomy_name-') ): //taxonomy mapping
-          $slug = substr($field,$len_cf7_2_post_taxonomy_slug);
-          if( !isset($this->taxonomy_properties[$slug]) ){
-            $this->taxonomy_properties[$slug] =  array();
-          }
-          $this->taxonomy_properties[$slug]['singular_name'] = $value;
-          //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
-          break;
-        case (0 === strpos($field,'cf7_2_post_map_taxonomy_slug-') ): //taxonomy mapping
-          if( !isset($this->taxonomy_properties[$value]) ){
-            $this->taxonomy_properties[$value] =  array();
-          }
-          $this->post_properties['taxonomy'][]= $value;
-          //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
-          break;
-        case (0 === strpos($field,'cf7_2_post_map_taxonomy_value-') ): //taxonomy field mapping
-          $slug = substr($field,$len_cf7_2_post_map_taxonomy);
-          $this->post_map_taxonomy[$value] = $slug;
-          //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
-          break;
-          */
+
       }
     }
     //let's save the properties if this is a factory mapping
@@ -367,12 +338,7 @@ class Cf7_2_Post_Factory {
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
       }
-      /*
-      foreach($this->post_properties['taxonomy'] as $slug){
-        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
-      }*/
+
     }
     //let'save the mapping of cf7 form fields to post fields
     foreach($this->post_map_fields as $cf7_field=>$post_field){
@@ -1446,5 +1412,33 @@ class Cf7_2_Post_Factory {
   	register_taxonomy( $taxonomy["slug"], array( $this->post_properties["type"] ), $args );
 
   }
-
+  /**
+   * Delete a post mapping
+   *
+   * @since 1.0.0
+   * @param      int    $cf7_post_id    form post id whose mapping is to be deleted .
+   * @param     boolean    $delete_all_posted_data     .
+  **/
+  public function delete_mapping($delete_all_posted_data){
+    //TODO delete all meta_fields for this post
+    //delete_post_meta($post_id, $meta_key, $meta_value);
+    foreach($this->post_properties as $key=>$value){
+      delete_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key);
+    }
+    foreach($this->post_map_fields as $cf7_field=>$post_field){
+      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field);
+    }
+    foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
+      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field);
+    }
+    //taxonomy mapping
+    delete_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy');
+    foreach($this->post_properties['taxonomy'] as $slug){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug);
+      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug);
+      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug);
+    }
+    //TOFO if( true==$delete_all_posted_data ) then we should remove all posted data
+  }
 }

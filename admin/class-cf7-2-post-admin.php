@@ -320,5 +320,20 @@ class Cf7_2_Post_Admin {
     return $html;
   }
 
+  /**
+   * Delete existing fields for a given cf7 form, as well as all post data
+   * This funciton is hooked on 'wpcf7_post_delete', a filter created by hooking on the cf7 plugin 'wp_redirect' hook in the 'cf7-post-admin-table.php' file
+   * @since 1.0.0
+   * @param      int    $cf7_post_id    The ID of the cf7 form to be deleted .
+  **/
+  public function delete_cf7_post($cf7_post_id){
+    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+      $delete_all_posts = false;
+      //TODO load settings to allow users to delete all submitted form post data when deleting a mapping
+      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $factory->delete_mapping($delete_all_posts);
+
+    }
+  }
 
 }

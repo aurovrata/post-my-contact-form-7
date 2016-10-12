@@ -170,6 +170,8 @@ class Cf7_2_Post {
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
     //override the cf7 shortcodes
     $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'override_cf7_shortcode',20);
+    //delete post
+    $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //reset the cf7 admin table
     $cf7_admin = Cf7_WP_Post_Table::set_table();
     if(!$cf7_admin->hooks()){

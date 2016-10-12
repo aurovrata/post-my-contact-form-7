@@ -1,9 +1,5 @@
 - check that cf7 is installed, bail out otherwise
 -
-- custom post type to keep track of CF7 forms and their mapped posts
-- create a custom post type based on the form ID
-  + the post factory class creates + registers custom post dynamically. This needs to be hooked on 'init'
-  + need to create one more custom post which sole purpose if to keep track of all the mapped post types.
 - hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
   + add mapped post id the cf7 post meta fields
 - skip mail setting in post creation page
