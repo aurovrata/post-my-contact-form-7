@@ -871,7 +871,6 @@ class Cf7_2_Post_Factory {
   		'items_list_navigation' => $this->post_properties['plural_name'].' list navigation',
   		'filter_items_list'     => 'Filter '.$this->post_properties['plural_name'].' list',
   	);
-    //$labels = apply_filters('cf7_2_post_filter_post_labels-'.$this->post_properties['type'], $labels);
     //labels can be modified post taxonomy registratipn
   	$args = array(
   		'label'                 => $this->post_properties['singular_name'],
@@ -1423,7 +1422,6 @@ class Cf7_2_Post_Factory {
   		'items_list'                 =>  $taxonomy["name"].' list',
   		'items_list_navigation'      =>  $taxonomy["name"].' list navigation',
   	);
-    //$labels = apply_filters('cf7_2_post_filter_taxonomy_lables-'.$taxonomy["slug"], $labels);
     //labels can be modified post registration
   	$args = array(
   		'labels'                     => $labels,
