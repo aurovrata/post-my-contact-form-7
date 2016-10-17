@@ -14,7 +14,13 @@ This plugin enables the mapping of your CF7 forms to custom posts.
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
 
-**Now you can even map fields to custom taxonomies!!!**
+You can submit and map to a post all of the following fields,
+
+* Default post field, title, author, content, excerpt
+* featured image, you can submit a file and save it as a post attachment
+* meta fields, unlimited number of meta-fields can be created
+* taxonomies, you can map select/checkbox/radio input fields to taxonomies
+
 
 = Filters for fields =
 
