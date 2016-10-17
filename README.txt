@@ -1,7 +1,7 @@
 === Post My CF7 Form ===
 Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
-Tags: contact form 7, contact form 7 module, post, custom post, form to post
+Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 3.0.1
 Tested up to: 4.5.3
 Stable tag: 1.2.0
