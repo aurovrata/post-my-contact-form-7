@@ -116,10 +116,11 @@ class Cf7_2_Post_Admin {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, false );
+    wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
     wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
 	}
   /**
-  * Modify the regsitered cf7 post tppe
+  * Modify the regsitered cf7 post type
   * THis function enables public capability and amind UI visibility for the cf7 post type. Hooked late on `init`
   * @since 1.0.0
   *
@@ -209,7 +210,7 @@ class Cf7_2_Post_Admin {
     //cehck the nonce security
     //wp_verify_nonce( $nonce, $action );
     //
-    debug_msg($_POST, "save post ");
+    //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
       wp_send_json_error("Security failed, try to reload the page");
     }
@@ -259,66 +260,7 @@ class Cf7_2_Post_Admin {
     //register_post_type('dummy',array('public'=> true,'label'=>Dummy));
     Cf7_2_Post_Factory::register_cf7_post_maps();
   }
-  /**
-  * Overrides the cf7 shortcode function to insert extra code in the form.
-  * This function hooks the 'plugins_loaded' action.
-  * @since 1.0.0
-  */
-  public function override_cf7_shortcode(){
-    remove_shortcode('contact-form-7');
-    remove_shortcode('contact-forms');
-    //override
-    add_shortcode( 'contact-form-7', array(&$this, 'cf7_shortcode_output') );
-  	add_shortcode( 'contact-form', array(&$this, 'cf7_shortcode_output') );
-  }
-  /**
-  * Overrides the cf7 shortcode function to insert extra code in the form.
-  * @since 1.0.0
-  */
-  public function cf7_shortcode_output( $atts, $content = null, $code = '' ) {
-  	if ( is_feed() ) {
-  		return '[contact-form-7]';
-  	}
-
-  	if ( 'contact-form-7' == $code ) {
-  		$atts = shortcode_atts( array(
-  			'id' => 0,
-  			'title' => '',
-  			'html_id' => '',
-  			'html_name' => '',
-  			'html_class' => '',
-  			'output' => 'form' ), $atts );
-
-  		$id = (int) $atts['id'];
-  		$title = trim( $atts['title'] );
-
-  		if ( ! $contact_form = wpcf7_contact_form( $id ) ) {
-  			$contact_form = wpcf7_get_contact_form_by_title( $title );
-  		}
-
-  	} else {
-  		if ( is_string( $atts ) ) {
-  			$atts = explode( ' ', $atts, 2 );
-  		}
-
-  		$id = (int) array_shift( $atts );
-  		$contact_form = wpcf7_get_contact_form_by_old_id( $id );
-  	}
-
-  	if ( ! $contact_form ) {
-  		return '[contact-form-7 404 "Not Found"]';
-  	}
-
-  	$html = $contact_form->form_html( $atts );
-
-    if(Cf7_2_Post_Factory::is_mapped($id)){
-      //now lets map our additional code at the end of the form
-      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($id);
-      //debug_msg("Pre-fill ".$id);
-      $html .= $this->post_mapping_factory->inject_form_script();
-    }
-    return $html;
-  }
+  
 
   /**
    * Delete existing fields for a given cf7 form, as well as all post data

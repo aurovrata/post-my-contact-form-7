@@ -66,10 +66,10 @@ class Cf7_2_Post {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	public function __construct($version) {
 
 		$this->plugin_name = 'post-my-contact-form-7';
-		$this->version = '1.2.0';
+		$this->version = $version;
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -168,8 +168,6 @@ class Cf7_2_Post {
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
-    //override the cf7 shortcodes
-    $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'override_cf7_shortcode',20);
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //reset the cf7 admin table
@@ -206,9 +204,10 @@ class Cf7_2_Post {
     /* WP hooks */
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+    $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
 
     /*CF7 Hooks*/
-    $this->loader->add_filter( 'wpcf7_posted_data', $plugin_public, 'save_cf7_2_post');
+    $this->loader->add_filter( 'wpcf7_posted_data', $plugin_public, 'save_cf7_2_post',100);
 
 	}
 

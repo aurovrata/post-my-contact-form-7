@@ -61,6 +61,9 @@ form#cf7-post-mapping-form .cf7-post-error-msg{
   display: inline-block;
   margin: 0 5px;
   width: auto;
+  line-height: 15px;
+  vertical-align: middle;
+  position: relative;
 }
 form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
 form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
@@ -167,4 +170,20 @@ button.button-link.close-details {
 }
 .error-msg{
   color:red;
+}
+option.system-taxonomy {
+    color: blue;
+}
+.popup {
+    display: none;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    margin-left: -50px;
+    background: #515151;
+    color: white;
+    padding: 5px;
+}
+.cf7-post-error-msg a.code:hover + span.popup{
+  display:block;
 }

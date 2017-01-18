@@ -29,7 +29,7 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-
+define( 'CF7_2_POST_VERSION', '1.2.0' );
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-cf7-2-post-activator.php
@@ -68,7 +68,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-cf7-2-post.php';
  */
 function run_cf7_2_post() {
 
-	$plugin = new Cf7_2_Post();
+	$plugin = new Cf7_2_Post(CF7_2_POST_VERSION);
 	$plugin->run();
 
 }

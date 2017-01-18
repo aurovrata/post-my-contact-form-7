@@ -1,5 +1,5 @@
-- check that cf7 is installed, bail out otherwise
--
+
+- factory class, update function has a TODO on line 402
 - hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
   + add mapped post id the cf7 post meta fields
 - skip mail setting in post creation page
@@ -10,3 +10,4 @@
 - meta fields created need to have spaces replaced with underscore + msg flashed
 DONE
 - add filter for meta capabilities in factory class (http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types)
+- check that cf7 is installed, bail out otherwise

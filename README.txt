@@ -2,13 +2,13 @@
 Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
-Requires at least: 3.0.1
-Tested up to: 4.5.3
-Stable tag: 1.2.0
+Requires at least: 4.7
+Tested up to: 4.7.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin enables the mapping of your CF7 forms to custom posts.
+This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
 
@@ -17,16 +17,17 @@ This plugin enables the mapping of each form field to a post field.   Each forms
 You can submit and map to a post all of the following fields,
 
 * Default post field, title, author, content, excerpt
-* featured image, you can submit a file and save it as a post attachment
-* meta fields, unlimited number of meta-fields can be created
-* taxonomies, you can map select/checkbox/radio input fields to taxonomies
+* featured image, you can **submit a file** and save it as a post attachment
+* meta fields, unlimited number of **meta-fields** can be created
+* **taxonomies**, you can map select/checkbox/radio input fields to taxonomies
 
+**NOTE:** this pluign is currently not able to map a form to an *existing* post, you can only map your forms to custom post type created using this plugin.
 
 = Filters for fields =
 
 In addition to mapping your form fields to post fields you are also given a custom filter for that specific form field.  The filter option allows you to custom fill the post created for the submitted form, for example if a form requests the date of birth, you may want to create an additional post field for the age, so you can filter the date field in your `functions.php` file and calculate the age and save it to a custom post meta field.  The custom filters are created using the following nomenclature, `cf7_2_post_filter-<post_type>-<post-field>`.  For example if you have created a custom post type `quick-contact`, which as a meta field `age`, you could filter it with,
 `
-add_filter('cf7_2_post_filter-quick-contact-age','filter_date_to_age',10,2);
+add_filter('cf7_2_post_filter-quick-contact-age','filter_date_to_age',10,3);
 function filter_date_to_age($value, $post_id, $form_data){
   //$value is the post field value to return, by default it is empty
   //$post_id is the ID of the post to which the form values are being mapped to
@@ -78,8 +79,6 @@ The plugin has been coded with additional actions and filters to allow you to ho
 
 == Frequently Asked Questions ==
 
-= Questions ? =
-
 = How do I map a form to a post? =
 
 In the Contact Form 7 table list you will notice a new column has been added which allows you to create a new custom post mapping.  This will take you to a new screen where you will see your existing fields listed in select dropdowns.  Map your form fields to either a default field (eg title, content, excerpt, or author), or create a custom (meta) field, or even create a new taxonomy for your post.  Once you have mapped your form you can save it as a draft or publish it.  Once published you cannot edit the mapping anymore, so be warned.  As of version 1.2.0 you will have to delete the whole form and start again to remap it.  Subsequent versions may introduce a 'delete' button.
@@ -104,6 +103,49 @@ You may have noticed that in addition to mapping a post field or taxonomy to one
 = How do I allow my form users to create a new term for a taxonomy? =
 This is a little more complex.  You will need to create an input field in your form in which users can submit a new term.  You will then need to hook the action `cf7_2_post_form_mapped_to_{$post_type}` which is fired right at the end of the saving process.  The hook parses the newly created `$post_ID` as well as the submitted `$cf7_form_data` form data array.  You can then check if your user has submitted a new value and [include it in taxonomy](https://codex.wordpress.org/Function_Reference/wp_insert_term) and [assign the new term to the post](https://codex.wordpress.org/Function_Reference/wp_set_object_terms).
 
+= How can I pre-fill a form from a WordPress page template that contains a CF7 form ? =
+
+This can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in, 
+
+`
+$content = get_the_content();
+//let's find our shortcode
+preg_match_all( '/' . get_shortcode_regex() . '/s', $content, $matches );
+$args = array();
+if( isset( $matches[2] ) ){
+  foreach( (array) $matches[2] as $key => $shortcode ){
+    if( 'contact-form-7' === $shortcode )
+      $args[] = shortcode_parse_atts( $matches[3][$key] );
+  }
+}
+//here I am assuming there is a single form on the page, if you have multiple, you will need to loop though each one
+if(!empty($args) && isset($args[0]['id'])){
+  $short_id = $args[0]['id'];
+  $values = array();
+
+  if(is_user_logged_in()){
+    $user = wp_get_current_user();
+    $values['your-name']= $user->display_name;
+    $values['your-email'] = $user->user_email;
+    if(!empty($subject)){
+      $term = get_term_by('id', $subject, 'project-type');
+      $values['your-message'] = 'Dear Hexagon,'.PHP_EOL.'I request you to create a new '.rtrim($term->name,'s') ;
+
+    }
+    //now lets filter the values
+    add_filter('cf7_2_post_form_values', function($field_values, $cf7_id) use ($short_id, $values){
+      if($short_id == $cf7_id ){
+        return $values;
+      }
+    }, 10,2);
+  }
+}
+`
+
+
+= Is there any advanced documentation for developers ? =
+sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) which lists all the hooks (filters & actions) available for developers with examples of how to use them.  These expose a lot of the default functionality for further fine-tuning.  If you see a scope for improvement and/or come across a bug, please report it in the support forum.
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -113,6 +155,14 @@ This is a little more complex.  You will need to create an input field in your f
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+
+= 1.3.0 =
+
+* added functionality to map taxonomies belonging to other existing posts
+* introduced a save button in the cf7 elements to build draft submission forms
+* fixed some minor bugs resulting from cf7 plugin update
+* improved loading of mapped forms
+* make use of 'do_shortcode_tag' filter introduced in WP4.7
 
 = 1.2.0 =
 
@@ -222,7 +272,7 @@ function modify_my_categories($taxonomy_arg){
 
 = 'cf7_2_post_filter_cf7_field_value' =
 
-This filter allows you to pre-fill form fields with custom values for new submissions.
+This filter allows you to pre-fill form fields with custom values for **new submissions**.
 `
 add_filter('cf7_2_post_filter_cf7_field_value','modify_my_field',10,3);
 function modify_my_field($value, $cf7_post_id, $field){
@@ -311,5 +361,26 @@ function enable_grouped_options($enable, $cf7_post_id, $form_field, $parent_term
     }
   }
   return $enable;
+}
+`
+= `cf7_2_post_filter_user_draft_form_query` =
+This filter is useful to change the behaviour in which previously submitted values can be edited by a user.  By default the plugin loads forms values that have been saved using the 'save' button.  However, you can modify this by changing the default post query such as the example below,
+`
+add_filter('cf7_2_post_filter_user_draft_form_query','load_published_submissions',10,2);
+function load_published_submissions($query_args, $post_type){
+  if('submitted-reports' == post_type){
+    //we assume a cf7 form allowing users to submit online reports has been mapped to a post_type submitted-reports'
+    if(is_user_logged_in()){
+      $user = wp_get_current_user();
+      //load this user's previously submitted values
+      $query_args = array(
+      	'posts_per_page'   => 1,
+      	'post_type'        => post_type,
+      	'author'	   => $user->ID,
+      	'post_status'      => 'published'
+      );
+    }
+  }
+  return $query_args;
 }
 `
