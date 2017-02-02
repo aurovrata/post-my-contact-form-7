@@ -30,6 +30,7 @@
     //functions
     function createNewTaxonomy(){
       //enable the new field
+      parent = $(this).parent();
       var postType = $('input#mapped_post_type').val();
       var button = parent.find('.taxonomy-label-field span.link-button');
       //enable input fiedls in the details section
@@ -221,6 +222,7 @@
       //change the other input names
       $(this).parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
       $(this).parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
+      $(this).parent().find('input.taxonomy-source').attr('name','cf7_2_post_map_taxonomy_source-'+slug);
     }
     //function called when the taxonomy name changes
     function pluralName(){

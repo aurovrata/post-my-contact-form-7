@@ -1,13 +1,6 @@
 <?php
 class Cf7_2_Post_Factory {
   /**
-  *
-  * @since    2.0.0
-  * @access   private
-  * @var     String $chosen_version  Jquery Chosen version.
-  */
-  private $chosen_version = "1.6.2";
-  /**
 	 * The properties of the mapped custom post type.
 	 *
 	 * @since    1.0.0
@@ -391,8 +384,6 @@ class Cf7_2_Post_Factory {
       //is this a draft save?
       if($create_post){
         $this->post_properties['map']='publish';
-        //let's save the public js file
-        $this->save_field_script();
       }else{
         $this->post_properties['map']='draft';
       }
@@ -515,6 +506,7 @@ class Cf7_2_Post_Factory {
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
       }
+      //debug_msg($slugs, "saved taxonomy ");
       //save the taxonomy properties
       $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
       //make sure they are unique
@@ -847,7 +839,6 @@ class Cf7_2_Post_Factory {
   * @since 1.0.0
   */
   public function is_published($element='input', $echo=true){
-
     if('publish' == $this->post_properties['map']){
       switch($element){
         case 'input':

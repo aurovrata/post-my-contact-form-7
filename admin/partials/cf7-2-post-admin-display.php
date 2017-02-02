@@ -200,7 +200,7 @@ $default_post_fields .= '<div class="clear"></div>';
                     </div>
                     <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
                     <div class="clear"></div>
-              <?php if( $factory_mapping->is_published('boolean',false) ): ?>
+              <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
                     <div class="custom-taxonomy-input-fields hide-if-js">
                       <h4>
                         Choose a taxonomy, in blue are existing public taxonomies
