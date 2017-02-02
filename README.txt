@@ -105,7 +105,7 @@ This is a little more complex.  You will need to create an input field in your f
 
 = How can I pre-fill a form from a WordPress page template that contains a CF7 form ? =
 
-This can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in, 
+This can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in,
 
 `
 $content = get_the_content();
@@ -141,7 +141,20 @@ if(!empty($args) && isset($args[0]['id'])){
   }
 }
 `
+= How to use custom javascript script on the form front-end ? =
 
+The plugin fires a number of jQuery scripts in order to map saved submissions back to draft forms.  So if you have a form which your users can save before submitting and you need to customise some additional functionality on your form on `$(document).ready()`, then you need to make sure it fires after the plugin's scripts have finished.  In order to achieve this, the script fires a custom event on the form, `cf7Mapped`, which you can use to ensure you script fires in the right order, here is how you would enable this,
+`
+(function( $ ) {
+	'use strict';
+  $( function() { //the jQuery equivalent of document.ready()
+    var cf7Form = $('div.cf7_2_post form.wpcf7-form'); //this ensures you target the mapped forms
+    cf7Form.on('formMapped', function(){
+      //fire your script
+    });
+  });
+})( jQuery );
+`
 
 = Is there any advanced documentation for developers ? =
 sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) which lists all the hooks (filters & actions) available for developers with examples of how to use them.  These expose a lot of the default functionality for further fine-tuning.  If you see a scope for improvement and/or come across a bug, please report it in the support forum.
@@ -157,12 +170,15 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 == Changelog ==
 
 = 1.3.0 =
-
+* added filter 'cf7_2_post_form_values' to filter values loaded in form
+* swapped jquery select2 for of chosen plugin
+* added filter 'cf7_2_post_form_append_output' to allow custom scripts to be appended to forms
 * added functionality to map taxonomies belonging to other existing posts
 * introduced a save button in the cf7 elements to build draft submission forms
 * fixed some minor bugs resulting from cf7 plugin update
 * improved loading of mapped forms
 * make use of 'do_shortcode_tag' filter introduced in WP4.7
+* introduced a custom js event 'cf7Mapped' on the form to ensure custom scripts don't fire too early.
 
 = 1.2.0 =
 
@@ -317,14 +333,14 @@ function custom_dropdown_order($args, $cf7_post_id, $taxonomy){
 This function changes the list order, putting the most commonly used terms at the top of the list.
 For more information on taxonomy query arguments, please refer to the [WP codex documentation](https://developer.wordpress.org/reference/functions/get_terms/#parameters).
 
-= 'cf7_2_post_filter_cf7_taxonomy_chosen_select' =
+= 'cf7_2_post_filter_cf7_taxonomy_select2' =
 
-This filter expects a boolean, by default it is `true` and enables [jquery chosen plugin](https://harvesthq.github.io/chosen/) on select dropdown fields.
+This filter expects a boolean, by default it is `true` and enables [jquery select2 plugin](https://select2.github.io/) on select dropdown fields.
 To disable it, do the following
 
 `
-add_filter('cf7_2_post_filter_cf7_taxonomy_chosen_select','disable_chosen_plugin',10,3);
-function disable_chosen_plugin($enable, $cf7_post_id, $form_field){
+add_filter('cf7_2_post_filter_cf7_taxonomy_select2','disable_select2_plugin',10,3);
+function disable_select2_plugin($enable, $cf7_post_id, $form_field){
   if(20 == $cf7_post_id && 'your-option' == $form_field){
     //we assume here that cf7 form 20 has a dropdown field called 'your-option' which was mapped to a taxonomy
     $enable=false;
@@ -333,11 +349,11 @@ function disable_chosen_plugin($enable, $cf7_post_id, $form_field){
   return $enable;
 }
 `
-= 'cf7_2_post_filter_cf7_delay_chosen_launch' =
+= 'cf7_2_post_filter_cf7_delay_select2_launch' =
 
-This allows you manually launch the chosen select.  This is required if you need to customise the select dropdown on windows load event with your own jquery scripts before the chosen select transformation is applied.
+This allows you manually launch the select2 jquery dropdonw fields.  This is required if you need to customise the select dropdown on windows load event with your own jquery scripts before the select2 transformation is applied.  Please read the FAQ on custom scripts to make sure you trigger your script after the form is mapped.
 `
-add_filter( 'cf7_2_post_filter_cf7_delay_chosen_launch', '__return_true');`
+add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');`
 
 = 'cf7_2_post_filter_cf7_taxonomy_select_optgroup' =
 
@@ -382,5 +398,47 @@ function load_published_submissions($query_args, $post_type){
     }
   }
   return $query_args;
+}
+`
+
+= `cf7_2_post_form_append_output` =
+
+this filter is fired when the cf7 shortcode output is printed, it allows you to add a custom script at the end of your form should you need it,
+`
+add_filter('cf7_2_post_form_append_output', 'append_my_script', 10, 3);
+function append_my_script($output, $attr, $nonce){
+  if(!isset($attr['id'])){
+    return $output;
+  }
+  $cf7_id = $attr['id'];
+  if(19 == $cf7_id){ //check this is your form
+    $output .= '<script type="text/javascript">';
+    $output .= '(function( $ ) {';
+    $output .= '  //fire your script once the form nonce event is triggered';
+    $output .= '  $(document).on("'.$nonce.'", $("div#'.$nonce.' form.wpcf7-form"), function() {';
+    $output .= '  var cf7Form = $("div#'.$nonce.' form.wpcf7-form");';
+    $output .= '  ... //your custom scripting';
+    $output .= '});';
+    $output .= '})( jQuery );';
+    $output .= '</script>';
+  }
+  return $output;
+}
+`
+
+= `cf7_2_post_form_values` =
+This filter allows you to load default values into your mapped forms. If the current user has a saved form, this filter will override any values you set.
+
+`
+add_filter('cf7_2_post_form_values', 'set_default_location', 10, 3);
+function set_default_location($values, $$cf7_id, $mapped_post_type){
+  if('travel_post' != mapped_post_type){
+    return values;
+  }
+  if(19 == $cf7_id){ //check this is your form
+    $field_name = 'location-rental';
+    $values[$field_name] .= 'Paris';
+  }
+  return $values;
 }
 `

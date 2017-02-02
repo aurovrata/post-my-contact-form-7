@@ -154,6 +154,8 @@ class Cf7_2_Post {
     /* WP hooks */
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+    //on save cf7 post type
+    //$this->loader->add_action( 'save_post_wpcf7_contact_form', $plugin_admin,'reset_mapped_scripts', 30, 2 );
     //modify the CF7 post type
     $this->loader->add_action('init', $plugin_admin, 'modify_cf7_post_type',20);
     //cf7 sub-menu
@@ -170,6 +172,9 @@ class Cf7_2_Post {
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
+    //add the 'save' button tag
+    $this->loader->add_action( 'wpcf7_init', $plugin_admin, 'cf7_shortcode_save' );
+
     //reset the cf7 admin table
     $cf7_admin = Cf7_WP_Post_Table::set_table();
     if(!$cf7_admin->hooks()){
@@ -208,6 +213,7 @@ class Cf7_2_Post {
 
     /*CF7 Hooks*/
     $this->loader->add_filter( 'wpcf7_posted_data', $plugin_public, 'save_cf7_2_post',100);
+    $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
 
 	}
 

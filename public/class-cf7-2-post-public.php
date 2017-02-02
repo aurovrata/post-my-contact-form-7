@@ -61,18 +61,6 @@ class Cf7_2_Post_Public {
 	 */
 	public function enqueue_styles() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Cf7_2_Post_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Cf7_2_Post_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-public.css', array(), $this->version, 'all' );
 
 	}
@@ -84,23 +72,12 @@ class Cf7_2_Post_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Cf7_2_Post_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Cf7_2_Post_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
     $plugin_dir = plugin_dir_url( __FILE__ );
-		wp_enqueue_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
-    $scripts = self::scan_local_scripts();
+		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
+    /*$scripts = self::scan_local_scripts();
     foreach($scripts as $cf7_id=>$file){
       wp_register_script('cf7_2_post-'.$cf7_id, $plugin_dir . 'js/'.$file , array('jquery'), $this->version, false);
-    }
+    }*/
     //wp_localize_script('cf7_2_post-622', 'cf7_2_post_622', array('your_name'=>"value"));
 	}
   /**
@@ -110,13 +87,14 @@ class Cf7_2_Post_Public {
   * @param Array $cf7_form_data  data posted from teh cf7 form
   */
   public function save_cf7_2_post($cf7_form_data){
-    //debug_msg($cf7_form_data, 'cf7 form posted');
     //load the form factory
     if(isset($cf7_form_data['_wpcf7'])){
       $cf7_post_id = $cf7_form_data['_wpcf7'];
       //is this form mapped yet?
       $map_status = get_post_meta( $cf7_post_id , '_cf7_2_post-map' , true );
-      if('publish' != $map_status) return; //nothing to do here
+      if('publish' != $map_status){
+        return; //nothing to do here
+      }
 
       $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
       $factory->save_form_2_post($cf7_form_data);
@@ -134,6 +112,7 @@ class Cf7_2_Post_Public {
    * @return     string    shortcode html string.
   **/
   public function load_cf7_script($output, $tag, $attr){
+
     if('contact-form-7' != $tag){
       return $output;
     }
@@ -146,33 +125,12 @@ class Cf7_2_Post_Public {
     if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
       $plugin_dir = plugin_dir_url( __FILE__ );
       $factory = Cf7_2_Post_Factory::get_factory($cf7_id);
+      //unique nonce
+      $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
 
-      $field_and_values = $factory->get_form_values();
-
-      if(isset($field_and_values['taxonomies'])){
-        //append the taxonomy loading script
-        $output.='<script type="text/javascript">';
-        $output.='  (function( $ ) {';
-        $output.='    "use strict";';
-        $output.='   	$(document).ready(function() {';
-        $output.='      var cf7Form = $("form.wpcf7-form");';
-        $output.= $field_and_values['taxonomies'];
-        $output.='});})( jQuery );</script>';
-        unset($field_and_values['taxonomies']);
-      }
-
-      $mapped_post_type = $factory->get('type');
-
-      $user_values = apply_filters('cf7_2_post_form_values', array(), $cf7_id, $mapped_post_type);
-
-      if( !empty($user_values) ){
-        foreach($user_values as $field=>$value){
-          $field_and_values[str_replace('-','_',$field)] = $value;
-        }
-      }
-      wp_localize_script('cf7_2_post-'.$cf7_id, 'cf7_2_post_'.$cf7_id, $field_and_values);
-      //enqueue script that was earlier registered
-      wp_enqueue_script('cf7_2_post-'.$cf7_id);
+      $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce);
+      $map_script = $factory->get_form_field_script( $nonce );
+      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$map_script.PHP_EOL.$scripts.'</div>';
     }
     return $output;
   }
@@ -182,7 +140,7 @@ class Cf7_2_Post_Public {
    * @since 1.3.0
    * @return     array    array of $cf7_id=>$script_file_name  pairs   .
   **/
-  public static function scan_local_scripts(){
+  /*public static function scan_local_scripts(){
     $script_files = scandir( plugin_dir_path( __FILE__ ) . 'js/');
 		$cf7_mapped_scripts = array();
 
@@ -201,6 +159,57 @@ class Cf7_2_Post_Public {
 		}
 
     return $cf7_mapped_scripts;
+  }*/
+  /**
+   * Register a [save] shortcode with CF7.
+   * Hooked  o 'wpcf7_init'
+   * This function registers a callback function to expand the shortcode for the save button field.
+   * @since 2.0.0
+   */
+  public function save_button_shortcode_handler() {
+    if( function_exists('wpcf7_add_form_tag') ) {
+      wpcf7_add_form_tag(
+        array( 'save' ),
+        array($this,'save_button_display'),
+        true //has name
+      );
+    }
   }
+  /**
+	 * Dsiplays the save button field
+	 * This function expands the shortcode into the required hiddend fields
+	 * to manage the googleMap forms.  This function is called by cf7 directly, registered above.
+	 *
+	 * @since 1.0.0
+	 * @param strng $tag the tag name designated in the tag help screen
+	 * @return string a set of html fields to capture the googleMap information
+	 */
+	public function save_button_display( $tag ) {
+      //enqueue required scripts and styles
+      wp_enqueue_script( $this->plugin_name);
 
+	    $tag = new WPCF7_FormTag( $tag );
+      $class = wpcf7_form_controls_class( $tag->type );
+
+    	$atts = array();
+
+    	$atts['class'] = $tag->get_class_option( $class );
+      $atts['class'] .=' wpcf7-submit cf7_2_post_save';
+    	$atts['id'] = $tag->get_id_option();
+    	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
+
+    	$value = isset( $tag->values[0] ) ? $tag->values[0] : '';
+
+    	if ( empty( $value ) ) {
+    		$value = __( 'Save', 'contact-form-7' );
+    	}
+
+    	$atts['type'] = 'submit';
+    	$atts['value'] = $value;
+
+    	$atts = wpcf7_format_atts( $atts );
+    	$html = sprintf( '<input %1$s />', $atts );
+      $html .=PHP_EOL.'<input type="hidden" name="save_cf7_2_post" class="cf7_2_post_draft" value="false"/>';
+	    return $html;
+	}
 }

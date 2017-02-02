@@ -257,10 +257,9 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function register_dynamic_posts(){
-    //register_post_type('dummy',array('public'=> true,'label'=>Dummy));
     Cf7_2_Post_Factory::register_cf7_post_maps();
   }
-  
+
 
   /**
    * Delete existing fields for a given cf7 form, as well as all post data
@@ -277,5 +276,44 @@ class Cf7_2_Post_Admin {
 
     }
   }
-
+  /**
+   * Adds a 'save' button shortcode to cf7 forms
+   *
+   * @since 2.0.0
+  **/
+  public function cf7_shortcode_save(){
+    if ( class_exists( 'WPCF7_TagGenerator' ) ) {
+      $tag_generator = WPCF7_TagGenerator::get_instance();
+      $tag_generator->add(
+        'save', //tag id
+        __( 'save', 'cf7_2_post' ), //tag button label
+        array($this,'save_tag_generator'), //callback
+        array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
+    );
+    }
+  }
+  /**
+	 * Sav button tag screen displayt.
+	 *
+	 * This function is called by cf7 plugin, and is registered with a hooked function above
+	 *
+	 * @since 1.0.0
+	 * @param WPCF7_ContactForm $contact_form the cf7 form object
+	 * @param array $args arguments for this form.
+	 */
+	function save_tag_generator( $contact_form, $args = '' ) {
+    $args = wp_parse_args( $args, array() );
+		include( plugin_dir_path( __FILE__ ) . '/partials/cf7-tag-display.php');
+	}
+  /**
+   * Reset the custom scripts for mapped forms when the form is being saved
+   *
+   * @since 1.3.0
+   * @param      string    $cf7_id     the id of the cf7 form being saved.
+  **/
+  /*public function reset_mapped_scripts($cf7_id){
+    if(file_exists(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js')){
+      unlink(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js');
+    }
+  }*/
 }

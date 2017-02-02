@@ -985,16 +985,16 @@ class Cf7_2_Post_Factory {
     global $wpdb;
     $cf7_post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-map' AND meta_value='publish'");
     //debug_msg($cf7_post_ids);
-    $script_files = Cf7_2_Post_Public::scan_local_scripts();
+    //$script_files = Cf7_2_Post_Public::scan_local_scripts();
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = self::get_factory($post_id);
       //debug_msg("Registering ".$cf7_2_post_map->get('type'));
       //debug_msg($cf7_2_post_map);
       //make sure we have the script file that goes witt this form
       $cf7_2_post_map->create_cf7_post_type();
-      if(!isset($script_files[$post_id])){
+      /*if(!isset($script_files[$post_id])){
         $cf7_2_post_map->save_field_script();
-      }
+      }*/
     }
   }
   /**
@@ -1027,7 +1027,7 @@ class Cf7_2_Post_Factory {
                   'post_title'  => 'CF7 2 Post'
                 );
     $post_id = '';
-    if(isset($cf7_form_data['_map_post_id'])){
+    if(isset($cf7_form_data['_map_post_id']) && !empty($cf7_form_data['_map_post_id'])){
       $post_id = $cf7_form_data['_map_post_id']; //this is an existing post being updated
       $wp_post = get_post($post_id);
       $post['post_status'] = $wp_post->post_status;
@@ -1093,7 +1093,9 @@ class Cf7_2_Post_Factory {
           break;
       }
 
-      if($skip_loop) continue;
+      if($skip_loop){
+        continue;
+      }
 
       if( empty($post_key) ){
         debug_msg("Unable to map form field=".$form_field." to post field= ".$post_field);
@@ -1121,16 +1123,14 @@ class Cf7_2_Post_Factory {
         $post['post_name'] = 'cf7_'.$this->cf7_post_ID.'_to_post_'.$post_id;
       }
     }
-    debug_msg($post, 'updating post... ');
     $post_id = wp_insert_post ( $post );
-    //debug_msg("Updated post... ".$post_id);
     //
     //-------------- meta fields
     //
-    if(isset($cf7_form_data['save_cf7_2_post'])){
-      update_post_meta($post_id, '_form_submitted','no'); //form is saved
+    if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
+      update_post_meta($post_id, '_cf7_2_post_form_submitted','no'); //form is saved
     }else{
-      update_post_meta($post_id, '_form_submitted','yes'); //form is submitted
+      update_post_meta($post_id, '_cf7_2_post_form_submitted','yes'); //form is submitted
     }
     $this->load_form_fields(); //this loads the form fields and their type
     //debug_msg($cf7_form_data, "submitted data ");
@@ -1194,7 +1194,7 @@ class Cf7_2_Post_Factory {
     $field_and_values = array();
     $unmapped_fields = array();
 
-    if(is_user_logged_in()){
+    if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
       //find out if this user has a post already created/saved
       $args = array(
@@ -1204,17 +1204,16 @@ class Cf7_2_Post_Factory {
       	'post_status'      => 'any'
       );
       //filter by submission value for newer version so as not to break older version
-      if( version_compare( CF7_2_POST_VERSION , $this->post_properties['version'] , '>') ){
+      if( version_compare( CF7_2_POST_VERSION , $this->post_properties['version'] , '>=') ){
         $args['meta_query'] = array(
       		array(
-      			'key'     => '_form_submitted',
+      			'key'     => '_cf7_2_post_form_submitted',
       			'value'   => 'no',
       			'compare' => 'LIKE',
       		)
         );
       }
       $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type']);
-
       $posts_array = get_posts( $args );
       //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
       if($posts_array){
@@ -1300,9 +1299,6 @@ class Cf7_2_Post_Factory {
       //
       // ------------ taxonomy fields
       //
-      //debug_msg($this->post_map_taxonomy, ' taxonomies... ');
-      $script=''; //we need to keep track of the javascript
-
       $load_chosen_script=false;
       foreach($this->post_map_taxonomy as $form_field => $taxonomy){
 
@@ -1324,64 +1320,38 @@ class Cf7_2_Post_Factory {
         //debug_msg("buidling options for taxonomy ".$taxonomy);
         $field_type = $this->cf7_form_fields[$form_field];
         $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type);
-        if(apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field)){
-          wp_enqueue_script('jquery-chosen',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/chosen/chosen.jquery.js', array('jquery'),$this->chosen_version,true);
-          wp_enqueue_style('jquery-chosen',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/chosen/chosen.min.css', array(),$this->chosen_version);
+        //for legacy purpose
+        $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $form_field);
+        if( $apply_jquery_select ){
+          wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+          wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
         }
         $field_and_values[str_replace('-','_',$form_field)] = json_encode($options);
-        /*
-        //debug_msg($options, "Loading terms in field, ");
-        switch($field_type){
-          case 'select':
-            if( $this->field_has_option($form_field, 'multiple') ){
-              $form_field = '"'.$form_field.'[]"';
-            }
-            if(apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field)){
-              $script .= "      cf7Form.find('select[name=".$form_field."]').addClass('chosen-select').append('".$options."');".PHP_EOL;
-              $load_chosen_script=true;
-            }else{
-              $script .= "      cf7Form.find('select[name=".$form_field."]').append('".$options."');".PHP_EOL;
-            }
-            break;
-          case 'radio':
-            $script .= "      cf7Form.find('span.".$form_field." span.wpcf7-radio').html('".$options."');".PHP_EOL;
-            break;
-          case 'checkbox':
-            $script .= "      cf7Form.find('span.".$form_field." span.wpcf7-checkbox').html('".$options."');".PHP_EOL;
-            break;
-        }*/
-      }
-      /*
-      if($load_chosen_script){
-        if(!apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $this->cf7_post_ID)){
-          $script .= '    $(".chosen-select").each(function(){ $(this).chosen({ width: $(this).eq( 0 ).width() + "px" }); })'.PHP_EOL;
-        }
-        wp_enqueue_script('jquery-chosen',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/chosen/chosen.jquery.js', array('jquery'),$this->chosen_version,true);
-        wp_enqueue_style('jquery-chosen',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/chosen/chosen.min.css', array(),$this->chosen_version);
-      }*/
 
-      $field_and_values['taxonomies'] = $script;
+      }
+
     }
 
-    return $field_and_values;
+    return apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'] );
   }
 
   /**
-  * Function to save jquery script for form field initialisation
+  * Function to print jquery script for form field initialisation
   *
   * @since 1.3.0
   * @param   Array  $field_and_values   array of $field_name=>$values pairs
   */
-  protected function save_field_script(){
+  public function get_form_field_script($nonce){
     ob_start();
     include( plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-script.php');
     $script = ob_get_contents ();
     ob_end_clean();
     //save to file
-    $result = file_put_contents( plugin_dir_path( __DIR__ ) . 'public/js/cf7_2_post-'.$this->cf7_post_ID.'.js',  $script);
+    /*$result = file_put_contents( plugin_dir_path( __DIR__ ) . 'public/js/cf7_2_post-'.$this->cf7_post_ID.'.js',  $script);
     if(false === $result){
       debug_msg(plugin_dir_path( __DIR__ ) . 'js/cf7_2_post-'.$this->cf7_post_ID.'.js', "Unable to save script file: ");
-    }
+    }*/
+    return $script;
   }
   /**
   * Function to retrieve jquery script for form field taxonomy capture
