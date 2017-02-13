@@ -958,9 +958,30 @@ class Cf7_2_Post_Factory {
   		'publicly_queryable'    => !empty($this->post_properties['publicly_queryable']),
   		'capability_type'       => $this->post_properties['capability_type'],
   	);
-    //debug_msg($args,'register_post_type '.$this->post_properties['type'].' ');
+    $reference = array(
+        'edit_post' => '',
+        'edit_posts' => '',
+        'edit_others_posts' => '',
+        'publish_posts' => '',
+        'read_post' => '',
+        'read_private_posts' => '',
+        'delete_post' => ''
+    );
+    $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$this->post_properties['type'], $reference));
+    $diff=array_diff_key($reference, $capabilities);
+    if( empty( $diff ) ) {
+      $args['capabilities'] = $capabilities;
+      $args['map_meta_cap'] = true;
+    }else{ //some keys are not set, so capabilities will not work
+      //set to defaul post capabilities
+      $args['capability_type'] = 'post';
+    }
+
+    //allow additional settings
+    $args = apply_filters('cf7_2_post_register_post_'.$this->post_properties['type'], $args );
+
   	register_post_type( $this->post_properties['type'], $args );
-    //register_post_type($this->post_properties['type'],array('public'=> true,'label'=>$this->post_properties['singular_name']));
+
     //link the taxonomy and the post
     foreach($this->post_properties['taxonomy'] as $taxonomy_slug){
       register_taxonomy_for_object_type( $taxonomy_slug, $this->post_properties['type'] );

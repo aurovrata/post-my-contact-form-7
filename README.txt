@@ -180,6 +180,19 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 * make use of 'do_shortcode_tag' filter introduced in WP4.7
 * introduced a custom js event 'cf7Mapped' on the form to ensure custom scripts don't fire too early.
 
+= 1.2.4 =
+* added filter 'cf7_2_post_register_post_{post_type}' to allow tweaking of custom post registration
+
+= 1.2.3 =
+* changed hooking position of cf7 submission process to save forms to posts before mails are sent
+
+= 1.2.2 =
+* fixed a bug which prevented cf7 emails from being filled with field values
+
+= 1.2.1 =
+* small bug fix stopping cpt properties from being changed once created
+* added filter
+
 = 1.2.0 =
 
 * ability to map custom taxonomies to fields
@@ -440,5 +453,18 @@ function set_default_location($values, $$cf7_id, $mapped_post_type){
     $values[$field_name] .= 'Paris';
   }
   return $values;
+}
+`
+= 'cf7_2_post_register_post_{post_type}' =
+
+this filter allows you to tweak the arguments used to register the custom_post type, for example, if you want to modify the [rewrite front-end slug](https://codex.wordpress.org/Function_Reference/register_post_type#rewrite) for the post type,
+
+`add_filter('cf7_2_post_register_post_my-custom-post', 'set_rewrite_slug');
+function set_rewrite_slug($args){
+  $args['rewrite'] = array(
+    'slug' => 'posted-replies',
+    'with_front' => true
+  );
+  return $args;
 }
 `

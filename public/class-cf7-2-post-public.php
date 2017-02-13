@@ -81,7 +81,7 @@ class Cf7_2_Post_Public {
     //wp_localize_script('cf7_2_post-622', 'cf7_2_post_622', array('your_name'=>"value"));
 	}
   /**
-  * Maps a cf7 form to its corresponding form
+  * Maps a cf7 form to its corresponding post
   * Hooks 'wpcf7_posted_data' cf7 action in the public section
   * @since 1.0.0
   * @param Array $cf7_form_data  data posted from teh cf7 form
@@ -91,13 +91,10 @@ class Cf7_2_Post_Public {
     if(isset($cf7_form_data['_wpcf7'])){
       $cf7_post_id = $cf7_form_data['_wpcf7'];
       //is this form mapped yet?
-      $map_status = get_post_meta( $cf7_post_id , '_cf7_2_post-map' , true );
-      if('publish' != $map_status){
-        return; //nothing to do here
+      if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+        $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+        $factory->save_form_2_post($cf7_form_data);
       }
-
-      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-      $factory->save_form_2_post($cf7_form_data);
     }else{
       debug_msg("ERROR, unable to get CF7 post ID for mapping in posted data!");
     }
