@@ -1,0 +1,3 @@
+[submodule "assets/cf7-admin-table"]
+	path = assets/cf7-admin-table
+	url = https://github.com/aurovrata/cf7-admin-table
