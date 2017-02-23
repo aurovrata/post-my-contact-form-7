@@ -29,7 +29,7 @@ $default_post_fields .= '<p class="cf7-post-error-msg"></p>';
 $default_post_fields .= '<div class="clear"></div>';
 ?>
 <div class="wrap">
-  <h1>Save Form as Post</h1>
+  <h1>Save Form as Custom Post <span id="custom-post-title"><?php echo $factory_mapping->get('plural_name');?></span></h1>
   <form id="cf7-post-mapping-form" method="post">
     <input type="hidden" name="action" value="save_post_mapping"/>
 <?php  //wp_nonce_field( $action, $field_name, $show_referer_field, $echo_field )
@@ -45,68 +45,76 @@ $default_post_fields .= '<div class="clear"></div>';
               <h2 class="hndle ui-sortable-handle"><span>Create</span></h2>
               <div class="inside">
                 <div class="createbox" id="createpost">
-                  <div id="minor-publishing">
-                    <div id="save-draft-actions" <?php echo ($is_new_mapping ? '': 'style="display:none;"');?>>
-                      <div id="save-draft-action">
-                        <span class="spinner save_draft"></span>
-                        <input name="submit" onclick="this.form.submited=this.id;" id="save_draft" value="Save Draft" class="button" type="submit">
-                      </div>
-                      <div class="clear"></div>
-                    </div><!-- #minor-publishing-actions -->
-                    <div id="misc-publishing-actions">
-                      <div class="misc-pub-section misc-pub-post-type">
-                        <label for="post_type">Post Type:</label>
-                        <span id="post-type-display"><?php echo $factory_mapping->get('type');?></span>
-                        <a href="#post_type" class="edit-post-type hide-if-no-js"><span aria-hidden="true">Edit</span> <span class="screen-reader-text">Edit status</span></a>
-                        <div id="post-type-select" class="hide-if-js">
-                          <label for="mapped_post_type" class="post_type_labels">Post type</label>
-                          <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
-                          <input name="mapped_post_type_source" id="mapped_post_type" value="<?php echo $factory_mapping->get('type_source');?>" type="hidden">
-                          <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
-                          <label for="mapped_post_singular_name" class="post_type_labels">Singular name</label>
-                          <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
-                          <label for="mapped_post_plural_name" class="post_type_labels">Plural name</label>
-                          <input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text">
-                          <p class="post-type-display">
-                            Capabilities
-                          </p>
-                          <input type="checkbox" <?php $factory_mapping->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>
-                          <label class="post_type_cb_labels">hierarchical</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('public','checked="checked"');?> name="mapped_post_public"/>
-                          <label class="post_type_cb_labels">public</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>
-                          <label class="post_type_cb_labels">show_ui</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>
-                          <label class="post_type_cb_labels">show_in_menu</label><br />
-                          <div id="post_type_is_menu_position"><label>menu_position</label>
-                            <input style="width:45px;" type="number" value="<?php $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/>
-                          </div>
-                          <input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="post_type_is_show_in_admin_bar"/>
-                          <label class="post_type_cb_labels">show_in_admin_bar</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="post_type_is_show_in_nav_menus"/>
-                          <label class="post_type_cb_labels">show_in_nav_menus</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>
-                          <label class="post_type_cb_labels">can_export</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>
-                          <label class="post_type_cb_labels">has_archive</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>
-                          <label class="post_type_cb_labels">exclude_from_search</label><br />
-                          <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
-                          <label class="post_type_cb_labels">publicly_queryable</label><br />
-                          <div class="clear"></div>
+                  <div id="misc-publishing-actions">
+                    <div class="misc-pub-section misc-pub-post-type">
+                      <label for="post_type">Post Type:</label>
+                      <span id="post-type-display">
+                        <select name="mapped_post_type_source" id="mapped_post_type">
+                          <?php $source = $factory_mapping->get('type_source');?>
+                          <option value="factory" <?php echo ('factory'==$source) ? ' selected="true"' : ''; ?>>New Post</option>
+                          <option value="system"<?php echo ('system'==$source) ? ' selected="trur"' : ''; ?>>Existing Post</option>
+                        </select>
+                      </span>
+                      <div id="post-type-select"> <!--class="hide-if-js"-->
+                        <label for="mapped_post_type" class="post_type_labels">Post type</label>
+                        <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
+                        <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
+                        <label for="mapped_post_singular_name" class="post_type_labels">Singular name</label>
+                        <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
+                        <label for="mapped_post_plural_name" class="post_type_labels">Plural name</label>
+                        <input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text">
+                        <p class="post-type-display">
+                          Capabilities
+                        </p>
+                        <input type="checkbox" <?php $factory_mapping->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>
+                        <label class="post_type_cb_labels">hierarchical</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('public','checked="checked"');?> name="mapped_post_public"/>
+                        <label class="post_type_cb_labels">public</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>
+                        <label class="post_type_cb_labels">show_ui</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>
+                        <label class="post_type_cb_labels">show_in_menu</label><br />
+                        <div id="post_type_is_menu_position"><label>menu_position</label>
+                          <input style="width:45px;" type="number" value="<?php $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/>
                         </div>
-                      </div><!-- .misc-pub-section -->
+                        <input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="post_type_is_show_in_admin_bar"/>
+                        <label class="post_type_cb_labels">show_in_admin_bar</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="post_type_is_show_in_nav_menus"/>
+                        <label class="post_type_cb_labels">show_in_nav_menus</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>
+                        <label class="post_type_cb_labels">can_export</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>
+                        <label class="post_type_cb_labels">has_archive</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>
+                        <label class="post_type_cb_labels">exclude_from_search</label><br />
+                        <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
+                        <label class="post_type_cb_labels">publicly_queryable</label><br />
+                        <div class="clear"></div>
+                      </div>
+                      <div id="post-type-exists">
+                        <label for="system_post_type">Select a Post</label>
+                        <select id="system-post-type" name="system_post_type">
+                          <?php echo $factory_mapping->get_system_posts_options();?>
+                        </select>
+                      </div>
+                    </div><!-- .misc-pub-section -->
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <div id="post-creation-actions">
+                  <div id="save-draft-actions" <?php echo ($is_new_mapping ? '': 'style="display:none;"');?>>
+                    <div id="save-draft-action">
+                      <span class="spinner save_draft"></span>
+                      <input name="submit" onclick="this.form.submited=this.id;" id="save_draft" value="Save Draft" class="button button-large" type="submit">
                     </div>
                     <div class="clear"></div>
                   </div>
-                  <div id="post-creation-actions">
-                    <div id="ajax-response"></div>
-                    <div id="creation-action">
-                      <span class="spinner save_post"></span>
-                      <input name="submit" onclick="this.form.submited=this.id;" id="<?php echo ($is_new_mapping ? 'save': 'update');?>_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
-                    </div>
-                    <div class="clear"></div>
+                  <div id="creation-action">
+                    <span class="spinner save_post"></span>
+                    <input name="submit" onclick="this.form.submited=this.id;" id="<?php echo ($is_new_mapping ? 'save': 'update');?>_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
                   </div>
+                  <div class="clear"></div>
+                  <div id="ajax-response"></div>
                 </div>
               </div>
             </div>

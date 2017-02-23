@@ -271,9 +271,7 @@ class Cf7_2_Post_Factory {
   public function save($data, $create_post_mapping){
     //check if we need to create a post
     $create_post = false;
-    if( isset($data['mapped_post_type_source']) &&
-    'factory'==$data['mapped_post_type_source'] &&
-    $create_post_mapping){
+    if( isset($data['mapped_post_type_source']) && 'factory' == $data['mapped_post_type_source'] && $create_post_mapping){
       $create_post = true;
     }
     //let's  update the properties
@@ -598,6 +596,56 @@ class Cf7_2_Post_Factory {
    */
   public function get_select_options( $field_to_map=null, $is_meta = false){
     return $this->_select_options( $field_to_map, ($is_meta ? 'meta-field' : 'field') );
+  }
+  /**
+   *Get a list of available system post_types as <option> elements
+   *
+   * @since 1.3.0
+   * @return     String    html list of <option> elements with existing post_types in the DB
+  **/
+  public function get_system_posts_options(){
+    $remove_post_types = array('revision','attachment','nav_menu_item','wpcf7_contact_form');
+    $remove_post_types = apply_filters('cf7_2_post_filter_system_posts', $remove_post_types, $this->cf7_post_ID);
+    $not_in = "'".implode("','", $remove_post_types)."'";
+    global $wpdb;
+    $posts = $wpdb->get_results(
+      "SELECT DISTINCT post_type
+      FROM {$wpdb->posts}
+      WHERE post_type NOT IN ({$not_in})"
+    );
+    $html = '';
+    $display = array();
+    foreach($posts as $row){
+      $display[] = $row->post_type;
+    }
+    $display = apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
+    foreach($display as $post_type){
+      $selected = ($this->post_properties['type'] == $post_type) ? ' selected="true"':'';
+      $html .='<option value="' . $post_type . '"' . $selected . '>' . $post_type . '</option>' . PHP_EOL;
+    }
+    return $html;
+  }
+  /**
+   * Get a list of meta fields for the requested post_type
+   *
+   * @since 1.3.0
+   * @param      String    $post_type     post_type for which meta fields are requested.
+   * @return     String    a list of option elements for each existing meta field in the DB.
+  **/
+  public function get_system_post_metas($post_type){
+    global $wpdb;
+    $metas = $wpdb->get_results($wpdb->prepare(
+      "SELECT DISTINCT meta_key
+      FROM {$wpdb->postmeta} as wpm, {$wpdb->posts} as wp
+      WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
+      $post_type
+    ));
+    $html = '';
+    foreach($metas as $row){
+      $selected='';
+      $html+='<option value="' . $row->meta_key . '"' . $selected . '>' . $row->meta_key . '</option>' . PHP_EOL;
+    }
+    return $html;
   }
   /**
 	 * Return htlm <option></option> for taxonomy mapping .
@@ -1343,8 +1391,14 @@ class Cf7_2_Post_Factory {
       }
 
     }
-
-    return apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'] );
+    //filter the values
+    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'] );
+    //make sure the field names are with underscores
+    $return_values = array();
+    foreach($field_and_values as $field=>$value){
+      $return_values[str_replace('-','_',$field)]=$value;
+    }
+    return $return_values;
   }
 
   /**

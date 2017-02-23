@@ -22,11 +22,15 @@
   padding: 0 5px;
   width: 57%;
 }
-#save-draft-action {
-    margin-top: 4px;
+#save-draft-actions {
+    display: inline-block;
 }
 #save-draft-action .spinner{
   float:left;
+}
+label[for="post_type"] {
+    min-width: 90px;
+    display: inline-block;
 }
 form#cf7-post-mapping-form .cf7-2-post-map-labels{
   min-width: 130px;
