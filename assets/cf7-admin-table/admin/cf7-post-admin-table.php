@@ -362,7 +362,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
       }
     }
     /**
-     *
+     *cf7-form Shortcode handler
      *
      * @since 1.0.0
      * @param      Array    $atts     array of attributes.
@@ -381,7 +381,8 @@ if(!class_exists('Cf7_WP_Post_Table')){
         'name' => $a['cf7key']
       ));
       if(!empty($form)){
-        $id = $form[0]->ID;
+        $id = apply_filters('cf7_form_shortcode_form_id',$form[0]->ID, $atts);
+
         wp_reset_postdata();
         $attributes ='';
         foreach($a as $key=>$value){

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.7.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -175,6 +175,8 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+= 1.3.1 =
+* small bug fix
 
 = 1.3.0 =
 * enable mapping to existing post types using hooks
