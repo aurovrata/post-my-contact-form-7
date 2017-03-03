@@ -113,6 +113,11 @@ select#post_type_source,
 select#system-post-type {
     width: 130px;
 }
+#system-poststuff span.code {
+    background-color: #eaeaea;
+    display: inline-block;
+    padding: 5px 10px;
+}
 .post_type_labels {
     min-width: 90px;
     display: inline-block;
@@ -132,13 +137,15 @@ select.field-options option.filter-option{
 p.cf7-post-error-msg span.code{
   font-size: 1.1em;
 }
-p.animate-color{
+#postcustomstuff p.animate-color,
+#system-poststuff p.animate-color span.animate{
     -webkit-animation: color-change 1s 3;
     -moz-animation: color-change 1s 3;
     -o-animation: color-change 1s 3;
     -ms-animation: color-change 1s 3;
     animation: color-change 1s 3;
 }
+
 
 @-webkit-keyframes color-change {
     0% { background-color: red; }

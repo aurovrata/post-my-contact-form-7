@@ -298,12 +298,23 @@ $default_post_fields .= '<div class="clear"></div>';
                         $post_type = $factory_mapping->get('type');
                       }
                     ?>
-                    <span class="code">add_action( '<span class="code action-form-map">cf7_2_post_save-<?php echo $post_type?></span>', 'your_function_name',10,3);</span><br />
-                    <span class="code">function your_function_name($cf7_key, $submitted_data, $submitted_files){}</span>
+                    <span class="code">add_action( '<span class="code action-form-map animate">cf7_2_post_save-<?php echo $post_type?></span>', 'your_function_name',10,3);<br />
+                    function your_function_name($cf7_key, $submitted_data, $submitted_files){}</span>
                   </p>
                   <p class="animate-color">
                     <strong>Pre-loading the form</strong>: hook the following filter,<br />
-                    <span class="code">add_filter( '<span class="code filter-form-load">cf7_2_post_load-<?php echo $post_type?></span>', 'your_function_name',10,3);</span>
+                    <span class="code">add_filter( '<span class="code filter-form-load animate">cf7_2_post_load-<?php echo $post_type?></span>', 'your_function_name',10,5);<br />
+                    function your_function_name( $field_value_pairs, $cf7_key, $form_fields, $form_field_options, $cf7_post_id){<br />
+                      &nbsp;&nbsp;//$form_field_options options set in the form field tags<br />
+                      &nbsp;&nbsp;//$cf7_post_id the cf7 form id in case you need to load the form object<br />
+                      &nbsp;&nbsp;foreach($form_fields as $field=>$type){<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;$field_value_pairs[$field] = '';//load your value<br />
+                      &nbsp;&nbsp;}<br />
+                      &nbsp;&nbsp;//if this is a saved draft form, you can set your mapped post id<br />
+                      &nbsp;&nbsp;//it will be set as hidden field so you can map the (re)submission to the same post<br />
+                      &nbsp;&nbsp;$field_value_pairs['map_post_id'] = $post_id;<br />
+                      &nbsp;&nbsp;return $field_value_pairs;<br />
+                    }</span>
                   </p>
                 </div>
               </div><!-- .inside end -->

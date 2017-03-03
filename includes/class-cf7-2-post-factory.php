@@ -1086,11 +1086,16 @@ class Cf7_2_Post_Factory {
   */
   public static function register_cf7_post_maps(){
     global $wpdb;
-    $cf7_post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-map' AND meta_value='publish'");
-
+    $cf7_post_ids = $wpdb->get_col(
+      "SELECT post_id FROM $wpdb->postmeta, $wpdb->posts
+      WHERE meta_key='_cf7_2_post-map'
+      AND meta_value='publish'
+      AND ID=post_id
+      AND post_status LIKE 'publish'"
+    );
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = self::get_factory($post_id);
-      if('factory'==$cf7_2_post_map->get('source_type')){
+      if('factory'==$cf7_2_post_map->get('type_source')){
         $cf7_2_post_map->create_cf7_post_type();
       }
     }
@@ -1308,6 +1313,18 @@ class Cf7_2_Post_Factory {
 
     $field_and_values = array();
     $unmapped_fields = array();
+    $this->load_form_fields(); //this loads the cf7 form fields and their type
+
+    //currently mapped fields will be
+    if('system'==$this->get('type_source')){
+      $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), array(), $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID);
+
+      foreach($post_values as $field=>$value){
+        $field_and_values[str_replace('-','_',$field)] = $value;
+      }
+      //in future version, if the $post_values is empty we will simply conitnue
+      return $field_and_values;
+    }
 
     if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
@@ -1339,8 +1356,6 @@ class Cf7_2_Post_Factory {
       }
     }
       //we now need to load the save meta field values
-
-      $this->load_form_fields(); //this loads the cf7 form fields and their type
 
 
       foreach($this->post_map_fields as $form_field => $post_field){

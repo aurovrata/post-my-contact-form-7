@@ -20,6 +20,7 @@ You can submit and map to a post all of the following fields,
 * featured image, you can **submit a file** and save it as a post attachment
 * meta fields, unlimited number of **meta-fields** can be created
 * **taxonomies**, you can map select/checkbox/radio input fields to taxonomies
+* map your submitted forms to **existing post types**
 * addition of form key to identify cf7 forms instead of the form id to make development more portable
 
 = Make your CF7 Form more portable =
@@ -70,6 +71,8 @@ The plugin has been coded with additional actions and filters to allow you to ho
 * [CF7 Multi-slide Module](https://wordpress.org/plugins/cf7-multislide/) - this plugin allows you to build a multi-step form using a slider.  Each slide has cf7 form which are linked together and submitted as a single form.
 
 * [Post My CF7 Form](https://wordpress.org/plugins/post-my-contact-form-7/) - this plugin allows you to save you cf7 form to a custom post, map your fields to meta fields or taxonomy.  It also allows you to pre-fill fields before your form  is displayed.
+
+* [CF7 Google Map](https://wordpress.org/plugins/cf7-google-map/) - allows google maps to be inserted into a Contact Form 7.  Unlike other plugins, this one allows map settings to be done at the form level, enabling diverse maps to be configured for each forms.
 
 == Installation ==
 
@@ -174,6 +177,7 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 == Changelog ==
 
 = 1.3.0 =
+* enable mapping to existing post types using hooks
 * added filter 'cf7_2_post_form_values' to filter values loaded in form
 * swapped jquery select2 for of chosen plugin
 * added filter 'cf7_2_post_form_append_output' to allow custom scripts to be appended to forms
