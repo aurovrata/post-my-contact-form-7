@@ -76,7 +76,7 @@ class Cf7_2_Post_Public {
 
 	}
   /**
-  * Maps a cf7 form to its corresponding form
+  * Maps a cf7 form to its corresponding post
   * Hooks 'wpcf7_before_send_mail' cf7 action in the public section.
   * This action is after form validation to make sure the form is properly submitted
   * @since 1.0.0

@@ -202,7 +202,9 @@
       $(this).parent().prevAll('div.custom-taxonomy-field').eq(0).find('span.taxonomy-name strong').text(taxonomyName);
     }
     //post_type rename event
-    $('div#post-type-select input#mapped_post_type').on('change',function(){
+    $('div#post-type-select input#custom_post_type').on('change',function(){
+      //udpate the hidden field
+      $('input#mapped_post_type').val($(this).val());
       //rename the filter options
       var postType = $(this).val();
       $('div.post-meta-field').each(function(){
@@ -275,6 +277,50 @@
           $('div#ajax-response').addClass('error-msg');
         }
       });
+    });
+    //existing post selection
+    $('#post_type_source').on('change', function(){
+      var $source = $(this).find('option:selected');
+      var $system = $('#system-poststuff');
+      var $factory = $('#postcustomstuff');
+      var $selectPost = $('#post-type-exists');
+      var $customPost = $('#post-type-select');
+      var $post = $('#system-post-type option:selected');
+      var $mapped_type = $('input#mapped_post_type');
+      var type='';
+      switch($source.val()){
+        case 'factory':
+          $system.hide();
+          $selectPost.hide();
+          $customPost.show();
+          $factory.show();
+          type = $('input#custom_post_type').val();
+          $mapped_type.val(type);
+          break;
+        case 'system':
+          $('h3', $system).text('This form is mapped to an existing post: '+$post.text() );
+          $('p span.action-form-map',$system).text( 'cf7_2_post_save-'+$post.val() );
+          $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+$post.val() );
+          $mapped_type.val($post.val());
+          $factory.hide();
+          $customPost.hide();
+          $selectPost.show();
+          $system.show();
+          break;
+      }
+    });
+    $('#system-post-type').on('change', function(){
+      var $system = $('#system-poststuff');
+      var $mapped_type = $('input#mapped_post_type');
+      $mapped_type.val( $(this).val() );
+      $('h3', $system).text('This form is mapped to an existing post: '+ $(this).val() );
+      var anime = $('p span.action-form-map', $system).text( 'cf7_2_post_save-'+$(this).val() ).closest('p');
+      anime.before(anime.clone());
+      anime.remove();
+      anime = $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+$(this).val() ).closest('p');
+      anime.before(anime.clone());
+      anime.remove();
+      $mapped_type.val( $(this).val() );
     });
   });
   /*set elemetn widths once all images are loaded*/
