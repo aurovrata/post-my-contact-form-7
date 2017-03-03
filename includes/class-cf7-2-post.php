@@ -176,6 +176,7 @@ class Cf7_2_Post {
     $this->loader->add_action( 'wpcf7_init', $plugin_admin, 'cf7_shortcode_save' );
 
     //reset the cf7 admin table
+    /*
     $cf7_admin = Cf7_WP_Post_Table::set_table();
     if(!$cf7_admin->hooks()){
       $this->loader->add_action( 'admin_enqueue_scripts', $cf7_admin , 'enqueue_styles');
@@ -193,7 +194,7 @@ class Cf7_2_Post {
       $this->loader->add_action('admin_print_footer_scripts',$cf7_admin, 'change_add_new_button');
       //catch cf7 delete redirection
       $this->loader->add_filter('wp_redirect',$cf7_admin, 'filter_cf7_redirect',10,2);
-    }
+    }*/
 	}
 
 	/**
