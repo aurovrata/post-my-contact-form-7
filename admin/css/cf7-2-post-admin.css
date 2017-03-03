@@ -6,6 +6,9 @@
  label{
    cursor: default;
  }
+ .display-none{
+   display:none;
+ }
  #adminmenu ul.wp-submenu li a[href="admin.php?page=cf7_post"] {
     display: none;
 }
@@ -105,7 +108,9 @@ orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
   margin-top:0;
   margin-bottom:0;
 }
-#post-type-select input[type="text"] {
+#post-type-select input[type="text"],
+select#post_type_source,
+select#system-post-type {
     width: 130px;
 }
 .post_type_labels {
@@ -127,7 +132,7 @@ select.field-options option.filter-option{
 p.cf7-post-error-msg span.code{
   font-size: 1.1em;
 }
-p.cf7-post-error-msg.animate-color{
+p.animate-color{
     -webkit-animation: color-change 1s 3;
     -moz-animation: color-change 1s 3;
     -o-animation: color-change 1s 3;
