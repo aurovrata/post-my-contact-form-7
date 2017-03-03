@@ -207,8 +207,6 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function ajax_save_post_mapping(){
-    //cehck the nonce security
-    //wp_verify_nonce( $nonce, $action );
     //
     //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
@@ -218,7 +216,11 @@ class Cf7_2_Post_Admin {
 
       $cf7_post_id = $_POST['cf7_post_id'];
       $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-
+      if($this->post_mapping_factory->is_system_published()){
+        $json_data = array('msg'=>'Nothing to update');
+        wp_send_json_error($json_data);
+        die();
+      }
       $create_or_update = false;
       $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');;
       switch(true){
@@ -243,11 +245,11 @@ class Cf7_2_Post_Admin {
         //wp_send_json_success( $data );
         wp_send_json_success( $json_data );
       }else{
-        $json_data = array('msg'=>'Something is wrong, try to reload the page',);
+        $json_data = array('msg'=>'Something is wrong, try to reload the page');
         wp_send_json_error($json_data);
       }
     }else{
-      $json_data = array('msg'=>'No CF7 post ID, try to reload the page',);
+      $json_data = array('msg'=>'No CF7 post ID, try to reload the page');
       wp_send_json_error($json_data);
     }
     die();

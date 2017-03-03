@@ -4,16 +4,14 @@
 * @since 1.0.0
 * @var string $message to log if in debug mode
 */
-if( !defined( 'WP_GURUS_DEBUG_MSG' ) ){
-    define( 'WP_GURUS_DEBUG_MSG', true);
-}
+
 if( !function_exists('debug_msg') ){
-  if (true === WP_DEBUG && true === WP_GURUS_DEBUG_MSG) {
+  if (true === WP_DEBUG || true === WP_GURUS_DEBUG) {
      $debug_msg_last_line='';
      $debug_msg_last_file='';
    }
   function debug_msg($message,$prefix='') {
-      if (true === WP_DEBUG && true === WP_GURUS_DEBUG_MSG) {
+      if (true === WP_DEBUG || true === WP_GURUS_DEBUG) {
         global $debug_msg_last_line,$debug_msg_last_file;
           $backtrace = debug_backtrace();
           $file = $backtrace[0]['file'];

@@ -71,7 +71,6 @@ class Cf7_2_Post_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
     $plugin_dir = plugin_dir_url( __FILE__ );
 		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
     /*$scripts = self::scan_local_scripts();
@@ -86,18 +85,28 @@ class Cf7_2_Post_Public {
   * @since 1.0.0
   * @param Array $cf7_form_data  data posted from teh cf7 form
   */
-  public function save_cf7_2_post($cf7_form_data){
+  public function save_cf7_2_post($cf7_form){
+
     //load the form factory
-    if(isset($cf7_form_data['_wpcf7'])){
-      $cf7_post_id = $cf7_form_data['_wpcf7'];
+    if(isset($_POST['_wpcf7'])){
+      $cf7_post_id = $_POST['_wpcf7'];
       //is this form mapped yet?
       if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
         $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-        $factory->save_form_2_post($cf7_form_data);
+
+        //load all the submittec values
+        $cf7_form_data = array();
+        $tags = $cf7_form->scan_form_tags(); //get your form tags
+        //the curent submission object from cf7 plugin
+        $submission = WPCF7_Submission::get_instance();
+
+        //debug_msg($cf7_form_data, "saving form data ");
+        $factory->save_form_2_post($submission);
       }
     }else{
       debug_msg("ERROR, unable to get CF7 post ID for mapping in posted data!");
     }
+    return $cf7_form;
   }
   /**
    * Function to load scripts rqeuired for cf7 form loading

@@ -20,8 +20,12 @@ You can submit and map to a post all of the following fields,
 * featured image, you can **submit a file** and save it as a post attachment
 * meta fields, unlimited number of **meta-fields** can be created
 * **taxonomies**, you can map select/checkbox/radio input fields to taxonomies
+* addition of form key to identify cf7 forms instead of the form id to make development more portable
 
-**NOTE:** this pluign is currently not able to map a form to an *existing* post, you can only map your forms to custom post type created using this plugin.
+= Make your CF7 Form more portable =
+
+ this plugin introduces form keys (which you can modify in the CF7 admin table).  Keys are unique for each form, allowing you identify a form my its key rather than an ID.  Why is this priceless?  IDs changes from one server to the next because they are the custom post ID attributed by the WordPress installation, and therefore you develop your form in a local machine only to find out that the IDs are different when you move your form to your production server.  To overcome this problem, we suggest you use a form key along with this plugin's contact form shortcode, `[cf7-2-post key="contact-us"]`.  Don't worry your old contact form 7 shortcodes will still work too, behind the scenes we simply map the key to the ID and call the regular contact form 7 shortcode.
+
 
 = Filters for fields =
 
@@ -179,6 +183,12 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 * improved loading of mapped forms
 * make use of 'do_shortcode_tag' filter introduced in WP4.7
 * introduced a custom js event 'cf7Mapped' on the form to ensure custom scripts don't fire too early.
+
+= 1.2.6 =
+* bug fix which prevented files being uploaded properly
+
+= 1.2.5 =
+* bug fix which prevented files from being saved as custom meta fields in post
 
 = 1.2.4 =
 * added filter 'cf7_2_post_register_post_{post_type}' to allow tweaking of custom post registration
@@ -392,6 +402,7 @@ function enable_grouped_options($enable, $cf7_post_id, $form_field, $parent_term
   return $enable;
 }
 `
+
 = `cf7_2_post_filter_user_draft_form_query` =
 This filter is useful to change the behaviour in which previously submitted values can be edited by a user.  By default the plugin loads forms values that have been saved using the 'save' button.  However, you can modify this by changing the default post query such as the example below,
 `

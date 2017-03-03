@@ -25,6 +25,14 @@ class Cf7_2_Post_Factory {
 	 */
   private $cf7_post_ID;
   /**
+   * The the CF7 post unique key.
+   *
+   * @since    1.2.7
+   * @access   private
+   * @var      string    $cf7_key    the unique key which can be used to identfy this form.
+   */
+  private $cf7_key;
+  /**
 	 * The CF7 form fields.
 	 *
 	 * @since    1.0.0
@@ -89,21 +97,8 @@ class Cf7_2_Post_Factory {
     $this->taxonomy_properties = array();
     $this->localise_values=array();
     $this->cf7_post_ID = $cf7_post_id;
-  }
-  /**
-  * Initialise the factory for an existing mapping
-  * @since 1.0.0
-  * @param $factory_source if this mapped post was created by the factory
-  */
-  protected function init_factory($factory_source=true){
-    if($factory_source){
-      $this->post_properties['type_source']='factory';
-      $this->load_post_mapping();
-    }else {
-      $this->post_properties['type_source']='system';
-      $this->post_properties['map']='publish';
-      //TODO load the system post properties.
-    }
+    $post = get_post($cf7_post_id);
+    $this->cf7_key = $post->post_name;
   }
   /**
    *Enqueue the localised script
@@ -223,30 +218,31 @@ class Cf7_2_Post_Factory {
   public static function get_factory( $cf7_post_id ){
     //check if the cf7 form already has a mapping
     $post_type = get_post_meta($cf7_post_id,'_cf7_2_post-type',true);
+    $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
     $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
     $factory = null;
     //debug_msg('type='.$post_type);
     if(empty($post_type)){ //let's create a new one
+      $factory = new self($cf7_post_id);
       $form = WPCF7_ContactForm::get_instance($cf7_post_id);
       $post_type_source = 'factory';
-      $post_type = $form->name();
-      $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$post_type) );
+      $post_type = $factory->cf7_key;
+      $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
       $plural_name = $singular_name;
       if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
-      $factory = new self($cf7_post_id);
       $factory->init_new_factory($post_type,$singular_name,$plural_name);
     }else{
-      //debug_msg('source='.$post_type_source);
-      switch($post_type_source){
-        case 'factory':
-          $factory = new self($cf7_post_id);
-          $factory->init_factory(true);
-          break;
-        case 'system':
-          $factory = new self($cf7_post_id);
-          $factory->init_factory(false);
-          break;
-       }
+
+      $factory = new self($cf7_post_id);
+      if('system' == $post_type_source && 'draft' == $map){
+        $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+        $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+        $plural_name = $singular_name;
+        $factory->init_new_factory($post_type, $singular_name, $plural_name);
+      }
+      $factory->post_properties['type_source']=$post_type_source;
+      $factory->load_post_mapping();
+
      }
      return $factory;
    }
@@ -269,46 +265,87 @@ class Cf7_2_Post_Factory {
    * @return  boolean   true if successful
    */
   public function save($data, $create_post_mapping){
-    //check if we need to create a post
-    $create_post = false;
-    if( isset($data['mapped_post_type_source']) && 'factory' == $data['mapped_post_type_source'] && $create_post_mapping){
-      $create_post = true;
-    }
     //let's  update the properties
     //is this a factory post or a system post?
     if( isset($data['mapped_post_type_source']) && isset($data['mapped_post_type']) ) {
       $this->post_properties['type_source'] = $data['mapped_post_type_source'];
       $this->post_properties['type'] = $data['mapped_post_type'];
       $this->post_properties['version'] = CF7_2_POST_VERSION;
-      $is_factory_map = false;
+
       switch($this->post_properties['type_source']){
-        case 'system': //reset the properties
-          $this->set_system_post_properties($data['mapped_post_type']);
+        case 'system':
+          return $this->set_system_mapping($data, $create_post_mapping);
           break;
         case 'factory':
-          $is_factory_map = true;
-          //reset, as only checked input field are submitted and will set to true
-          $this->post_properties=array_merge( $this->post_properties,
-            array('hierarchical'          => false,
-                  'public'                => false,
-                  'show_ui'               => false,
-                  'show_in_menu'          => false,
-                  'menu_position'         => 5,
-                  'show_in_admin_bar'     => false,
-                  'show_in_nav_menus'     => false,
-                  'can_export'            => false,
-                  'has_archive'           => false,
-                  'exclude_from_search'   => false,
-                  'publicly_queryable'    => false
-                )
-            );
-          //initial supports, set the rest from the admin $_POST
-          $this->post_properties['supports'] = array('custom-fields' );
+          return $this->set_factory_mapping($data, $create_post_mapping);
           break;
       }
     }else{
       return false;
     }
+  }
+  /**
+  * Setups the form to existing post mapping
+  * @since 1.2.7
+  * @param   array   $data   an array containing the admin form data, $_POST
+  * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
+  * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
+  * @return  boolean   true if successful
+  */
+  protected function set_system_mapping($data, $create_post_mapping){
+    //reset the properties, this is now being published
+    $this->post_properties = array();
+    $this->post_properties['type_source'] = $data['mapped_post_type_source'];
+    $this->post_properties['type'] = $data['mapped_post_type'];
+    $this->post_properties['taxonomy'] = array();
+
+    if($create_post_mapping){
+      $this->post_properties['map']='publish';
+    }else{
+      $this->post_properties['map']='draft';
+    }
+    debug_msg($this->post_properties, 'saving system post ');
+    foreach($this->post_properties as $key=>$value){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+    }
+    return true;
+  }
+  /**
+  * Setups the form to new post mapping
+  * @since 1.2.7
+  * @param   array   $data   an array containing the admin form data, $_POST
+  * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
+  * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
+  * @return  boolean   true if successful
+  */
+  protected function set_factory_mapping($data, $create_post_mapping){
+    $is_factory_map = true;
+    //check if we need to create a post
+    $create_post = false;
+    if( isset($data['mapped_post_type_source']) && 'factory'==$data['mapped_post_type_source'] &&
+    $create_post_mapping){
+      $create_post = true;
+    }
+    //reset, as only checked input field are submitted and will set to true
+    $this->post_properties = array_merge(
+      $this->post_properties,
+      array(
+        'hierarchical'          => false,
+        'public'                => true,
+        'show_ui'               => true,
+        'show_in_menu'          => true,
+        'menu_position'         => 5,
+        'show_in_admin_bar'     => false,
+        'show_in_nav_menus'     => false,
+        'can_export'            => true,
+        'has_archive'           => true,
+        'exclude_from_search'   => true,
+        'publicly_queryable'    => false
+      )
+  );
+    //initial supports, set the rest from the admin $_POST
+    $this->post_properties['supports'] = array('custom-fields' );
     //make sure the arrays are initialised
     $this->post_properties['taxonomy']=array();
     $this->post_map_taxonomy=array();
@@ -355,7 +392,6 @@ class Cf7_2_Post_Factory {
           $this->post_map_meta_fields[$value]=substr($field,$len_cf7_2_post_map_meta);
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
-
       }
     }
     //let's save the properties if this is a factory mapping
@@ -389,7 +425,6 @@ class Cf7_2_Post_Factory {
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
       }
-
     }
     //let'save the mapping of cf7 form fields to post fields
     foreach($this->post_map_fields as $cf7_field=>$post_field){
@@ -619,9 +654,13 @@ class Cf7_2_Post_Factory {
       $display[] = $row->post_type;
     }
     $display = apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
+    $selected = 'post';
+    if('system' == $this->get('type_source')){
+      $selected = $this->get('type');
+    }
     foreach($display as $post_type){
-      $selected = ($this->post_properties['type'] == $post_type) ? ' selected="true"':'';
-      $html .='<option value="' . $post_type . '"' . $selected . '>' . $post_type . '</option>' . PHP_EOL;
+      $select = ($selected == $post_type) ? ' selected="true"':'';
+      $html .='<option value="' . $post_type . '"' . $select . '>' . $post_type . '</option>' . PHP_EOL;
     }
     return $html;
   }
@@ -845,7 +884,7 @@ class Cf7_2_Post_Factory {
     if( isset( $this->post_properties[$property] ) ){
       return $this->post_properties[$property];
     }else{
-      return null;
+      return '';
     }
   }
   /**
@@ -914,6 +953,12 @@ class Cf7_2_Post_Factory {
     }else{
       return $value;
     }
+  }
+  /**
+  * Check if this is published system post
+  */
+  public function is_system_published(){
+    return('publish' == $this->get('map') && 'system' == $this->get('type_source') );
   }
   /**
   * Checks if a form mapping is published
@@ -991,7 +1036,7 @@ class Cf7_2_Post_Factory {
   		'label'                 => $this->post_properties['singular_name'],
   		'description'           => 'Post for CF7 Form'. $this->post_properties['cf7_title'],
   		'labels'                => $labels,
-      'supports'              => $this->post_properties['supports'],
+      'supports'              => apply_filters('cf7_2_post_supports_'.$this->post_properties['type'], $this->post_properties['supports']),
   		'taxonomies'            => $this->post_properties['taxonomy'],
   		'hierarchical'          => !empty($this->post_properties['hierarchical']),
   		'public'                => !empty($this->post_properties['public']),
@@ -1004,7 +1049,6 @@ class Cf7_2_Post_Factory {
   		'has_archive'           => !empty($this->post_properties['has_archive']),
   		'exclude_from_search'   => !empty($this->post_properties['exclude_from_search']),
   		'publicly_queryable'    => !empty($this->post_properties['publicly_queryable']),
-  		'capability_type'       => $this->post_properties['capability_type'],
   	);
     $reference = array(
         'edit_post' => '',
@@ -1034,7 +1078,6 @@ class Cf7_2_Post_Factory {
     foreach($this->post_properties['taxonomy'] as $taxonomy_slug){
       register_taxonomy_for_object_type( $taxonomy_slug, $this->post_properties['type'] );
     }
-
   }
   /**
   * Dynamically registers new custom post
@@ -1044,6 +1087,7 @@ class Cf7_2_Post_Factory {
   public static function register_cf7_post_maps(){
     global $wpdb;
     $cf7_post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-map' AND meta_value='publish'");
+
     //debug_msg($cf7_post_ids);
     //$script_files = Cf7_2_Post_Public::scan_local_scripts();
     foreach($cf7_post_ids as $post_id){
@@ -1063,7 +1107,13 @@ class Cf7_2_Post_Factory {
   *@since 1.0.0
   *@param Array $cf7_form_data data submitted from cf7 form
   */
-  public function save_form_2_post($cf7_form_data){
+  public function save_form_2_post($submission){
+    $cf7_form_data = $submission->get_posted_data();
+    //check if this is a system post
+    if('system' == $this->get('type_source')){
+      do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
+      return;
+    }
     //create a new post
     //get the form email recipient
     $author = 1;
@@ -1117,11 +1167,12 @@ class Cf7_2_Post_Factory {
         case 'thumbnail':
           //
           //debug_msg($form_field, 'uploaded file...');
-          //debug_msg($_FILES, 'files... ');
-          $file = $_FILES[$form_field]['tmp_name'];
-          $filename = $_FILES[$form_field]['name'];
+          $cf7_files = $submission->uploaded_files();
+          $file = $cf7_files[$form_field];
+          $filename = $cf7_form_data[$form_field]; //path
+
           //wp_upload_bits( $name, $deprecated, $bits, $time )
-          $upload_file = wp_upload_bits($filename, null, file_get_contents($file));
+          $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
           if (!$upload_file['error']) {
           	$wp_filetype = wp_check_filetype($filename, null );
           	$attachment = array(
@@ -1183,6 +1234,8 @@ class Cf7_2_Post_Factory {
         $post['post_name'] = 'cf7_'.$this->cf7_post_ID.'_to_post_'.$post_id;
       }
     }
+    //debug_msg($post, 'updating post... ');
+
     $post_id = wp_insert_post ( $post );
     //
     //-------------- meta fields
@@ -1193,24 +1246,31 @@ class Cf7_2_Post_Factory {
       update_post_meta($post_id, '_cf7_2_post_form_submitted','yes'); //form is submitted
     }
     $this->load_form_fields(); //this loads the form fields and their type
+
     //debug_msg($cf7_form_data, "submitted data ");
+
     foreach($this->post_map_meta_fields as $form_field => $post_field){
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $value = apply_filters($form_field,'', $post_id, $cf7_form_data);
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($post_id, $post_field, $value);
       }else{
-        if( isset($cf7_form_data[$form_field]) ){
-          if( 'file' == $this->cf7_form_fields[$form_field] ){
-            $file = $_FILES[$form_field]['tmp_name'];
-            $filename = $_FILES[$form_field]['name'];
-            //wp_upload_bits( $name, $deprecated, $bits, $time )
-            $upload_file = wp_upload_bits($filename, null, file_get_contents($file));
-            //debug_msg($upload_file, "uploading file to meta field... ");
-            if (!$upload_file['error']) {
-              update_post_meta($post_id, $post_field, $upload_file['file']);
-            }
+        if( 'file' == $this->cf7_form_fields[$form_field] ){
+          $cf7_files = $submission->uploaded_files();
+          $file = $cf7_files[$form_field];
+          $filename = $cf7_form_data[$form_field]; //path
+          //wp_upload_bits( $name, $deprecated, $bits, $time )
+          //debug_msg(, "uploading file to meta field... ");
+          $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
+
+          if (!$upload_file['error']) {
+            update_post_meta($post_id, $post_field, $upload_file['file']);
           }else{
+            //debug_msg($upload_file['error']);
+            debug_msg($file, "Unable to upload file ".$filename);
+          }
+        }else{
+          if( isset($cf7_form_data[$form_field]) ){
             update_post_meta($post_id, $post_field, $cf7_form_data[$form_field]);
           }
         }
@@ -1251,6 +1311,7 @@ class Cf7_2_Post_Factory {
     //is user logged in?
     $load_saved_values = false;
     $post=null;
+
     $field_and_values = array();
     $unmapped_fields = array();
 
@@ -1273,6 +1334,7 @@ class Cf7_2_Post_Factory {
       		)
         );
       }
+
       $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type']);
       $posts_array = get_posts( $args );
       //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
@@ -1281,6 +1343,7 @@ class Cf7_2_Post_Factory {
         $load_saved_values = true;
         $field_and_values['map_post_id']= $post->ID;
       }
+    }
       //we now need to load the save meta field values
 
       $this->load_form_fields(); //this loads the cf7 form fields and their type

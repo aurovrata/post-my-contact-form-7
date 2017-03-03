@@ -70,7 +70,6 @@ class Cf7_2_Post {
 
 		$this->plugin_name = 'post-my-contact-form-7';
 		$this->version = $version;
-
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
@@ -170,31 +169,11 @@ class Cf7_2_Post {
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
+
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //add the 'save' button tag
     $this->loader->add_action( 'wpcf7_init', $plugin_admin, 'cf7_shortcode_save' );
-
-    //reset the cf7 admin table
-    /*
-    $cf7_admin = Cf7_WP_Post_Table::set_table();
-    if(!$cf7_admin->hooks()){
-      $this->loader->add_action( 'admin_enqueue_scripts', $cf7_admin , 'enqueue_styles');
-      //add_action( 'admin_enqueue_scripts', array($this, 'enqueue_scripts') );
-      //modify the CF7 post type
-      $this->loader->add_action('init', $cf7_admin, 'modify_cf7_post_type' ,20);
-      //cf7 sub-menu
-      $this->loader->add_action('admin_menu',  $cf7_admin, 'add_cf7_sub_menu' );
-      $this->loader->add_filter( 'custom_menu_order', $cf7_admin, 'change_cf7_submenu_order' );
-      //modify the cf7 list table columns
-      $this->loader->add_filter('manage_wpcf7_contact_form_posts_columns' , $cf7_admin, 'modify_cf7_list_columns' );
-      $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $cf7_admin, 'populate_custom_column' ,10,2);
-      $this->loader->add_filter('post_row_actions',$cf7_admin, 'modify_cf7_list_row_actions' , 10, 2);
-      //change the 'Add New' button link.
-      $this->loader->add_action('admin_print_footer_scripts',$cf7_admin, 'change_add_new_button');
-      //catch cf7 delete redirection
-      $this->loader->add_filter('wp_redirect',$cf7_admin, 'filter_cf7_redirect',10,2);
-    }*/
 	}
 
 	/**
@@ -213,8 +192,11 @@ class Cf7_2_Post {
     $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
 
     /*CF7 Hooks*/
-    $this->loader->add_filter( 'wpcf7_posted_data', $plugin_public, 'save_cf7_2_post',100);
+    //use before_send_mail to ensure mapping post form validation 
+    $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
+    //instroduced a 'save button tag for forms
     $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
+
 
 	}
 
