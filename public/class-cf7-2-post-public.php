@@ -71,24 +71,29 @@ class Cf7_2_Post_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
-
+    $plugin_dir = plugin_dir_url( __FILE__ );
+		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
+    /*$scripts = self::scan_local_scripts();
+    foreach($scripts as $cf7_id=>$file){
+      wp_register_script('cf7_2_post-'.$cf7_id, $plugin_dir . 'js/'.$file , array('jquery'), $this->version, false);
+    }*/
+    //wp_localize_script('cf7_2_post-622', 'cf7_2_post_622', array('your_name'=>"value"));
 	}
   /**
   * Maps a cf7 form to its corresponding post
-  * Hooks 'wpcf7_before_send_mail' cf7 action in the public section.
-  * This action is after form validation to make sure the form is properly submitted
+  * Hooks 'wpcf7_posted_data' cf7 action in the public section
   * @since 1.0.0
   * @param Array $cf7_form_data  data posted from teh cf7 form
   */
   public function save_cf7_2_post($cf7_form){
+
     //load the form factory
     if(isset($_POST['_wpcf7'])){
       $cf7_post_id = $_POST['_wpcf7'];
       //is this form mapped yet?
       if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
         $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+
         //load all the submittec values
         $cf7_form_data = array();
         $tags = $cf7_form->scan_form_tags(); //get your form tags
@@ -103,5 +108,114 @@ class Cf7_2_Post_Public {
     }
     return $cf7_form;
   }
+  /**
+   * Function to load scripts rqeuired for cf7 form loading
+   * hooked on WP 4.7 'do_shortcode_tag' filter
+   * @since 1.3.0
+   * @param string $output Shortcode output.
+ 	 * @param string $tag    Shortcode name.
+ 	 * @param array  $attr   Shortcode attributes array,
+   * @return     string    shortcode html string.
+  **/
+  public function load_cf7_script($output, $tag, $attr){
 
+    if('contact-form-7' != $tag){
+      return $output;
+    }
+    if(!isset($attr['id'])){
+      debug_msg($attr, "Missing cf7 shortcode id attribute");
+      return $output;
+    }
+    $cf7_id = $attr['id'];
+    //let get the corresponding factory object,
+    if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
+      $plugin_dir = plugin_dir_url( __FILE__ );
+      $factory = Cf7_2_Post_Factory::get_factory($cf7_id);
+      //unique nonce
+      $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
+
+      $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce);
+      $map_script = $factory->get_form_field_script( $nonce );
+      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$map_script.PHP_EOL.$scripts.'</div>';
+    }
+    return $output;
+  }
+  /**
+   * Scans the public/js to find the cf7 form ids that have been mapped
+   *
+   * @since 1.3.0
+   * @return     array    array of $cf7_id=>$script_file_name  pairs   .
+  **/
+  /*public static function scan_local_scripts(){
+    $script_files = scandir( plugin_dir_path( __FILE__ ) . 'js/');
+		$cf7_mapped_scripts = array();
+
+		foreach($script_files as $file){
+			$parts = pathinfo($file);
+			if( 'js'==$parts['extension'] ){
+				if( !isset($parts['filename']) ){
+					$parts['filename'] = str_replace('.js','', $parts['basename']);
+				}
+
+        if(false !== strpos($parts['filename'], 'cf7_2_post-') ){
+          $id = str_replace( 'cf7_2_post-','',$parts['filename'] );
+				  $cf7_mapped_scripts[ $id ] = $parts['basename']; //php 5.2 onwards
+        }
+			}
+		}
+
+    return $cf7_mapped_scripts;
+  }*/
+  /**
+   * Register a [save] shortcode with CF7.
+   * Hooked  o 'wpcf7_init'
+   * This function registers a callback function to expand the shortcode for the save button field.
+   * @since 2.0.0
+   */
+  public function save_button_shortcode_handler() {
+    if( function_exists('wpcf7_add_form_tag') ) {
+      wpcf7_add_form_tag(
+        array( 'save' ),
+        array($this,'save_button_display'),
+        true //has name
+      );
+    }
+  }
+  /**
+	 * Dsiplays the save button field
+	 * This function expands the shortcode into the required hiddend fields
+	 * to manage the googleMap forms.  This function is called by cf7 directly, registered above.
+	 *
+	 * @since 1.0.0
+	 * @param strng $tag the tag name designated in the tag help screen
+	 * @return string a set of html fields to capture the googleMap information
+	 */
+	public function save_button_display( $tag ) {
+      //enqueue required scripts and styles
+      wp_enqueue_script( $this->plugin_name);
+
+	    $tag = new WPCF7_FormTag( $tag );
+      $class = wpcf7_form_controls_class( $tag->type );
+
+    	$atts = array();
+
+    	$atts['class'] = $tag->get_class_option( $class );
+      $atts['class'] .=' wpcf7-submit cf7_2_post_save';
+    	$atts['id'] = $tag->get_id_option();
+    	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
+
+    	$value = isset( $tag->values[0] ) ? $tag->values[0] : '';
+
+    	if ( empty( $value ) ) {
+    		$value = __( 'Save', 'contact-form-7' );
+    	}
+
+    	$atts['type'] = 'submit';
+    	$atts['value'] = $value;
+
+    	$atts = wpcf7_format_atts( $atts );
+    	$html = sprintf( '<input %1$s />', $atts );
+      $html .=PHP_EOL.'<input type="hidden" name="save_cf7_2_post" class="cf7_2_post_draft" value="false"/>';
+	    return $html;
+	}
 }

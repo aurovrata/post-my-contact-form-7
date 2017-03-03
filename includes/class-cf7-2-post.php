@@ -66,11 +66,10 @@ class Cf7_2_Post {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	public function __construct($version) {
 
 		$this->plugin_name = 'post-my-contact-form-7';
-		$this->version = '1.2.6';
-
+		$this->version = $version;
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
@@ -154,6 +153,8 @@ class Cf7_2_Post {
     /* WP hooks */
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+    //on save cf7 post type
+    //$this->loader->add_action( 'save_post_wpcf7_contact_form', $plugin_admin,'reset_mapped_scripts', 30, 2 );
     //modify the CF7 post type
     $this->loader->add_action('init', $plugin_admin, 'modify_cf7_post_type',20);
     //cf7 sub-menu
@@ -168,8 +169,11 @@ class Cf7_2_Post {
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
-    //override the cf7 shortcodes
-    $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'override_cf7_shortcode',20);
+
+    //delete post
+    $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
+    //add the 'save' button tag
+    $this->loader->add_action( 'wpcf7_init', $plugin_admin, 'cf7_shortcode_save' );
 	}
 
 	/**
@@ -185,9 +189,14 @@ class Cf7_2_Post {
     /* WP hooks */
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+    $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
 
     /*CF7 Hooks*/
+    //use before_send_mail to ensure mapping post form validation 
     $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
+    //instroduced a 'save button tag for forms
+    $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
+
 
 	}
 

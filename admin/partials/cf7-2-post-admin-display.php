@@ -29,7 +29,7 @@ $default_post_fields .= '<p class="cf7-post-error-msg"></p>';
 $default_post_fields .= '<div class="clear"></div>';
 ?>
 <div class="wrap">
-  <h1>Save Form as Post</h1>
+  <h1>Save Form as Custom Post <span id="custom-post-title"><?php echo $factory_mapping->get('plural_name');?></span></h1>
   <form id="cf7-post-mapping-form" method="post">
     <input type="hidden" name="action" value="save_post_mapping"/>
 <?php  //wp_nonce_field( $action, $field_name, $show_referer_field, $echo_field )
@@ -47,6 +47,7 @@ $default_post_fields .= '<div class="clear"></div>';
                 <div class="createbox" id="createpost">
                   <div id="misc-publishing-actions">
                     <div class="misc-pub-section misc-pub-post-type">
+
                       <label class="post_type_labels" for="post_type">Post Type:</label>
                       <span id="post-type-display">
                         <select name="mapped_post_type_source" id="post_type_source" <?php $factory_mapping->is_published();?>>
@@ -63,6 +64,7 @@ $default_post_fields .= '<div class="clear"></div>';
                       <?php if(!$factory_mapping->is_system_published()):?>
                         <label for="custom_post_type" class="post_type_labels">Post type</label>
                         <input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
+
                         <label for="mapped_post_singular_name" class="post_type_labels">Singular name</label>
                         <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
                         <label for="mapped_post_plural_name" class="post_type_labels">Plural name</label>
@@ -94,11 +96,13 @@ $default_post_fields .= '<div class="clear"></div>';
                         <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
                         <label class="post_type_cb_labels">publicly_queryable</label><br />
                         <div class="clear"></div>
+
                       <?php endif; ?>
                       </div>
                       <div id="post-type-exists"<?php echo ('system'==$source)? '':' class="display-none"';?>>
                         <label class="post_type_labels" for="system_post_type">Select a Post</label>
                         <select id="system-post-type" name="system_post_type" <?php $factory_mapping->is_published();?>>
+
                           <?php echo $factory_mapping->get_system_posts_options();?>
                         </select>
                       </div>
@@ -203,10 +207,12 @@ $default_post_fields .= '<div class="clear"></div>';
                     ?>
                     <div class="custom-taxonomy-field cf7-2-post-field">
                       <label class="taxonomy-label-field cf7-2-post-map-labels">
-                        <span class="taxonomy-name"><strong><?php echo $taxonomy['name'];?></strong></span>&nbsp;(<span class="enabled link-button">Edit</span>)
+                        <span class="taxonomy-name">
+                          <strong><?php echo $taxonomy['name']; ?></strong>
+                        </span>&nbsp;(<span class="enabled link-button">Edit</span>)
                       </label>
                         <select <?php $factory_mapping->is_published('select');?> class="field-options" name="cf7_2_post_map_taxonomy_value-<?php echo $post_taxonomy;?>">
-                            <?php echo $factory_mapping->get_taxonomy_select_options($post_taxonomy);?>
+                        <?php echo $factory_mapping->get_taxonomy_select_options($post_taxonomy);?>
                         </select>
                         <?php if($is_new_mapping):?>
                         <span class="dashicons dashicons-minus remove-field"></span>
@@ -214,21 +220,35 @@ $default_post_fields .= '<div class="clear"></div>';
                     </div>
                     <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
                     <div class="clear"></div>
+              <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
                     <div class="custom-taxonomy-input-fields hide-if-js">
-                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>"><strong>Plural Name</strong></label>
-                      <input class="cf7-2-post-map-labels plural-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['name'];?>">
-                      <label for="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>"><strong>Singular Name</strong></label>
-                      <input class="cf7-2-post-map-labels singular-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['singular_name'];?>">
-                      <label for="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>"><strong>Slug</strong></label>
-                      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>" value="<?php echo $post_taxonomy;?>" />
+                      <h4>
+                        Choose a taxonomy, in blue are existing public taxonomies
+                      </h4>
+                      <?php echo $factory_mapping->get_taxonomy_listing($post_taxonomy)?>
+                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>">
+                        <strong>Plural Name</strong>
+                      </label>
+
+                      <input class="cf7-2-post-map-labels plural-name" type="text" <?php $factory_mapping->is_published();?> readonly="<?echo ('system'==$taxonomy['source'])?>" name="cf7_2_post_map_taxonomy_names-<?php echo $post_taxonomy;?>" value="<?php echo $taxonomy['name'];?>">
+                      <label for="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>">
+                        <strong>Singular Name</strong>
+                      </label>
+                      <input class="cf7-2-post-map-labels singular-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_name-<?php echo $post_taxonomy;?>" readonly="<?echo ('system'==$taxonomy['source'])?>" value="<?php echo $taxonomy['singular_name'];?>">
+                      <label for="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>">
+                        <strong>Slug</strong>
+                      </label>
+                      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_slug-<?php echo $post_taxonomy;?>" readonly="<?echo ('system'==$taxonomy['source'])?>" value="<?php echo $post_taxonomy;?>" />
+                      <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?php echo $post_taxonomy;?>" <?php $factory_mapping->is_published();?> value="<?php echo $taxonomy['source'];?>"/>
                       <button type="button" class="button-link close-details" aria-expanded="true">
                         <span class="screen-reader-text">Toggle panel: Taxonomy details</span>
                         <span class="wp-core-ui button" aria-hidden="true">Save</span>
                       </button>
                     </div>
-                    <?php
+              <?php endif;
                       }
                     }
+                    //default new taxonomy slug
                     $taxonomy_slug = sanitize_title( $factory_mapping->get('singular_name') ).'_categories';
                     ?>
                     <div class="custom-taxonomy-field cf7-2-post-field">
@@ -243,10 +263,17 @@ $default_post_fields .= '<div class="clear"></div>';
                     <p class="cf7-post-error-msg"></p>
                     <div class="clear"></div>
                     <div class="custom-taxonomy-input-fields hide-if-js">
-                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>"><strong>Plural Name</strong></label>
-                      <input disabled="disabled" class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>" value="Categories">
+                      <h3>
+                        Choose a taxonomy, in blue are existing public taxonomies
+                      </h3>
+                      <?php echo $factory_mapping->get_taxonomy_listing()?>
+                      <label for="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>">
+                        <strong>Plural Name</strong>
+                      </label>
+                      <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?php echo $taxonomy_slug;?>" disabled="disabled" value="factory"/>
+                      <input disabled="disabled" class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?php echo $taxonomy_slug;?>" value="New Categories">
                       <label for="cf7_2_post_map_taxonomy_name-<?php echo $taxonomy_slug;?>"><strong>Singular Name</strong></label>
-                      <input disabled="disabled" class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?php echo $taxonomy_slug;?>" value="Category">
+                      <input disabled="disabled" class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?php echo $taxonomy_slug;?>" value="New Category">
                       <label for="cf7_2_post_map_taxonomy_slug-<?php echo $taxonomy_slug;?>"><strong>Slug</strong></label>
                       <input disabled="disabled" class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?php echo $taxonomy_slug;?>" value="<?php echo $taxonomy_slug;?>" />
                       <button type="button" class="button-link close-details" aria-expanded="true">

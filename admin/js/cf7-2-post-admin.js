@@ -12,12 +12,25 @@
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
     var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
     var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
+    //since 1.3
+    $('select.taxonomy-list').on('change',function(){
+      var option = $("option:selected", this);
 
+      $(this).siblings('input.plural-name').val(option.text()).change();
+      $(this).siblings('input.singular-name').val(option.data('name'));
+      $(this).siblings('input.taxonomy-slug').val(option.val()).change();
+      $(this).siblings('input.taxonomy-source').val('factory');
+
+      if(option.hasClass('system-taxonomy')){
+        $(this).siblings('input').prop('readonly',true);
+        $(this).siblings('input.taxonomy-source').val('system');
+      }
+
+    });
     //functions
     function createNewTaxonomy(){
-      parent = $(this).parent();
-
       //enable the new field
+      parent = $(this).parent();
       var postType = $('input#mapped_post_type').val();
       var button = parent.find('.taxonomy-label-field span.link-button');
       //enable input fiedls in the details section
@@ -122,9 +135,14 @@
         this.filter( 'option.filter-option:selected' ).each(function() {
           var msgBox = $(this).closest('div.cf7-2-post-field').next('p.cf7-post-error-msg');
           msgBox.empty();
-          msgBox.append('filter: <span class="code">'+$(this).attr('value')+'</span>');
+          var filter = $('<a class="code" data-clipboard-text="'+$(this).attr('value')+'" href="javascript:void(0);">'+$(this).attr('value')+'</a>').appendTo(msgBox);
+          msgBox.prepend('filter:');
+          msgBox.append('<span class="popup">Click to Copy!</span>')
+          new Clipboard(filter[0]);
           if(highlight) msgBox.addClass('animate-color');
         });
+
+
         return this;
     };
 
@@ -146,17 +164,22 @@
             ++selectedCount;
             break;
           default:
-            isDuplicate = true;
+            if(otherSelected==selected.val()){
+              isDuplicate = true;
+            }
             break;
           }
       });
       /* clear old msg */
-      $(this).parent().next('p.cf7-post-error-msg').empty();
+      var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();
       if(isDuplicate){
-        $(this).parent().next('p.cf7-post-error-msg').text("Warning: Field already selected!");
+        msgBox.text("Warning: Field already selected!");
       }else if(selected.find('option:selected').hasClass('filter-option')){
         var value = selected.find('option:selected').val();
-        $(this).parent().next('p.cf7-post-error-msg').append('filter: <span class="code">'+value+'</span>');
+        var filter = $('<a class="code" data-clipboard-text="'+ value +'" href="javascript:void(0);">'+ value +'</a>').appendTo(msgBox);
+        msgBox.prepend('filter:');
+        msgBox.append('<span class="popup">Click to Copy!</span>');
+        new Clipboard(filter[0]);
       }
     }
     function removeField(){
@@ -171,14 +194,18 @@
       var name = $(this).val();
       var postType = $('input#mapped_post_type').val();
       //clear message box
-      $(this).parent().next('p.cf7-post-error-msg').empty();
+      var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();
       $(this).attr('name','cf7_2_post_map_meta-'+name);
       $(this).next('select').attr('name','cf7_2_post_map_meta_value-'+name);
+
       var option = $(this).next('select').find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+postType+'-'+name);
       if( option.is('option:selected') ){
-        $(this).parent().next('p.cf7-post-error-msg').append('filter: <span class="code">'+option.attr("value")+'</span>');
-        $(this).parent().next('p.cf7-post-error-msg').addClass('animate-color');
+        var filter = $('<a class="code" data-clipboard-text="'+option.attr('value')+'" href="javascript:void(0);">'+option.attr('value')+'</a>').appendTo(msgBox);
+        msgBox.prepend('filter:');
+        msgBox.append('<span class="popup">Click to Copy!</span>');
+        msgBox.addClass('animate-color');
+        new Clipboard(filter[0]);
       }
     }
     //change in slug of taxonomy
@@ -195,6 +222,7 @@
       //change the other input names
       $(this).parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
       $(this).parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
+      $(this).parent().find('input.taxonomy-source').attr('name','cf7_2_post_map_taxonomy_source-'+slug);
     }
     //function called when the taxonomy name changes
     function pluralName(){

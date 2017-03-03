@@ -116,10 +116,11 @@ class Cf7_2_Post_Admin {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, false );
+    wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
     wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
 	}
   /**
-  * Modify the regsitered cf7 post tppe
+  * Modify the regsitered cf7 post type
   * THis function enables public capability and amind UI visibility for the cf7 post type. Hooked late on `init`
   * @since 1.0.0
   *
@@ -258,69 +259,63 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function register_dynamic_posts(){
-    //register_post_type('dummy',array('public'=> true,'label'=>Dummy));
     Cf7_2_Post_Factory::register_cf7_post_maps();
   }
+
+
   /**
-  * Overrides the cf7 shortcode function to insert extra code in the form.
-  * This function hooks the 'plugins_loaded' action.
-  * @since 1.0.0
-  */
-  public function override_cf7_shortcode(){
-    remove_shortcode('contact-form-7');
-    remove_shortcode('contact-forms');
-    //override
-    add_shortcode( 'contact-form-7', array(&$this, 'cf7_shortcode_output') );
-  	add_shortcode( 'contact-form', array(&$this, 'cf7_shortcode_output') );
-  }
-  /**
-  * Overrides the cf7 shortcode function to insert extra code in the form.
-  * @since 1.0.0
-  */
-  public function cf7_shortcode_output( $atts, $content = null, $code = '' ) {
-  	if ( is_feed() ) {
-  		return '[contact-form-7]';
-  	}
+   * Delete existing fields for a given cf7 form, as well as all post data
+   * This funciton is hooked on 'wpcf7_post_delete', a filter created by hooking on the cf7 plugin 'wp_redirect' hook in the 'cf7-post-admin-table.php' file
+   * @since 1.0.0
+   * @param      int    $cf7_post_id    The ID of the cf7 form to be deleted .
+  **/
+  public function delete_cf7_post($cf7_post_id){
+    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+      $delete_all_posts = false;
+      //TODO load settings to allow users to delete all submitted form post data when deleting a mapping
+      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $factory->delete_mapping($delete_all_posts);
 
-  	if ( 'contact-form-7' == $code ) {
-  		$atts = shortcode_atts( array(
-  			'id' => 0,
-  			'title' => '',
-  			'html_id' => '',
-  			'html_name' => '',
-  			'html_class' => '',
-  			'output' => 'form' ), $atts );
-
-  		$id = (int) $atts['id'];
-  		$title = trim( $atts['title'] );
-
-  		if ( ! $contact_form = wpcf7_contact_form( $id ) ) {
-  			$contact_form = wpcf7_get_contact_form_by_title( $title );
-  		}
-
-  	} else {
-  		if ( is_string( $atts ) ) {
-  			$atts = explode( ' ', $atts, 2 );
-  		}
-
-  		$id = (int) array_shift( $atts );
-  		$contact_form = wpcf7_get_contact_form_by_old_id( $id );
-  	}
-
-  	if ( ! $contact_form ) {
-  		return '[contact-form-7 404 "Not Found"]';
-  	}
-
-  	$html = $contact_form->form_html( $atts );
-
-    if(Cf7_2_Post_Factory::is_mapped($id)){
-      //now lets map our additional code at the end of the form
-      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($id);
-      //debug_msg("Pre-fill ".$id);
-      $html .= $this->post_mapping_factory->inject_form_script();
     }
-    return $html;
   }
-
-
+  /**
+   * Adds a 'save' button shortcode to cf7 forms
+   *
+   * @since 2.0.0
+  **/
+  public function cf7_shortcode_save(){
+    if ( class_exists( 'WPCF7_TagGenerator' ) ) {
+      $tag_generator = WPCF7_TagGenerator::get_instance();
+      $tag_generator->add(
+        'save', //tag id
+        __( 'save', 'cf7_2_post' ), //tag button label
+        array($this,'save_tag_generator'), //callback
+        array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
+    );
+    }
+  }
+  /**
+	 * Sav button tag screen displayt.
+	 *
+	 * This function is called by cf7 plugin, and is registered with a hooked function above
+	 *
+	 * @since 1.0.0
+	 * @param WPCF7_ContactForm $contact_form the cf7 form object
+	 * @param array $args arguments for this form.
+	 */
+	function save_tag_generator( $contact_form, $args = '' ) {
+    $args = wp_parse_args( $args, array() );
+		include( plugin_dir_path( __FILE__ ) . '/partials/cf7-tag-display.php');
+	}
+  /**
+   * Reset the custom scripts for mapped forms when the form is being saved
+   *
+   * @since 1.3.0
+   * @param      string    $cf7_id     the id of the cf7 form being saved.
+  **/
+  /*public function reset_mapped_scripts($cf7_id){
+    if(file_exists(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js')){
+      unlink(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js');
+    }
+  }*/
 }
