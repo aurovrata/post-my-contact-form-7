@@ -69,7 +69,7 @@ class Cf7_2_Post {
 	public function __construct() {
 
 		$this->plugin_name = 'post-my-contact-form-7';
-		$this->version = '1.2.0';
+		$this->version = '1.2.6';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -112,7 +112,7 @@ class Cf7_2_Post {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-cf7-2-post-admin.php';
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/cf7-post-admin-table.php';
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/cf7-admin-table-loader.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -170,25 +170,6 @@ class Cf7_2_Post {
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
     //override the cf7 shortcodes
     $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'override_cf7_shortcode',20);
-    //reset the cf7 admin table
-    $cf7_admin = Cf7_WP_Post_Table::set_table();
-    if(!$cf7_admin->hooks()){
-      $this->loader->add_action( 'admin_enqueue_scripts', $cf7_admin , 'enqueue_styles');
-      //add_action( 'admin_enqueue_scripts', array($this, 'enqueue_scripts') );
-      //modify the CF7 post type
-      $this->loader->add_action('init', $cf7_admin, 'modify_cf7_post_type' ,20);
-      //cf7 sub-menu
-      $this->loader->add_action('admin_menu',  $cf7_admin, 'add_cf7_sub_menu' );
-      $this->loader->add_filter( 'custom_menu_order', $cf7_admin, 'change_cf7_submenu_order' );
-      //modify the cf7 list table columns
-      $this->loader->add_filter('manage_wpcf7_contact_form_posts_columns' , $cf7_admin, 'modify_cf7_list_columns' );
-      $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $cf7_admin, 'populate_custom_column' ,10,2);
-      $this->loader->add_filter('post_row_actions',$cf7_admin, 'modify_cf7_list_row_actions' , 10, 2);
-      //change the 'Add New' button link.
-      $this->loader->add_action('admin_print_footer_scripts',$cf7_admin, 'change_add_new_button');
-      //catch cf7 delete redirection
-      $this->loader->add_filter('wp_redirect',$cf7_admin, 'filter_cf7_redirect',10,2);
-    }
 	}
 
 	/**
@@ -206,7 +187,7 @@ class Cf7_2_Post {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
     /*CF7 Hooks*/
-    $this->loader->add_filter( 'wpcf7_posted_data', $plugin_public, 'save_cf7_2_post');
+    $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
 
 	}
 

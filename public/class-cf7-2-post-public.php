@@ -61,18 +61,6 @@ class Cf7_2_Post_Public {
 	 */
 	public function enqueue_styles() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Cf7_2_Post_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Cf7_2_Post_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-public.css', array(), $this->version, 'all' );
 
 	}
@@ -84,41 +72,36 @@ class Cf7_2_Post_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Cf7_2_Post_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Cf7_2_Post_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
 
 	}
   /**
   * Maps a cf7 form to its corresponding form
-  * Hooks 'wpcf7_posted_data' cf7 action in the public section
+  * Hooks 'wpcf7_before_send_mail' cf7 action in the public section.
+  * This action is after form validation to make sure the form is properly submitted
   * @since 1.0.0
   * @param Array $cf7_form_data  data posted from teh cf7 form
   */
-  public function save_cf7_2_post($cf7_form_data){
-    //debug_msg($cf7_form_data, 'cf7 form posted');
+  public function save_cf7_2_post($cf7_form){
     //load the form factory
-    if(isset($cf7_form_data['_wpcf7'])){
-      $cf7_post_id = $cf7_form_data['_wpcf7'];
+    if(isset($_POST['_wpcf7'])){
+      $cf7_post_id = $_POST['_wpcf7'];
       //is this form mapped yet?
-      $map_status = get_post_meta( $cf7_post_id , '_cf7_2_post-map' , true );
-      if('publish' != $map_status) return; //nothing to do here
+      if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+        $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+        //load all the submittec values
+        $cf7_form_data = array();
+        $tags = $cf7_form->scan_form_tags(); //get your form tags
+        //the curent submission object from cf7 plugin
+        $submission = WPCF7_Submission::get_instance();
 
-      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-      $factory->save_form_2_post($cf7_form_data);
+        //debug_msg($cf7_form_data, "saving form data ");
+        $factory->save_form_2_post($submission);
+      }
     }else{
       debug_msg("ERROR, unable to get CF7 post ID for mapping in posted data!");
     }
+    return $cf7_form;
   }
 
 }

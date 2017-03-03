@@ -32,6 +32,14 @@ class Cf7_2_Post_Factory {
 	 */
   private $cf7_post_ID;
   /**
+   * The the CF7 post unique key.
+   *
+   * @since    1.2.7
+   * @access   private
+   * @var      string    $cf7_key    the unique key which can be used to identfy this form.
+   */
+  private $cf7_key;
+  /**
 	 * The CF7 form fields.
 	 *
 	 * @since    1.0.0
@@ -87,6 +95,9 @@ class Cf7_2_Post_Factory {
     $this->post_properties = array();
     $this->taxonomy_properties = array();
     $this->cf7_post_ID = $cf7_post_id;
+    $post = get_post($cf7_post_id);
+    $this->cf7_key = $post->name;
+    debug_msg("Form key: ".$this->cf7_key);
   }
   /**
   * Initialise the factory for an existing mapping
@@ -687,7 +698,7 @@ class Cf7_2_Post_Factory {
     //get all the fields of the form
     if(empty($this->cf7_form_fields)){
       $form = WPCF7_ContactForm::get_instance($this->cf7_post_ID);
-      $form_elements = $form->form_scan_shortcode();
+      $form_elements = $form->scan_form_tags();
       //debug_msg($form_elements, " cf7 form elements ");
       foreach ($form_elements as $element) {
           $type = $element['type'];
@@ -876,7 +887,7 @@ class Cf7_2_Post_Factory {
   		'label'                 => $this->post_properties['singular_name'],
   		'description'           => 'Post for CF7 Form'. $this->post_properties['cf7_title'],
   		'labels'                => $labels,
-      'supports'              => $this->post_properties['supports'],
+      'supports'              => apply_filters('cf7_2_post_supports_'.$this->post_properties['type'], $this->post_properties['supports']),
   		'taxonomies'            => $this->post_properties['taxonomy'],
   		'hierarchical'          => !empty($this->post_properties['hierarchical']),
   		'public'                => !empty($this->post_properties['public']),
@@ -889,12 +900,30 @@ class Cf7_2_Post_Factory {
   		'has_archive'           => !empty($this->post_properties['has_archive']),
   		'exclude_from_search'   => !empty($this->post_properties['exclude_from_search']),
   		'publicly_queryable'    => !empty($this->post_properties['publicly_queryable']),
-  		'capability_type'       => $this->post_properties['capability_type'],
   	);
-    //debug_msg($args,'register_post_type '.$this->post_properties['type'].' ');
-  	register_post_type( $this->post_properties['type'], $args );
-    //register_post_type($this->post_properties['type'],array('public'=> true,'label'=>$this->post_properties['singular_name']));
+    $reference = array(
+        'edit_post' => '',
+        'edit_posts' => '',
+        'edit_others_posts' => '',
+        'publish_posts' => '',
+        'read_post' => '',
+        'read_private_posts' => '',
+        'delete_post' => ''
+    );
+    $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$this->post_properties['type'], $reference));
+    $diff=array_diff_key($reference, $capabilities);
+    if( empty( $diff ) ) {
+      $args['capabilities'] = $capabilities;
+      $args['map_meta_cap'] = true;
+    }else{ //some keys are not set, so capabilities will not work
+      //set to defaul post capabilities
+      $args['capability_type'] = 'post';
+    }
 
+    //allow additional settings
+    $args = apply_filters('cf7_2_post_register_post_'.$this->post_properties['type'], $args );
+
+  	register_post_type( $this->post_properties['type'], $args );
 
   }
   /**
@@ -908,9 +937,10 @@ class Cf7_2_Post_Factory {
     //debug_msg($cf7_post_ids);
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = self::get_factory($post_id);
-      //debug_msg("Registering ".$cf7_2_post_map->get('type'));
-      //debug_msg($cf7_2_post_map);
-      $cf7_2_post_map->create_cf7_post_type();
+      //let's create cpt for factory mapped forms
+      if('factory' == $cf7_2_post_map->post_properties['type_source']){
+        $cf7_2_post_map->create_cf7_post_type();
+      }
     }
   }
   /**
@@ -919,8 +949,9 @@ class Cf7_2_Post_Factory {
   *@since 1.0.0
   *@param Array $cf7_form_data data submitted from cf7 form
   */
-  public function save_form_2_post($cf7_form_data){
-    //debug_msg($cf7_form_data, 'form data submission... ');
+  public function save_form_2_post($submission){
+    $cf7_form_data = $submission->get_posted_data();
+
     //create a new post
     //get the form email recipient
     $author = 1;
@@ -974,11 +1005,12 @@ class Cf7_2_Post_Factory {
         case 'thumbnail':
           //
           //debug_msg($form_field, 'uploaded file...');
-          //debug_msg($_FILES, 'files... ');
-          $file = $_FILES[$form_field]['tmp_name'];
-          $filename = $_FILES[$form_field]['name'];
+          $cf7_files = $submission->uploaded_files();
+          $file = $cf7_files[$form_field];
+          $filename = $cf7_form_data[$form_field]; //path
+
           //wp_upload_bits( $name, $deprecated, $bits, $time )
-          $upload_file = wp_upload_bits($filename, null, file_get_contents($file));
+          $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
           if (!$upload_file['error']) {
           	$wp_filetype = wp_check_filetype($filename, null );
           	$attachment = array(
@@ -1038,31 +1070,36 @@ class Cf7_2_Post_Factory {
         $post['post_name'] = 'cf7_'.$this->cf7_post_ID.'_to_post_'.$post_id;
       }
     }
-    debug_msg($post, 'updating post... ');
+    //debug_msg($post, 'updating post... ');
     $post_id = wp_insert_post ( $post );
     //debug_msg("Updated post... ".$post_id);
     //
     //-------------- meta fields
     //
     $this->load_form_fields(); //this loads the form fields and their type
-    debug_msg($cf7_form_data, "submitted data ");
+    //debug_msg($cf7_form_data);
     foreach($this->post_map_meta_fields as $form_field => $post_field){
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $value = apply_filters($form_field,'', $post_id, $cf7_form_data);
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($post_id, $post_field, $value);
       }else{
-        if( isset($cf7_form_data[$form_field]) ){
-          if( 'file' == $this->cf7_form_fields[$form_field] ){
-            $file = $_FILES[$form_field]['tmp_name'];
-            $filename = $_FILES[$form_field]['name'];
-            //wp_upload_bits( $name, $deprecated, $bits, $time )
-            $upload_file = wp_upload_bits($filename, null, file_get_contents($file));
-            //debug_msg($upload_file, "uploading file to meta field... ");
-            if (!$upload_file['error']) {
-              update_post_meta($post_id, $post_field, $upload_file['file']);
-            }
+        if( 'file' == $this->cf7_form_fields[$form_field] ){
+          $cf7_files = $submission->uploaded_files();
+          $file = $cf7_files[$form_field];
+          $filename = $cf7_form_data[$form_field]; //path
+          //wp_upload_bits( $name, $deprecated, $bits, $time )
+          //debug_msg(, "uploading file to meta field... ");
+          $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
+
+          if (!$upload_file['error']) {
+            update_post_meta($post_id, $post_field, $upload_file['file']);
           }else{
+            //debug_msg($upload_file['error']);
+            debug_msg($file, "Unable to upload file ".$filename);
+          }
+        }else{
+          if( isset($cf7_form_data[$form_field]) ){
             update_post_meta($post_id, $post_field, $cf7_form_data[$form_field]);
           }
         }
@@ -1103,21 +1140,24 @@ class Cf7_2_Post_Factory {
     //is user logged in?
     $load_saved_values = false;
     $post=null;
+    $script='';
     if(is_user_logged_in()){
       $user = wp_get_current_user();
       //find out if this user has a post already created/saved
       $args = array(
-              	'posts_per_page'   => 1,
-              	'post_type'        => $this->post_properties['type'],
-              	'author'	   => $user->ID,
-              	'post_status'      => 'any',
-              );
+      	'posts_per_page'   => 1,
+      	'post_type'        => $this->post_properties['type'],
+      	'author'	   => $user->ID,
+      	'post_status'      => 'draft',
+      );
+      $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type']);
       $posts_array = get_posts( $args );
       //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
       if($posts_array){
         $post = $posts_array[0];
         $load_saved_values = true;
       }
+    }
       //we now need to load the save meta field values
 
       $this->load_form_fields(); //this loads the form fields and their type
@@ -1237,7 +1277,7 @@ class Cf7_2_Post_Factory {
 
       $script .= '  })( jQuery );'.PHP_EOL;
       $script .= '</script>'.PHP_EOL;
-    }
+
     //debug_msg($script, "adding built script... ");
     return $script;
   }

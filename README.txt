@@ -1,26 +1,36 @@
 === Post My CF7 Form ===
 Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
-Tags: contact form 7, contact form 7 module, post, custom post, form to post
+Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 3.0.1
-Tested up to: 4.5.3
-Stable tag: 1.2.0
+Tested up to: 4.7.2
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin enables the mapping of your CF7 forms to custom posts.
+This plugin enables the mapping of your Contact Form 7 forms to custom posts.
 
 == Description ==
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
 
-**Now you even map fields to custom taxonomies!!!**
+You can submit and map to a post all of the following fields,
 
-=Filters for fields=
+* Default post field, title, author, content, excerpt
+* featured image, you can submit a file and save it as a post attachment
+* meta fields, unlimited number of meta-fields can be created
+* taxonomies, you can map select/checkbox/radio input fields to taxonomies
+* addition of form key to identify cf7 forms instead of the form id to make development more portable
+
+= Make your CF7 Form more portable =
+
+ this plugin introduces form keys (which you can modify in the CF7 admin table).  Keys are unique for each form, allowing you identify a form my its key rather than an ID.  Why is this priceless?  IDs changes from one server to the next because they are the custom post ID attributed by the WordPress installation, and therefore you develop your form in a local machine only to find out that the IDs are different when you move your form to your production server.  To overcome this problem, we suggest you use a form key along with this plugin's contact form shortcode, `[cf7-2-post key="contact-us"]`.  Don't worry your old contact form 7 shortcodes will still work too, behind the scenes we simply map the key to the ID and call the regular contact form 7 shortcode.
+
+= Filters for fields =
 
 In addition to mapping your form fields to post fields you are also given a custom filter for that specific form field.  The filter option allows you to custom fill the post created for the submitted form, for example if a form requests the date of birth, you may want to create an additional post field for the age, so you can filter the date field in your `functions.php` file and calculate the age and save it to a custom post meta field.  The custom filters are created using the following nomenclature, `cf7_2_post_filter-<post_type>-<post-field>`.  For example if you have created a custom post type `quick-contact`, which as a meta field `age`, you could filter it with,
 `
-add_filter('cf7_2_post_filter-quick-contact-age','filter_date_to_age',10,2);
+add_filter('cf7_2_post_filter-quick-contact-age','filter_date_to_age',10,3);
 function filter_date_to_age($value, $post_id, $form_data){
   //$value is the post field value to return, by default it is empty
   //$post_id is the ID of the post to which the form values are being mapped to
@@ -42,15 +52,23 @@ function filter_date_to_age($value, $post_id, $form_data){
 
 = Pre-fill form fields =
 
-Contact Form 7 does not allow you to pre-fill fields before your form is displayed.  With this plugin you can do this, you will need to map your form first, and then the filter 'cf7_2_post_filter_cf7_field_value' to pre-fill your fields, see the [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) section for more details.
+Contact Form 7 does not allow you to pre-fill fields before your form is displayed.  With this plugin you can do this, you will need to map your form first, and use the filter 'cf7_2_post_filter_cf7_field_value' to pre-fill your fields, see the [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) section for more details.
 
 = Contact Form 7 list table =
 
-This plugin re-organises the CF7 dashboard list table, using the cf7 custom post list table to permit other developpers to easily add custom columns to the list table.  You can therefore use [WP functionality](http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types) to customise your table.
+This plugin re-organises the CF7 dashboard list table, using the cf7 custom post list table to permit other developpers to easily add custom columns to the list table.  You can therefore use [WP functionality](http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types) to customise your table.  For example you could view how many submits a form has received.
 
 = Other hooks =
 
 The plugin has been coded with additional actions and filters to allow you to hook your functionality such as when a form to post mapping is completed.  For a list of such hooks, please refer to the [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) section.
+
+= Checkout our other CF7 plugin extensions =
+
+* [CF7 Polylang Module](https://wordpress.org/plugins/cf7-polylang/) - this plugin allows you to create forms in different languages for a multi-language website.  The plugin requires the [Polylang](https://wordpress.org/plugins/polylang/) plugin to be installed in order to manage translations.
+
+* [CF7 Multi-slide Module](https://wordpress.org/plugins/cf7-multislide/) - this plugin allows you to build a multi-step form using a slider.  Each slide has cf7 form which are linked together and submitted as a single form.
+
+* [Post My CF7 Form](https://wordpress.org/plugins/post-my-contact-form-7/) - this plugin allows you to save you cf7 form to a custom post, map your fields to meta fields or taxonomy.  It also allows you to pre-fill fields before your form  is displayed.
 
 == Installation ==
 
@@ -94,11 +112,33 @@ This is a little more complex.  You will need to create an input field in your f
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
 2. Once created, you have can only view the mapping.  All the fields are disabled to maintain post integrity. You can however add new meta-fields.  You will also see your new custom post in your dashboard menu is you have enabled post attributes `show_ui` & `show_in_menu`.
-3. The CF7 table list shows an exra column with the status of the form mapping.
+3. The CF7 table list shows an extra column with the status of the form mapping.
 4. You can now map forms fields to custom taxonomies
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+
+= 1.2.6 =
+
+
+= 1.2.6 =
+* bug fix which prevented files being uploaded properly
+
+= 1.2.5 =
+* bug fix which prevented files from being saved as custom meta fields in post
+
+= 1.2.4 =
+* added filter 'cf7_2_post_register_post_{post_type}' to allow tweaking of custom post registration
+
+= 1.2.3 =
+* changed hooking position of cf7 submission process to save forms to posts before mails are sent
+
+= 1.2.2 =
+* fixed a bug which prevented cf7 emails from being filled with field values
+
+= 1.2.1 =
+* small bug fix stopping cpt properties from being changed once created
+* added filter
 
 = 1.2.0 =
 
@@ -297,5 +337,19 @@ function enable_grouped_options($enable, $cf7_post_id, $form_field, $parent_term
     }
   }
   return $enable;
+}
+`
+
+= 'cf7_2_post_register_post_{post_type}' =
+
+this filter allows you to tweak the arguments used to register the custom_post type, for example, if you want to modify the [rewrite front-end slug](https://codex.wordpress.org/Function_Reference/register_post_type#rewrite) for the post type,
+
+`add_filter('cf7_2_post_register_post_my-custom-post', 'set_rewrite_slug');
+function set_rewrite_slug($args){
+  $args['rewrite'] = array(
+    'slug' => 'posted-replies',
+    'with_front' => true
+  );
+  return $args;
 }
 `

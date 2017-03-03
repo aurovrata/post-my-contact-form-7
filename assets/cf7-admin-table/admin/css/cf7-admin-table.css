@@ -1,0 +1,44 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+ .display-none {
+    display: none;
+}
+#wpbody-content .inline-edit-row-page fieldset.hide-element,
+#wpbody-content .inline-edit-row-page fieldset.hide-element *{
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    margin:0;
+}
+.cf7-2-post-key-error {
+    color: red;
+    display: none;
+}
+.cf7-help-tip{
+  position: relative;
+}
+.cf7-help-tip span {
+    display: none;
+}
+.cf7-help-tip:hover > span {
+  display: block;
+  position: absolute;
+  width: 210px;
+  bottom: -18px;
+  line-height: 1.2em;
+  font-size: 90%;
+  left: 90px;
+  background: #e7e7e7;
+  padding: 5px;
+  border: 1px solid grey;
+  border-radius: 3px;
+}
+.cf7-help-tip a {
+    font-size: 95%;
+    font-style: italic;
+}
+#shortcode {
+    line-height: 1.2em;
+}

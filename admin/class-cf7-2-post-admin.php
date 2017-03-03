@@ -97,7 +97,7 @@ class Cf7_2_Post_Admin {
     // for the Cf7_2_Post_Factory class
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
     //contact post table list
-    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/cf7-post-admin-table.php';
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/cf7-post-admin-table.php';
   }
 
 	/**
@@ -206,10 +206,8 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function ajax_save_post_mapping(){
-    //cehck the nonce security
-    //wp_verify_nonce( $nonce, $action );
     //
-    debug_msg($_POST, "save post ");
+    //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
       wp_send_json_error("Security failed, try to reload the page");
     }
