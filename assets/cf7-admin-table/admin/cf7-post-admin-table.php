@@ -283,12 +283,20 @@ if(!class_exists('Cf7_WP_Post_Table')){
           $form = WPCF7_ContactForm::get_instance($post->ID);
           $url = admin_url( 'admin.php?page=wpcf7&post=' . absint( $form->id() ) );
           $edit_link = add_query_arg( array( 'action' => 'edit' ), $url );
-          $trash = $actions['trash'];
+          $idx = strpos($actions['trash'],'_wpnonce=') + 9;
+          $nonce = substr($actions['trash'], $idx, strpos($actions['trash'],'"', $idx) - $idx);
+
           if ( current_user_can( 'wpcf7_edit_contact_form', $form->id() ) ) {
             $actions['edit'] = sprintf(
               '<a href="%1$s">%2$s</a>',
               esc_url( $edit_link ),
               esc_html( __( 'Edit', 'contact-form-7' ) )
+            );
+
+            $actions['trash'] = sprintf(
+              '<a href="%1$s">%2$s</a>',
+              admin_url( 'post.php?post=' . $post->ID . '&action=trash&_wpnonce=' . $nonce ),
+              esc_html( __( 'Trash', 'contact-form-7' ) )
             );
 
             $copy_link = wp_nonce_url(

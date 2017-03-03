@@ -1088,17 +1088,11 @@ class Cf7_2_Post_Factory {
     global $wpdb;
     $cf7_post_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-map' AND meta_value='publish'");
 
-    //debug_msg($cf7_post_ids);
-    //$script_files = Cf7_2_Post_Public::scan_local_scripts();
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = self::get_factory($post_id);
-      //debug_msg("Registering ".$cf7_2_post_map->get('type'));
-      //debug_msg($cf7_2_post_map);
-      //make sure we have the script file that goes witt this form
-      $cf7_2_post_map->create_cf7_post_type();
-      /*if(!isset($script_files[$post_id])){
-        $cf7_2_post_map->save_field_script();
-      }*/
+      if('factory'==$cf7_2_post_map->get('source_type')){
+        $cf7_2_post_map->create_cf7_post_type();
+      }
     }
   }
   /**
@@ -1452,8 +1446,6 @@ class Cf7_2_Post_Factory {
         $field_and_values[str_replace('-','_',$form_field)] = json_encode($options);
 
       }
-
-    }
     //filter the values
     $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'] );
     //make sure the field names are with underscores

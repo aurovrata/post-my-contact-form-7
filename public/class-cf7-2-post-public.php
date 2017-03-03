@@ -73,11 +73,6 @@ class Cf7_2_Post_Public {
 	public function enqueue_scripts() {
     $plugin_dir = plugin_dir_url( __FILE__ );
 		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
-    /*$scripts = self::scan_local_scripts();
-    foreach($scripts as $cf7_id=>$file){
-      wp_register_script('cf7_2_post-'.$cf7_id, $plugin_dir . 'js/'.$file , array('jquery'), $this->version, false);
-    }*/
-    //wp_localize_script('cf7_2_post-622', 'cf7_2_post_622', array('your_name'=>"value"));
 	}
   /**
   * Maps a cf7 form to its corresponding post
@@ -140,32 +135,6 @@ class Cf7_2_Post_Public {
     }
     return $output;
   }
-  /**
-   * Scans the public/js to find the cf7 form ids that have been mapped
-   *
-   * @since 1.3.0
-   * @return     array    array of $cf7_id=>$script_file_name  pairs   .
-  **/
-  /*public static function scan_local_scripts(){
-    $script_files = scandir( plugin_dir_path( __FILE__ ) . 'js/');
-		$cf7_mapped_scripts = array();
-
-		foreach($script_files as $file){
-			$parts = pathinfo($file);
-			if( 'js'==$parts['extension'] ){
-				if( !isset($parts['filename']) ){
-					$parts['filename'] = str_replace('.js','', $parts['basename']);
-				}
-
-        if(false !== strpos($parts['filename'], 'cf7_2_post-') ){
-          $id = str_replace( 'cf7_2_post-','',$parts['filename'] );
-				  $cf7_mapped_scripts[ $id ] = $parts['basename']; //php 5.2 onwards
-        }
-			}
-		}
-
-    return $cf7_mapped_scripts;
-  }*/
   /**
    * Register a [save] shortcode with CF7.
    * Hooked  o 'wpcf7_init'
