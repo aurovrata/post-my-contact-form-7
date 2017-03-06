@@ -304,7 +304,7 @@ class Cf7_2_Post_Factory {
     }else{
       $this->post_properties['map']='draft';
     }
-    debug_msg($this->post_properties, 'saving system post ');
+    //debug_msg($this->post_properties, 'saving system post ');
     foreach($this->post_properties as $key=>$value){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
@@ -1317,11 +1317,24 @@ class Cf7_2_Post_Factory {
 
     //currently mapped fields will be
     if('system'==$this->get('type_source')){
-      $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), array(), $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID);
+      $post_values = array();
+
+      $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), $post_values, $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID, $this);
+      $post_values = apply_filters('cf7_2_post_pre_load-' . $this->get('type'), $post_values, $this->cf7_key, $this);
 
       foreach($post_values as $field=>$value){
         $field_and_values[str_replace('-','_',$field)] = $value;
+        //check if the select2 plugin is required
+        if( 'select' == $this->cf7_form_fields[$field] ){
+          $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $field);
+
+          if( $apply_jquery_select ){
+            wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+            wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
+          }
+        }
       }
+
       //in future version, if the $post_values is empty we will simply conitnue
       return $field_and_values;
     }
@@ -1433,7 +1446,6 @@ class Cf7_2_Post_Factory {
       //
       $load_chosen_script=false;
       foreach($this->post_map_taxonomy as $form_field => $taxonomy){
-
         //if the value was filtered, let's skip it
         if( 0 === strpos($form_field,'cf7_2_post_filter-') ) continue;
         $terms_id = array();
@@ -1490,16 +1502,33 @@ class Cf7_2_Post_Factory {
     return $script;
   }
   /**
+   * Function to return taxonomy terms as either options list for dropdown, checkbox, or radio
+   * This is used for system post mapping in conjunstion with the filter 'cf7_2_post_load-{$post_type}'
+   * @since 1.3.2
+   * @param   String    $taxonomy     The taxonomy slug from which to retrieve the terms.
+   * @param   String    $parent     the parent branch for which to retrieve the terms (by default 0).
+   * @param   Array     $post_term_ids an array of term ids which a post has been tagged with
+   * @param   String    $field form field name for which this taxonomy is mapped to.
+   * @param   String    $field_type the type of field in which the tersm are going to be listed
+   * @return  String    json encoded HTML script to be used as value for the $field     .
+  **/
+  public function get_taxonomy_mapping($taxonomy, $parent=0, $post_term_ids, $field){
+    $this->load_form_fields();
+    $script = $this->get_taxonomy_terms( $taxonomy, $parent, $post_term_ids, $field, $this->cf7_form_fields[$field] );
+    return json_encode($script);
+  }
+  /**
   * Function to retrieve jquery script for form field taxonomy capture
   *
   * @since 1.2.0
   * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
   * @param   Int  $parent  the parent ID of child terms to fetch
   * @param   Array  $post_terms an array of terms which a post has been tagged with
+  * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   String $field_type the type of field in which the tersm are going to be listed
   * @return  String a jquery code to be executed once the page is loaded.
   */
-  protected function get_taxonomy_terms($taxonomy, $parent, $post_terms, $field, $field_type){
+   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type){
     $args = array(
       'parent' => $parent,
       'hide_empty' => 0,
@@ -1578,6 +1607,9 @@ class Cf7_2_Post_Factory {
           }
           $script .='<input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
           $script .='<label>'.$term->name.'</label>'.$nl;
+          break;
+        default:
+          return ''; //nothing more to do here
           break;
       }
       //get children

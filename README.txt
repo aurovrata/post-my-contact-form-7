@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.7.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -162,6 +162,13 @@ The plugin fires a number of jQuery scripts in order to map saved submissions ba
   });
 })( jQuery );
 `
+= Is it possible to save my form to an existing post type? =
+
+yes, but you need to know how to use WordPress hooks in your functions.php file in order to get it to work.  If you map your form, you now have a dropdown to select the type of post to which you want to save it to.  When you select 'Existing Post' from the option, instructions will show up on screen to map your form.
+
+= I am saving my form to an existing post, can I pre-load taxonomy terms in my form? =
+
+Sure you can, again you need to use the hooks `cf7_2_post_map_extra_taxonomy` & `cf7_2_post_pre_load-{$post_type}` to get it to work, see the example in the section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/).
 
 = Is there any advanced documentation for developers ? =
 sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) which lists all the hooks (filters & actions) available for developers with examples of how to use them.  These expose a lot of the default functionality for further fine-tuning.  If you see a scope for improvement and/or come across a bug, please report it in the support forum.
@@ -175,6 +182,11 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+= 1.3.2 =
+* introduced extra filter for mapping taxonomies in system posts
+* added filter 'cf7_2_post_map_extra_taxonomy' to add non-mapped taxonomy
+* added filter 'cf7_2_post_pre_load-'{$post_type} to make use of post factory object
+
 = 1.3.1 =
 * small bug fix
 
@@ -483,5 +495,39 @@ function set_rewrite_slug($args){
     'with_front' => true
   );
   return $args;
+}
+`
+= `cf7_2_post_map_extra_taxonomy` =
+
+this filter allows you to add extra taxonomy to the list of mapped taxonomies.  This is useful when you are mapping your form to an existing post_type. Currently this is only possible using the hooks as the UI implementation will be done later on.  So in order to pre-load your form with taxonomy terms for a dropdown/check/radio field, you need to first register the taxonomy slug with the plugin,
+
+`
+//assume you have a form to post to your blog (post_type=post)
+add_filter('cf7_2_post_map_extra_taxonomy', 'register_category',10,2);
+function register_category( $taxonomies, $cf7_key){
+  if($cf7_key != 'my-posted-form'){
+    return $taxonomies;
+  }
+  //assume you have a field called your-category,
+  //so users select a term from the category taxonomy
+  $taxonomies['your-category'] = 'category';
+  return $taxonomies;
+}
+`
+= `cf7_2_post_pre_load-{$post_type}` =
+
+using the above example, we now want to pre-load our form with the existing terms in the category taxonomy,
+`
+add_filter('cf7_2_post_pre_load-post', 'pre_load_taxonomy', 10,6);
+function pre_load_taxonomy($post_values, $cf7_key, $cf7_2_post_factory){
+  if($cf7_key != 'my-posted-form'){
+    return $post_values;
+  }
+  //$cf7_2_post_factory is the internal factory object used to handle the mapping
+  //the method, get_taxonomy_mapping($taxonomy_slug, $parent, $term_ids, $form_field)
+  // is used to pre_load values in your field, and if you supply an array of term_ids, these will be pre-selected too.
+  $post_values['your-category'] = $cf7_2_post_factory->get_taxonomy_mapping('category', 0, array(), 'your-category');
+
+  return $post_values;
 }
 `
