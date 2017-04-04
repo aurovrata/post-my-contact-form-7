@@ -138,7 +138,7 @@ p.cf7-post-error-msg span.code{
   font-size: 1.1em;
 }
 #postcustomstuff p.animate-color,
-#system-poststuff p.animate-color span.animate{
+#system-poststuff p.animate-color span.animate-change{
     -webkit-animation: color-change 1s 3;
     -moz-animation: color-change 1s 3;
     -o-animation: color-change 1s 3;

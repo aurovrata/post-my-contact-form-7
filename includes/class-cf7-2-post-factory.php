@@ -1304,9 +1304,10 @@ class Cf7_2_Post_Factory {
   * Builds a set of field=>value pairs to pre-populate a mapped form
   * Called by Cf7_2_Post_Public::load_cf7_script()
   * @since 1.3.0
+  * @param   Int  $cf7_2_post_id   a specific post to which this form submission is mapped/saved
   * @return    Array  cf7 form field=>value pairs.
   */
-  public function get_form_values(){
+  public function get_form_values($cf7_2_post_id=''){
     //is user logged in?
     $load_saved_values = false;
     $post=null;
@@ -1348,16 +1349,19 @@ class Cf7_2_Post_Factory {
       	'author'	   => $user->ID,
       	'post_status'      => 'any'
       );
+      if(!empty($cf7_2_post_id)){ //search for the sepcific mapped/saved post
+        $args['post__in']=array($cf7_2_post_id);
+      }
       //filter by submission value for newer version so as not to break older version
       if( version_compare( CF7_2_POST_VERSION , $this->post_properties['version'] , '>=') ){
         $args['meta_query'] = array(
-      		array(
-      			'key'     => '_cf7_2_post_form_submitted',
-      			'value'   => 'no',
-      			'compare' => 'LIKE',
-      		)
-        );
+    		array(
+    			'key'     => '_cf7_2_post_form_submitted',
+    			'value'   => 'no',
+    			'compare' => 'LIKE',
+    		));
       }
+
 
       $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type']);
       $posts_array = get_posts( $args );
@@ -1470,7 +1474,7 @@ class Cf7_2_Post_Factory {
           wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
           wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
         }
-        $field_and_values[str_replace('-','_',$form_field)] = json_encode($options);
+        $field_and_values[str_replace('-','_',$form_field)] = wp_json_encode($options);
 
       }
     //filter the values
@@ -1488,8 +1492,9 @@ class Cf7_2_Post_Factory {
   *
   * @since 1.3.0
   * @param   Array  $field_and_values   array of $field_name=>$values pairs
+  * @param   Int  $cf7_2_post_id   a specific post to which this form submission is mapped/saved
   */
-  public function get_form_field_script($nonce){
+  public function get_form_field_script($nonce, $cf7_2_post_id=''){
     ob_start();
     include( plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-script.php');
     $script = ob_get_contents ();

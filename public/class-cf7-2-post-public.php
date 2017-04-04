@@ -130,7 +130,12 @@ class Cf7_2_Post_Public {
       $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
 
       $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce);
-      $map_script = $factory->get_form_field_script( $nonce );
+      //verify if this cf7 form is mapped to a specific post.
+      $cf7_2_post_id ='';
+      if(isset($attr['cf7_2_post_id'])){
+        $cf7_2_post_id = $attr['cf7_2_post_id'];
+      }
+      $map_script = $factory->get_form_field_script( $nonce, $cf7_2_post_id );
       $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$map_script.PHP_EOL.$scripts.'</div>';
     }
     return $output;

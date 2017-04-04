@@ -3,8 +3,8 @@ Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
-Tested up to: 4.7.1
-Stable tag: 1.3.2
+Tested up to: 4.7.3
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,7 @@ You can submit and map to a post all of the following fields,
 * **taxonomies**, you can map select/checkbox/radio input fields to taxonomies
 * map your submitted forms to **existing post types**
 * addition of form key to identify cf7 forms instead of the form id to make development more portable
+* this plugin allows your users to manage multiple draft submissions from a single page.
 
 = Make your CF7 Form more portable =
 
@@ -173,6 +174,25 @@ Sure you can, again you need to use the hooks `cf7_2_post_map_extra_taxonomy` & 
 = Is there any advanced documentation for developers ? =
 sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) which lists all the hooks (filters & actions) available for developers with examples of how to use them.  These expose a lot of the default functionality for further fine-tuning.  If you see a scope for improvement and/or come across a bug, please report it in the support forum.
 
+= Is it possible to have multiple forms submitted from a single page ? =
+yes, as of v1.4 of this plugin you can now have multiple saved/draft submissions on a single page.  To get it to work you need to track which forms are mapped to which post yourself.  Introduce a hidden variable in your form to store your mapped post ids.  For example you have a custom post which maps/stores submitted faults  reported by your users.  On  page load, you need to pass the mapped post id to this plugin via your cf7 shortcode by dynamically calling the shortcode using `do_shortcode` and the attribute `cf7_2_post_id`,
+`
+$args = array(
+  'post_type'  => 'fault-post',
+  'post_status'=> 'any',
+  'author' => get_current_user_id()
+);
+$faults = get_posts($args);
+foreach($faults as $post){
+  $cf7_attr = ' cf7_2_post_id="'.$post->ID.'"';
+  //display your form, you might want to add some more html to structure to display them as tabs or something else.
+  echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
+}
+wp_reset_postdata();
+//if you need to add an extra empty form, then ensure you pass the cf7_2_post_id attribute as -1
+//$cf7_attr = ' cf7_2_post_id="-1"';
+//echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
+`
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -182,6 +202,8 @@ sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-m
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+= 1.4.0 =
+* introduce cf7_2_post_id attribute in the cf7 shortcode to enable multiple forms in single page
 = 1.3.2 =
 * introduced extra filter for mapping taxonomies in system posts
 * added filter 'cf7_2_post_map_extra_taxonomy' to add non-mapped taxonomy

@@ -161,7 +161,7 @@ class Cf7_2_Post {
     $this->loader->add_action('admin_menu',  $plugin_admin, 'add_cf7_sub_menu' );
     //$this->loader->add_filter( 'custom_menu_order', $plugin_admin, 'change_cf7_submenu_order' );
     //modify the cf7 list table columns
-    $this->loader->add_filter('manage_wpcf7_contact_form_posts_columns' , $plugin_admin, 'modify_cf7_list_columns',30,2);
+    $this->loader->add_filter('manage_wpcf7_contact_form_posts_columns' , $plugin_admin, 'modify_cf7_list_columns',30,1);
     $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
     //ajax submission
     $this->loader->add_action('wp_ajax_save_post_mapping', $plugin_admin, 'ajax_save_post_mapping');
@@ -192,7 +192,7 @@ class Cf7_2_Post {
     $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
 
     /*CF7 Hooks*/
-    //use before_send_mail to ensure mapping post form validation 
+    //use before_send_mail to ensure mapping post form validation
     $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
     //instroduced a 'save button tag for forms
     $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );

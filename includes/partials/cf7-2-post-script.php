@@ -1,5 +1,5 @@
 <?php
-$form_values = $this->get_form_values();
+$form_values = $this->get_form_values($cf7_2_post_id);
 ?>
 <script type="text/javascript">
 (function( $ ) {
@@ -7,7 +7,7 @@ $form_values = $this->get_form_values();
    (function(){ //make scope local to this script
      $( document).ready(function() {
        var fname;
-       var data = <?php echo json_encode($form_values);?>;
+       var data = <?php echo wp_json_encode($form_values);?>;
        var cf7Form = $("div#<?php echo $nonce ?> form.wpcf7-form");
        if(cf7Form.is('div.cf7-smart-grid form.wpcf7-form')){
          //if the smart grid is enabled, execute the loading once the grid is ready

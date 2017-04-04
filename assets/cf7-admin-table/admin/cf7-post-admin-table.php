@@ -233,8 +233,10 @@ if(!class_exists('Cf7_WP_Post_Table')){
     }
     /**
     * Modify cf7 post type list table columns
-    * Hooked on 'modify_{$post_type}_posts_columns', to remove the default columns
-    *
+    * Hooked on 'manage_{$post_type}_posts_columns', to remove the default columns
+    * @since 1.0.0
+    * @param      Array    $columns     array of columns to display.
+    * @return     Array    array of columns to display.
     */
     public function modify_cf7_list_columns($columns){
       $columns['shortcode'] = 'Shortcode<br /><span class="cf7-help-tip"><a href="javascript:void();">What\'s this?</a><span class="cf7-short-info">Use this shortcode the same way you would use the contact-form-7 shortcode. (See the plugin page for more information )</span></span>';
@@ -243,8 +245,11 @@ if(!class_exists('Cf7_WP_Post_Table')){
     }
     /**
     * Populate custom columns in cf7 list table
+    * hooked on 'manage_{$post_type}_posts_custom_column'
     * @since 1.0.0
-    *
+    * @param      String    $column     column key.
+    * @param      Int    $post_id     row post id.
+    * @return     String    value to display.
     */
     public function populate_custom_column( $column, $post_id ) {
       switch ( $column ) {

@@ -105,7 +105,10 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles($hook) {
+    if ('contact_page_cf7_post' != $hook){
+      return;
+    }
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
 	}
 
@@ -114,7 +117,10 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts($hook) {
+    if ('contact_page_cf7_post' != $hook){
+      return;
+    }
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, false );
     wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
     wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
