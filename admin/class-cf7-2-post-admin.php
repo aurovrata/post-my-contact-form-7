@@ -79,7 +79,7 @@ class Cf7_2_Post_Admin {
     if(is_plugin_active("post-my-contact-form-7/cf7-2-post.php") &&
       !is_plugin_active("contact-form-7/wp-contact-form-7.php") ){
         deactivate_plugins( "post-my-contact-form-7/cf7-2-post.php" );
-        wp_die( '<strong>CF7 Polylang Module Extension</strong> requires <strong>CfF7</strong> and has been deactivated!' );
+        wp_die( '<strong>Post My CF7 Form</strong> requires <strong>CF7 plugin</strong> and has been deactivated!' );
         debug_msg("Deactivating CF7 Polylang Module Enxtension");
     }
 
@@ -289,7 +289,7 @@ class Cf7_2_Post_Admin {
    *
    * @since 2.0.0
   **/
-  public function cf7_shortcode_save(){
+  public function cf7_shortcode_tags(){
     if ( class_exists( 'WPCF7_TagGenerator' ) ) {
       $tag_generator = WPCF7_TagGenerator::get_instance();
       $tag_generator->add(
@@ -297,9 +297,10 @@ class Cf7_2_Post_Admin {
         __( 'save', 'cf7_2_post' ), //tag button label
         array($this,'save_tag_generator'), //callback
         array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
-    );
+      );
     }
   }
+
   /**
 	 * Sav button tag screen displayt.
 	 *
@@ -313,15 +314,5 @@ class Cf7_2_Post_Admin {
     $args = wp_parse_args( $args, array() );
 		include( plugin_dir_path( __FILE__ ) . '/partials/cf7-tag-display.php');
 	}
-  /**
-   * Reset the custom scripts for mapped forms when the form is being saved
-   *
-   * @since 1.3.0
-   * @param      string    $cf7_id     the id of the cf7 form being saved.
-  **/
-  /*public function reset_mapped_scripts($cf7_id){
-    if(file_exists(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js')){
-      unlink(plugin_dir_path(__DIR__).'/public/js/cf7_2_post-'.$cf7_id.'.js');
-    }
-  }*/
+
 }

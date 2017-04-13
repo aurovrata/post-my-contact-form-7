@@ -76,31 +76,27 @@ class Cf7_2_Post_Public {
 	}
   /**
   * Maps a cf7 form to its corresponding post
-  * Hooks 'wpcf7_posted_data' cf7 action in the public section
+  * Hooks 'wpcf7_before_send_mail' just after all validation is done
   * @since 1.0.0
-  * @param Array $cf7_form_data  data posted from teh cf7 form
+  * @param  WPCF7_Contact_Form $cf7_form  cf7 form object
   */
   public function save_cf7_2_post($cf7_form){
 
     //load the form factory
-    if(isset($_POST['_wpcf7'])){
-      $cf7_post_id = $_POST['_wpcf7'];
-      //is this form mapped yet?
-      if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
-        $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+    $cf7_post_id = $cf7_form->id();
+    //is this form mapped yet?
+    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
 
-        //load all the submittec values
-        $cf7_form_data = array();
-        $tags = $cf7_form->scan_form_tags(); //get your form tags
-        //the curent submission object from cf7 plugin
-        $submission = WPCF7_Submission::get_instance();
-
-        //debug_msg($cf7_form_data, "saving form data ");
-        $factory->save_form_2_post($submission);
-      }
-    }else{
-      debug_msg("ERROR, unable to get CF7 post ID for mapping in posted data!");
+      //load all the submittec values
+      //$cf7_form_data = array();
+      //$tags = $cf7_form->scan_form_tags(); //get your form tags
+      //the curent submission object from cf7 plugin
+      $submission = WPCF7_Submission::get_instance();
+      //debug_msg($submission, "saving form data ");
+      $factory->save_form_2_post($submission);
     }
+
     return $cf7_form;
   }
   /**
@@ -142,7 +138,7 @@ class Cf7_2_Post_Public {
   }
   /**
    * Register a [save] shortcode with CF7.
-   * Hooked  o 'wpcf7_init'
+   * Hooked  on 'wpcf7_init'
    * This function registers a callback function to expand the shortcode for the save button field.
    * @since 2.0.0
    */

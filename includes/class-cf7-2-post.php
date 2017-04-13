@@ -169,11 +169,14 @@ class Cf7_2_Post {
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
-
+    
+    /* CF7 Hooks */
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //add the 'save' button tag
-    $this->loader->add_action( 'wpcf7_init', $plugin_admin, 'cf7_shortcode_save' );
+    $this->loader->add_action( 'wpcf7_admin_init', $plugin_admin, 'cf7_shortcode_tags' );
+
+
 	}
 
 	/**

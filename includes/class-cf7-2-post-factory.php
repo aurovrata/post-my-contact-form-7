@@ -184,6 +184,9 @@ class Cf7_2_Post_Factory {
     }else{
         $result .= '<select class="taxonomy-list">';
     }
+    if('' === $taxonomy_slug){
+      $result .= '<option value="" data-name="" >Choose a Taxonomy</option>';
+    }
     $default_slug = sanitize_title( $this->get('singular_name') ).'_categories';
     $result .= '<option class="factory-taxonomy" value="'.$default_slug.'" data-name="New Category" class="factory-taxonomy">New Categories</option>';
     if(!empty($taxonomy_slug) &&
@@ -327,6 +330,25 @@ class Cf7_2_Post_Factory {
     $create_post_mapping){
       $create_post = true;
     }
+    /*
+    * check if we have a save button and map post publish to submit button
+
+
+    //get cf7 form
+    $cf7_form = wpcf7_contact_form($this->cf7_post_ID);
+    $tags = $cf7_form->scan_form_tags(); //get form tags
+    $has_save_button = false;
+    foreach($tags as $tag){
+      if('save' == $tag['basetype']){
+        $has_save_button = true;
+        break;//stop looping
+      }
+    }
+    if($has_save_button){
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post_submit_publishes', true);
+    }else{
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post_submit_publishes', false);
+    }*/
     //reset, as only checked input field are submitted and will set to true
     $this->post_properties = array_merge(
       $this->post_properties,
@@ -1239,6 +1261,7 @@ class Cf7_2_Post_Factory {
     //
     //-------------- meta fields
     //
+    $publish_post = false;
     if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
       update_post_meta($post_id, '_cf7_2_post_form_submitted','no'); //form is saved
     }else{

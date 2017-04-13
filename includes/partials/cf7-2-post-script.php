@@ -54,6 +54,11 @@ $form_values = $this->get_form_values($cf7_2_post_id);
           cf7Form.find("select[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
         }
     <?php break;
+      case 'dynamic_select':?>
+        if(data.<?php echo $form_field?> !== undefined){
+          cf7Form.find("select[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
+        }
+    <?php break;
       case 'textarea':?>
         if(data.<?php echo $form_field?> !== undefined){
           cf7Form.find("textarea[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
