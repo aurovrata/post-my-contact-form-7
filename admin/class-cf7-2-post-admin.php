@@ -310,9 +310,11 @@ class Cf7_2_Post_Admin {
 	 * @param WPCF7_ContactForm $contact_form the cf7 form object
 	 * @param array $args arguments for this form.
 	 */
-	function save_tag_generator( $contact_form, $args = '' ) {
+	public function save_tag_generator( $contact_form, $args = '' ) {
     $args = wp_parse_args( $args, array() );
 		include( plugin_dir_path( __FILE__ ) . '/partials/cf7-tag-display.php');
 	}
-
+  public function inject_footer_script(){
+    include( plugin_dir_path( __FILE__ ) . '/partials/cf72post-footer-script.php');
+  }
 }
