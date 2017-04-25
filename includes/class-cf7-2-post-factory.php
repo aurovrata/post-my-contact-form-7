@@ -330,25 +330,7 @@ class Cf7_2_Post_Factory {
     $create_post_mapping){
       $create_post = true;
     }
-    /*
-    * check if we have a save button and map post publish to submit button
 
-
-    //get cf7 form
-    $cf7_form = wpcf7_contact_form($this->cf7_post_ID);
-    $tags = $cf7_form->scan_form_tags(); //get form tags
-    $has_save_button = false;
-    foreach($tags as $tag){
-      if('save' == $tag['basetype']){
-        $has_save_button = true;
-        break;//stop looping
-      }
-    }
-    if($has_save_button){
-      update_post_meta($this->cf7_post_ID, '_cf7_2_post_submit_publishes', true);
-    }else{
-      update_post_meta($this->cf7_post_ID, '_cf7_2_post_submit_publishes', false);
-    }*/
     //reset, as only checked input field are submitted and will set to true
     $this->post_properties = array_merge(
       $this->post_properties,
@@ -371,6 +353,7 @@ class Cf7_2_Post_Factory {
     //make sure the arrays are initialised
     $this->post_properties['taxonomy']=array();
     $this->post_map_taxonomy=array();
+    $this->post_map_meta_fields = array();
     //lets load all fields
     $len_mapped_post = strlen('mapped_post_');
     $len_cf7_2_post_map = strlen('cf7_2_post_map-');
@@ -510,7 +493,7 @@ class Cf7_2_Post_Factory {
     //keep track of all the taxonomy slugs in the the slugs array
     $slugs=array();
     $post_map_taxonomy = array();
-
+    //debug_msg($data);
     foreach($data as $field => $value){
       if(empty($value)) continue;
       //debug_msg($field."=".$value,"saving...");
@@ -544,6 +527,7 @@ class Cf7_2_Post_Factory {
             $this->taxonomy_properties[$value] =  array();
           }
           $slugs[]= $value;
+          //debug_msg("found slug ".$value);
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
         case (0 === strpos($field,'cf7_2_post_map_taxonomy_value-') ): //taxonomy field mapping
@@ -555,6 +539,7 @@ class Cf7_2_Post_Factory {
     }
     if($is_factory_map){
       //save the taxonomy mappings
+      //debug_msg($slugs);
       foreach($slugs as $slug){
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug,$this->taxonomy_properties[$slug]['source']);

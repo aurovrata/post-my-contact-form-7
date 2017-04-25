@@ -145,6 +145,58 @@
 
         return this;
     };
+    /** Added @since 1.5 automatically populates the meta_field name */
+    //delegate the change on meta field mapping.
+    $('#custom-meta-fields').change('select.field-options', function(event){
+      var $target = $(event.target);
+      if( $target.is('select.field-options') ){
+        if($target.is('.autofill-field-name')){
+          var name = $target.val().replace('-','_');
+          var $parent = $target.closest('.custom-meta-field');
+          $parent.find('input.cf7-2-post-map-labels').val(name);
+          //$target.removeClass('autofill-field-name');
+          //if this funcitonality has been used, let's replicate it on the next meta field input.
+          var $next = $parent.nextAll('.custom-meta-field:first');
+          if($next.is($parent.siblings('.custom-meta-field:last') ) ){ //next is last.
+            $next.addClass('autofill-field-name'); //prep for autofill.
+          }
+        }
+      }
+    });
+    //switch-off auto-fill is the name is manually edited.
+    $('#custom-meta-fields').keyup('input.cf7-2-post-map-labels', function(event){
+      var $target = $(event.target);
+      if( $target.is('.cf7-2-post-map-labels') ){
+        //remove the autofill class on the dropdopwn.
+        var $parent = $target.closest('.custom-meta-field');
+        $parent.find('select.field-options').removeClass('autofill-field-name');
+        $parent.nextAll('.custom-meta-field:first').removeClass('autofill-field-name');
+      }
+    });
+    //auto-fill the meta-field name.
+    $('#custom-meta-fields').on('click', 'span.add-more-field', function(event){
+      var $target = $(event.target);
+      if( $target.is('.add-more-field') ){
+        var $parent = $target.closest('.custom-meta-field');
+        if($parent.is('.autofill-field-name')){
+          var $previous = $parent.prevAll('.custom-meta-field:first').find('select.field-options').find('option:selected');
+          var $select = $parent.find('select.field-options');
+          if($select.find('option:last').val() != $previous.val() ){
+            $select.addClass('autofill-field-name'); //allows change to autofill.
+            var $nextOption = $select.find('option[value="'+$previous.val()+'"]').next();
+            $nextOption.prop('selected','true'); //select.
+            var name = $nextOption.val().replace('-','_');
+            $parent.find('input.cf7-2-post-map-labels').val(name);
+            if( $nextOption.next().val() != $select.find('option:last').val()){
+              $parent.nextAll('.custom-meta-field:first').addClass('autofill-field-name'); //prep for autofill.
+            }
+          }
+          $parent.removeClass('autofill-field-name');
+        }else{ //enable autofill on the select
+          $parent.find('select.field-options').addClass('autofill-field-name');
+        }
+      }
+    });
 
     //when the select dropdown changes
     function optionSelected(){
@@ -223,6 +275,7 @@
       $(this).parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
       $(this).parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
       $(this).parent().find('input.taxonomy-source').attr('name','cf7_2_post_map_taxonomy_source-'+slug);
+      $(this).parent().find('input.taxonomy-slug').attr('name','cf7_2_post_map_taxonomy_slug-'+slug);
     }
     //function called when the taxonomy name changes
     function pluralName(){

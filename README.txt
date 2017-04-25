@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.7.3
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ You can submit and map to a post all of the following fields,
 * map your submitted forms to **existing post types**
 * addition of form key to identify cf7 forms instead of the form id to make development more portable
 * this plugin allows your users to manage multiple draft submissions from a single page.
+* for large forms with multiple fields, an auto-create functionality has been added for meta-field mapping.  See the installation instruction for details.
 
 = Make your CF7 Form more portable =
 
@@ -81,7 +82,8 @@ The plugin has been coded with additional actions and filters to allow you to ho
 2. Install the *Post My CF7 Form* plugin
 3. Create a contact form.  A new column appears in the contact table list which shows you which Post Type the form is mapped to
 4. Click on the link 'Create New' that appears on the column to start mapping your form to a custom post.
-5. Create the post and it will appear in your Dashboard.
+5. Create the post and it will appear in your Dashboard.  Currently you cannot undo a mapped form, you will have to create a new form and re-map it while deleting the old one to change the mapping.  So be careful when you save finally create your form.  In a later version of this plugin I will introduce functionality to un-publish a mapped form.
+6. As of v1.5 of this plugin a functionality has been introduced to quickly create meta-field mappings. This is useful when you have complex forms with multiple fields. Simply add a new meta-field and select a field to map (leave the meta field name to the default value), the meta-field name will automatically update itself to reflect the form field name with hyphens replaced by underscores. Subsequent additions of new meta-fields will further increase the magic by auto-selecting the next form field in the dropdown and filling in the meta-field name too.  If you wish to switch-off this functionality, simply manually edit the meta-field name and it will switch-off the autofill.
 6. Each time a visitor submits the form on your website, a new post will be created.
 
 
@@ -202,6 +204,10 @@ wp_reset_postdata();
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+= 1.5.0 =
+* bug fix which prevented multiple taxonomies from being saved
+* added autofill functionality on meta-field button creation.
+
 = 1.4.0 =
 * introduce cf7_2_post_id attribute in the cf7 shortcode to enable multiple forms in single page
 = 1.3.2 =
