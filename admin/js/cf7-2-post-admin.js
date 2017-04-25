@@ -141,8 +141,6 @@
           new Clipboard(filter[0]);
           if(highlight) msgBox.addClass('animate-color');
         });
-
-
         return this;
     };
     /** Added @since 1.5 automatically populates the meta_field name */
@@ -153,7 +151,7 @@
         if($target.is('.autofill-field-name')){
           var name = $target.val().replace('-','_');
           var $parent = $target.closest('.custom-meta-field');
-          $parent.find('input.cf7-2-post-map-labels').val(name);
+          $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
           //$target.removeClass('autofill-field-name');
           //if this funcitonality has been used, let's replicate it on the next meta field input.
           var $next = $parent.nextAll('.custom-meta-field:first');
@@ -185,8 +183,9 @@
             $select.addClass('autofill-field-name'); //allows change to autofill.
             var $nextOption = $select.find('option[value="'+$previous.val()+'"]').next();
             $nextOption.prop('selected','true'); //select.
+            $select.trigger('change');
             var name = $nextOption.val().replace('-','_');
-            $parent.find('input.cf7-2-post-map-labels').val(name);
+            $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
             if( $nextOption.next().val() != $select.find('option:last').val()){
               $parent.nextAll('.custom-meta-field:first').addClass('autofill-field-name'); //prep for autofill.
             }

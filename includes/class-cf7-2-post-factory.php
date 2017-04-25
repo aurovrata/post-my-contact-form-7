@@ -361,6 +361,7 @@ class Cf7_2_Post_Factory {
     /*$len_cf7_2_post_map_taxonomy = strlen('cf7_2_post_map_taxonomy_value-');
     $len_cf7_2_post_taxonomy_slug = strlen('cf7_2_post_map_taxonomy_slug-');
     $len_cf7_2_post_taxonomy_names = strlen('cf7_2_post_map_taxonomy_names-');*/
+    $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
 
     foreach($data as $field => $value){
       if(empty($value)) continue;
@@ -426,22 +427,46 @@ class Cf7_2_Post_Factory {
       }else{
         $this->post_properties['map']='draft';
       }
+
       foreach($this->post_properties as $key=>$value){
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+        //clear previous values.
+        if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
+          unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
+        }
       }
     }
     //let'save the mapping of cf7 form fields to post fields
     foreach($this->post_map_fields as $cf7_field=>$post_field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       update_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field,$cf7_field);
+      if(isset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]) ){
+        unset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]);
+      }
     }
     foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field,$cf7_field);
+      if(isset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]) ){
+        unset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]);
+      }
+    }
+    //clear any old values left.
+    debug_msg($old_cf7_post_metas);
+    foreach($old_cf7_post_metas as $key=>$value){
+      switch(true){
+        case (0 === strpos($key,'_cf7_2_post-')):
+        case (0 === strpos($key,'cf7_2_post_map-')):
+        case (0 === strpos($key,'cf7_2_post_map_meta-')):
+          delete_post_meta($this->cf7_post_ID, $key);
+          debug_msg('deleting: '.$key);
+          break;
+      }
     }
     //save the taxonomy mapping
-    $this->save_taxonomies($data, $is_factory_map);
+    $this->save_taxonomies($data, $is_factory_map, $old_cf7_post_metas);
+
     return true;
   }
   /**
@@ -480,7 +505,7 @@ class Cf7_2_Post_Factory {
    * @param   array   $data   an array containing the admin form data, $_POST
    * @return  boolean   true if successful
   **/
-  protected function save_taxonomies($data, $is_factory_map){
+  protected function save_taxonomies($data, $is_factory_map, $old_fields = array()){
     /*
     the taxonomy field names are built using the slug, such as
       cf7_2_post_map_taxonomy_names-<taxonomy_slug>
@@ -575,7 +600,7 @@ class Cf7_2_Post_Factory {
     //get_post_meta ( int $post_id, string $key = '', bool $single = false )
     $fields = get_post_meta ($this->cf7_post_ID);
     //debug_msg("found post meta,");
-    //debug_msg($fields);
+    //($fields);
     $start = strlen('_cf7_2_post-');
     $start2 = strlen('cf7_2_post_map-');
     $start3 = strlen('cf7_2_post_map_meta-');
