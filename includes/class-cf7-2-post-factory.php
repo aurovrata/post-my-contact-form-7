@@ -453,14 +453,13 @@ class Cf7_2_Post_Factory {
       }
     }
     //clear any old values left.
-    debug_msg($old_cf7_post_metas);
     foreach($old_cf7_post_metas as $key=>$value){
       switch(true){
         case (0 === strpos($key,'_cf7_2_post-')):
         case (0 === strpos($key,'cf7_2_post_map-')):
         case (0 === strpos($key,'cf7_2_post_map_meta-')):
           delete_post_meta($this->cf7_post_ID, $key);
-          debug_msg('deleting: '.$key);
+          //debug_msg('deleting: '.$key);
           break;
       }
     }
@@ -567,9 +566,25 @@ class Cf7_2_Post_Factory {
       //debug_msg($slugs);
       foreach($slugs as $slug){
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+        if(isset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]) ){
+          unset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]);
+          unset($old_fields['cf7_2_post_map_taxonomy_names-'.$slug]);
+          unset($old_fields['cf7_2_post_map_taxonomy_name-'.$slug]);
+        }
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug,$this->taxonomy_properties[$slug]['source']);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
+      }
+      //clear any old values left.
+      foreach($old_fields as $key=>$value){
+        switch(true){
+          case (0 === strpos($key,'cf7_2_post_map_taxonomy_source-')):
+          case (0 === strpos($key,'cf7_2_post_map_taxonomy_names-')):
+          case (0 === strpos($key,'cf7_2_post_map_taxonomy_name-')):
+            delete_post_meta($this->cf7_post_ID, $key);
+            //debug_msg('deleting: '.$key);
+            break;
+        }
       }
       //debug_msg($slugs, "saved taxonomy ");
       //save the taxonomy properties
