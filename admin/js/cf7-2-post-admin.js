@@ -149,7 +149,7 @@
       var $target = $(event.target);
       if( $target.is('select.field-options') ){
         if($target.is('.autofill-field-name')){
-          var name = $target.val().replace('-','_');
+          var name = $target.val().replace(/-/g,'_');
           var $parent = $target.closest('.custom-meta-field');
           $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
           //$target.removeClass('autofill-field-name');
@@ -184,7 +184,7 @@
             var $nextOption = $select.find('option[value="'+$previous.val()+'"]').next();
             $nextOption.prop('selected','true'); //select.
             $select.trigger('change');
-            var name = $nextOption.val().replace('-','_');
+            var name = $nextOption.val().replace(/-/g,'_');
             $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
             if( $nextOption.next().val() != $select.find('option:last').val()){
               $parent.nextAll('.custom-meta-field:first').addClass('autofill-field-name'); //prep for autofill.
