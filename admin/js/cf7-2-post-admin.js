@@ -75,7 +75,7 @@
 
       //enable the new field
       var postType = $('input#mapped_post_type').val();
-      parent.find('.cf7-2-post-map-labels').prop('disabled',false);
+      parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
       parent.find('select').prop('disabled',false);
       //parent.find('select').attr('name',keyName+'_value');
@@ -381,24 +381,37 @@
           break;
       }
     });
-    $('#post-type-exists').on('change', function(){
+    /**@since 2.0.0 get system post meta fields as select option */
+    $('#system-post-type').on('change', function(){
       //get the options
+       $('#custom-meta-fields .custom-meta-field .cf7-2-post-map-labels').hide();
+      $('#custom-meta-fields .custom-meta-field .spinner.meta-label').show().css('display','inline-block');
+      var postType = $(this).val();
       $.ajax({
         type:'POST',
-        action:'ajax_get_meta_options',
         dataType: 'json',
-        url: ajaxUrl,
-        data: $(this).serialize()+'&'+buttonID+'=selected',
+        url: ajaxurl,
+        data: {
+          action:'get_meta_options',
+          post_type: postType,
+          cf7_2_post_nonce: $('#cf7_2_post_nonce').val()
+        },
         success:function(data){
-          $('.spinner.'+buttonID).css('visibility','hidden');
-          $('div#ajax-response').text(data.data.msg);
-          if('created'==data.data.post) location.reload();
-          $('div#ajax-response').removeClass('error-msg');
+          $('#custom-meta-fields .custom-meta-field').each(function(index){
+            $(this).removeClass('autofill-field-name');
+            $(this).removeClass('autofill-field-name');
+            var disable = '';
+            if($(this).is('.custom-meta-field:last')) disable = ' disabled="disabled"';
+            var $label = $('<select class="cf7-2-post-map-labels metas-'+postType+'" '+ disable +'>');
+            $label.append('<option value="">Select a field</option>')
+            $label.append(data.data.options);
+            $('.spinner' , $(this)).hide().after($label);
+            $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
+          });
         },
         error:function(data){
-          $('.spinner.'+buttonID).css('visibility','hidden');
-          $('div#ajax-response').text(data.data.msg);
-          $('div#ajax-response').addClass('error-msg');
+          var $label = $('<em>error in getting fields</em>');
+          $('.spinner' , $(this)).hide().after($label);
         }
       });
     });

@@ -6,7 +6,8 @@
  label{
    cursor: default;
  }
- .display-none{
+ .display-none,
+ form#cf7-post-mapping-form .cf7-2-post-map-labels.hide{
    display:none;
  }
  #adminmenu ul.wp-submenu li a[href="admin.php?page=cf7_post"] {
@@ -202,4 +203,10 @@ option.system-taxonomy {
 }
 .cf7-post-error-msg a.code:hover + span.popup{
   display:block;
+}
+.spinner.meta-label {
+    float: none;
+    margin: 4px 57px;
+    display:none;
+    visibility: visible;
 }

@@ -262,9 +262,7 @@ class Cf7_2_Post_Admin {
   /**
    * Ajax Load system post options
    * Hooked on 'wp_ajax'
-   * @since 1.0.0
-   * @param      string    $p1     .
-   * @return     string    $p2     .
+   * @since 2.0.0
   **/
   public function ajax_get_meta_options(){
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){

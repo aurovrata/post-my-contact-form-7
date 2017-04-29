@@ -95,9 +95,15 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
       $post_type
     ));
     $html = '';
-    foreach($metas as $row){
-      $selected_option = ($selected==$row->meta_key)? ' selected="true"':'';
-      $html+='<option value="' . $row->meta_key . '"' . $selected_option . '>' . $row->meta_key . '</option>' . PHP_EOL;
+    if(false !== $metas){
+      foreach($metas as $row){
+        if( 0=== strpos( $row->meta_key, '_') &&
+        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){ //skip _meta_keys, assuming system fields.
+          continue;
+        }
+        $selected_option = ($selected==$row->meta_key)? ' selected="true"':'';
+        $html.='<option value="' . $row->meta_key . '"' . $selected_option . '>' . $row->meta_key . '</option>' . PHP_EOL;
+      }
     }
     return $html;
   }

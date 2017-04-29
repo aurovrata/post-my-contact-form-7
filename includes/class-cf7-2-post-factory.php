@@ -4,7 +4,7 @@ class Cf7_2_Post_Factory {
 	 * The properties of the mapped custom post type.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $post_properties    an array of properties.
 	 */
   protected $post_properties;
@@ -12,7 +12,7 @@ class Cf7_2_Post_Factory {
 	 * The properties of the mapped custom taxonomy.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $taxonomy_properties    an array of properties with   $taxonomy_slug=>array('source'=>$taxonomy_source, 'singular_name'=>$value, 'name'=>$plural_name)
 	 */
   protected $taxonomy_properties;
@@ -20,7 +20,7 @@ class Cf7_2_Post_Factory {
 	 * The the CF7 post ID.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      int    $cf7_post_ID    the CF7 post ID.
 	 */
   protected $cf7_post_ID;
@@ -28,7 +28,7 @@ class Cf7_2_Post_Factory {
    * The the CF7 post unique key.
    *
    * @since    1.2.7
-   * @access   private
+   * @access    protected
    * @var      string    $cf7_key    the unique key which can be used to identfy this form.
    */
   protected $cf7_key;
@@ -36,7 +36,7 @@ class Cf7_2_Post_Factory {
 	 * The CF7 form fields.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
 	 */
   protected $cf7_form_fields;
@@ -44,7 +44,7 @@ class Cf7_2_Post_Factory {
 	 * The CF7 form fields options.
 	 *
 	 * @since    2.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
 	 */
   protected $cf7_form_fields_options;
@@ -52,7 +52,7 @@ class Cf7_2_Post_Factory {
 	 * The CF7 form fields mapped to post fields.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $post_map_fields    an array mapped CF7 fields, to default
    * post fields {'form field name'=>'post field'}.
 	 */
@@ -61,7 +61,7 @@ class Cf7_2_Post_Factory {
 	 * The CF7 form fields mapped to post fields.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $post_map_meta_fields    an array mapped CF7 fields, to post
    * custom meta fields  {'form field name'=>'post field'}.
 	 */
@@ -70,16 +70,16 @@ class Cf7_2_Post_Factory {
 	 * The CF7 form fields mapped to post fields.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $post_map_taxonomy    an array mapped CF7 fields, to post
    * custom taxonomy  {'form field name'=>'taxonomy slug'}.
 	 */
-  private $post_map_taxonomy;
+   protected $post_map_taxonomy;
   /**
 	 * The CF7 form fields values to set as localize_script.
 	 *
 	 * @since    1.0.0
-	 * @access   private
+	 * @access    protected
 	 * @var      array    $localise_values    an array CF7 fields=>values.
 	 */
   protected $localise_values;
@@ -570,7 +570,7 @@ class Cf7_2_Post_Factory {
 	 *
 	 * @since    1.0.0
    */
-  private function load_post_mapping(){
+   protected function load_post_mapping(){
     $this->post_map_fields = array();
     $this->post_map_meta_fields = array();
     $this->post_map_taxonomy = array();
