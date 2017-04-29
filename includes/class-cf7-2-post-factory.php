@@ -221,62 +221,7 @@ class Cf7_2_Post_Factory {
    public function get_cf7_post_id(){
      return $this->cf7_post_ID;
    }
-  /**
-	 * Store the mapping in the CF7 post & create the custom post mapping.
-	 * This is called by the plugin admin class function ajax_save_post_mapping whih is hooked to the ajax form call
-	 * @since    1.0.0
-   * @param   array   $data   an array containing the admin form data, $_POST
-   * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
-   * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
-   * @return  boolean   true if successful
-   */
-  public function save($data, $create_post_mapping){
-    //let's  update the properties
-    //is this a factory post or a system post?
-    if( isset($data['mapped_post_type_source']) && isset($data['mapped_post_type']) ) {
-      $this->post_properties['type_source'] = $data['mapped_post_type_source'];
-      $this->post_properties['type'] = $data['mapped_post_type'];
-      $this->post_properties['version'] = CF7_2_POST_VERSION;
 
-      switch($this->post_properties['type_source']){
-        case 'system':
-          return $this->set_system_mapping($data, $create_post_mapping);
-          break;
-        case 'factory':
-          return $this->set_factory_mapping($data, $create_post_mapping);
-          break;
-      }
-    }else{
-      return false;
-    }
-  }
-  /**
-  * Setups the form to existing post mapping
-  * @since 1.2.7
-  * @param   array   $data   an array containing the admin form data, $_POST
-  * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
-  * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
-  * @return  boolean   true if successful
-  */
-  protected function set_system_mapping($data, $create_post_mapping){
-    //reset the properties, this is now being published
-    $this->post_properties = array();
-    $this->post_properties['type_source'] = $data['mapped_post_type_source'];
-    $this->post_properties['type'] = $data['mapped_post_type'];
-    $this->post_properties['taxonomy'] = array();
-
-    if($create_post_mapping){
-      $this->post_properties['map']='publish';
-    }else{
-      $this->post_properties['map']='draft';
-    }
-    //debug_msg($this->post_properties, 'saving system post ');
-    foreach($this->post_properties as $key=>$value){
-      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
-    }
-    return true;
-  }
   /**
   * Setups the form to new post mapping
   * @since 1.2.7
@@ -319,13 +264,13 @@ class Cf7_2_Post_Factory {
     $this->post_map_meta_fields = array();
     //lets load all fields
     $len_mapped_post = strlen('mapped_post_');
-    $len_cf7_2_post_map = strlen('cf7_2_post_map-');
-    $len_cf7_2_post_map_meta = strlen('cf7_2_post_map_meta_value-');
+    $this->post_map_fields = $this->get_mapped_fields('cf7_2_post_map-', $data);
+    $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-', $data);
     /*$len_cf7_2_post_map_taxonomy = strlen('cf7_2_post_map_taxonomy_value-');
     $len_cf7_2_post_taxonomy_slug = strlen('cf7_2_post_map_taxonomy_slug-');
     $len_cf7_2_post_taxonomy_names = strlen('cf7_2_post_map_taxonomy_names-');*/
     $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
-
+    //properties of factory post
     foreach($data as $field => $value){
       if(empty($value)) continue;
       //debug_msg($field."=".$value,"saving...");
@@ -340,26 +285,6 @@ class Cf7_2_Post_Factory {
         case ( (0 === strpos($field,'mapped_post_')) && $is_factory_map ): //properties
           $this->post_properties[substr($field,$len_mapped_post)]=true;
           //debug_msg("PROPERTIES: ".$value."=".substr($field,$len_mapped_post).",".strpos($field,'mapped_post_'));
-          break;
-        case ( 0 === strpos($field,'cf7_2_post_map-') ): //cf7 form field => post field
-          $post_field = substr($field,$len_cf7_2_post_map);
-          $this->post_map_fields[$value]=$post_field;
-          //capture the supports settings
-          switch($post_field){
-            case 'title':
-            case 'excerpt':
-            case 'author':
-            case 'thumbnail':
-            case 'editor':
-              $this->post_properties['supports'][]=$post_field;
-              break;
-            default:
-              break;
-          }
-          break;
-        case (0 === strpos($field,'cf7_2_post_map_meta_value-') ): //cf7 form field => post meta field
-          $this->post_map_meta_fields[$value]=substr($field,$len_cf7_2_post_map_meta);
-          //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
       }
     }
@@ -407,6 +332,18 @@ class Cf7_2_Post_Factory {
       if(isset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]) ){
         unset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]);
       }
+      //keep track of custom post type support
+      switch($post_field){
+        case 'title':
+        case 'excerpt':
+        case 'author':
+        case 'thumbnail':
+        case 'editor':
+          $this->post_properties['supports'][]=$post_field;
+          break;
+        default:
+          break;
+      }
     }
     foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
@@ -430,6 +367,28 @@ class Cf7_2_Post_Factory {
     $this->save_taxonomies($data, $is_factory_map, $old_cf7_post_metas);
 
     return true;
+  }
+  /**
+   * Strips mapped fields from the admin mapping
+   *
+   * @since 2.0.0
+   * @param      String    $field_prefix     field prefix used to identify where this field is mapped to.
+   * @param      Array    $data     mapped form data.
+   * @return     Array    array of fields mapped to post values.
+  **/
+  protected function get_mapped_fields($field_prefix, $data){
+    $prefix_length = strlen($field_prefix);
+    $fields = array();
+    foreach($data as $field => $value){
+      if(empty($value)) continue;
+      switch (strpos($field, $field_prefix)){
+        case  0 : //cf7 form field => post field
+          $post_field = substr($field, $prefix_length);
+          $fields[$value]=$post_field;
+          break;
+      }
+    }
+    return $fields;
   }
   /**
    * This function is called when a mapping is updated
@@ -1064,10 +1023,10 @@ class Cf7_2_Post_Factory {
   *@since 1.0.0
   *@param Array $cf7_form_data data submitted from cf7 form
   */
-  public function save_form_2_post($submission){
+  public function save_form_2_post($submission, $hook){
     $cf7_form_data = $submission->get_posted_data();
     //check if this is a system post
-    if('system' == $this->get('type_source')){
+    if($hook){
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }

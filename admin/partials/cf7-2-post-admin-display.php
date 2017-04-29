@@ -49,6 +49,7 @@ $source = $factory_mapping->get('type_source');
                   <div id="misc-publishing-actions">
                     <div class="misc-pub-section misc-pub-post-type">
                       <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
+                      <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
                     <?php if('system'==$source):?>
                       <label class="post_type_labels" for="post_type">Post Type:</label>
                       <input type="hidden" name="mapped_post_type_source" id="post_type_source" value="factory"/>
@@ -65,9 +66,6 @@ $source = $factory_mapping->get('type_source');
                         </select>
                       </span>
                       <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
-                        <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
-
-                      <?php if($souce->is_system_published()):?>
                         <label for="custom_post_type" class="post_type_labels">Post type</label>
                         <input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
 
@@ -103,7 +101,6 @@ $source = $factory_mapping->get('type_source');
                         <label class="post_type_cb_labels">publicly_queryable</label><br />
                         <div class="clear"></div>
 
-                      <?php endif; ?>
                       </div>
                       <div id="post-type-exists"<?php echo ('system'==$source)? '':' class="display-none"';?>>
                         <label class="post_type_labels" for="system_post_type">Select a Post</label>

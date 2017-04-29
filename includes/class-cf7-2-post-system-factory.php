@@ -107,4 +107,109 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     }
     return $html;
   }
+  /**
+	 * Store the mapping in the CF7 post & create the custom post mapping.
+	 * This is called by the plugin admin class function ajax_save_post_mapping whih is hooked to the ajax form call
+	 * @since    1.0.0
+   * @param   array   $data   an array containing the admin form data, $_POST
+   * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
+   * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
+   * @return  boolean   true if successful
+   */
+  public function save($data, $create_post_mapping){
+    //let's  update the properties
+    //is this a factory post or a system post?
+    debug_msg($data);
+    if( isset($data['mapped_post_type_source']) && isset($data['mapped_post_type']) ) {
+      $this->post_properties['type_source'] = $data['mapped_post_type_source'];
+      $this->post_properties['type'] = $data['mapped_post_type'];
+      $this->post_properties['version'] = CF7_2_POST_VERSION;
+
+      switch($this->post_properties['type_source']){
+        case 'system':
+          return $this->set_system_mapping($data, $create_post_mapping);
+          break;
+        case 'factory':
+          return $this->set_factory_mapping($data, $create_post_mapping);
+          break;
+      }
+    }else{
+      return false;
+    }
+  }
+  /**
+  * Setups the form to existing post mapping
+  * @since 1.2.7
+  * @param   array   $data   an array containing the admin form data, $_POST
+  * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
+  * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
+  * @return  boolean   true if successful
+  */
+  protected function set_system_mapping($data, $create_post_mapping){
+    //reset the properties, this is now being published
+    $this->post_properties = array();
+    $this->post_properties['type_source'] = $data['mapped_post_type_source'];
+    $this->post_properties['type'] = $data['mapped_post_type'];
+    $this->post_properties['taxonomy'] = array();
+
+    if($create_post_mapping){
+      $this->post_properties['map']='publish';
+    }else{
+      $this->post_properties['map']='draft';
+    }
+    //debug_msg($this->post_properties, 'saving system post ');
+    foreach($this->post_properties as $key=>$value){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+    }
+    if(!has_action('cf7_2_post_save-'.$this->post_properties['type'])){
+      //keep track of old mappings.
+      $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
+      //save post fields
+      $this->post_map_fields = $this->get_mapped_fields('cf7_2_post_map-', $data);
+      foreach($this->post_map_fields as $cf7_field=>$post_field){
+        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field,$cf7_field);
+        if(isset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]) ){
+          unset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]);
+        }
+        //keep track of custom post type support
+        switch($post_field){
+          case 'title':
+          case 'excerpt':
+          case 'author':
+          case 'thumbnail':
+          case 'editor':
+            $this->post_properties['supports'][]=$post_field;
+            break;
+          default:
+            break;
+        }
+      }
+
+      //save meta fields
+      $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-', $data);
+      foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
+        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field,$cf7_field);
+        if(isset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]) ){
+          unset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]);
+        }
+      }
+      //clear any old values left.
+      foreach($old_cf7_post_metas as $key=>$value){
+        switch(true){
+          case (0 === strpos($key,'_cf7_2_post-')):
+          case (0 === strpos($key,'cf7_2_post_map-')):
+          case (0 === strpos($key,'cf7_2_post_map_meta-')):
+            delete_post_meta($this->cf7_post_ID, $key);
+            //debug_msg('deleting: '.$key);
+            break;
+        }
+      }
+      //save the taxonomy mapping
+      $this->save_taxonomies($data, false, $old_cf7_post_metas);
+    }
+    return true;
+  }
 }
