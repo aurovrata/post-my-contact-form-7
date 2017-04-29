@@ -10,6 +10,44 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     parent::__construct($cf7_post_id);
   }
   /**
+	 * Get a factory object for a CF7 form.
+	 *
+	 * @since    1.0.0
+   * @param  int  $cf7_post_id  cf7 post id
+   * @return Cf7_2_Post_Factory  a factory oject
+   */
+  public static function get_factory( $cf7_post_id ){
+    //check if the cf7 form already has a mapping
+    $post_type = get_post_meta($cf7_post_id,'_cf7_2_post-type',true);
+    $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
+    $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
+    $factory = null;
+    //debug_msg('type='.$post_type);
+    if(empty($post_type)){ //let's create a new one
+      $factory = new self($cf7_post_id);
+      $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+      $post_type_source = 'factory';
+      $post_type = $factory->cf7_key;
+      $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+      $plural_name = $singular_name;
+      if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
+      $factory->init_new_factory($post_type,$singular_name,$plural_name);
+    }else{
+
+      $factory = new self($cf7_post_id);
+      if('system' == $post_type_source && 'draft' == $map){
+        $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+        $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+        $plural_name = $singular_name;
+        $factory->init_new_factory($post_type, $singular_name, $plural_name);
+      }
+      $factory->post_properties['type_source']=$post_type_source;
+      $factory->load_post_mapping();
+
+     }
+     return $factory;
+   }
+  /**
    *Get a list of available system post_types as <option> elements
    *
    * @since 1.3.0
@@ -48,7 +86,7 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
    * @param      String    $post_type     post_type for which meta fields are requested.
    * @return     String    a list of option elements for each existing meta field in the DB.
   **/
-  public function get_system_post_metas($post_type, $selected=''){
+  public static function get_system_post_metas($post_type, $selected=''){
     global $wpdb;
     $metas = $wpdb->get_results($wpdb->prepare(
       "SELECT DISTINCT meta_key

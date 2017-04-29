@@ -361,7 +361,6 @@
     //existing post selection
     $('#post_type_source').on('change', function(){
       var $source = $(this).find('option:selected');
-      var $system = $('#system-poststuff');
       var $factory = $('#postcustomstuff');
       var $selectPost = $('#post-type-exists');
       var $customPost = $('#post-type-select');
@@ -370,24 +369,38 @@
       var type='';
       switch($source.val()){
         case 'factory':
-          $system.hide();
           $selectPost.hide();
           $customPost.show();
-          $factory.show();
           type = $('input#custom_post_type').val();
           $mapped_type.val(type);
           break;
         case 'system':
-          $('h3', $system).text('This form is mapped to an existing post: '+$post.text() );
-          $('p span.action-form-map',$system).text( 'cf7_2_post_save-'+$post.val() );
-          $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+$post.val() );
           $mapped_type.val($post.val());
-          $factory.hide();
           $customPost.hide();
           $selectPost.show();
-          $system.show();
           break;
       }
+    });
+    $('#post-type-exists').on('change', function(){
+      //get the options
+      $.ajax({
+        type:'POST',
+        action:'ajax_get_meta_options',
+        dataType: 'json',
+        url: ajaxUrl,
+        data: $(this).serialize()+'&'+buttonID+'=selected',
+        success:function(data){
+          $('.spinner.'+buttonID).css('visibility','hidden');
+          $('div#ajax-response').text(data.data.msg);
+          if('created'==data.data.post) location.reload();
+          $('div#ajax-response').removeClass('error-msg');
+        },
+        error:function(data){
+          $('.spinner.'+buttonID).css('visibility','hidden');
+          $('div#ajax-response').text(data.data.msg);
+          $('div#ajax-response').addClass('error-msg');
+        }
+      });
     });
     $('#system-post-type').on('change', function(){
       var $system = $('#system-poststuff');

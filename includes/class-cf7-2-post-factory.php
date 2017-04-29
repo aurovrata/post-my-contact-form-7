@@ -7,7 +7,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      array    $post_properties    an array of properties.
 	 */
-  private $post_properties;
+  protected $post_properties;
   /**
 	 * The properties of the mapped custom taxonomy.
 	 *
@@ -15,7 +15,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      array    $taxonomy_properties    an array of properties with   $taxonomy_slug=>array('source'=>$taxonomy_source, 'singular_name'=>$value, 'name'=>$plural_name)
 	 */
-  private $taxonomy_properties;
+  protected $taxonomy_properties;
   /**
 	 * The the CF7 post ID.
 	 *
@@ -23,7 +23,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      int    $cf7_post_ID    the CF7 post ID.
 	 */
-  private $cf7_post_ID;
+  protected $cf7_post_ID;
   /**
    * The the CF7 post unique key.
    *
@@ -31,7 +31,7 @@ class Cf7_2_Post_Factory {
    * @access   private
    * @var      string    $cf7_key    the unique key which can be used to identfy this form.
    */
-  private $cf7_key;
+  protected $cf7_key;
   /**
 	 * The CF7 form fields.
 	 *
@@ -39,7 +39,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
 	 */
-  private $cf7_form_fields;
+  protected $cf7_form_fields;
   /**
 	 * The CF7 form fields options.
 	 *
@@ -47,7 +47,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
 	 */
-  private $cf7_form_fields_options;
+  protected $cf7_form_fields_options;
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -56,7 +56,7 @@ class Cf7_2_Post_Factory {
 	 * @var      array    $post_map_fields    an array mapped CF7 fields, to default
    * post fields {'form field name'=>'post field'}.
 	 */
-  private $post_map_fields;
+  protected $post_map_fields;
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -65,7 +65,7 @@ class Cf7_2_Post_Factory {
 	 * @var      array    $post_map_meta_fields    an array mapped CF7 fields, to post
    * custom meta fields  {'form field name'=>'post field'}.
 	 */
-  private $post_map_meta_fields;
+  protected $post_map_meta_fields;
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -82,7 +82,7 @@ class Cf7_2_Post_Factory {
 	 * @access   private
 	 * @var      array    $localise_values    an array CF7 fields=>values.
 	 */
-  private $localise_values;
+  protected $localise_values;
   /**
    * Default Construct a Cf7_2_Post_Factory object.
    *
@@ -211,44 +211,7 @@ class Cf7_2_Post_Factory {
 
     return $result;
   }
-  /**
-	 * Get a factory object for a CF7 form.
-	 *
-	 * @since    1.0.0
-   * @param  int  $cf7_post_id  cf7 post id
-   * @return Cf7_2_Post_Factory  a factory oject
-   */
-  public static function get_factory( $cf7_post_id ){
-    //check if the cf7 form already has a mapping
-    $post_type = get_post_meta($cf7_post_id,'_cf7_2_post-type',true);
-    $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
-    $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
-    $factory = null;
-    //debug_msg('type='.$post_type);
-    if(empty($post_type)){ //let's create a new one
-      $factory = new self($cf7_post_id);
-      $form = WPCF7_ContactForm::get_instance($cf7_post_id);
-      $post_type_source = 'factory';
-      $post_type = $factory->cf7_key;
-      $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
-      $plural_name = $singular_name;
-      if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
-      $factory->init_new_factory($post_type,$singular_name,$plural_name);
-    }else{
 
-      $factory = new self($cf7_post_id);
-      if('system' == $post_type_source && 'draft' == $map){
-        $form = WPCF7_ContactForm::get_instance($cf7_post_id);
-        $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
-        $plural_name = $singular_name;
-        $factory->init_new_factory($post_type, $singular_name, $plural_name);
-      }
-      $factory->post_properties['type_source']=$post_type_source;
-      $factory->load_post_mapping();
-
-     }
-     return $factory;
-   }
    /**
  	 * Get the CF7 post id.
  	 *
@@ -680,7 +643,7 @@ class Cf7_2_Post_Factory {
     return $this->_select_options( $field_to_map, ($is_meta ? 'meta-field' : 'field') );
   }
 
-  
+
   /**
 	 * Return htlm <option></option> for taxonomy mapping .
 	 *

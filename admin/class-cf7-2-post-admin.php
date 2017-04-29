@@ -44,7 +44,7 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      Cf7_2_Post_Factory    $post_mapping_factory   mapping factory object.
+	 * @var      Cf7_2_Post_system    $post_mapping_factory   mapping factory object.
 	 */
 	private $post_mapping_factory;
   /**
@@ -95,7 +95,8 @@ class Cf7_2_Post_Admin {
 	 */
 	private function load_dependencies() {
     // for the Cf7_2_Post_Factory class
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-system-factory.php';
     //contact post table list
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/cf7-post-admin-table.php';
   }
@@ -195,7 +196,7 @@ class Cf7_2_Post_Admin {
       if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
         $factory_mapping = $this->post_mapping_factory;
       }else{
-        $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+        $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
         $this->post_mapping_factory = $factory_mapping;
       }
       include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-admin-display.php');
@@ -206,8 +207,6 @@ class Cf7_2_Post_Admin {
       echo ' please access it from the from <a href="'.$adminUrl.'">table list page</a>.</p></div>';
     }
   }
-
-
   /**
   *Save draft with Ajax data submission from admin form.
   * @since 1.0.0
@@ -221,7 +220,7 @@ class Cf7_2_Post_Admin {
     if( isset( $_POST['cf7_post_id'] ) ){
 
       $cf7_post_id = $_POST['cf7_post_id'];
-      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $this->post_mapping_factory = Cf7_2_Post_System::get_factory($cf7_post_id);
       if($this->post_mapping_factory->is_system_published()){
         $json_data = array('msg'=>'Nothing to update');
         wp_send_json_error($json_data);
@@ -257,6 +256,27 @@ class Cf7_2_Post_Admin {
     }else{
       $json_data = array('msg'=>'No CF7 post ID, try to reload the page');
       wp_send_json_error($json_data);
+    }
+    die();
+  }
+  /**
+   * Ajax Load system post options
+   * Hooked on 'wp_ajax'
+   * @since 1.0.0
+   * @param      string    $p1     .
+   * @return     string    $p2     .
+  **/
+  public function ajax_get_meta_options(){
+    if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
+      wp_send_json_error("Security failed, try to reload the page");
+    }
+    if( isset($_POST['post_type'])){
+      $json_data = array(
+        'options' => Cf7_2_Post_System::get_system_post_metas($_POST['post_type'])
+      );
+      wp_send_json_success( $json_data );
+    }else{
+      wp_send_json_error(array('msg'=>'no post_type defined'));
     }
     die();
   }

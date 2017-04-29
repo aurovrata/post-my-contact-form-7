@@ -165,6 +165,7 @@ class Cf7_2_Post {
     $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
     //ajax submission
     $this->loader->add_action('wp_ajax_save_post_mapping', $plugin_admin, 'ajax_save_post_mapping');
+    $this->loader->add_action('wp_ajax_get_meta_options', $plugin_admin, 'ajax_get_meta_options');
     //register dynamic posts
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
