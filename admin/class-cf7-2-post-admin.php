@@ -186,6 +186,30 @@ class Cf7_2_Post_Admin {
     }
   }
   /**
+   * Function to populate the quick edit form
+   * Hooked on 'quick_edit_custom_box' action
+   *
+   * @since 1.0.0
+   * @param      string    $column_name     column name to add edit field.
+   * @param      string    $post_type     post type being displayed.
+   * @return     string    echos the html fields.
+  **/
+  public function quick_edit_box( $column_name, $post_type ) {
+    if("wpcf7_contact_form" != $post_type){
+      return;
+    }
+    static $printNonce = TRUE;
+    if ( $printNonce ) {
+        $printNonce = FALSE;
+        wp_nonce_field( plugin_basename( __DIR__ ), 'cf7_key_nonce' );
+    }
+    switch ( $column_name ) {
+      case 'mapped_post':
+        echo '<select></select>';
+        break;
+    }
+  }
+  /**
   * Display the custom admin page for creating post
   * This is a call back function based on the admin menu hook
   * @since 1.0.0

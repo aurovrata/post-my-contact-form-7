@@ -50,9 +50,9 @@ $source = $factory_mapping->get('type_source');
                     <div class="misc-pub-section misc-pub-post-type">
                       <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
                       <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
-                    <?php if('system'==$source):?>
+                    <?php if('system' == $source):?>
                       <label class="post_type_labels" for="post_type">Post Type:</label>
-                      <input type="hidden" name="mapped_post_type_source" id="post_type_source" value="factory"/>
+                      <input type="hidden" name="mapped_post_type_source" id="post_type_source" value="system"/>
                       <span id="post-type-display">Existing Post</span>
                       <label class="post_type_labels">Post:</label>
                       <input type="hidden" id="system-post-type" name="system_post_type" value="<?php echo $factory_mapping->get('type') ?>"/>
@@ -100,11 +100,11 @@ $source = $factory_mapping->get('type_source');
                         <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
                         <label class="post_type_cb_labels">publicly_queryable</label><br />
                         <div class="clear"></div>
-
                       </div>
                       <div id="post-type-exists"<?php echo ('system'==$source)? '':' class="display-none"';?>>
                         <label class="post_type_labels" for="system_post_type">Select a Post</label>
                         <select id="system-post-type" name="system_post_type" <?php $factory_mapping->is_published();?>>
+                          <option value="">Select a Post</option>
                           <?php echo $factory_mapping->get_system_posts_options();?>
                         </select>
                       </div>
@@ -141,11 +141,8 @@ $source = $factory_mapping->get('type_source');
               </button>
               <h2 class="hndle ui-sortable-handle"><span>Map Contact Form 7 Fields to Post Meta Fields</span></h2>
               <div class="inside">
-
-              <?php if(!$factory_mapping->is_system_published()):?>
-
                 <div id="postcustomstuff">
-                  <h2 class="hndle ui-sortable-handle"><span> Default post fields</span></h2>
+                  <h2 class="handle ui-sortable-handle"><span> Default post fields</span></h2>
                 <?php
                     if($factory_mapping->supports('title')){
                       echo sprintf($default_post_fields, __('Post title', 'cf7_2_post'), 'title', $factory_mapping->get_select_options('title'));
@@ -169,21 +166,20 @@ $source = $factory_mapping->get('type_source');
                 <?php
                   $mapped_fields = $factory_mapping->get_mapped_meta_fields();
                   //debug_msg($mapped_fields, "meta fields...");
+                  //debug_msg($mapped_fields);
                   if(!empty($mapped_fields)){
                     foreach( $mapped_fields as $cf7_field => $post_field ){
                 ?>
                     <div class="custom-meta-field cf7-2-post-field">
                       <span class="spinner meta-label"></span>
-                    <?php
-                    $disabled = '';
-                    if('system' == $source):?>
+                    <?php if('system' == $source):?>
                       <select class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
+                        <option value="">Select a field</option>
                         <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
                       </select>
-                    <?php
-                    $disabled = 'disabled="disabled"';
-                    endif;?>
-                      <input <?php echo $disabled?> <?php $factory_mapping->is_published();?> name="cf7_2_post_map_meta-<?php echo $post_field;?>" class="cf7-2-post-map-labels" type="text" value="<?php echo $post_field;?>">
+                    <?php else: ?>
+                      <input <?php $factory_mapping->is_published();?> name="cf7_2_post_map_meta-<?php echo $post_field;?>" class="cf7-2-post-map-labels" type="text" value="<?php echo $post_field;?>">
+                    <?php endif; ?>
                       <select <?php $factory_mapping->is_published('select');?> class="field-options" name="cf7_2_post_map_meta_value-<?php echo $post_field;?>">
                           <?php echo $factory_mapping->get_select_options($post_field,true);?>
                       </select>
@@ -199,14 +195,14 @@ $source = $factory_mapping->get('type_source');
                   ?>
                     <div class="custom-meta-field cf7-2-post-field">
                       <span class="spinner meta-label"></span>
-                      <?php
-                      if('system' == $source):?>
-                        <select disabled="disabled" class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
-                          <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
-                        </select>
-                      <?php
-                      endif;?>
-                      <input disabled="disabled" class="cf7-2-post-map-labels hide" type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
+                    <?php if('system' == $source):?>
+                      <select disabled="disabled" class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
+                        <option value="">Select a field</option>
+                        <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
+                      </select>
+                    <?php else:?>
+                      <input disabled="disabled" class="cf7-2-post-map-labels " type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
+                    <?php endif;?>
                       <select disabled="disabled" name="cf7_2_post_map_meta_value-meta_key_1" class="field-options">
                           <?php echo $factory_mapping->get_select_options();?>
                       </select>
@@ -241,7 +237,7 @@ $source = $factory_mapping->get('type_source');
                     </div>
                     <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
                     <div class="clear"></div>
-              <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
+                  <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
                     <div class="custom-taxonomy-input-fields hide-if-js">
                       <h4>
                         Choose a taxonomy, in blue are existing public taxonomies
@@ -303,9 +299,6 @@ $source = $factory_mapping->get('type_source');
                     </div>
                   </div>
                 </div>
-
-              <?php endif; ?>
-
               </div><!-- .inside end -->
             </div>
           </div>

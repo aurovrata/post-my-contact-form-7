@@ -98,8 +98,8 @@
     $.fn.activateField = function() {
         this.filter( 'div.custom-meta-field' ).each(function() {
           $(this).find('.remove-field').on('click',removeField);
-          $(this).find('select').on('change',optionSelected);
-          $(this).find('input.cf7-2-post-map-labels').on('change', metaKeyChange);
+          $(this).find('select.field-options').on('change',optionSelected);
+          $(this).find('.cf7-2-post-map-labels').on('change', metaKeyChange);
         });
         return this;
     };
@@ -176,6 +176,9 @@
       var $target = $(event.target);
       if( $target.is('.add-more-field') ){
         var $parent = $target.closest('.custom-meta-field');
+        if($parent.children('.cf7-2-post-map-labels:first').is('select')){
+          return;//this is not a text field label.
+        }
         if($parent.is('.autofill-field-name')){
           var $previous = $parent.prevAll('.custom-meta-field:first').find('select.field-options').find('option:selected');
           var $select = $parent.find('select.field-options');
@@ -247,9 +250,10 @@
       //clear message box
       var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();
       $(this).attr('name','cf7_2_post_map_meta-'+name);
-      $(this).next('select').attr('name','cf7_2_post_map_meta_value-'+name);
+      var $cf7Fields = $(this).siblings('select.field-options');
+      $cf7Fields.attr('name','cf7_2_post_map_meta_value-'+name);
 
-      var option = $(this).next('select').find('option.filter-option');
+      var option = $cf7Fields.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+postType+'-'+name);
       if( option.is('option:selected') ){
         var filter = $('<a class="code" data-clipboard-text="'+option.attr('value')+'" href="javascript:void(0);">'+option.attr('value')+'</a>').appendTo(msgBox);
@@ -329,6 +333,7 @@
     $('form#cf7-post-mapping-form').submit(function(event){
       event.preventDefault();
       var buttonID = $(this).prop('submited');
+      var source = $('#post_type_source').val();
       $('.spinner.'+buttonID).css('visibility','visible');
       switch(buttonID){
         case 'save_draft':
@@ -349,6 +354,7 @@
           $('.spinner.'+buttonID).css('visibility','hidden');
           $('div#ajax-response').text(data.data.msg);
           if('created'==data.data.post) location.reload();
+          else if('system' == source) location.reload();
           $('div#ajax-response').removeClass('error-msg');
         },
         error:function(data){

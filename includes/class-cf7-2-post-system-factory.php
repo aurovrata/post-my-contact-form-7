@@ -54,28 +54,26 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
    * @return     String    html list of <option> elements with existing post_types in the DB
   **/
   public function get_system_posts_options(){
-    $remove_post_types = array('revision','attachment','nav_menu_item','wpcf7_contact_form');
-    $remove_post_types = apply_filters('cf7_2_post_filter_system_posts', $remove_post_types, $this->cf7_post_ID);
-    $not_in = "'".implode("','", $remove_post_types)."'";
-    global $wpdb;
-    $posts = $wpdb->get_results(
-      "SELECT DISTINCT post_type
-      FROM {$wpdb->posts}
-      WHERE post_type NOT IN ({$not_in})"
+    $args = array(
+     'show_ui'   => true
     );
+    $post_types = get_post_types( $args, 'objects', 'and' );
     $html = '';
     $display = array();
-    foreach($posts as $row){
-      $display[] = $row->post_type;
+    foreach($post_types as $post_type){
+      $display[$post_type->name] = $post_type->label;
     }
     $display = apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
-    $selected = 'post';
+    $selected = '';
     if('system' == $this->get('type_source')){
       $selected = $this->get('type');
     }
-    foreach($display as $post_type){
+    //debug_msg($display);
+    foreach($display as $post_type=>$post_label){
       $select = ($selected == $post_type) ? ' selected="true"':'';
-      $html .='<option value="' . $post_type . '"' . $select . '>' . $post_type . '</option>' . PHP_EOL;
+      $html .='<option value="' . $post_type . '"' . $select . '>';
+      $html .= $post_label . ' ('.$post_type.')';
+      $html .='</option>' . PHP_EOL;
     }
     return $html;
   }
@@ -119,7 +117,7 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
   public function save($data, $create_post_mapping){
     //let's  update the properties
     //is this a factory post or a system post?
-    debug_msg($data);
+    //debug_msg($data);
     if( isset($data['mapped_post_type_source']) && isset($data['mapped_post_type']) ) {
       $this->post_properties['type_source'] = $data['mapped_post_type_source'];
       $this->post_properties['type'] = $data['mapped_post_type'];
@@ -146,11 +144,14 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
   * @return  boolean   true if successful
   */
   protected function set_system_mapping($data, $create_post_mapping){
-    //reset the properties, this is now being published
-    $this->post_properties = array();
+    $this->post_properties = array(); //reset.
     $this->post_properties['type_source'] = $data['mapped_post_type_source'];
     $this->post_properties['type'] = $data['mapped_post_type'];
+    $this->post_properties['version'] = CF7_2_POST_VERSION;
+    //reset the properties, this is now being published
     $this->post_properties['taxonomy'] = array();
+    //keep track of old mappings.
+    $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
 
     if($create_post_mapping){
       $this->post_properties['map']='publish';
@@ -158,37 +159,30 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
       $this->post_properties['map']='draft';
     }
     //debug_msg($this->post_properties, 'saving system post ');
+    //debug_msg($this->post_properties, 'saving properties ');
     foreach($this->post_properties as $key=>$value){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+      //clear previous values.
+      if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
+        unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
+      }
     }
     if(!has_action('cf7_2_post_save-'.$this->post_properties['type'])){
-      //keep track of old mappings.
-      $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
       //save post fields
       $this->post_map_fields = $this->get_mapped_fields('cf7_2_post_map-', $data);
+      //debug_msg($this->post_map_fields, 'saving post fields');
       foreach($this->post_map_fields as $cf7_field=>$post_field){
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field,$cf7_field);
         if(isset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]) ){
           unset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]);
         }
-        //keep track of custom post type support
-        switch($post_field){
-          case 'title':
-          case 'excerpt':
-          case 'author':
-          case 'thumbnail':
-          case 'editor':
-            $this->post_properties['supports'][]=$post_field;
-            break;
-          default:
-            break;
-        }
       }
 
       //save meta fields
       $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-', $data);
+      //debug_msg($this->post_map_meta_fields, 'saving meta fields');
       foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field,$cf7_field);
@@ -196,19 +190,21 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
           unset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]);
         }
       }
-      //clear any old values left.
-      foreach($old_cf7_post_metas as $key=>$value){
-        switch(true){
-          case (0 === strpos($key,'_cf7_2_post-')):
-          case (0 === strpos($key,'cf7_2_post_map-')):
-          case (0 === strpos($key,'cf7_2_post_map_meta-')):
-            delete_post_meta($this->cf7_post_ID, $key);
-            //debug_msg('deleting: '.$key);
-            break;
-        }
-      }
+
       //save the taxonomy mapping
       $this->save_taxonomies($data, false, $old_cf7_post_metas);
+    }
+    //clear any old values left.
+    //debug_msg($old_cf7_post_metas , 'deleting');
+    foreach($old_cf7_post_metas as $key=>$value){
+      switch(true){
+        case (0 === strpos($key,'_cf7_2_post-')):
+        case (0 === strpos($key,'cf7_2_post_map-')):
+        case (0 === strpos($key,'cf7_2_post_map_meta-')):
+          delete_post_meta($this->cf7_post_ID, $key);
+          //debug_msg('deleting: '.$key);
+          break;
+      }
     }
     return true;
   }

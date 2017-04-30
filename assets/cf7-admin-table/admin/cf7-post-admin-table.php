@@ -356,13 +356,8 @@ if(!class_exists('Cf7_WP_Post_Table')){
           wp_nonce_field( plugin_basename( __DIR__ ), 'cf7_key_nonce' );
       }
       switch ( $column_name ) {
-        case 'cf7_key':
-      ?>
-      <span class="cf7-form-key-error">Your key in not unique or contains spaces</span>
-      <?php
-        break;
         default:
-          echo '';
+          //echo '';
           break;
       }
     }

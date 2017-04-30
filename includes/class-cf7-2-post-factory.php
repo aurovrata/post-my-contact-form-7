@@ -381,11 +381,9 @@ class Cf7_2_Post_Factory {
     $fields = array();
     foreach($data as $field => $value){
       if(empty($value)) continue;
-      switch (strpos($field, $field_prefix)){
-        case  0 : //cf7 form field => post field
-          $post_field = substr($field, $prefix_length);
-          $fields[$value]=$post_field;
-          break;
+      if (0===strpos($field, $field_prefix)){
+        $post_field = substr($field, $prefix_length);
+        $fields[$value]=$post_field;
       }
     }
     return $fields;
@@ -536,7 +534,7 @@ class Cf7_2_Post_Factory {
     $this->post_properties = array();
     //get_post_meta ( int $post_id, string $key = '', bool $single = false )
     $fields = get_post_meta ($this->cf7_post_ID);
-    //debug_msg("found post meta,");
+    //debug_msg($fields,"found post meta,");
     //($fields);
     $start = strlen('_cf7_2_post-');
     $start2 = strlen('cf7_2_post_map-');
