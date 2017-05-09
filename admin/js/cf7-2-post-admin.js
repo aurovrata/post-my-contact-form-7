@@ -6,7 +6,7 @@
   var selectedOptions = new Array();
   var selectedCount = 0;
 
-
+  /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();

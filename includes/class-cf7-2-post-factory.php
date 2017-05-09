@@ -1009,7 +1009,7 @@ class Cf7_2_Post_Factory {
       AND post_status LIKE 'publish'"
     );
     foreach($cf7_post_ids as $post_id){
-      $cf7_2_post_map = self::get_factory($post_id);
+      $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
       if('factory'==$cf7_2_post_map->get('type_source')){
         $cf7_2_post_map->create_cf7_post_type();
       }

@@ -107,10 +107,19 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
-    if ('contact_page_cf7_post' != $hook){
-      return;
+    if ('contact_page_cf7_post' == $hook){
+  		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
+    }else{
+      $screen = get_current_screen();
+      if(WPCF7_ContactForm::post_type != $screen->post_type){
+        return;
+      }
+      switch($screen->base){
+        case 'edit':
+          wp_enqueue_style( 'cf7-2-post-quick-edit-css', plugin_dir_url( __FILE__ ) . 'css/cf7-table.css', array(), $this->version, 'all' );
+          break;
+      }
     }
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
 	}
 
 	/**
@@ -119,12 +128,23 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
-    if ('contact_page_cf7_post' != $hook){
-      return;
+
+    if ('contact_page_cf7_post' == $hook){
+  		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, true );
+      wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
+      wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+    }else{
+      $screen = get_current_screen();
+      if(WPCF7_ContactForm::post_type != $screen->post_type){
+        return;
+      }
+      switch($screen->base){
+        case 'edit':
+          wp_enqueue_script( 'cf72post-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-quick-edit.js', array( 'jquery' ), $this->version, true );
+          break;
+      }
     }
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, false );
-    wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
-    wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+
 	}
   /**
   * Modify the regsitered cf7 post type
@@ -177,10 +197,11 @@ class Cf7_2_Post_Admin {
           if ($post_type){
             $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
             $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=edit' );
-            echo '<a href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+            echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
           }else{
             $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=new' );
-            echo '<a href="'.$url.'">Create new</a>';
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
           }
           break;
     }
@@ -201,12 +222,49 @@ class Cf7_2_Post_Admin {
     static $printNonce = TRUE;
     if ( $printNonce ) {
         $printNonce = FALSE;
-        wp_nonce_field( plugin_basename( __DIR__ ), 'cf7_key_nonce' );
+        wp_nonce_field('cf7_2_post_quick_edit' , 'cf7_2_post_quick_edit' );
     }
     switch ( $column_name ) {
       case 'mapped_post':
-        echo '<select></select>';
+        include(plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php');
         break;
+    }
+  }
+  /**
+   * Saves Quick-edits changes
+   * Hooked to save_post_wpcf7_contact_form
+   * @since 2.0.0
+   * @param      string    $post_id     post ID.
+  **/
+  public function save_quick_edit($post_id){
+    debug_msg($_POST);
+    if(!isset($_POST['cf7_2_post_quick_edit'])){
+      return;
+    }
+    if(!wp_verify_nonce($_POST['cf7_2_post_quick_edit'],'cf7_2_post_quick_edit')){
+      return;
+    }
+    if(isset($_POST['cf7_2_post_status'])){
+      switch($_POST['cf7_2_post_status']){
+        case 'draft':
+        case 'publish':
+          update_post_meta($post_id, '_cf7_2_post-map', $_POST['cf7_2_post_status']);
+          break;
+        case 'delete':
+          //reset mapping
+          $mappings = get_post_meta($post_id);
+          foreach($mappings as $key=>$value){
+            switch(true){
+              case (0 === strpos($key,'_cf7_2_post-')):
+              case (0 === strpos($key,'cf7_2_post_map-')):
+              case (0 === strpos($key,'cf7_2_post_map_meta-')):
+                delete_post_meta($post_id, $key);
+                //debug_msg('deleting: '.$key);
+                break;
+            }
+          }
+          break;
+      }
     }
   }
   /**

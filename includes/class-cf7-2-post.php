@@ -172,6 +172,10 @@ class Cf7_2_Post {
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
     //hide the cf7->post page form the submenu
     $this->loader->add_action( 'admin_print_footer_scripts', $plugin_admin, 'inject_footer_script');
+    //quick-edit
+    $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
+    //save quick edit
+    $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_quick_edit', 10);
 
     /* CF7 Hooks */
     //delete post

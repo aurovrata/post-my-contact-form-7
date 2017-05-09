@@ -346,7 +346,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
      * @param      string    $post_type     post type being displayed.
      * @return     string    echos the html fields.
     **/
-    public function quick_edit_box( $column_name, $post_type ) {
+    /*public function quick_edit_box( $column_name, $post_type ) {
       if("wpcf7_contact_form" != $post_type){
         return;
       }
@@ -360,7 +360,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
           //echo '';
           break;
       }
-    }
+    }*/
     /**
      *cf7-form Shortcode handler
      *

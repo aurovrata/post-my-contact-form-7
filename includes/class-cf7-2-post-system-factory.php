@@ -9,6 +9,9 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
   protected function __construct($cf7_post_id){
     parent::__construct($cf7_post_id);
   }
+  protected function load_system_post_properties(){
+
+  }
   /**
 	 * Get a factory object for a CF7 form.
 	 *
@@ -41,7 +44,7 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
         $plural_name = $singular_name;
         $factory->init_new_factory($post_type, $singular_name, $plural_name);
       }
-      $factory->post_properties['type_source']=$post_type_source;
+      $factory->post_properties['type_source'] = $post_type_source;
       $factory->load_post_mapping();
 
      }

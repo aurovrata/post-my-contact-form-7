@@ -21,7 +21,7 @@ if(!$cf7_admin->hooks()){
   //catch cf7 delete redirection
   add_filter('wp_redirect', array( $cf7_admin, 'filter_cf7_redirect'),10,2 );
   //add quick edit
-  add_action( 'quick_edit_custom_box',   array( $cf7_admin, 'quick_edit_box'), 100, 2 );
+  //add_action( 'quick_edit_custom_box',   array( $cf7_admin, 'quick_edit_box'), 100, 2 );
   //cf7-form shortcode
   add_shortcode( 'cf7-form', array( $cf7_admin, 'shortcode') );
 }
