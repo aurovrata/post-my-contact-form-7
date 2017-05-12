@@ -113,8 +113,9 @@ $source = $factory_mapping->get('type_source');
                   </div>
                   <div class="clear"></div>
                 </div>
+          <?php if($is_new_mapping):?>
                 <div id="post-creation-actions">
-                  <div id="save-draft-actions" <?php echo ($is_new_mapping ? '': 'style="display:none;"');?>>
+                  <div id="save-draft-actions">
                     <div id="save-draft-action">
                       <span class="spinner save_draft"></span>
                       <input name="submit" onclick="this.form.submited=this.id;" id="save_draft" value="Save Draft" class="button button-large" type="submit">
@@ -123,11 +124,12 @@ $source = $factory_mapping->get('type_source');
                   </div>
                   <div id="creation-action">
                     <span class="spinner save_post"></span>
-                    <input name="submit" onclick="this.form.submited=this.id;" id="<?php echo ($is_new_mapping ? 'save': 'update');?>_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
+                    <input name="submit" onclick="this.form.submited=this.id;" id="save_post" class="button button-primary button-large" value="Create" type="submit">
                   </div>
                   <div class="clear"></div>
                   <div id="ajax-response"></div>
                 </div>
+              <?php endif;?>
               </div>
             </div>
           </div>

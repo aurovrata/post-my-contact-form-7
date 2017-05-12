@@ -20,7 +20,7 @@ You can submit and map to a post all of the following fields,
 * featured image, you can **submit a file** and save it as a post attachment
 * meta fields, unlimited number of **meta-fields** can be created
 * **taxonomies**, you can map select/checkbox/radio input fields to taxonomies
-* map your submitted forms to **existing post types**
+* map your submitted forms to **existing post types** using the new UI
 * addition of form key to identify cf7 forms instead of the form id to make development more portable
 * this plugin allows your users to manage multiple draft submissions from a single page.
 * for large forms with multiple fields, an auto-create functionality has been added for meta-field mapping.  See the installation instruction for details.
@@ -195,6 +195,12 @@ wp_reset_postdata();
 //$cf7_attr = ' cf7_2_post_id="-1"';
 //echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
 `
+= I made a mistake in my form mapping, how do I correct it once it is created? =
+as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
+
+= I have enabled a save button on my form, but draft submissions are not being validated! =
+This is the default functionality for saving draft submissions.  This is especially useful for avery large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -204,6 +210,11 @@ wp_reset_postdata();
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 
 == Changelog ==
+= 2.0.0 =
+* enabled UI for system posts mapping
+* enabled reset mapping for created mappings
+* introduced filters to skips mail & validation when saving draft forms
+
 = 1.5.0 =
 * bug fix which prevented multiple taxonomies from being saved
 * added autofill functionality on meta-field button creation.
@@ -263,8 +274,10 @@ wp_reset_postdata();
 = 1.0 =
 * Allows for mapping of any CF7 form to a custom post
 
-== Filters & Actions ==
 
+== Filters & Actions ==
+<div id="#documentation">
+</div>
 The following filters are provided in this plugin,
 
 = `cf7_2_post_supports_{$post_type}` =
@@ -336,7 +349,7 @@ function modify_my_categories($taxonomy_arg){
   return $taxonomy_arg;
 }
 `
-It is possible to pass optional arguments for Metabox callback functions, taxonomy count update, and the taxonomy capabilities.  See the Wordpress [register_taxonomy](https://codex.wordpress.org/Function_Reference/register_taxonomy) documentation for more information.
+It is possible to pass optional arguments for Metabox callback functions, taxonomy count update, and the taxonomy capabilities.  See the WordPress [register_taxonomy](https://codex.wordpress.org/Function_Reference/register_taxonomy) documentation for more information.
 
 `
 add_filter('cf7_2_post_filter_taxonomy_registration-my_categories','modify_my_categories');
@@ -559,3 +572,27 @@ function pre_load_taxonomy($post_values, $cf7_key, $cf7_2_post_factory){
   return $post_values;
 }
 `
+= `cf7_2_post_draft_skips_validation` =
+For forms which have a save button, the validation of draft forms are skipped by default. This filter allows you to force validation of draft forms.
+
+`add_fitler('cf7_2_post_draft_skips_validation', 'force_validation');
+function force_validation($skip_validation, $cf7_key){
+  if('my-form' == $cf7_key){
+    skip_validation = false;
+  }
+  return skip_validation;
+}
+`
+= `cf7_2_post_draft_skips_mail` =
+For forms which have a save button, the mail sending of draft forms is skipped by default. This filter allows you to force mail notification of draft forms.
+
+`add_fitler('cf7_2_post_draft_skips_mail', 'force_notification');
+function force_notification($skip_mail, $cf7_key){
+  if('my-form' == $cf7_key){
+    skip_mail = false;
+  }
+  return skip_mail;
+}
+`
+== Upgrade Notice ==
+As of now there is no special upgrade notes, simply  follow the normal plugin update process.

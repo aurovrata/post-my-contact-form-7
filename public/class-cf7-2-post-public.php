@@ -86,7 +86,7 @@ class Cf7_2_Post_Public {
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
     if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
-      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $factory = Cf7_2_Post_System::get_factory($cf7_post_id);
 
       //load all the submittec values
       //$cf7_form_data = array();
@@ -121,7 +121,7 @@ class Cf7_2_Post_Public {
     //let get the corresponding factory object,
     if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
       $plugin_dir = plugin_dir_url( __FILE__ );
-      $factory = Cf7_2_Post_Factory::get_factory($cf7_id);
+      $factory = Cf7_2_Post_System::get_factory($cf7_id);
       //unique nonce
       $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
 
@@ -188,4 +188,46 @@ class Cf7_2_Post_Public {
       $html .=PHP_EOL.'<input type="hidden" name="save_cf7_2_post" class="cf7_2_post_draft" value="false"/>';
 	    return $html;
 	}
+  /**
+   * Reset cf7 validation if this form is being saved as a draft.
+   * Hooked to filter 'wpcf7_validate', sets up the final $results object
+   * @since 2.0.0
+   * @param WPCF7_Validation $results   validation object
+   * @param Array $tags   an array of cf7 tag used in this form
+   * @return WPCF7_Validation  validation results
+  **/
+  public function save_skips_wpcf7_validate($results, $tags){
+    $cf7form = WPCF7_ContactForm::get_current();
+    $cf7_id = $cf7form->id();
+    $cf7_post = get_post($cf7_id, ARRAY_A);
+    $cf7_key = $cf7_post['post_name'];
+    /**
+    * Filter to skip validation if this form is being saved as a draft
+    * @since 2.0.0
+    * @param boolean $skip_validation  default to true
+    * @param string $cf7_key  current form's unique key identifier
+    */
+    $skip_validation = true;
+    if(apply_filters('cf7_2_post_draft_skips_validation', $skip_validation, $cf7_key)){
+      $results = new WPCF7_Validation();
+    }
+    //skip mail by default
+    $skip_mail = true;
+    /**
+    * Filter to skip mail sending if this form is being saved as a draft
+    * @since 2.0.0
+    * @param boolean $skip_mail  default to true
+    * @param string $cf7_key  current form's unique key identifier
+    */
+    if(apply_filters('cf7_2_post_draft_skips_mail', $skip_mail, $cf7_key)){
+      add_filter('wpcf7_skip_mail', function($skip_mail, $contact_form) use($cf7_id){
+        if($cf7_id === $contact_form->id()){
+          return true;
+        }else{
+          return $skip_mail;
+        }
+      }, 10, 2);
+    }
+    return $results;
+  }
 }

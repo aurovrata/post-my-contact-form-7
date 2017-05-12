@@ -137,7 +137,7 @@ class Cf7_2_Post_Factory {
     $this->post_properties['singular_name']=$singular_name;
     $this->post_properties['plural_name']=$plural_name;
     $this->post_properties['type_source'] = 'factory';
-    $this->post_properties['$cf7_title']=get_the_title($this->cf7_post_ID);
+    $this->post_properties['cf7_title']=get_the_title($this->cf7_post_ID);
 
     $this->post_properties['taxonomy']=array();
     //supports
@@ -244,15 +244,15 @@ class Cf7_2_Post_Factory {
       $this->post_properties,
       array(
         'hierarchical'          => false,
-        'public'                => true,
-        'show_ui'               => true,
-        'show_in_menu'          => true,
+        'public'                => false,
+        'show_ui'               => false,
+        'show_in_menu'          => false,
         'menu_position'         => 5,
         'show_in_admin_bar'     => false,
         'show_in_nav_menus'     => false,
-        'can_export'            => true,
-        'has_archive'           => true,
-        'exclude_from_search'   => true,
+        'can_export'            => false,
+        'has_archive'           => false,
+        'exclude_from_search'   => false,
         'publicly_queryable'    => false
       )
   );
@@ -275,55 +275,46 @@ class Cf7_2_Post_Factory {
       if(empty($value)) continue;
       //debug_msg($field."=".$value,"saving...");
       switch (true){
-        case ('mapped_post_menu_position'==$field && $is_factory_map): //properties:
-        case ('mapped_post_type'==$field && $is_factory_map):
-        case ('mapped_post_type_source'==$field && $is_factory_map):
-        case ('mapped_post_singular_name'==$field && $is_factory_map):
-        case ('mapped_post_plural_name'==$field && $is_factory_map):
+        case ('mapped_post_menu_position'==$field ): //properties:
+        case ('mapped_post_type'==$field ):
+        case ('mapped_post_type_source'==$field ):
+        case ('mapped_post_singular_name'==$field ):
+        case ('mapped_post_plural_name'==$field ):
           $this->post_properties[substr($field,$len_mapped_post)]=$value;
           break;
         case ( (0 === strpos($field,'mapped_post_')) && $is_factory_map ): //properties
           $this->post_properties[substr($field,$len_mapped_post)]=true;
-          //debug_msg("PROPERTIES: ".$value."=".substr($field,$len_mapped_post).",".strpos($field,'mapped_post_'));
+          //debug_msg("PROPERTIES:substr($field,$len_mapped_post)." = true");
           break;
       }
     }
+    //debug_msg($this->post_properties, 'saving properties ');
     //let's save the properties if this is a factory mapping
-    if($is_factory_map){
-      //let's get the capabilities
-      $reference = array(
-          'edit_post' => '',
-          'edit_posts' => '',
-          'edit_others_posts' => '',
-          'publish_posts' => '',
-          'read_post' => '',
-          'read_private_posts' => '',
-          'delete_post' => ''
-      );
-      $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$this->post_properties['type'], $reference));
-      $diff=array_diff_key($reference, $capabilities);
-      if( empty( $diff ) ) {
-        $this->post_properties['capabilities'] = $capabilities;
-        $this->post_properties['map_meta_cap'] = true;
-      }else{ //some keys are not set, so capabilities will not work
-        //set to defaul post capabilities
-        $this->post_properties['capability_type'] = 'post';
-      }
-      //is this a draft save?
-      if($create_post){
-        $this->post_properties['map']='publish';
-      }else{
-        $this->post_properties['map']='draft';
-      }
 
-      foreach($this->post_properties as $key=>$value){
-        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-        update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
-        //clear previous values.
-        if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
-          unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
-        }
-      }
+    //let's get the capabilities
+    $reference = array(
+        'edit_post' => '',
+        'edit_posts' => '',
+        'edit_others_posts' => '',
+        'publish_posts' => '',
+        'read_post' => '',
+        'read_private_posts' => '',
+        'delete_post' => ''
+    );
+    $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$this->post_properties['type'], $reference));
+    $diff=array_diff_key($reference, $capabilities);
+    if( empty( $diff ) ) {
+      $this->post_properties['capabilities'] = $capabilities;
+      $this->post_properties['map_meta_cap'] = true;
+    }else{ //some keys are not set, so capabilities will not work
+      //set to defaul post capabilities
+      $this->post_properties['capability_type'] = 'post';
+    }
+    //is this a draft save?
+    if($create_post){
+      $this->post_properties['map']='publish';
+    }else{
+      $this->post_properties['map']='draft';
     }
     //let'save the mapping of cf7 form fields to post fields
     foreach($this->post_map_fields as $cf7_field=>$post_field){
@@ -343,6 +334,14 @@ class Cf7_2_Post_Factory {
           break;
         default:
           break;
+      }
+    }
+    foreach($this->post_properties as $key=>$value){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+      //clear previous values.
+      if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
+        unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
       }
     }
     foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
@@ -1017,11 +1016,11 @@ class Cf7_2_Post_Factory {
   }
   /**
   * Save the submitted form data to a new/existing post
-  * calling this funciton assumes the mapped post_type exists and is published
+  * calling this function assumes the mapped post_type exists and is published
   *@since 1.0.0
   *@param Array $cf7_form_data data submitted from cf7 form
   */
-  public function save_form_2_post($submission, $hook){
+  public function save_form_2_post($submission, $hook=false){
     $cf7_form_data = $submission->get_posted_data();
     //check if this is a system post
     if($hook){

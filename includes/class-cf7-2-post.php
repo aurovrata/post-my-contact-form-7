@@ -206,7 +206,8 @@ class Cf7_2_Post {
     $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
     //instroduced a 'save button tag for forms
     $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
-
+    //skip validation for saved forms
+    $this->loader->add_filter( 'wpcf7_validate', $plugin_public, 'save_skips_wpcf7_validate', 100, 2 );
 
 	}
 
