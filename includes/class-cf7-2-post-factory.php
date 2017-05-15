@@ -1020,10 +1020,10 @@ class Cf7_2_Post_Factory {
   *@since 1.0.0
   *@param Array $cf7_form_data data submitted from cf7 form
   */
-  public function save_form_2_post($submission, $hook=false){
+  public function save_form_2_post($submission){
     $cf7_form_data = $submission->get_posted_data();
-    //check if this is a system post
-    if($hook){
+    //check if this is a system post which are mapped using an action.
+    if( has_action('cf7_2_post_save-'.$this->get('type')) ){
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }

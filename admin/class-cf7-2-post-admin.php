@@ -237,7 +237,7 @@ class Cf7_2_Post_Admin {
    * @param      string    $post_id     post ID.
   **/
   public function save_quick_edit($post_id){
-    debug_msg($_POST);
+    //debug_msg($_POST);
     if(!isset($_POST['cf7_2_post_quick_edit'])){
       return;
     }
