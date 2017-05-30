@@ -101,7 +101,7 @@ class Cf7_2_Post_Public {
   }
   /**
    * Function to skip mail if this is a draft form being sent.
-   * Hooked on 'wpcf7_skip_mail'
+   * Hooked on 'wpcf7_skip_mail'.  Skip mail also stops form clearance on being saved.
    * @since 2.0.0
    * @param      boolean    $skip_mail     boolean flag.
    * @return     boolean    true to skip mails if this is adraft form being saved .
@@ -109,7 +109,6 @@ class Cf7_2_Post_Public {
   public function skip_cf7_mail($skip_mail){
     if(isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
       $skip_mail = true;
-      debug_msg('skipping mail');
     }
     return $skip_mail;
   }
