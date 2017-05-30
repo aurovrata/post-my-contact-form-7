@@ -135,6 +135,23 @@ if(!class_exists('Cf7_WP_Post_Table')){
 
   	}
     /**
+     * get form id for a given key
+     *
+     * @since 1.2.0
+     * @param      string    $form_key   the unique key for qhich to get the id  .
+     * @return     string    form id     .
+    **/
+    public static function form_id($form_key){
+      $form_id = 0;
+      $forms = get_posts(array(
+        'post_type' => 'wpcf7_contact_form',
+        'post_name' => $form_key
+      ));
+      if(!empty($forms)) $form_id = $forms[0]->ID;
+      wp_reset_postdata();
+      return $form_id;
+    }
+    /**
     *  Checks if this is the admin table list page
     *
     * @since 1.1.3

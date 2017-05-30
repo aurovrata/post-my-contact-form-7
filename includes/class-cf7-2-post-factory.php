@@ -741,6 +741,7 @@ class Cf7_2_Post_Factory {
       //debug_msg($form_elements, " cf7 form elements ");
       foreach ($form_elements as $element) {
           $type = $element['type'];
+          if('' == $element['name']) continue; //save | submit type.
           $type = str_replace('*', '', $type);
           $this->cf7_form_fields[$element['name']]=$type;
           $this->cf7_form_fields_options[$element['name']]=$element['options'];
@@ -1022,6 +1023,7 @@ class Cf7_2_Post_Factory {
   */
   public function save_form_2_post($submission){
     $cf7_form_data = $submission->get_posted_data();
+    //debug_msg($cf7_form_data);
     //check if this is a system post which are mapped using an action.
     if( has_action('cf7_2_post_save-'.$this->get('type')) ){
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
@@ -1286,6 +1288,7 @@ class Cf7_2_Post_Factory {
         $load_saved_values = true;
         $field_and_values['map_post_id']= $post->ID;
       }
+      wp_reset_postdata();
     }
       //we now need to load the save meta field values
 
@@ -1336,7 +1339,7 @@ class Cf7_2_Post_Factory {
         }
         //get the meta value
         if($load_saved_values) {
-          $post_value = get_post_meta($post->ID, $post_field);
+          $post_value = get_post_meta($post->ID, $post_field, true);
         }else{
           //debug_msg('spllygin filter cf7_2_post_filter_cf7_field_value'. $form_field);
           $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field);

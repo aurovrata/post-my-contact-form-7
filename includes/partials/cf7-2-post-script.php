@@ -19,66 +19,81 @@ $form_values = $this->get_form_values($cf7_2_post_id);
        }
        // function to load all the data into the form
        function preloadForm(cf7Form){
-         <?php
-        /**
-        * filter fields mapped to taxonomy (in case mapping is done on a system post)
-        * @since 1.3.2
-        */
-        $taxonomies = array();
-        $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $this->cf7_key );
-        $taxonomies = array_merge($this->post_map_taxonomy, $taxonomies);
+  <?php
+    /**
+    * filter fields mapped to taxonomy (in case mapping is done on a system post)
+    * @since 1.3.2
+    */
+    $taxonomies = array();
+    $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $this->cf7_key );
+    $taxonomies = array_merge($this->post_map_taxonomy, $taxonomies);
 
-        $this->load_form_fields(); //this loads the cf7 form fields and their type
-        foreach($this->cf7_form_fields as $field=>$type):
-          if(isset($taxonomies[$field]) ) continue;
+    $this->load_form_fields(); //this loads the cf7 form fields and their type
+    foreach($this->cf7_form_fields as $field=>$type){
+      if(isset($taxonomies[$field]) ) continue;
 
-          $form_field = str_replace('-','_',$field);
-          switch($type):
-            case 'text':
-            case 'password':
-            case 'url':
-            case 'number':
-            case 'tel':
-            case 'date':
-            case 'datetime':
-            case 'email':
-            case 'time':
-            case 'hidden':
-            ?>
-        if(data.<?php echo $form_field?> !== undefined){
-          cf7Form.find("input[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
+      $json_var = str_replace('-','_',$field);
+      //setup sprintf format, %1 = $field (field name), %2 = $json_var (json data variable)
+      $js_form = 'cf7Form';
+      $json_value = 'data.'.$json_var;
+      $default_script = true;
+      $form_id = $this->cf7_post_ID;
+      /**
+      * @since 2.0.0
+      * filter to modify the way the field is set.  This is introduced for plugin developers
+      * who wish to load values for their custom fields.
+      * By default the Post My CF7 Form will load the following js script,
+      * `if(<$json_value> !== undefined){ //make sure a value is available for this field.
+      *   <$js_form>.find("<input|select|textarea>[name=<$field>]").val(<$json_value>);
+      * }`
+      * which can be overriden by printing (echo) the custom script using the follwoing attributes,
+      * @param boolean  $default_script  whether to use the default script or not, default is true.
+      * @param string  $form_id  cf7 form post id
+      * @param string  $field  cf7 form field name
+      * @param string  $type   field type (number, text, select...)
+      * @param string  $json_value  the json value loaded for this field in the form.
+      * @param string  $$js_form  the javascript variable in which the form is loaded.
+      * @return boolean  false to print a custom script from the called function, true for the default script printed by this plugin.
+      */
+      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form)){
+        $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
+        switch($type){
+          case 'text':
+          case 'password':
+          case 'url':
+          case 'number':
+          case 'tel':
+          case 'date':
+          case 'datetime':
+          case 'email':
+          case 'time':
+          case 'hidden':
+            $format .= 'cf7Form.find("input[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            break;
+          case 'select':
+            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            break;
+          case 'dynamic_select':
+            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            break;
+          case 'textarea':
+            $format .= 'cf7Form.find("textarea[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            break;
+          case 'radio':
+            $format .= 'cf7Form.find("input[name=%1$s]").prop("checked",true);'.PHP_EOL;
+            break;
+          case 'checkbox':
+            $format .= 'fname = %1$s[];'.PHP_EOL;
+            $format .= '$.each(data.%2$s , function(index, value){'.PHP_EOL;
+            $format .= '  cf7Form.find("input[name=fname][value=data.%2$s."+value+"]").prop("checked",true);'.PHP_EOL;
+            $format .= '});';
+            break;
         }
-    <?php break;
-      case 'select':?>
-        if(data.<?php echo $form_field?> !== undefined){
-          cf7Form.find("select[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
-        }
-    <?php break;
-      case 'dynamic_select':?>
-        if(data.<?php echo $form_field?> !== undefined){
-          cf7Form.find("select[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
-        }
-    <?php break;
-      case 'textarea':?>
-        if(data.<?php echo $form_field?> !== undefined){
-          cf7Form.find("textarea[name=<?php echo $field?>]").val(data.<?php echo $form_field?>);
-        }
-    <?php break;
-      case 'radio': ?>
-        if(data.<?php echo $form_field?> !== undefined){
-          cf7Form.find("input[name=<?php echo $field?>]").prop("checked",true);
-        }
-    <?php break;
-      case 'checkbox': ?>
-        if(data.<?php echo $form_field?> !== undefined){
-          fname = <?php echo $field.'[]'?>;
-          $.each(data.<?php echo $form_field?>), function(index, value){
-            cf7Form.find("input[name=fname][value=data.<?php echo $form_field?>."+value+"]").prop("checked",true);
-          });
-        }
-    <?php break;
-    endswitch;
-  endforeach;
+        $format .= '}'.PHP_EOL;
+        //output script
+        printf($format, $field, $json_var);
+      }
+    }
   /*
   Taxonomy fields
   */
