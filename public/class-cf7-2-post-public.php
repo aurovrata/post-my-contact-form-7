@@ -100,6 +100,20 @@ class Cf7_2_Post_Public {
     return $cf7_form;
   }
   /**
+   * Function to skip mail if this is a draft form being sent.
+   * Hooked on 'wpcf7_skip_mail'
+   * @since 2.0.0
+   * @param      boolean    $skip_mail     boolean flag.
+   * @return     boolean    true to skip mails if this is adraft form being saved .
+  **/
+  public function skip_cf7_mail($skip_mail){
+    if(isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
+      $skip_mail = true;
+      debug_msg('skipping mail');
+    }
+    return $skip_mail;
+  }
+  /**
    * Function to load scripts rqeuired for cf7 form loading
    * hooked on WP 4.7 'do_shortcode_tag' filter
    * @since 1.3.0
