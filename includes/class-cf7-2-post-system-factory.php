@@ -133,6 +133,9 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
         case 'factory':
           return $this->set_factory_mapping($data, $create_post_mapping);
           break;
+        case 'filter':
+        return $this->set_system_mapping($data, $create_post_mapping);
+        break;
       }
     }else{
       return false;
@@ -171,7 +174,8 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
         unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
       }
     }
-    if(!has_action('cf7_2_post_save-'.$this->post_properties['type'])){
+    $is_action = ('filter' == $data['mapped_post_type_source'] || has_action('cf7_2_post_save-'.$this->post_properties['type']));
+    if(!$is_action){
       //save post fields
       $this->post_map_fields = $this->get_mapped_fields('cf7_2_post_map-', $data);
       //debug_msg($this->post_map_fields, 'saving post fields');

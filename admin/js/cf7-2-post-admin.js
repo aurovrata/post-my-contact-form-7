@@ -372,19 +372,34 @@
       var $customPost = $('#post-type-select');
       var $post = $('#system-post-type option:selected');
       var $mapped_type = $('input#mapped_post_type');
+      var $postbox = $('#postbox-container-2');
+      var $filterbox = $('#postbox-container-3');
+      var $draftButton = $('#save-draft-action');
       var type='';
       switch($source.val()){
         case 'factory':
+          $postbox.show();
+          $filterbox.hide();
           $selectPost.hide();
           $customPost.show();
+          $draftButton.show();
           type = $('input#custom_post_type').val();
           $mapped_type.val(type);
           break;
         case 'system':
+          $postbox.show();
+          $filterbox.hide();
           $mapped_type.val($post.val());
           $customPost.hide();
           $selectPost.show();
+          $draftButton.show();
           break;
+        case 'filter':
+          $postbox.hide();
+          $filterbox.show();
+          $selectPost.hide();
+          $customPost.hide();
+          $draftButton.fadeOut();
       }
     });
     /**@since 2.0.0 get system post meta fields as select option */

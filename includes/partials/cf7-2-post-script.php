@@ -1,5 +1,6 @@
 <?php
 $form_values = $this->get_form_values($cf7_2_post_id);
+//debug_msg($form_values);
 ?>
 <script type="text/javascript">
 (function( $ ) {

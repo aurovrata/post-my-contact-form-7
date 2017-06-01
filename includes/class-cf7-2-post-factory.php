@@ -1013,6 +1013,15 @@ class Cf7_2_Post_Factory {
       if('factory'==$cf7_2_post_map->get('type_source')){
         $cf7_2_post_map->create_cf7_post_type();
       }
+      //add a filter for newly saved posts of this type.
+      add_action('save_post_'.$cf7_2_post_map->get('type'), function($post_id, $post, $update){
+        if($update) return $post_id;
+        $cf7_flag = get_post_meta($post_id, '_cf7_2_post_form_submitted', true);
+        if(empty($cf7_flag)){
+          update_post_meta($post_id, '_cf7_2_post_form_submitted', 'no');
+        }
+        return $post_id;
+      }, 10,3);
     }
   }
   /**
@@ -1027,6 +1036,10 @@ class Cf7_2_Post_Factory {
     //check if this is a system post which are mapped using an action.
     if( has_action('cf7_2_post_save-'.$this->get('type')) ){
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
+      return;
+    }
+    if( 'filter' == $this->get('type_source')){
+      do_action( 'cf7_2_post_save_submission', $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }
     //create a new post
