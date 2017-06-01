@@ -63,6 +63,7 @@ $source = $factory_mapping->get('type_source');
                         <select name="mapped_post_type_source" id="post_type_source" <?php $factory_mapping->is_published();?>>
                           <option value="factory" <?php echo ('factory'==$source) ? ' selected="true"' : ''; ?>>New Post</option>
                           <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>>Existing Post</option>
+                          <option value="filter"<?php echo ('filter'==$source) ? ' selected="true"' : ''; ?>>Hook with filter</option>
                         </select>
                       </span>
                       <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
