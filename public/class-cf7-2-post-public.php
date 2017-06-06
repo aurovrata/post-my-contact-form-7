@@ -106,12 +106,12 @@ class Cf7_2_Post_Public {
    * @param      boolean    $skip_mail     boolean flag.
    * @return     boolean    true to skip mails if this is adraft form being saved .
   **/
-  // public function skip_cf7_mail($skip_mail){
-  //   if(isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
-  //     $skip_mail = true;
-  //   }
-  //   return $skip_mail;
-  // }
+  public function skip_cf7_mail($skip_mail){
+    if(isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
+      $skip_mail = true;
+    }
+    return $skip_mail;
+  }
   /**
    * Function to load scripts rqeuired for cf7 form loading
    * hooked on WP 4.7 'do_shortcode_tag' filter
@@ -210,7 +210,6 @@ class Cf7_2_Post_Public {
    * @return WPCF7_Validation  validation results
   **/
   public function save_skips_wpcf7_validate($results, $tags){
-
     if( !isset($_POST['save_cf7_2_post']) || 'false'==$_POST['save_cf7_2_post']){
       return $results;
     }
@@ -225,6 +224,7 @@ class Cf7_2_Post_Public {
     * @param string $cf7_key  current form's unique key identifier
     */
     $skip_validation = true;
+
     if(apply_filters('cf7_2_post_draft_skips_validation', $skip_validation, $cf7_key)){
       $results = new WPCF7_Validation();
     }
