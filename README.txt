@@ -208,6 +208,7 @@ This is the default functionality for saving draft submissions.  This is especia
 3. The CF7 table list shows an extra column with the status of the form mapping.
 4. You can now map forms fields to custom taxonomies
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
+6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 
 == Changelog ==
 = 2.0.0 =
