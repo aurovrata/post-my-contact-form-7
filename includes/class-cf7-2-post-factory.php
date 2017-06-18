@@ -1228,7 +1228,12 @@ class Cf7_2_Post_Factory {
         }
       }
     }
-    do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data);
+    do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
+    /**
+    * @since 2.0.0
+    * general action for other plugins to hook custom functionality
+    */
+    do_action('cf7_2_post_form_posted', $post_id, $this->cf7_key, $this->post_map_fields, $this->post_map_meta_fields, $cf7_form_data, $submission->uploaded_files());
   }
   /**
   * Builds a set of field=>value pairs to pre-populate a mapped form
