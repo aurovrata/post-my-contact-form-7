@@ -3,7 +3,7 @@ Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
-Tested up to: 4.7.3
+Tested up to: 4.8
 Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -215,7 +215,9 @@ This is the default functionality for saving draft submissions.  This is especia
 * enabled UI for system posts mapping
 * enabled reset mapping for created mappings
 * introduced filters to skips mail & validation when saving draft forms
-
+* added actions for plugin dev: cf7_2_post_form_posted
+* added system post meta fields filter: cf7_2_post_skip_system_metakey
+* added filter to display system post types: cf7_2_post_display_system_posts
 = 1.5.0 =
 * bug fix which prevented multiple taxonomies from being saved
 * added autofill functionality on meta-field button creation.
@@ -595,5 +597,32 @@ function force_notification($skip_mail, $cf7_key){
   return skip_mail;
 }
 `
+= `cf7_2_post_display_system_posts` =
+In v2.0 the plugin allows users to map their forms to existing system posts.  By default, only system posts which are visible in the dashboard are listed.  This list can be modified by this filter,
+
+`add_filter('cf7_2_post_display_system_posts', 'filter_posts', 10, 2);
+function filter_posts($displayed_posts, $form_id){
+  // the form_id is the post id of the current cf7 form being mapped
+  //displayed_posts is an array of $post_type => $post_label key value pairs
+  return displayed_posts;
+}`
+
+= `cf7_2_post_skip_system_metakey` =
+In v2.0 the plugin allows users to map their forms to existing system posts through a UI interface.  The form fields can be mapped to the post fields, as well as existing post meta-fields, in addition to being able to add new ones too.  The list of existing meta-fields available is built by ignoring meta-fields with names starting with the '_' character which by convention is used to denote an internal meta-field.  This filter permits to include these meta-fields on a field by field mode,
+`add_filter('cf7_2_post_skip_system_metakey', 'filter_post_metas', 10, 3);
+function filter_post_metas($skip, $post_type, $meta_field_name){
+  // boolean $skip flag is set to true by default
+  //the $post_type of the post to which the form is being mapped to
+  //$meta_field_name is the name of the field which is being skipped.
+  return $skip;
+}`
+
+
+= `cf7_2_post_form_posted` =
+
+action introduced for plugin developers specifically.  Fired at the end of the submission mapping process, once a new post has been created for a new submission.  The current mapping of the form fields is exposed, along with the data values submitted in the form and the files uploaded.  For developers interested in using this hook, please lookup in the inline documentation in the code itself.  The action is located in the includes/class-cf7-2-post-factory.php file.
+
+* added system post meta fields filter:
+* added filter to display system post types:
 == Upgrade Notice ==
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.

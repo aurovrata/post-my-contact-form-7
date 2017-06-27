@@ -1230,8 +1230,15 @@ class Cf7_2_Post_Factory {
     }
     do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     /**
+    * action introduced for plugin developers to map custom plugin tag fields 
     * @since 2.0.0
     * general action for other plugins to hook custom functionality
+    * @param string $post_id  the id of the post to which this submission was mapped
+    * @param string $cf7_key  the unique form key to identity the form being submitted
+    * @param array $post_map_fields form fields mapped to post fields, form-field-name => post-field-name key value pairs
+    * @param array $post_map_meta_fields form fields mapped to post meta fields,  form-field-name => post-meta-field-name key value pairs
+    * @param array $cf7_form_data data submited in the form, form-field-name => submitted-value key value pairs
+    * @param array $uploaded_files an array of uploaded files if any file submission fields are available in this form.
     */
     do_action('cf7_2_post_form_posted', $post_id, $this->cf7_key, $this->post_map_fields, $this->post_map_meta_fields, $cf7_form_data, $submission->uploaded_files());
   }

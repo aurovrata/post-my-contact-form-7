@@ -66,6 +66,13 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     foreach($post_types as $post_type){
       $display[$post_type->name] = $post_type->label;
     }
+    /**
+    * add/remove system posts to which to map forms to. By defualt the plugin only lists system posts which are visible in the dashboard
+    * @since 2.0.0
+    * @param array $display  list of system post picked up by the plugin to display
+    * @param string $form_id  the post id of the cf7 form currently being mapped
+    * @return array an array of post-types=>post-label key value pairs to display
+    */
     $display = apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
     $selected = '';
     if('system' == $this->get('type_source')){
@@ -99,6 +106,13 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     if(false !== $metas){
       foreach($metas as $row){
         if( 0=== strpos( $row->meta_key, '_') &&
+        /**
+        * filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
+        * @since 2.0.0
+        * @param boolean $skip true by default
+        * @param string $post_type post type under consideration
+        * @param string $meta_key meta field name
+        */
         apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){ //skip _meta_keys, assuming system fields.
           continue;
         }
