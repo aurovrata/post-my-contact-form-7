@@ -135,6 +135,23 @@ if(!class_exists('Cf7_WP_Post_Table')){
 
   	}
     /**
+     * get form id for a given key
+     *
+     * @since 1.2.0
+     * @param      string    $form_key   the unique key for qhich to get the id  .
+     * @return     string    form id     .
+    **/
+    public static function form_id($form_key){
+      $form_id = 0;
+      $forms = get_posts(array(
+        'post_type' => 'wpcf7_contact_form',
+        'post_name' => $form_key
+      ));
+      if(!empty($forms)) $form_id = $forms[0]->ID;
+      wp_reset_postdata();
+      return $form_id;
+    }
+    /**
     *  Checks if this is the admin table list page
     *
     * @since 1.1.3
@@ -346,7 +363,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
      * @param      string    $post_type     post type being displayed.
      * @return     string    echos the html fields.
     **/
-    public function quick_edit_box( $column_name, $post_type ) {
+    /*public function quick_edit_box( $column_name, $post_type ) {
       if("wpcf7_contact_form" != $post_type){
         return;
       }
@@ -356,16 +373,11 @@ if(!class_exists('Cf7_WP_Post_Table')){
           wp_nonce_field( plugin_basename( __DIR__ ), 'cf7_key_nonce' );
       }
       switch ( $column_name ) {
-        case 'cf7_key':
-      ?>
-      <span class="cf7-form-key-error">Your key in not unique or contains spaces</span>
-      <?php
-        break;
         default:
-          echo '';
+          //echo '';
           break;
       }
-    }
+    }*/
     /**
      *cf7-form Shortcode handler
      *

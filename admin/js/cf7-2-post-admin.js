@@ -6,7 +6,7 @@
   var selectedOptions = new Array();
   var selectedCount = 0;
 
-
+  /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
@@ -75,7 +75,7 @@
 
       //enable the new field
       var postType = $('input#mapped_post_type').val();
-      parent.find('.cf7-2-post-map-labels').prop('disabled',false);
+      parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
       parent.find('select').prop('disabled',false);
       //parent.find('select').attr('name',keyName+'_value');
@@ -98,8 +98,8 @@
     $.fn.activateField = function() {
         this.filter( 'div.custom-meta-field' ).each(function() {
           $(this).find('.remove-field').on('click',removeField);
-          $(this).find('select').on('change',optionSelected);
-          $(this).find('input.cf7-2-post-map-labels').on('change', metaKeyChange);
+          $(this).find('select.field-options').on('change',optionSelected);
+          $(this).find('.cf7-2-post-map-labels').on('change', metaKeyChange);
         });
         return this;
     };
@@ -176,6 +176,9 @@
       var $target = $(event.target);
       if( $target.is('.add-more-field') ){
         var $parent = $target.closest('.custom-meta-field');
+        if($parent.children('.cf7-2-post-map-labels:first').is('select')){
+          return;//this is not a text field label.
+        }
         if($parent.is('.autofill-field-name')){
           var $previous = $parent.prevAll('.custom-meta-field:first').find('select.field-options').find('option:selected');
           var $select = $parent.find('select.field-options');
@@ -247,9 +250,10 @@
       //clear message box
       var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();
       $(this).attr('name','cf7_2_post_map_meta-'+name);
-      $(this).next('select').attr('name','cf7_2_post_map_meta_value-'+name);
+      var $cf7Fields = $(this).siblings('select.field-options');
+      $cf7Fields.attr('name','cf7_2_post_map_meta_value-'+name);
 
-      var option = $(this).next('select').find('option.filter-option');
+      var option = $cf7Fields.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+postType+'-'+name);
       if( option.is('option:selected') ){
         var filter = $('<a class="code" data-clipboard-text="'+option.attr('value')+'" href="javascript:void(0);">'+option.attr('value')+'</a>').appendTo(msgBox);
@@ -329,6 +333,7 @@
     $('form#cf7-post-mapping-form').submit(function(event){
       event.preventDefault();
       var buttonID = $(this).prop('submited');
+      var source = $('#post_type_source').val();
       $('.spinner.'+buttonID).css('visibility','visible');
       switch(buttonID){
         case 'save_draft':
@@ -349,6 +354,7 @@
           $('.spinner.'+buttonID).css('visibility','hidden');
           $('div#ajax-response').text(data.data.msg);
           if('created'==data.data.post) location.reload();
+          else if('system' == source) location.reload();
           $('div#ajax-response').removeClass('error-msg');
         },
         error:function(data){
@@ -361,33 +367,74 @@
     //existing post selection
     $('#post_type_source').on('change', function(){
       var $source = $(this).find('option:selected');
-      var $system = $('#system-poststuff');
       var $factory = $('#postcustomstuff');
       var $selectPost = $('#post-type-exists');
       var $customPost = $('#post-type-select');
       var $post = $('#system-post-type option:selected');
       var $mapped_type = $('input#mapped_post_type');
+      var $postbox = $('#postbox-container-2');
+      var $filterbox = $('#postbox-container-3');
+      var $draftButton = $('#save-draft-action');
       var type='';
       switch($source.val()){
         case 'factory':
-          $system.hide();
+          $postbox.show();
+          $filterbox.hide();
           $selectPost.hide();
           $customPost.show();
-          $factory.show();
+          $draftButton.show();
           type = $('input#custom_post_type').val();
           $mapped_type.val(type);
           break;
         case 'system':
-          $('h3', $system).text('This form is mapped to an existing post: '+$post.text() );
-          $('p span.action-form-map',$system).text( 'cf7_2_post_save-'+$post.val() );
-          $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+$post.val() );
+          $postbox.show();
+          $filterbox.hide();
           $mapped_type.val($post.val());
-          $factory.hide();
           $customPost.hide();
           $selectPost.show();
-          $system.show();
+          $draftButton.show();
           break;
+        case 'filter':
+          $postbox.hide();
+          $filterbox.show();
+          $selectPost.hide();
+          $customPost.hide();
+          $draftButton.fadeOut();
       }
+    });
+    /**@since 2.0.0 get system post meta fields as select option */
+    $('#system-post-type').on('change', function(){
+      //get the options
+       $('#custom-meta-fields .custom-meta-field .cf7-2-post-map-labels').hide();
+      $('#custom-meta-fields .custom-meta-field .spinner.meta-label').show().css('display','inline-block');
+      var postType = $(this).val();
+      $.ajax({
+        type:'POST',
+        dataType: 'json',
+        url: ajaxurl,
+        data: {
+          action:'get_meta_options',
+          post_type: postType,
+          cf7_2_post_nonce: $('#cf7_2_post_nonce').val()
+        },
+        success:function(data){
+          $('#custom-meta-fields .custom-meta-field').each(function(index){
+            $(this).removeClass('autofill-field-name');
+            $(this).removeClass('autofill-field-name');
+            var disable = '';
+            if($(this).is('.custom-meta-field:last')) disable = ' disabled="disabled"';
+            var $label = $('<select class="cf7-2-post-map-labels metas-'+postType+'" '+ disable +'>');
+            $label.append('<option value="">Select a field</option>')
+            $label.append(data.data.options);
+            $('.spinner' , $(this)).hide().after($label);
+            $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
+          });
+        },
+        error:function(data){
+          var $label = $('<em>error in getting fields</em>');
+          $('.spinner' , $(this)).hide().after($label);
+        }
+      });
     });
     $('#system-post-type').on('change', function(){
       var $system = $('#system-poststuff');

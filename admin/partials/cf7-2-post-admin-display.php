@@ -27,6 +27,7 @@ $default_post_fields .= '%3$s';
 $default_post_fields .= '</select></div>';
 $default_post_fields .= '<p class="cf7-post-error-msg"></p>';
 $default_post_fields .= '<div class="clear"></div>';
+$source = $factory_mapping->get('type_source');
 ?>
 <div class="wrap">
   <h1>Save Form as Custom Post <span id="custom-post-title"><?php echo $factory_mapping->get('plural_name');?></span></h1>
@@ -47,21 +48,30 @@ $default_post_fields .= '<div class="clear"></div>';
                 <div class="createbox" id="createpost">
                   <div id="misc-publishing-actions">
                     <div class="misc-pub-section misc-pub-post-type">
-
+                      <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
+                      <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
+                    <?php if('system' == $source):?>
+                      <label class="post_type_labels" for="post_type">Post Type:</label>
+                      <input type="hidden" name="mapped_post_type_source" id="post_type_source" value="system"/>
+                      <span id="post-type-display">Existing Post</span>
+                      <label class="post_type_labels">Post:</label>
+                      <input type="hidden" id="system-post-type" name="system_post_type" value="<?php echo $factory_mapping->get('type') ?>"/>
+                      <span><?php echo $factory_mapping->get('type') ?></span>
+                    <?php else:?>
                       <label class="post_type_labels" for="post_type">Post Type:</label>
                       <span id="post-type-display">
+                        <?php if('filter'!==$source):?>
                         <select name="mapped_post_type_source" id="post_type_source" <?php $factory_mapping->is_published();?>>
-                          <?php $source = $factory_mapping->get('type_source');?>
                           <option value="factory" <?php echo ('factory'==$source) ? ' selected="true"' : ''; ?>>New Post</option>
                           <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>>Existing Post</option>
+                          <option style="color:red;" value="filter"<?php echo ('filter'==$source) ? ' selected="true"' : ''; ?>>Action hook</option>
                         </select>
+                        <?php else:?>
+                        Action Hook<input type="hidden" name="mapped_post_type_source" value="filter">
+                        <?php endif;?>
                       </span>
+                      <?php if('filter'!==$source):?><!-- post-type-select -->
                       <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
-
-                        <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped_post_type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
-                        <input name="cf7_post_id" id="cf7_post_id" value="<?php echo $cf7_post_id;?>" type="hidden">
-
-                      <?php if(!$factory_mapping->is_system_published()):?>
                         <label for="custom_post_type" class="post_type_labels">Post type</label>
                         <input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
 
@@ -96,22 +106,23 @@ $default_post_fields .= '<div class="clear"></div>';
                         <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
                         <label class="post_type_cb_labels">publicly_queryable</label><br />
                         <div class="clear"></div>
-
-                      <?php endif; ?>
-                      </div>
+                      </div><!-- end post-type-select -->
                       <div id="post-type-exists"<?php echo ('system'==$source)? '':' class="display-none"';?>>
                         <label class="post_type_labels" for="system_post_type">Select a Post</label>
                         <select id="system-post-type" name="system_post_type" <?php $factory_mapping->is_published();?>>
-
+                          <option value="">Select a Post</option>
                           <?php echo $factory_mapping->get_system_posts_options();?>
                         </select>
                       </div>
+                      <?php endif;?>
+                    <?php endif;?>
                     </div><!-- .misc-pub-section -->
                   </div>
                   <div class="clear"></div>
                 </div>
+          <?php if($is_new_mapping):?>
                 <div id="post-creation-actions">
-                  <div id="save-draft-actions" <?php echo ($is_new_mapping ? '': 'style="display:none;"');?>>
+                  <div id="save-draft-actions">
                     <div id="save-draft-action">
                       <span class="spinner save_draft"></span>
                       <input name="submit" onclick="this.form.submited=this.id;" id="save_draft" value="Save Draft" class="button button-large" type="submit">
@@ -120,15 +131,17 @@ $default_post_fields .= '<div class="clear"></div>';
                   </div>
                   <div id="creation-action">
                     <span class="spinner save_post"></span>
-                    <input name="submit" onclick="this.form.submited=this.id;" id="<?php echo ($is_new_mapping ? 'save': 'update');?>_post" class="button button-primary button-large" value="<?php echo ($is_new_mapping ? 'Create': 'Update');?>" type="submit">
+                    <input name="submit" onclick="this.form.submited=this.id;" id="save_post" class="button button-primary button-large" value="Create" type="submit">
                   </div>
                   <div class="clear"></div>
                   <div id="ajax-response"></div>
                 </div>
+              <?php endif;?>
               </div>
             </div>
           </div>
         </div><!-- #postbox-container-1 end -->
+        <?php if('filter'!==$source):?> <!-- postbox-container-2 -->
         <div id="postbox-container-2" class="postbox-container">
           <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <div style="display: block;" id="postcustom" class="postbox  hide-if-js">
@@ -138,11 +151,8 @@ $default_post_fields .= '<div class="clear"></div>';
               </button>
               <h2 class="hndle ui-sortable-handle"><span>Map Contact Form 7 Fields to Post Meta Fields</span></h2>
               <div class="inside">
-
-              <?php if(!$factory_mapping->is_system_published()):?>
-
-                <div id="postcustomstuff"<?php echo ('system'==$source)?' class="display-none"':'';?>>
-                  <h2 class="hndle ui-sortable-handle"><span> Default post fields</span></h2>
+                <div id="postcustomstuff">
+                  <h2 class="handle ui-sortable-handle"><span> Default post fields</span></h2>
                 <?php
                     if($factory_mapping->supports('title')){
                       echo sprintf($default_post_fields, __('Post title', 'cf7_2_post'), 'title', $factory_mapping->get_select_options('title'));
@@ -166,16 +176,25 @@ $default_post_fields .= '<div class="clear"></div>';
                 <?php
                   $mapped_fields = $factory_mapping->get_mapped_meta_fields();
                   //debug_msg($mapped_fields, "meta fields...");
+                  //debug_msg($mapped_fields);
                   if(!empty($mapped_fields)){
                     foreach( $mapped_fields as $cf7_field => $post_field ){
                 ?>
                     <div class="custom-meta-field cf7-2-post-field">
-                        <input <?php $factory_mapping->is_published();?> name="cf7_2_post_map_meta-<?php echo $post_field;?>" class="cf7-2-post-map-labels" type="text" value="<?php echo $post_field;?>">
-                        <select <?php $factory_mapping->is_published('select');?> class="field-options" name="cf7_2_post_map_meta_value-<?php echo $post_field;?>">
-                            <?php echo $factory_mapping->get_select_options($post_field,true);?>
-                        </select>
-                        <?php if($is_new_mapping):?>
-                        <span class="dashicons dashicons-minus remove-field"></span>
+                      <span class="spinner meta-label"></span>
+                    <?php if('system' == $source):?>
+                      <select class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
+                        <option value="">Select a field</option>
+                        <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
+                      </select>
+                    <?php else: ?>
+                      <input <?php $factory_mapping->is_published();?> name="cf7_2_post_map_meta-<?php echo $post_field;?>" class="cf7-2-post-map-labels" type="text" value="<?php echo $post_field;?>">
+                    <?php endif; ?>
+                      <select <?php $factory_mapping->is_published('select');?> class="field-options" name="cf7_2_post_map_meta_value-<?php echo $post_field;?>">
+                          <?php echo $factory_mapping->get_select_options($post_field,true);?>
+                      </select>
+                      <?php if($is_new_mapping):?>
+                      <span class="dashicons dashicons-minus remove-field"></span>
                       <?php endif;?>
                     </div>
                     <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
@@ -185,11 +204,19 @@ $default_post_fields .= '<div class="clear"></div>';
                   }
                   ?>
                     <div class="custom-meta-field cf7-2-post-field">
-                        <input disabled="disabled" class="cf7-2-post-map-labels" type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
-                        <select disabled="disabled" name="cf7_2_post_map_meta_value-meta_key_1" class="field-options">
-                            <?php echo $factory_mapping->get_select_options();?>
-                        </select>
-                        <span class="dashicons dashicons-plus add-more-field"></span>
+                      <span class="spinner meta-label"></span>
+                    <?php if('system' == $source):?>
+                      <select disabled="disabled" class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
+                        <option value="">Select a field</option>
+                        <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
+                      </select>
+                    <?php else:?>
+                      <input disabled="disabled" class="cf7-2-post-map-labels " type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
+                    <?php endif;?>
+                      <select disabled="disabled" name="cf7_2_post_map_meta_value-meta_key_1" class="field-options">
+                          <?php echo $factory_mapping->get_select_options();?>
+                      </select>
+                      <span class="dashicons dashicons-plus add-more-field"></span>
                     </div>
                     <p class="cf7-post-error-msg"></p>
                     <div class="clear"></div>
@@ -220,7 +247,7 @@ $default_post_fields .= '<div class="clear"></div>';
                     </div>
                     <p class="cf7-post-error-msg"><span class="select-error-msg cf7-2-post-map-labels"></span></p>
                     <div class="clear"></div>
-              <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
+                  <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
                     <div class="custom-taxonomy-input-fields hide-if-js">
                       <h4>
                         Choose a taxonomy, in blue are existing public taxonomies
@@ -282,28 +309,32 @@ $default_post_fields .= '<div class="clear"></div>';
                     </div>
                   </div>
                 </div>
-
-              <?php endif; ?>
-
-                <div id="system-poststuff"<?php echo ('system'==$source)?'':' class="display-none"';?>>
-                  <h3>Title</h3>
+              </div><!-- .inside end -->
+            </div>
+          </div>
+        </div> <!-- #postbox-container-2 end -->
+      <?php endif;?>
+        <div id="postbox-container-3" class="postbox-container<?= ('filter' == $source ) ? '':' display-none' ?>">
+          <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+            <div style="display: block;" id="postcustom" class="postbox  hide-if-js">
+              <button type="button" class="handlediv button-link" aria-expanded="true">
+                <span class="screen-reader-text">Toggle panel: Custom Fields</span>
+                <span class="toggle-indicator" aria-hidden="true"></span>
+              </button>
+              <h2 class="hndle ui-sortable-handle"><span>Map Contact Form 7 Fields with an Action hook</span></h2>
+              <div class="inside">
+                <div id="postcustomstuff">
                   <p class="info">
-                    As of this version, the plugin does not manage automated mapping of your Contact Form 7 to an existing post type.  You can however, programmatically enable this by hooking the following filters and mappinp your form submission to the fields of the post you have selected.
+                    Hook the following acton hooks to programmatically map your form submission.
                   </p>
-                  <p class="animate-color">
+                  <p>
                     <strong>Mapping Form submissions</strong>: hook the following action,<br />
-                    <?php
-                      $post_type = 'post';
-                      if('system' == $factory_mapping->get('type_source')){
-                        $post_type = $factory_mapping->get('type');
-                      }
-                    ?>
-                    <span class="code">add_action( '<span class="code action-form-map animate-change">cf7_2_post_save-<?php echo $post_type?></span>', 'your_function_name',10,3);<br />
+                    <span class="code">add_action( '<span class="code action-form-map animate-change">cf7_2_post_save_submission</span>', 'your_function_name',10,3);<br />
                     function your_function_name($cf7_key, $submitted_data, $submitted_files){}</span>
                   </p>
-                  <p class="animate-color">
+                  <p>
                     <strong>Pre-loading the form</strong>: hook the following filter,<br />
-                    <span class="code">add_filter( '<span class="code filter-form-load animate-change">cf7_2_post_load-<?php echo $post_type?></span>', 'your_function_name',10,5);<br />
+                    <span class="code">add_filter( '<span class="code filter-form-load animate-change">cf7_2_post_load_form</span>', 'your_function_name',10,5);<br />
                     function your_function_name( $field_value_pairs, $cf7_key, $form_fields, $form_field_options, $cf7_post_id){<br />
                       &nbsp;&nbsp;//$form_field_options options set in the form field tags<br />
                       &nbsp;&nbsp;//$cf7_post_id the cf7 form id in case you need to load the form object<br />
@@ -316,11 +347,11 @@ $default_post_fields .= '<div class="clear"></div>';
                       &nbsp;&nbsp;return $field_value_pairs;<br />
                     }</span>
                   </p>
+
                 </div>
-              </div><!-- .inside end -->
+              </div>
             </div>
-          </div>
-        </div> <!-- #postbox-container-2 end -->
+        </div>
       </div>
     </div>
   </form>

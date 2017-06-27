@@ -23,10 +23,10 @@
 			var $post_row = $( '#post-' + $post_id );
 
 			// get the data
-      var $name = $( ':input[name="post_name"]', $edit_row );
-      var $error = $('<span class="cf7-2-post-key-error">Key is not unique or contains spaces</span>').hide()
+      var $name = $( 'input[name="post_name"]', $edit_row );
+      var $error = $('<span class="cf7-2-post-key-error">Key is not unique or contains spaces</span>');
       $name.after($error);
-
+      $error.hide();
 			var form_key = $name.val();
 
 			// populate the data

@@ -44,7 +44,7 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      Cf7_2_Post_Factory    $post_mapping_factory   mapping factory object.
+	 * @var      Cf7_2_Post_system    $post_mapping_factory   mapping factory object.
 	 */
 	private $post_mapping_factory;
   /**
@@ -95,7 +95,8 @@ class Cf7_2_Post_Admin {
 	 */
 	private function load_dependencies() {
     // for the Cf7_2_Post_Factory class
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-system-factory.php';
     //contact post table list
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/cf7-post-admin-table.php';
   }
@@ -106,10 +107,19 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
-    if ('contact_page_cf7_post' != $hook){
-      return;
+    if ('contact_page_cf7_post' == $hook){
+  		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
+    }else{
+      $screen = get_current_screen();
+      if(WPCF7_ContactForm::post_type != $screen->post_type){
+        return;
+      }
+      switch($screen->base){
+        case 'edit':
+          wp_enqueue_style( 'cf7-2-post-quick-edit-css', plugin_dir_url( __FILE__ ) . 'css/cf7-table.css', array(), $this->version, 'all' );
+          break;
+      }
     }
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
 	}
 
 	/**
@@ -118,12 +128,23 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
-    if ('contact_page_cf7_post' != $hook){
-      return;
+
+    if ('contact_page_cf7_post' == $hook){
+  		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, true );
+      wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
+      wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+    }else{
+      $screen = get_current_screen();
+      if(WPCF7_ContactForm::post_type != $screen->post_type){
+        return;
+      }
+      switch($screen->base){
+        case 'edit':
+          wp_enqueue_script( 'cf72post-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-quick-edit.js', array( 'jquery' ), $this->version, true );
+          break;
+      }
     }
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, false );
-    wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
-    wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+
 	}
   /**
   * Modify the regsitered cf7 post type
@@ -176,12 +197,74 @@ class Cf7_2_Post_Admin {
           if ($post_type){
             $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
             $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=edit' );
-            echo '<a href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+            echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
           }else{
             $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=new' );
-            echo '<a href="'.$url.'">Create new</a>';
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
           }
           break;
+    }
+  }
+  /**
+   * Function to populate the quick edit form
+   * Hooked on 'quick_edit_custom_box' action
+   *
+   * @since 1.0.0
+   * @param      string    $column_name     column name to add edit field.
+   * @param      string    $post_type     post type being displayed.
+   * @return     string    echos the html fields.
+  **/
+  public function quick_edit_box( $column_name, $post_type ) {
+    if("wpcf7_contact_form" != $post_type){
+      return;
+    }
+    static $printNonce = TRUE;
+    if ( $printNonce ) {
+        $printNonce = FALSE;
+        wp_nonce_field('cf7_2_post_quick_edit' , 'cf7_2_post_quick_edit' );
+    }
+    switch ( $column_name ) {
+      case 'mapped_post':
+        include(plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php');
+        break;
+    }
+  }
+  /**
+   * Saves Quick-edits changes
+   * Hooked to save_post_wpcf7_contact_form
+   * @since 2.0.0
+   * @param      string    $post_id     post ID.
+  **/
+  public function save_quick_edit($post_id){
+    //debug_msg($_POST);
+    if(!isset($_POST['cf7_2_post_quick_edit'])){
+      return;
+    }
+    if(!wp_verify_nonce($_POST['cf7_2_post_quick_edit'],'cf7_2_post_quick_edit')){
+      return;
+    }
+    if(isset($_POST['cf7_2_post_status'])){
+      switch($_POST['cf7_2_post_status']){
+        case 'draft':
+        case 'publish':
+          update_post_meta($post_id, '_cf7_2_post-map', $_POST['cf7_2_post_status']);
+          break;
+        case 'delete':
+          //reset mapping
+          $mappings = get_post_meta($post_id);
+          foreach($mappings as $key=>$value){
+            switch(true){
+              case (0 === strpos($key,'_cf7_2_post-')):
+              case (0 === strpos($key,'cf7_2_post_map-')):
+              case (0 === strpos($key,'cf7_2_post_map_meta-')):
+                delete_post_meta($post_id, $key);
+                //debug_msg('deleting: '.$key);
+                break;
+            }
+          }
+          break;
+      }
     }
   }
   /**
@@ -195,7 +278,7 @@ class Cf7_2_Post_Admin {
       if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
         $factory_mapping = $this->post_mapping_factory;
       }else{
-        $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+        $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
         $this->post_mapping_factory = $factory_mapping;
       }
       include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-admin-display.php');
@@ -206,8 +289,6 @@ class Cf7_2_Post_Admin {
       echo ' please access it from the from <a href="'.$adminUrl.'">table list page</a>.</p></div>';
     }
   }
-
-
   /**
   *Save draft with Ajax data submission from admin form.
   * @since 1.0.0
@@ -221,7 +302,7 @@ class Cf7_2_Post_Admin {
     if( isset( $_POST['cf7_post_id'] ) ){
 
       $cf7_post_id = $_POST['cf7_post_id'];
-      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $this->post_mapping_factory = Cf7_2_Post_System::get_factory($cf7_post_id);
       if($this->post_mapping_factory->is_system_published()){
         $json_data = array('msg'=>'Nothing to update');
         wp_send_json_error($json_data);
@@ -257,6 +338,25 @@ class Cf7_2_Post_Admin {
     }else{
       $json_data = array('msg'=>'No CF7 post ID, try to reload the page');
       wp_send_json_error($json_data);
+    }
+    die();
+  }
+  /**
+   * Ajax Load system post options
+   * Hooked on 'wp_ajax'
+   * @since 2.0.0
+  **/
+  public function ajax_get_meta_options(){
+    if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
+      wp_send_json_error("Security failed, try to reload the page");
+    }
+    if( isset($_POST['post_type'])){
+      $json_data = array(
+        'options' => Cf7_2_Post_System::get_system_post_metas($_POST['post_type'])
+      );
+      wp_send_json_success( $json_data );
+    }else{
+      wp_send_json_error(array('msg'=>'no post_type defined'));
     }
     die();
   }

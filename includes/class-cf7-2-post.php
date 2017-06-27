@@ -165,12 +165,17 @@ class Cf7_2_Post {
     $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
     //ajax submission
     $this->loader->add_action('wp_ajax_save_post_mapping', $plugin_admin, 'ajax_save_post_mapping');
+    $this->loader->add_action('wp_ajax_get_meta_options', $plugin_admin, 'ajax_get_meta_options');
     //register dynamic posts
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
     $this->loader->add_action( 'admin_init', $plugin_admin, 'check_plugin_dependency');
     //hide the cf7->post page form the submenu
     $this->loader->add_action( 'admin_print_footer_scripts', $plugin_admin, 'inject_footer_script');
+    //quick-edit
+    $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
+    //save quick edit
+    $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_quick_edit', 10);
 
     /* CF7 Hooks */
     //delete post
@@ -199,9 +204,12 @@ class Cf7_2_Post {
     /*CF7 Hooks*/
     //use before_send_mail to ensure mapping post form validation
     $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
+    //skip mail for draft forms
+    $this->loader->add_filter('wpcf7_skip_mail', $plugin_public, 'skip_cf7_mail');
     //instroduced a 'save button tag for forms
     $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
-
+    //skip validation for saved forms
+    $this->loader->add_filter( 'wpcf7_validate', $plugin_public, 'save_skips_wpcf7_validate', 100, 2 );
 
 	}
 
