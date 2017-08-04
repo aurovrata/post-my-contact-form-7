@@ -9,7 +9,18 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
   protected function __construct($cf7_post_id){
     parent::__construct($cf7_post_id);
   }
-  protected function load_system_post_properties(){
+  /**
+  * Setup system post properties for support features
+  *@since 2.0.1
+  */
+  protected function load_system_post_properties($post_type){
+
+    //next set system properties
+    $this->post_properties['support'] = array();
+    $features = get_all_post_type_supports($post_type);
+    foreach($features as $feature=>$spported){
+      if($spported) $this->post_properties['supports'][] = $feature;
+    }
 
   }
   /**
@@ -38,14 +49,20 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     }else{
 
       $factory = new self($cf7_post_id);
-      if('system' == $post_type_source && 'draft' == $map){
-        $form = WPCF7_ContactForm::get_instance($cf7_post_id);
-        $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
-        $plural_name = $singular_name;
-        $factory->init_new_factory($post_type, $singular_name, $plural_name);
+
+      if('system' == $post_type_source){
+        if( 'draft' == $map){
+          $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+          $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+          $plural_name = $singular_name;
+          $factory->init_new_factory($post_type, $singular_name, $plural_name);
+        }
+        $factory->load_system_post_properties($post_type); //load DB values
+
       }
+      //frist load any saved properties,
+      $factory->load_post_mapping($factory->post_properties);
       $factory->post_properties['type_source'] = $post_type_source;
-      $factory->load_post_mapping();
 
      }
      return $factory;

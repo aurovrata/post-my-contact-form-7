@@ -526,11 +526,11 @@ class Cf7_2_Post_Factory {
 	 *
 	 * @since    1.0.0
    */
-   protected function load_post_mapping(){
+   protected function load_post_mapping($properties=array()){
     $this->post_map_fields = array();
     $this->post_map_meta_fields = array();
     $this->post_map_taxonomy = array();
-    $this->post_properties = array();
+    $this->post_properties = $properties;
     //get_post_meta ( int $post_id, string $key = '', bool $single = false )
     $fields = get_post_meta ($this->cf7_post_ID);
     //debug_msg($fields,"found post meta,");
@@ -1230,7 +1230,7 @@ class Cf7_2_Post_Factory {
     }
     do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     /**
-    * action introduced for plugin developers to map custom plugin tag fields 
+    * action introduced for plugin developers to map custom plugin tag fields
     * @since 2.0.0
     * general action for other plugins to hook custom functionality
     * @param string $post_id  the id of the post to which this submission was mapped

@@ -4,14 +4,14 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
-
+**WARNING**: Upgrading to Contact Form 7 v4.8 breaks this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
 
 You can submit and map to a post all of the following fields,
@@ -211,6 +211,9 @@ This is the default functionality for saving draft submissions.  This is especia
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 
 == Changelog ==
+=2.0.1=
+* bug fix when saving system post mapping without fields as reported by @michent1
+
 = 2.0.0 =
 * enabled UI for system posts mapping
 * enabled reset mapping for created mappings
