@@ -632,7 +632,7 @@ action introduced for plugin developers specifically.  Fired at the end of the s
 = `cf7_2_post_status_{$post_type}`=
 The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values),
 
-add_fitler('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
+add_filter('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
 function publish_by_default($status, $ckf7_key, $submitted_data){
   //$status to filter
   //$cf7_key the form's unique key, you can get its id with the following function call,
