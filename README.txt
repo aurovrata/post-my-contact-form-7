@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,6 +201,8 @@ as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table l
 = I have enabled a save button on my form, but draft submissions are not being validated! =
 This is the default functionality for saving draft submissions.  This is especially useful for avery large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
 
+= How do I publish posts automatically on form submission ? =
+The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use the filter 'cf7_2_post_status_{$post_type}' and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values). See the Filters & Hooks section of this documentation for more information.
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -211,6 +213,8 @@ This is the default functionality for saving draft submissions.  This is especia
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 
 == Changelog ==
+=2.0.2=
+* introduced post status filter
 =2.0.1=
 * bug fix when saving system post mapping without fields as reported by @michent1
 
@@ -625,7 +629,16 @@ function filter_post_metas($skip, $post_type, $meta_field_name){
 
 action introduced for plugin developers specifically.  Fired at the end of the submission mapping process, once a new post has been created for a new submission.  The current mapping of the form fields is exposed, along with the data values submitted in the form and the files uploaded.  For developers interested in using this hook, please lookup in the inline documentation in the code itself.  The action is located in the includes/class-cf7-2-post-factory.php file.
 
-* added system post meta fields filter:
-* added filter to display system post types:
+= `cf7_2_post_status_{$post_type}`=
+The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values),
+
+add_fitler('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
+function publish_by_default($status, $ckf7_key, $submitted_data){
+  //$status to filter
+  //$cf7_key the form's unique key, you can get its id with the following function call,
+  $cf7_post_id = get_cf7form_id($ckf7_key);
+  //$submitted_data form submitted fields as field-name=>value pairs
+  return 'publish';
+}
 == Upgrade Notice ==
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.

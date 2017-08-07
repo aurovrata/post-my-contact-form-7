@@ -1058,10 +1058,19 @@ class Cf7_2_Post_Factory {
         if($user) $author = $user->ID;
       }
     }
+    /**
+    * Filter the post status of the cusotm post created when a form is submitted, default ot 'draft';
+    * @since 2.0.2
+    * @param  string  $status  the post status values,default 'draft'
+    * @param  string  $cf7_key  the unique key to indetify the form
+    * @param  String  $data  array of key value pairs of submitted form fields
+    * @return string  the post status required.
+    */
+    $post_status = apply_filters('cf7_2_post_status_'.$this->post_properties['type'],'draft', $this->cf7_key, $cf7_form_data);
 
     $post = array('post_type'  =>$this->post_properties['type'],
                   'post_author'=>$author,
-                  'post_status'=>'draft',
+                  'post_status'=> $post_status,
                   'post_title'  => 'CF7 2 Post'
                 );
     $post_id = '';

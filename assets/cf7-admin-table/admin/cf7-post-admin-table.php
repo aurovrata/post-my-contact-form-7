@@ -22,6 +22,7 @@
  */
 if(!class_exists('Cf7_WP_Post_Table')){
 
+
   class Cf7_WP_Post_Table {
     /**
   	 * A CF7 list table object.
@@ -411,5 +412,8 @@ if(!class_exists('Cf7_WP_Post_Table')){
         return '<em>' . _('cf7-form shortcode key error, unable to find form','cf7-admin-table') . '</em>';
       }
     }
+  } //end class
+  function get_cf7form_id($cf7_key){
+  	return Cf7_WP_Post_Table::form_id($cf7_key);
   }
 }
