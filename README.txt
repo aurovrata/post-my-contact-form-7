@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -189,8 +189,8 @@ foreach($faults as $post){
   $cf7_attr = ' cf7_2_post_id="'.$post->ID.'"';
   //display your form, you might want to add some more html to structure to display them as tabs or something else.
   echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
+  wp_reset_postdata();
 }
-wp_reset_postdata();
 //if you need to add an extra empty form, then ensure you pass the cf7_2_post_id attribute as -1
 //$cf7_attr = ' cf7_2_post_id="-1"';
 //echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
@@ -213,6 +213,8 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 
 == Changelog ==
+=2.0.3=
+* bug fix wp_reset_postdata called regardless of query success.
 =2.0.2=
 * introduced post status filter
 =2.0.1=

@@ -102,8 +102,8 @@ if(!class_exists('Cf7_WP_Post_Table')){
             foreach($cf7_posts as $cf7){
               $keys[]=$cf7->post_name;
             }
+            wp_reset_postdata();
           }
-          wp_reset_postdata();
           wp_enqueue_script('jquery-effects-core');
           wp_enqueue_script( 'cf7-post-table-js', plugin_dir_url( __FILE__ ) . 'js/cf7-post-table.js', false, $this->version, true );
           wp_localize_script('cf7-post-table-js','cf7_2_post_admin', array('keys'=>$keys));
@@ -148,8 +148,10 @@ if(!class_exists('Cf7_WP_Post_Table')){
         'post_type' => 'wpcf7_contact_form',
         'post_name' => $form_key
       ));
-      if(!empty($forms)) $form_id = $forms[0]->ID;
-      wp_reset_postdata();
+      if(!empty($forms)){
+        $form_id = $forms[0]->ID;
+        wp_reset_postdata();
+      }
       return $form_id;
     }
     /**
@@ -408,7 +410,6 @@ if(!class_exists('Cf7_WP_Post_Table')){
         }
         return do_shortcode('[contact-form-7 id="'.$id.'"'.$attributes.']');
       }else{
-        wp_reset_postdata();
         return '<em>' . _('cf7-form shortcode key error, unable to find form','cf7-admin-table') . '</em>';
       }
     }
