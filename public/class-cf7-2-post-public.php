@@ -75,7 +75,7 @@ class Cf7_2_Post_Public {
 		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
 	}
   /**
-  * Maps a cf7 form to its corresponding post
+  * Saves a cf7 form submission to its mapped post
   * Hooks 'wpcf7_before_send_mail' just after all validation is done
   * @since 1.0.0
   * @param  WPCF7_Contact_Form $cf7_form  cf7 form object

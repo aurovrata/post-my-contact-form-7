@@ -203,7 +203,7 @@ class Cf7_2_Post {
 
     /*CF7 Hooks*/
     //use before_send_mail to ensure mapping post form validation
-    $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post');
+    $this->loader->add_action( 'wpcf7_before_send_mail', $plugin_public, 'save_cf7_2_post', 100);
     //skip mail for draft forms
     $this->loader->add_filter('wpcf7_skip_mail', $plugin_public, 'skip_cf7_mail');
     //instroduced a 'save button tag for forms

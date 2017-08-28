@@ -1010,9 +1010,20 @@ class Cf7_2_Post_Factory {
     );
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
+      $system = true;
       if('factory'==$cf7_2_post_map->get('type_source')){
         $cf7_2_post_map->create_cf7_post_type();
+        $system = false;
       }
+      /**
+      * action to notify other plugins for mapped post creation
+      * @since 2.0.4
+      * @param string $post_type   the post type being mapped to
+      * @param boolean $system   true if form is mapped to an existing post, false if it is being registered by this plugin.
+      * @param string $cf7_key   the form key value which is being mapped to the post type
+      * @param string $cf7_id   the form post ID value which is being mapped to the post type
+      */
+      do_action('cf72post_register_mapped_post', $cf7_2_post_map->get('type'), $system, $cf7_2_post_map->cf7_key, $post_id);
       //add a filter for newly saved posts of this type.
       add_action('save_post_'.$cf7_2_post_map->get('type'), function($post_id, $post, $update){
         if($update) return $post_id;

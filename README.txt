@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -213,6 +213,8 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 
 == Changelog ==
+=2.0.4=
+* added action 'cf72post_register_mapped_post'
 =2.0.3=
 * bug fix wp_reset_postdata called regardless of query success.
 =2.0.2=
@@ -634,13 +636,21 @@ action introduced for plugin developers specifically.  Fired at the end of the s
 = `cf7_2_post_status_{$post_type}`=
 The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values),
 
-add_filter('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
+`add_filter('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
 function publish_by_default($status, $ckf7_key, $submitted_data){
   //$status to filter
   //$cf7_key the form's unique key, you can get its id with the following function call,
   $cf7_post_id = get_cf7form_id($ckf7_key);
   //$submitted_data form submitted fields as field-name=>value pairs
   return 'publish';
+}``
+
+= `cf72post_register_mapped_post` =
+This action is fired each time the a mapped post is registered with the WP framework. This is mainly added for plugin developers to extend this plugin and target custom post types that created by this plug.
+`add_action('cf72post_register_mapped_post', 'custom_mapped_post');
+function custom_mapped_post($post_type){
+  //$post_type the post type being registered in the backend.
 }
+`
 == Upgrade Notice ==
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
