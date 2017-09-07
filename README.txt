@@ -3,15 +3,17 @@ Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
+Requires PHP: 5.6
 Tested up to: 4.8
-Stable tag: 2.0.4
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
-**WARNING**: Upgrading to Contact Form 7 v4.8 breaks this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!
+**WARNING**: Upgrading to Contact Form 7 v4.8 may break this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!  I have been testing with CF7 v4.9 and so far it is stable, however I believe the issues are related to the implementation of REST API in the CF7 plugin which I am yet to investigate.
+
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
 
 You can submit and map to a post all of the following fields,
@@ -196,13 +198,25 @@ foreach($faults as $post){
 //echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
 `
 = I made a mistake in my form mapping, how do I correct it once it is created? =
+
 as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
 
 = I have enabled a save button on my form, but draft submissions are not being validated! =
+
 This is the default functionality for saving draft submissions.  This is especially useful for avery large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
 
 = How do I publish posts automatically on form submission ? =
+
 The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use the filter 'cf7_2_post_status_{$post_type}' and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values). See the Filters & Hooks section of this documentation for more information.
+
+= How do I make custom posts publicly visible on the front-end ?=
+
+the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See screenshot 7 for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
+
+If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen opttions](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
+
+
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -211,8 +225,13 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 4. You can now map forms fields to custom taxonomies
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
+7. making custom posts publicly queryable.
 
 == Changelog ==
+
+=2.1.0=
+* introduce menu-position field in custom mapping
+* bug fix in some post registration attributes
 =2.0.4=
 * added action 'cf72post_register_mapped_post'
 =2.0.3=

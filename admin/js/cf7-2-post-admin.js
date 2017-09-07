@@ -27,6 +27,16 @@
       }
 
     });
+		/**toggle menu position field
+		*@since 2.1
+		**/
+		$('input#menu-position-checkbox').click(function(){
+			if($(this).is(':checked')){
+				$('#menu-position').show();
+			}else{
+				$('#menu-position').hide();
+			}
+		});
     //functions
     function createNewTaxonomy(){
       //enable the new field

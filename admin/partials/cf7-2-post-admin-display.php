@@ -88,14 +88,14 @@ $source = $factory_mapping->get('type_source');
                         <label class="post_type_cb_labels">public</label><br />
                         <input type="checkbox" <?php $factory_mapping->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>
                         <label class="post_type_cb_labels">show_ui</label><br />
-                        <input type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>
+                        <input id="menu-position-checkbox" type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>
                         <label class="post_type_cb_labels">show_in_menu</label><br />
-                        <div id="post_type_is_menu_position"><label>menu_position</label>
-                          <input style="width:45px;" type="number" value="<?php $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/>
+                        <div id="menu-position"><label>menu_position</label>
+                          <input style="width:45px;" type="number" value="<?= $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/>
                         </div>
-                        <input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="post_type_is_show_in_admin_bar"/>
+                        <input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="mapped_post_show_in_admin_bar"/>
                         <label class="post_type_cb_labels">show_in_admin_bar</label><br />
-                        <input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="post_type_is_show_in_nav_menus"/>
+                        <input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="mapped_post_show_in_nav_menus"/>
                         <label class="post_type_cb_labels">show_in_nav_menus</label><br />
                         <input type="checkbox" <?php $factory_mapping->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>
                         <label class="post_type_cb_labels">can_export</label><br />
@@ -103,7 +103,7 @@ $source = $factory_mapping->get('type_source');
                         <label class="post_type_cb_labels">has_archive</label><br />
                         <input type="checkbox" <?php $factory_mapping->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>
                         <label class="post_type_cb_labels">exclude_from_search</label><br />
-                        <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_exclude_publicly_queryable"/>
+                        <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>
                         <label class="post_type_cb_labels">publicly_queryable</label><br />
                         <div class="clear"></div>
                       </div><!-- end post-type-select -->

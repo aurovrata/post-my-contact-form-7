@@ -284,11 +284,11 @@ class Cf7_2_Post_Factory {
           break;
         case ( (0 === strpos($field,'mapped_post_')) && $is_factory_map ): //properties
           $this->post_properties[substr($field,$len_mapped_post)]=true;
-          //debug_msg("PROPERTIES:substr($field,$len_mapped_post)." = true");
+          // debug_msg("PROPERTIES:substr($field,$len_mapped_post) = true");
           break;
       }
     }
-    //debug_msg($this->post_properties, 'saving properties ');
+    // debug_msg($this->post_properties, 'saving properties ');
     //let's save the properties if this is a factory mapping
 
     //let's get the capabilities
@@ -339,6 +339,7 @@ class Cf7_2_Post_Factory {
     foreach($this->post_properties as $key=>$value){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
+      //debug_msg('udpating DB '.$key.'='.$value);
       //clear previous values.
       if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
         unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
