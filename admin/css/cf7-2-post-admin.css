@@ -43,6 +43,9 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels{
   padding: 3px;
   vertical-align: middle;
 }
+form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
+    display: none;
+}
 .add-more-field {
   color: blue;
   border: 2.5px solid blue;

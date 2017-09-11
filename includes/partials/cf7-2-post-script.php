@@ -162,7 +162,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
     ?>
         if(data.map_post_id !== undefined){
           fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
-          cf7Form.find('input[name=_wpcf7_nonce]').parent().append(fname);
+          cf7Form.find('input[name=_wpcf7]').parent().append(fname);
         }
         /* trigger the formMapped event to let other scripts that the form is now ready */
         cf7Form.trigger("<?php echo $nonce ?>");

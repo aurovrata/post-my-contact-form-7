@@ -33,11 +33,10 @@ class Cf7_2_Post_i18n {
 	 * @since    1.0.0
 	 */
 	public function load_plugin_textdomain() {
-
 		load_plugin_textdomain(
 			'cf7-2-post',
 			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+			plugin_basename( dirname(__DIR__) )  . '/languages/'
 		);
 
 	}

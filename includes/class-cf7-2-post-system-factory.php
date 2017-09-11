@@ -120,6 +120,8 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
       $post_type
     ));
     $html = '';
+    $foundField=false;
+
     if(false !== $metas){
       foreach($metas as $row){
         if( 0=== strpos( $row->meta_key, '_') &&
@@ -133,9 +135,21 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
         apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){ //skip _meta_keys, assuming system fields.
           continue;
         }
-        $selected_option = ($selected==$row->meta_key)? ' selected="true"':'';
+        $selected_option = '';
+        if($selected==$row->meta_key){
+          $selected_option = ' selected="true"';
+          $foundField= true;
+        }
+
         $html.='<option value="' . $row->meta_key . '"' . $selected_option . '>' . $row->meta_key . '</option>' . PHP_EOL;
       }
+    }
+    /**
+    *allows for custom fields to be created and added.
+    *@since 2.2.0
+    */
+    if(!$foundField && !empty($selected)){
+      $html.='<option value="' . $selected . '" selected="true">' . $selected. '</option>' . PHP_EOL;
     }
     return $html;
   }

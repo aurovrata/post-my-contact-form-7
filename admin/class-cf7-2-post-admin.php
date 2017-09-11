@@ -294,7 +294,6 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function ajax_save_post_mapping(){
-    //
     //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
       wp_send_json_error("Security failed, try to reload the page");

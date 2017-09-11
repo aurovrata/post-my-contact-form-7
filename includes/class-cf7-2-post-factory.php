@@ -481,38 +481,36 @@ class Cf7_2_Post_Factory {
           break;
       }
     }
-    if($is_factory_map){
-      //save the taxonomy mappings
-      //debug_msg($slugs);
-      foreach($slugs as $slug){
-        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-        if(isset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]) ){
-          unset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]);
-          unset($old_fields['cf7_2_post_map_taxonomy_names-'.$slug]);
-          unset($old_fields['cf7_2_post_map_taxonomy_name-'.$slug]);
-        }
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug,$this->taxonomy_properties[$slug]['source']);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
+    //save the taxonomy mappings so they can be created
+    //debug_msg($slugs);
+    foreach($slugs as $slug){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      if(isset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]) ){
+        unset($old_fields['cf7_2_post_map_taxonomy_source-'.$slug]);
+        unset($old_fields['cf7_2_post_map_taxonomy_names-'.$slug]);
+        unset($old_fields['cf7_2_post_map_taxonomy_name-'.$slug]);
       }
-      //clear any old values left.
-      foreach($old_fields as $key=>$value){
-        switch(true){
-          case (0 === strpos($key,'cf7_2_post_map_taxonomy_source-')):
-          case (0 === strpos($key,'cf7_2_post_map_taxonomy_names-')):
-          case (0 === strpos($key,'cf7_2_post_map_taxonomy_name-')):
-            delete_post_meta($this->cf7_post_ID, $key);
-            //debug_msg('deleting: '.$key);
-            break;
-        }
-      }
-      //debug_msg($slugs, "saved taxonomy ");
-      //save the taxonomy properties
-      $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
-      //make sure they are unique
-      $this->post_properties['taxonomy'] = array_unique($this->post_properties['taxonomy']);
-      update_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy', $this->post_properties['taxonomy']);
+      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug,$this->taxonomy_properties[$slug]['source']);
+      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
+      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
     }
+    //clear any old values left.
+    foreach($old_fields as $key=>$value){
+      switch(true){
+        case (0 === strpos($key,'cf7_2_post_map_taxonomy_source-')):
+        case (0 === strpos($key,'cf7_2_post_map_taxonomy_names-')):
+        case (0 === strpos($key,'cf7_2_post_map_taxonomy_name-')):
+          delete_post_meta($this->cf7_post_ID, $key);
+          //debug_msg('deleting: '.$key);
+          break;
+      }
+    }
+    //debug_msg($slugs, "saved taxonomy ");
+    //save the taxonomy properties
+    $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
+    //make sure they are unique
+    $this->post_properties['taxonomy'] = array_unique($this->post_properties['taxonomy']);
+    update_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy', $this->post_properties['taxonomy']);
     //map the cf7 fields to the taxonomies
     foreach($post_map_taxonomy as $cf7_field=>$taxonomy){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
@@ -1097,7 +1095,7 @@ class Cf7_2_Post_Factory {
       $post_id = wp_insert_post ( $post );
     }
     $post['ID'] = $post_id;
-    //debug_msg("Creating a new post... ".$post_id);
+    //debug_msg("Creating a new post (".$this->post_properties['type'].")... ".$post_id);
     foreach($this->post_map_fields as $form_field => $post_field){
       $post_key ='';
       $skip_loop = false;
@@ -1280,28 +1278,28 @@ class Cf7_2_Post_Factory {
     $this->load_form_fields(); //this loads the cf7 form fields and their type
 
     //currently mapped fields will be
-    if('system'==$this->get('type_source')){
-      $post_values = array();
-
-      $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), $post_values, $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID, $this);
-      $post_values = apply_filters('cf7_2_post_pre_load-' . $this->get('type'), $post_values, $this->cf7_key, $this);
-
-      foreach($post_values as $field=>$value){
-        $field_and_values[str_replace('-','_',$field)] = $value;
-        //check if the select2 plugin is required
-        if( 'select' == $this->cf7_form_fields[$field] ){
-          $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $field);
-
-          if( $apply_jquery_select ){
-            wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-            wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
-          }
-        }
-      }
-
-      //in future version, if the $post_values is empty we will simply conitnue
-      return $field_and_values;
-    }
+    // if('system'==$this->get('type_source')){
+    //   $post_values = array();
+    //
+    //   $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), $post_values, $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID, $this);
+    //   $post_values = apply_filters('cf7_2_post_pre_load-' . $this->get('type'), $post_values, $this->cf7_key, $this);
+    //
+    //   foreach($post_values as $field=>$value){
+    //     $field_and_values[str_replace('-','_',$field)] = $value;
+    //     //check if the select2 plugin is required
+    //     if( 'select' == $this->cf7_form_fields[$field] ){
+    //       $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $field);
+    //
+    //       if( $apply_jquery_select ){
+    //         wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+    //         wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
+    //       }
+    //     }
+    //   }
+    //
+    //   //in future version, if the $post_values is empty we will simply conitnue
+    //   return $field_and_values;
+    // }
 
     if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
@@ -1420,6 +1418,7 @@ class Cf7_2_Post_Factory {
         $terms_id = array();
         if( $load_saved_values ) {
           $terms = get_the_terms($post, $taxonomy);
+          if(empty($terms)) $terms = array();
           foreach($terms as $term){
             $terms_id[] = $term->term_id;
           }

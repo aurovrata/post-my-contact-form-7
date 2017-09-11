@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 4.8
-Stable tag: 2.1.0
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -211,11 +211,13 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 
 = How do I make custom posts publicly visible on the front-end ?=
 
-the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See screenshot 7 for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
+the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See this [screenshot](https://ps.w.org/post-my-contact-form-7/assets/screenshot-7.png) for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
 
 If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen opttions](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
 
+= I mapped some fields to post meta-fields, why can't I see them in the dashboard? =
 
+When you map your form fields to the custom post meta fields, you need to to ensure that these meta-fields are displayed in the post edit page of yoru dashboard using [meta-boxes](https://developer.wordpress.org/reference/functions/add_meta_box/).  You can custom [create these meta-boxes](https://www.smashingmagazine.com/2011/10/create-custom-post-meta-boxes-wordpress/) in  your functions.php file or you can also use a plugin.  However, without these meta-boxees you won't be able to see your field values when you edit your posts.
 
 == Screenshots ==
 
@@ -228,6 +230,10 @@ If you have created a custom taxonomy for your post, you can include these into 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=2.2.0=
+* fixed some bugs that prevented draft submissions to system post from saving properly
+* fixed bug that prevented system taxonomy from being saved in submitted forms
+* improved system post mapping to allow custom meta-field addition.
 
 =2.1.0=
 * introduce menu-position field in custom mapping

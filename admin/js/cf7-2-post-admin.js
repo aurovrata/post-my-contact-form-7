@@ -13,9 +13,8 @@
     var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
     var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
     //since 1.3
-    $('select.taxonomy-list').on('change',function(){
+    function taxonomySelected(){
       var option = $("option:selected", this);
-
       $(this).siblings('input.plural-name').val(option.text()).change();
       $(this).siblings('input.singular-name').val(option.data('name'));
       $(this).siblings('input.taxonomy-slug').val(option.val()).change();
@@ -26,7 +25,7 @@
         $(this).siblings('input.taxonomy-source').val('system');
       }
 
-    });
+    }
 		/**toggle menu position field
 		*@since 2.1
 		**/
@@ -121,6 +120,7 @@
           $(this).find('span.link-button.enabled').on('click', function(){
             var details = $(this).parents('div.custom-taxonomy-field').nextAll('div.custom-taxonomy-input-fields').eq(0);
             details.removeClass('hide-if-js');
+            details.find('select.taxonomy-list').on('change',taxonomySelected);
             var parent = $(this).parents('div.custom-taxonomy-field');
             parent.hide();
             parent.next('p.cf7-post-error-msg').hide();
@@ -155,7 +155,7 @@
     };
     /** Added @since 1.5 automatically populates the meta_field name */
     //delegate the change on meta field mapping.
-    $('#custom-meta-fields').change('select.field-options', function(event){
+    $('#custom-meta-fields').change('select', function(event){
       var $target = $(event.target);
       if( $target.is('select.field-options') ){
         if($target.is('.autofill-field-name')){
@@ -169,9 +169,16 @@
             $next.addClass('autofill-field-name'); //prep for autofill.
           }
         }
-      }
+      }else if($target.is('select.cf7-2-post-map-labels')){
+				if('cf72post-custom-meta-field'===$target.val()){
+					$target.hide();
+					var $input = $target.siblings('input.cf7-2-post-map-label-custom').show();
+					$input.prop('disabled', false).addClass('cf7-2-post-map-labels');
+          $input.on('change', metaKeyChange);
+				}
+			}
     });
-    //switch-off auto-fill is the name is manually edited.
+    //switch-off auto-fill if the name is manually edited.
     $('#custom-meta-fields').keyup('input.cf7-2-post-map-labels', function(event){
       var $target = $(event.target);
       if( $target.is('.cf7-2-post-map-labels') ){
@@ -256,6 +263,7 @@
     }
     function metaKeyChange(){
       var name = $(this).val();
+      if('cf72post-custom-meta-field'===name) return true;
       var postType = $('input#mapped_post_type').val();
       //clear message box
       var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();

@@ -186,7 +186,9 @@ $source = $factory_mapping->get('type_source');
                       <select class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
                         <option value="">Select a field</option>
                         <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
+                        <option value="cf72post-custom-meta-field">Custom field</option>
                       </select>
+                      <input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>
                     <?php else: ?>
                       <input <?php $factory_mapping->is_published();?> name="cf7_2_post_map_meta-<?php echo $post_field;?>" class="cf7-2-post-map-labels" type="text" value="<?php echo $post_field;?>">
                     <?php endif; ?>
@@ -205,11 +207,13 @@ $source = $factory_mapping->get('type_source');
                   ?>
                     <div class="custom-meta-field cf7-2-post-field">
                       <span class="spinner meta-label"></span>
-                    <?php if('system' == $source):?>
+                    <?php if('system' == $source): //post meta field names are saved in the form field option select name?>
                       <select disabled="disabled" class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
                         <option value="">Select a field</option>
                         <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
+                        <option value="cf72post-custom-meta-field">Custom field</option>
                       </select>
+                      <input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>
                     <?php else:?>
                       <input disabled="disabled" class="cf7-2-post-map-labels " type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
                     <?php endif;?>
@@ -226,7 +230,7 @@ $source = $factory_mapping->get('type_source');
                   <div id="post_taxonomy_map">
                     <?php
                       $mapped_taxonomy = $factory_mapping->get_mapped_taxonomy();
-
+                      // debug_msg($mapped_taxonomy, " taxonomy... ");
                       if(!empty($mapped_taxonomy)){
                         foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ){
                           $taxonomy = $factory_mapping->get_taxonomy($post_taxonomy);
