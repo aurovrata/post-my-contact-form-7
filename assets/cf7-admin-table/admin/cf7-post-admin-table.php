@@ -389,7 +389,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
      * @return     string    $p2     .
     **/
     public function shortcode( $atts ) {
-      $a = shortcode_atts( array(
+      $a = array_merge( array(
           'cf7key' => '',
       ), $atts );
       if(empty($a['cf7key'])){
