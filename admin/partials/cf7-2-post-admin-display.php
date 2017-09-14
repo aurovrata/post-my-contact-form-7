@@ -183,7 +183,7 @@ $source = $factory_mapping->get('type_source');
                     <div class="custom-meta-field cf7-2-post-field">
                       <span class="spinner meta-label"></span>
                     <?php if('system' == $source):?>
-                      <select class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
+                      <select <?php $factory_mapping->is_published('select');?> class="cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
                         <option value="">Select a field</option>
                         <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
                         <option value="cf72post-custom-meta-field">Custom field</option>

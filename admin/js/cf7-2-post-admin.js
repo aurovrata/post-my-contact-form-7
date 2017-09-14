@@ -444,8 +444,10 @@
             var $label = $('<select class="cf7-2-post-map-labels metas-'+postType+'" '+ disable +'>');
             $label.append('<option value="">Select a field</option>')
             $label.append(data.data.options);
+						$label.append('<option value="cf72post-custom-meta-field">Custom field</option>')
             $('.spinner' , $(this)).hide().after($label);
             $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
+						$label.after('<input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>');
           });
         },
         error:function(data){

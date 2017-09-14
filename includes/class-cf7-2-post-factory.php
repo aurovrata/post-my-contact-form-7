@@ -1277,29 +1277,6 @@ class Cf7_2_Post_Factory {
     $unmapped_fields = array();
     $this->load_form_fields(); //this loads the cf7 form fields and their type
 
-    //currently mapped fields will be
-    // if('system'==$this->get('type_source')){
-    //   $post_values = array();
-    //
-    //   $post_values = apply_filters('cf7_2_post_load-' . $this->get('type'), $post_values, $this->cf7_key, $this->cf7_form_fields, $this->cf7_form_fields_options, $this->cf7_post_ID, $this);
-    //   $post_values = apply_filters('cf7_2_post_pre_load-' . $this->get('type'), $post_values, $this->cf7_key, $this);
-    //
-    //   foreach($post_values as $field=>$value){
-    //     $field_and_values[str_replace('-','_',$field)] = $value;
-    //     //check if the select2 plugin is required
-    //     if( 'select' == $this->cf7_form_fields[$field] ){
-    //       $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $field);
-    //
-    //       if( $apply_jquery_select ){
-    //         wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-    //         wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
-    //       }
-    //     }
-    //   }
-    //
-    //   //in future version, if the $post_values is empty we will simply conitnue
-    //   return $field_and_values;
-    // }
 
     if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
