@@ -230,6 +230,8 @@ When you map your form fields to the custom post meta fields, you need to to ens
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=2.2.2=
+* fixed current logged in user author bug.
 =2.2.1=
 * cf7-form shortcode bug fix
 =2.2.0=

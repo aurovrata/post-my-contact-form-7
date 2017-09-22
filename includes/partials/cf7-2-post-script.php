@@ -164,6 +164,13 @@ $form_values = $this->get_form_values($cf7_2_post_id);
           fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
           cf7Form.find('input[name=_wpcf7]').parent().append(fname);
         }
+ <?php
+ if(is_user_logged_in()):
+   $user = wp_get_current_user();
+   ?>
+          fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?=$user->ID?>" />';
+          cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+<?php endif;?>
         /* trigger the formMapped event to let other scripts that the form is now ready */
         cf7Form.trigger("<?php echo $nonce ?>");
       }

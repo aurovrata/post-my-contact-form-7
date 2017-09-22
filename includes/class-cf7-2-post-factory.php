@@ -946,6 +946,8 @@ class Cf7_2_Post_Factory {
   		'filter_items_list'     => 'Filter '.$this->post_properties['plural_name'].' list',
   	);
     //labels can be modified post taxonomy registratipn
+    //ensure author is supported,
+    if(!isset($this->post_properties['supports']['author'])) $this->post_properties['supports'][]='author';
   	$args = array(
   		'label'                 => $this->post_properties['singular_name'],
   		'description'           => 'Post for CF7 Form'. $this->post_properties['cf7_title'],
@@ -1055,9 +1057,9 @@ class Cf7_2_Post_Factory {
     //create a new post
     //get the form email recipient
     $author = 1;
-    if(is_user_logged_in()){
-      $user = wp_get_current_user();
-      $author = $user->ID;
+    //$msg = (is_user_logged_in())?'yes':'no';
+    if(isset($cf7_form_data['_map_author']) && is_numeric($cf7_form_data['_map_author'])){
+      $author = intval($cf7_form_data['_map_author']);
     }else{
       //get_post_meta ( int $post_id, string $key = '', bool $single = false )
       $mail = get_post_meta ($this->cf7_post_ID,'_mail',true);
@@ -1095,7 +1097,7 @@ class Cf7_2_Post_Factory {
       $post_id = wp_insert_post ( $post );
     }
     $post['ID'] = $post_id;
-    //debug_msg("Creating a new post (".$this->post_properties['type'].")... ".$post_id);
+    //debug_msg($post,"Creating a new post (".$this->post_properties['type'].")... ".$post_id);
     foreach($this->post_map_fields as $form_field => $post_field){
       $post_key ='';
       $skip_loop = false;

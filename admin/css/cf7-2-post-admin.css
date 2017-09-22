@@ -98,6 +98,9 @@ form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg a {
   display: inline-block;
   box-sizing: border-box;
 }
+.custom-meta-field select.field-options {
+    width: 300px;
+}
 form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
 form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
   width: 350px;
