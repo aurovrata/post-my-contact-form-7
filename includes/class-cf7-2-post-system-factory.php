@@ -132,9 +132,10 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
         * @param string $post_type post type under consideration
         * @param string $meta_key meta field name
         */
-        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){ //skip _meta_keys, assuming system fields.
+        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){
+          //skip _meta_keys, assuming system fields.
           continue;
-        }
+        }//end if
         $selected_option = '';
         if($selected==$row->meta_key){
           $selected_option = ' selected="true"';

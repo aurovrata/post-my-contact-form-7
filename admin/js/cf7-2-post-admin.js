@@ -73,42 +73,48 @@
     }
     function createNewField(){
       parent = $(this).parent();
-      var keyName = parent.find('.cf7-2-post-map-labels').val();
-      idx = parseInt(keyName.substr(-1),10);
-      ++idx;
-      var input = newField.find('.cf7-2-post-map-labels');
-      var select = newField.find('select');
-      input.val('meta_key_'+idx);
-      input.attr('name','cf7_2_post_map_meta-meta_key_'+idx);
-      select.attr('name','cf7_2_post_map_meta_value-meta_key_'+idx);
+      var keyName;
+      idx=0;
 
+      var cloneField;
+
+      if($('#system-post-type').is(':visible') && $newSystemField.length>0){
+        $('select.cf7-2-post-map-labels' ,$newSystemField).attr('name','');
+        $('select.field-options' ,$newSystemField).attr('name','');
+        keyName = '';
+        cloneField = $newSystemField.clone();
+      }else{
+        var input = newField.find('.cf7-2-post-map-labels');
+        var select = newField.find('select');
+        keyName = parent.find('.cf7-2-post-map-labels').val();
+        idx = parseInt(keyName.substr(-1),10);
+        ++idx;
+        input.val('meta_key_'+idx);
+        input.attr('name','cf7_2_post_map_meta-meta_key_'+idx);
+        select.attr('name','cf7_2_post_map_meta_value-meta_key_'+idx);
+        cloneField = newField.clone();
+      }
       //enable the new field
       var postType = $('input#mapped_post_type').val();
-      parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
-      parent.find('select').prop('disabled',false);
-      //parent.find('select').attr('name',keyName+'_value');
-      //parent.find('select').on('change',optionSelected);
-      //if(parent.find('select option').length > selectedCount){
-        //add new field
-        var cloneField = newField.clone();
-        parent.parent().append(cloneField).append(errorBox);
-        //bind event handlers
-        cloneField.find('.add-more-field').on('click',createNewField);
-      //}
+      parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
+      parent.find('select.field-options').prop('disabled',false);
+      //add new field
+      parent.parent().append(cloneField).append(errorBox);
+      //bind event handlers
+      cloneField.find('.add-more-field').on('click',createNewField);
       $(this).css('display','none'); //hide the add button
       //add remove button
       parent.append(removeButton);
       //bind event handlers
       parent.activateField();
-      //find('.remove-field').on('click',removeField);
     }
     //function to activate fields
     $.fn.activateField = function() {
         this.filter( 'div.custom-meta-field' ).each(function() {
           $(this).find('.remove-field').on('click',removeField);
           $(this).find('select.field-options').on('change',optionSelected);
-          $(this).find('.cf7-2-post-map-labels').on('change', metaKeyChange);
+          $(this).find('.cf7-2-post-map-labels:visible').on('change', metaKeyChange);
         });
         return this;
     };
@@ -158,7 +164,8 @@
     $('#custom-meta-fields').change('select', function(event){
       var $target = $(event.target);
       if( $target.is('select.field-options') ){
-        if($target.is('.autofill-field-name')){
+        var $option = $('option[value="'+$target.val()+'"]', $target);
+        if($target.is('.autofill-field-name') && !$option.is('.filter-option')){
           var name = $target.val().replace(/-/g,'_');
           var $parent = $target.closest('.custom-meta-field');
           $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
@@ -175,6 +182,7 @@
 					var $input = $target.siblings('input.cf7-2-post-map-label-custom').show();
 					$input.prop('disabled', false).addClass('cf7-2-post-map-labels');
           $input.on('change', metaKeyChange);
+          $input.trigger('change');
 				}
 			}
     });
@@ -253,6 +261,7 @@
         new Clipboard(filter[0]);
       }
     }
+    // called by remove button
     function removeField(){
       parent = $(this).parent();
       var error = parent.next('p.cf7-post-error-msg');
@@ -261,12 +270,13 @@
       error.remove();
       if(details.length) details.remove();
     }
+    //called when meta field value changes
     function metaKeyChange(){
       var name = $(this).val();
       if('cf72post-custom-meta-field'===name) return true;
       var postType = $('input#mapped_post_type').val();
       //clear message box
-      var msgBox = $(this).parent().next('p.cf7-post-error-msg').empty();
+      var msgBox = $(this).parent().next('p.cf7-post-error-msg');
       $(this).attr('name','cf7_2_post_map_meta-'+name);
       var $cf7Fields = $(this).siblings('select.field-options');
       $cf7Fields.attr('name','cf7_2_post_map_meta_value-'+name);
@@ -274,6 +284,7 @@
       var option = $cf7Fields.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+postType+'-'+name);
       if( option.is('option:selected') ){
+        msgBox.empty();
         var filter = $('<a class="code" data-clipboard-text="'+option.attr('value')+'" href="javascript:void(0);">'+option.attr('value')+'</a>').appendTo(msgBox);
         msgBox.prepend('filter:');
         msgBox.append('<span class="popup">Click to Copy!</span>');
@@ -284,11 +295,13 @@
     //change in slug of taxonomy
     function taxonomySlug(){
       var taxonmyField = $(this).parent().prevAll('div.custom-taxonomy-field').eq(0);
+      var $fieldSelect = taxonmyField.find('select');
       var slug = $(this).val();
-      taxonmyField.find('select').attr('name','cf7_2_post_map_taxonomy_value-'+slug);
+      //var mapped = $fieldSelect.val();
+      $fieldSelect.attr('name','cf7_2_post_map_taxonomy_value-'+slug);
       //reset the select box
-      taxonmyField.find('select').prop('selectedIndex',0);
-      var option = taxonmyField.find('select').find('option.filter-option');
+      //$fieldSelect.prop('selectedIndex',0);
+      var option = $fieldSelect.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+slug);
       //reset the msg box
       taxonmyField.next('p.cf7-post-error-msg').empty();
@@ -421,9 +434,10 @@
       }
     });
     /**@since 2.0.0 get system post meta fields as select option */
+    var $newSystemField=''; //store the clnable meta field for system posts.
     $('#system-post-type').on('change', function(){
       //get the options
-       $('#custom-meta-fields .custom-meta-field .cf7-2-post-map-labels').hide();
+      $('#custom-meta-fields .custom-meta-field .cf7-2-post-map-labels').hide();
       $('#custom-meta-fields .custom-meta-field .spinner.meta-label').show().css('display','inline-block');
       var postType = $(this).val();
       $.ajax({
@@ -440,7 +454,10 @@
             $(this).removeClass('autofill-field-name');
             $(this).removeClass('autofill-field-name');
             var disable = '';
-            if($(this).is('.custom-meta-field:last')) disable = ' disabled="disabled"';
+            if($(this).is('.custom-meta-field:last')){
+							disable = ' disabled="disabled"';
+							$newSystemField = $(this);//reset for field cloning
+						}
             var $label = $('<select class="cf7-2-post-map-labels metas-'+postType+'" '+ disable +'>');
             $label.append('<option value="">Select a field</option>')
             $label.append(data.data.options);
@@ -449,14 +466,14 @@
             $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
 						$label.after('<input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>');
           });
+          $newSystemField = $newSystemField.clone();
         },
         error:function(data){
           var $label = $('<em>error in getting fields</em>');
           $('.spinner' , $(this)).hide().after($label);
         }
       });
-    });
-    $('#system-post-type').on('change', function(){
+
       var $system = $('#system-poststuff');
       var $mapped_type = $('input#mapped_post_type');
       $mapped_type.val( $(this).val() );
@@ -471,14 +488,14 @@
     });
   });
   /*set elemetn widths once all images are loaded*/
-  $(window).load(function() {
-    //set up the mesage box width
-    var fieldWidth = 0;
-    $('form#cf7-post-mapping-form div.cf7-2-post-field').each(function(){
-      var exactWidth = $(this).width()+1; /*+1 for rounding errors*/
-      if( exactWidth > fieldWidth ) fieldWidth = exactWidth;
-    });
-    $('div.cf7-2-post-field').width(fieldWidth);
-    $('.cf7-post-error-msg').css({'width':'calc(100% - '+(fieldWidth+10)+'px)'});
-  });
+  // $(window).load(function() {
+  //   //set up the mesage box width
+  //   var fieldWidth = 0;
+  //   $('form#cf7-post-mapping-form div.cf7-2-post-field').each(function(){
+  //     var exactWidth = $(this).width()+1; /*+1 for rounding errors*/
+  //     if( exactWidth > fieldWidth ) fieldWidth = exactWidth;
+  //   });
+  //   $('div.cf7-2-post-field').width(fieldWidth);
+  //   //$('.cf7-post-error-msg').css({'width':'calc(100% - '+(fieldWidth+10)+'px)'});
+  // });
 })( jQuery );

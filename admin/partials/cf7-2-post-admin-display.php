@@ -131,7 +131,7 @@ $source = $factory_mapping->get('type_source');
                   </div>
                   <div id="creation-action">
                     <span class="spinner save_post"></span>
-                    <input name="submit" onclick="this.form.submited=this.id;" id="save_post" class="button button-primary button-large" value="Create" type="submit">
+                    <input name="submit" onclick="this.form.submited=this.id;" id="save_post" class="button button-primary button-large" value="Publish Map" type="submit">
                   </div>
                   <div class="clear"></div>
                   <div id="ajax-response"></div>
@@ -170,9 +170,11 @@ $source = $factory_mapping->get('type_source');
                     if($factory_mapping->supports('excerpt')){
                       echo sprintf($default_post_fields, __('Post Excerpt', 'cf7_2_post'), 'excerpt', $factory_mapping->get_select_options('excerpt'));
                     }
+                    $published_class = '';
+                    if(!$is_new_mapping) $published_class = ' class="mapping-published"';
                 ?>
                   <h2>Custom meta fields key (no spaces allowed)</h2>
-                  <div id="custom-meta-fields">
+                  <div id="custom-meta-fields"<?=$published_class?>>
                 <?php
                   $mapped_fields = $factory_mapping->get_mapped_meta_fields();
                   //debug_msg($mapped_fields, "meta fields...");
@@ -204,6 +206,7 @@ $source = $factory_mapping->get('type_source');
                   <?php
                     }
                   }
+                  if($is_new_mapping):
                   ?>
                     <div class="custom-meta-field cf7-2-post-field">
                       <span class="spinner meta-label"></span>
@@ -223,11 +226,12 @@ $source = $factory_mapping->get('type_source');
                       <span class="dashicons dashicons-plus add-more-field"></span>
                     </div>
                     <p class="cf7-post-error-msg"></p>
+                  <?php endif;?>
                     <div class="clear"></div>
                   </div>
                   <p>Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>.</p>
                   <h2>Custom Taxonomy  (no spaces allowed)</h2>
-                  <div id="post_taxonomy_map">
+                  <div id="post_taxonomy_map"<?=$published_class?>>
                     <?php
                       $mapped_taxonomy = $factory_mapping->get_mapped_taxonomy();
                       // debug_msg($mapped_taxonomy, " taxonomy... ");
@@ -281,6 +285,7 @@ $source = $factory_mapping->get('type_source');
                     }
                     //default new taxonomy slug
                     $taxonomy_slug = sanitize_title( $factory_mapping->get('singular_name') ).'_categories';
+                    if($is_new_mapping):
                     ?>
                     <div class="custom-taxonomy-field cf7-2-post-field">
                       <label class="taxonomy-label-field cf7-2-post-map-labels">
@@ -311,6 +316,7 @@ $source = $factory_mapping->get('type_source');
                         <span class="wp-core-ui button" aria-hidden="true">Save</span>
                       </button>
                     </div>
+                  <?php endif;?>
                   </div>
                 </div>
               </div><!-- .inside end -->

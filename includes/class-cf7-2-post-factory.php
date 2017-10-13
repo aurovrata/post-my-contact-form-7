@@ -1500,13 +1500,14 @@ class Cf7_2_Post_Factory {
     //build the list
     $term_class = 'cf72post-'.$taxonomy;
     $nl = '';//PHP_EOL;
-    $script = '<fieldset class="'.$term_class.'">';
+    $script = '<fieldset class="top-level '.$term_class.'">';
     if($parent > 0){
       $script = '<fieldset class="cf72post-child-terms parent-term-'.$parent.'">';
       $term_class .= ' cf72post-child-term';
     }
     //if we are dealing with a dropdown, then don't group fieldsets
     if('select' == $field_type) $script = '';
+    //loop over all terms
     foreach($terms as $term){
       $term_id = $term->term_id;
       $is_optgroup=false;
@@ -1541,8 +1542,8 @@ class Cf7_2_Post_Factory {
           if( in_array($term_id, $post_terms) ){
             $check = 'checked';
           }
-          $script .='<input type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
-          $script .='<label>'.$term->name.'</label>'.$nl;
+          $script .='<div class="radio-term"><input type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         case 'checkbox':
           $check = '';
@@ -1553,8 +1554,8 @@ class Cf7_2_Post_Factory {
           if( !$this->field_has_option($field, 'exclusive') ){
             $field_name = $field.'[]';
           }
-          $script .='<input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
-          $script .='<label>'.$term->name.'</label>'.$nl;
+          $script .='<div class="checkbox-term"><input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         default:
           return ''; //nothing more to do here

@@ -37,10 +37,9 @@ label[for="post_type"] {
     display: inline-block;
 }
 form#cf7-post-mapping-form .cf7-2-post-map-labels{
-  min-width: 130px;
   display:inline-block;
   width: 130px;
-  padding: 3px;
+  padding: 3px 0;
   vertical-align: middle;
 }
 form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
@@ -71,19 +70,25 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
 form#cf7-post-mapping-form .cf7-post-error-msg{
   display: inline-block;
   margin: 0 5px;
-  width: auto;
+  width: calc(100% - 345px)
   line-height: 15px;
   vertical-align: middle;
   position: relative;
 }
+form#cf7-post-mapping-form #custom-meta-fields .cf7-2-post-map-labels{
+  min-width: 200px;
+}
 form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
 form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
   width: calc(100% - 480px);
+  /*width: 49%;*/
+  min-width: 200px;
+  overflow-x: auto;
   margin-left: 2px;
   vertical-align: middle;
   line-height: 15px;
 }
-form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg a {
+form#cf7-post-mapping-form .cf7-post-error-msg a {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -92,18 +97,34 @@ form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg a {
     margin-left: 0;
 }
 .field-options.post-options{
-  min-width: calc(100% - 165px);
+  width: 200px;
 }
 .custom-meta-field, .post-meta-field, .custom-taxonomy-field{
   display: inline-block;
   box-sizing: border-box;
 }
 .custom-meta-field select.field-options {
-    width: 300px;
+    min-width: 200px;
+    padding: 3px 0;
 }
 form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
 form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
-  width: 470px;
+  min-width: 460px;
+}
+
+form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field,
+form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .custom-taxonomy-field {
+    width: 100%;
+    max-width: unset;
+}
+form#cf7-post-mapping-form  #custom-meta-fields.mapping-published .cf7-post-error-msg,
+form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .cf7-post-error-msg{
+  display: none;
+}
+form#cf7-post-mapping-form .mapping-published .cf7-2-post-map-labels:disabled {
+    min-width: auto;
+    width: auto;
+    max-width: 45%;
 }
 form#cf7-post-mapping-form .custom-taxonomy-input-fields input {
   width: 100px;

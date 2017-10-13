@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 4.8.1
+Tested up to: 4.8.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -230,6 +230,12 @@ When you map your form fields to the custom post meta fields, you need to to ens
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=2.3.0=
+* bug fix which prevent radio/checkbox being saved
+* bug fix for system post meta-fields selection.
+* bug fix on taxonomy field select
+* improved styling of post mapping page
+* save draft prevents form fields from clearing
 =2.2.2=
 * fixed current logged in user author bug.
 =2.2.1=

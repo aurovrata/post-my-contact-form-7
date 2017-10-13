@@ -30,6 +30,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
     $taxonomies = array_merge($this->post_map_taxonomy, $taxonomies);
 
     $this->load_form_fields(); //this loads the cf7 form fields and their type
+    //debug_msg($this->cf7_form_fields, 'fields');
     foreach($this->cf7_form_fields as $field=>$type){
       if(isset($taxonomies[$field]) ) continue;
 
@@ -81,12 +82,12 @@ $form_values = $this->get_form_values($cf7_2_post_id);
             $format .= 'cf7Form.find("textarea[name=%1$s]").val(data.%2$s);'.PHP_EOL;
             break;
           case 'radio':
-            $format .= 'cf7Form.find("input[name=%1$s]").prop("checked",true);'.PHP_EOL;
-            break;
           case 'checkbox':
-            $format .= 'fname = %1$s[];'.PHP_EOL;
+            $suffix = ("checkbox"===$type)?"[]":"";
+            $format .= 'fname = "%1$s' . $suffix . '";'.PHP_EOL;
             $format .= '$.each(data.%2$s , function(index, value){'.PHP_EOL;
-            $format .= '  cf7Form.find("input[name=fname][value=data.%2$s."+value+"]").prop("checked",true);'.PHP_EOL;
+            //$format .= '  var search = +value;'.PHP_EOL;
+            $format .= "  cf7Form.find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true);".PHP_EOL;
             $format .= '});';
             break;
         }
