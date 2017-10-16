@@ -359,6 +359,7 @@ class Cf7_2_Post_Admin {
     }
     die();
   }
+  
   /**
   * Loads the custom posts created into the dashboard.
   * @since 1.0.0

@@ -70,7 +70,7 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
 form#cf7-post-mapping-form .cf7-post-error-msg{
   display: inline-block;
   margin: 0 5px;
-  width: calc(100% - 345px)
+  width: calc(100% - 345px);
   line-height: 15px;
   vertical-align: middle;
   position: relative;
@@ -81,9 +81,7 @@ form#cf7-post-mapping-form #custom-meta-fields .cf7-2-post-map-labels{
 form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
 form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
   width: calc(100% - 480px);
-  /*width: 49%;*/
   min-width: 200px;
-  overflow-x: auto;
   margin-left: 2px;
   vertical-align: middle;
   line-height: 15px;
@@ -95,6 +93,7 @@ form#cf7-post-mapping-form .cf7-post-error-msg a {
     width: calc(100% - 50px);
     vertical-align: middle;
     margin-left: 0;
+    padding-right: 0;
 }
 .field-options.post-options{
   width: 200px;
@@ -104,7 +103,7 @@ form#cf7-post-mapping-form .cf7-post-error-msg a {
   box-sizing: border-box;
 }
 .custom-meta-field select.field-options {
-    min-width: 200px;
+    width: 200px;
     padding: 3px 0;
 }
 form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
@@ -114,17 +113,23 @@ form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
 
 form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field,
 form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .custom-taxonomy-field {
-    width: 100%;
-    max-width: unset;
+  max-width: 80%;
+  width: auto;
 }
 form#cf7-post-mapping-form  #custom-meta-fields.mapping-published .cf7-post-error-msg,
 form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .cf7-post-error-msg{
-  display: none;
+  width: auto;
+  min-width: 0;
+  max-width: calc(100% - 475px);
+  margin-right: 0;
+}
+form#cf7-post-mapping-form #custom-meta-fields.mapping-published .cf7-post-error-msg .cf7-2-post-map-labels {
+    min-width: 0;
+    width: auto;
 }
 form#cf7-post-mapping-form .mapping-published .cf7-2-post-map-labels:disabled {
-    min-width: auto;
+    max-width: 260px;
     width: auto;
-    max-width: 45%;
 }
 form#cf7-post-mapping-form .custom-taxonomy-input-fields input {
   width: 100px;
