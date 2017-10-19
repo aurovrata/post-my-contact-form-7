@@ -1163,6 +1163,7 @@ class Cf7_2_Post_Factory {
        }
 
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        debug_msg($form_field);
         $post[$post_key] = apply_filters($form_field,'', $post_id, $cf7_form_data);
       }else{
         if( isset($cf7_form_data[$form_field]) ){
@@ -1542,7 +1543,7 @@ class Cf7_2_Post_Factory {
           if( in_array($term_id, $post_terms) ){
             $check = 'checked';
           }
-          $script .='<div class="radio-term"><input type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<div id="'.$term->slug.'" class="radio-term"><input type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
           $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         case 'checkbox':
@@ -1554,7 +1555,7 @@ class Cf7_2_Post_Factory {
           if( !$this->field_has_option($field, 'exclusive') ){
             $field_name = $field.'[]';
           }
-          $script .='<div class="checkbox-term"><input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<div id="'.$term->slug.'" class="checkbox-term"><input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
           $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         default:

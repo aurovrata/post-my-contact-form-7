@@ -330,9 +330,10 @@
       //rename the filter options
       var postType = $(this).val();
       $('div.post-meta-field').each(function(){
-        var name = $(this).find('select.field-options').attr('name');
-         name = name.replace('cf7_2_post_map-','');
-        $(this).find('option.filter-option').attr('value','cf7_2_post_filter-'+postType+'-'+name);
+        var $select = $('select.field-options', $(this));
+        var name = $select.attr('name');
+        name = name.replace('cf7_2_post_map-','');
+        $('option.filter-option', $select).attr('value','cf7_2_post_filter-'+postType+'-'+name);
       })
       $('div.custom-meta-field').each(function(){
         var name = $(this).find('select.field-options').attr('name');
@@ -483,15 +484,30 @@
 
       var $system = $('#system-poststuff');
       var $mapped_type = $('input#mapped_post_type');
-      $mapped_type.val( $(this).val() );
+      var postType = $(this).val();
+      $mapped_type.val( postType );
       $('h3', $system).text('This form is mapped to an existing post: '+ $(this).val() );
-      var anime = $('p span.action-form-map', $system).text( 'cf7_2_post_save-'+$(this).val() ).closest('p');
+      var anime = $('p span.action-form-map', $system).text( 'cf7_2_post_save-'+postType ).closest('p');
       anime.before(anime.clone());
       anime.remove();
-      anime = $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+$(this).val() ).closest('p');
+      anime = $('p span.filter-form-load',$system).text( 'cf7_2_post_load-'+postType ).closest('p');
       anime.before(anime.clone());
       anime.remove();
-      $mapped_type.val( $(this).val() );
+      $mapped_type.val( postType );
+      //rename the filter options
+      $('div.post-meta-field').each(function(){
+        var $select = $('select.field-options', $(this));
+        var name = $select.attr('name');
+        name = name.replace('cf7_2_post_map-','');
+        $('option.filter-option', $select).attr('value','cf7_2_post_filter-'+postType+'-'+name);
+      })
+      $('div.custom-meta-field').each(function(){
+        var name = $(this).find('select.field-options').attr('name');
+        name = name.replace('cf7_2_post_map_meta_value-','');
+        $(this).find('option.filter-option').attr('value','cf7_2_post_filter-'+postType+'-'+name);
+      })
+      //update hook messages
+      $('option.filter-option').hookMessages(true);
     });
   });
   /*set elemetn widths once all images are loaded*/

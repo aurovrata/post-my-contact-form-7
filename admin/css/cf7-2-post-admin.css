@@ -95,6 +95,9 @@ form#cf7-post-mapping-form .cf7-post-error-msg a {
     margin-left: 0;
     padding-right: 0;
 }
+.cf7-post-error-msg a.code:hover {
+    position: fixed;
+}
 .field-options.post-options{
   width: 200px;
 }

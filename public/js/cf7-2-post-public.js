@@ -10,7 +10,24 @@
         if($(this).is('.cf7_2_post_save')){
           isSave = 'true';
 					$(':input',$form).each(function(){
-						$(this).prop("defaultValue", $(this).val());
+            switch(true){
+              case $(this).is(':checked'):
+                $(this).prop("defaultChecked", true);
+                break;
+              case $(this).is('select'):
+                var values = $(this).val();
+                if(!$.isArray(values)) values = [values];
+                $('option', $(this)).each(function(){
+                  $(this)[0].defaultSelected= false;
+                  if(values.indexOf($(this).val()) >= 0){
+                    $(this)[0].defaultSelected=true;
+                  }
+                });
+                break;
+              default:
+                $(this).prop("defaultValue", $(this).val());
+                break;
+            }
 					});
         }
         $('input[type=hidden].cf7_2_post_draft', cf7Form).val(isSave);

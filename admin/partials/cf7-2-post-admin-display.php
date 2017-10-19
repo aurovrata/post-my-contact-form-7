@@ -139,6 +139,13 @@ $source = $factory_mapping->get('type_source');
               <?php endif;?>
               </div>
             </div>
+  <?php
+/**
+* Helper metabox with click-to-copy filter snippets.
+*@since 2.4.0
+*/
+include plugin_dir_path(__FILE__).'/cf7-2-post-helper-metabox.php';
+  ?>
           </div>
         </div><!-- #postbox-container-1 end -->
         <?php if('filter'!==$source):?> <!-- postbox-container-2 -->
