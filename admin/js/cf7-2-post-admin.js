@@ -151,12 +151,8 @@
         this.filter( 'option.filter-option:selected' ).each(function() {
           var msgBox = $(this).closest('div.cf7-2-post-field').next('p.cf7-post-error-msg');
           msgBox.empty();
-          var field = $(this).attr('value');
-          field = field.replace('cf7_2_post_filter-','');
-          field = field.replace(/-/g,'_');
-          var helper = "add_filter('"+$(this).attr('value')+"','filter_"+field+"',10,3);\n";
-          helper +="function filter_"+field+"($value, $post_id, $form_data){\n  //$value is the post field value to return, by default it is empty\n  //$post_id is the ID of the post to which the form values are being mapped to\n  // $form_data is the submitted form data as an array of field-name=>value pairs\n";
-          helper +="  return $value;\n}";
+          var value = $(this).attr('value');
+          var helper = filterHelper(value);
 
           var filter = $('<a class="code" data-clipboard-text="'+helper+'" href="javascript:void(0);">'+$(this).attr('value')+'</a>').appendTo(msgBox);
           msgBox.prepend('filter:');
@@ -262,11 +258,20 @@
         msgBox.text("Warning: Field already selected!");
       }else if(selected.find('option:selected').hasClass('filter-option')){
         var value = selected.find('option:selected').val();
-        var filter = $('<a class="code" data-clipboard-text="'+ value +'" href="javascript:void(0);">'+ value +'</a>').appendTo(msgBox);
+        var helper = filterHelper(value);
+        var filter = $('<a class="code" data-clipboard-text="'+ helper +'" href="javascript:void(0);">'+ value +'</a>').appendTo(msgBox);
         msgBox.prepend('filter:');
         msgBox.append('<span class="popup">Click to Copy!</span>');
         new Clipboard(filter[0]);
       }
+    }
+    function filterHelper(filter){
+      var field = filter.replace('cf7_2_post_filter-','');
+      field = field.replace(/-/g,'_');
+      var helper = "add_filter('"+filter+"','filter_"+field+"',10,3);\n";
+      helper +="function filter_"+field+"($value, $post_id, $form_data){\n  //$value is the post field value to return, by default it is empty\n  //$post_id is the ID of the post to which the form values are being mapped to\n  // $form_data is the submitted form data as an array of field-name=>value pairs\n";
+      helper +="  return $value;\n}";
+      return helper;
     }
     // called by remove button
     function removeField(){
