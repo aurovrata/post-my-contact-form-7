@@ -230,7 +230,8 @@ When you map your form fields to the custom post meta fields, you need to to ens
 7. making custom posts publicly queryable.
 
 == Changelog ==
-=2.3.1=
+=2.4.0=
+* introduction of inline helper
 * css error fix
 * improved in-page filter helper.
 =2.3.0=
