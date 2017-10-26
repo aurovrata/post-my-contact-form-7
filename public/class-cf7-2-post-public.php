@@ -55,24 +55,21 @@ class Cf7_2_Post_Public {
 	}
 
 	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-public.css', array(), $this->version, 'all' );
-
-	}
-
-	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
     $plugin_dir = plugin_dir_url( __FILE__ );
-		wp_register_script( $this->plugin_name, $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, false );
+    wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
+    // wp_register_script(
+    //     'cf7-2-post-loader', //handle
+    //     plugin_dir_url( __DIR__ ) . 'includes/partials/cf7-2-post-script.php', // src
+    //     array('jquery'), // dependencies, I use jquery in dynamic-javascript.php
+    //     $this->version, // version number,
+    //     false //in footer
+    // );
 	}
   /**
   * Saves a cf7 form submission to its mapped post
@@ -133,7 +130,10 @@ class Cf7_2_Post_Public {
     $cf7_id = $attr['id'];
     //let get the corresponding factory object,
     if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
-      $plugin_dir = plugin_dir_url( __FILE__ );
+      //let's ensure the page does not cache our values.
+			debug_msg('setting up metas');
+      add_action('wp_head', array($this, 'disable_browser_page_cache'), 1);
+      //$plugin_dir = plugin_dir_url( __FILE__ );
       $factory = Cf7_2_Post_System::get_factory($cf7_id);
       //unique nonce
       $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
@@ -144,11 +144,52 @@ class Cf7_2_Post_Public {
       if(isset($attr['cf7_2_post_id'])){
         $cf7_2_post_id = $attr['cf7_2_post_id'];
       }
-      $map_script = $factory->get_form_field_script( $nonce, $cf7_2_post_id );
-      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$map_script.PHP_EOL.$scripts.'</div>';
+      $form_values = $factory->get_form_values($cf7_2_post_id);
+      $inline_script = $factory->get_form_field_script( $nonce );
+      wp_enqueue_script($this->plugin_name.'-load'); //previously registered.
+      wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
+      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$inline_script.PHP_EOL.$scripts.'</div>';
     }
     return $output;
   }
+  /**
+  *Disables browser page caching for forms which are mapped to a post.
+  * Hooked on 'wp_head' in fn load_cf7_script.
+  *@since 2.5.0
+  */
+  public function disable_browser_page_cache(){
+		debug_msg('printing metas');
+      ?>
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+      <?php
+  }
+	/**
+	* Function to load dynamic script for post 2 map form filling.
+	* Hooked to 'wp_ajax_load_post_2_cf7'
+	*@since 2.5.0
+	*/
+	public function load_dynamic_script(){
+		if(!isset($_REQUEST['wpnonce']) || !isset($_REQUEST['form'])){
+			die('CF72POST: wrong ajax call, no attributes found!');
+		}
+		$nonce = $_REQUEST['wpnonce'];
+		$cf7_id = $_REQUEST['form'];
+    debug_msg($_REQUEST, 'request ');
+    debug_msg($_GET, 'get ');
+    debug_msg('nonce: '.wp_verify_nonce( $nonce, 'post-2-cf7-'.$cf7_id ));
+		if( ! wp_verify_nonce( $nonce, 'post-2-cf7-'.$cf7_id ) ) {
+      debug_msg('incalid nonce');
+			die( 'CF72POST: invalid nonce' );
+		} else {
+			$factory = Cf7_2_Post_System::get_factory($cf7_id);
+			require_once  plugin_dir_path( __DIR__ ) . '/includes/partials/cf7-2-post-script.php';
+		}
+		exit;
+	}
   /**
    * Register a [save] shortcode with CF7.
    * Hooked  on 'wpcf7_init'
@@ -175,7 +216,7 @@ class Cf7_2_Post_Public {
 	 */
 	public function save_button_display( $tag ) {
       //enqueue required scripts and styles
-      wp_enqueue_script( $this->plugin_name);
+      wp_enqueue_script( $this->plugin_name.'-save');
 
 	    $tag = new WPCF7_FormTag( $tag );
       $class = wpcf7_form_controls_class( $tag->type );

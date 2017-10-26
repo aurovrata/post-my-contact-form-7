@@ -197,9 +197,12 @@ class Cf7_2_Post {
 
 		$plugin_public = new Cf7_2_Post_Public( $this->get_plugin_name(), $this->get_version() );
     /* WP hooks */
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		//$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
     $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
+    //dynamic script ajax.
+    $this->loader->add_action( 'wp_ajax_load_post_2_cf7', $plugin_public, 'load_dynamic_script' );
+    $this->loader->add_action( 'wp_ajax_nopriv_load_post_2_cf7', $plugin_public, 'load_dynamic_script' );
 
     /*CF7 Hooks*/
     //use before_send_mail to ensure mapping post form validation

@@ -23,7 +23,7 @@ class Cf7_2_Post_Factory {
 	 * @access    protected
 	 * @var      int    $cf7_post_ID    the CF7 post ID.
 	 */
-  protected $cf7_post_ID;
+  public $cf7_post_ID;
   /**
    * The the CF7 post unique key.
    *
@@ -31,7 +31,7 @@ class Cf7_2_Post_Factory {
    * @access    protected
    * @var      string    $cf7_key    the unique key which can be used to identfy this form.
    */
-  protected $cf7_key;
+  public $cf7_key;
   /**
 	 * The CF7 form fields.
 	 *
@@ -682,6 +682,15 @@ class Cf7_2_Post_Factory {
   */
   public function get_mapped_taxonomy(){
     return $this->post_map_taxonomy;
+  }
+  /**
+  * Get the cf7 form fields
+  *@since 2.5.0
+  *@return array  of field=>type pairs.
+  */
+  public function get_form_fields(){
+    if(empty($this->cf7_form_fields)) $this->load_form_fields();
+    return $this->cf7_form_fields;
   }
   /**
   * Get the mapping of cf7 form field to post fields
@@ -1438,16 +1447,12 @@ class Cf7_2_Post_Factory {
   * @param   Array  $field_and_values   array of $field_name=>$values pairs
   * @param   Int  $cf7_2_post_id   a specific post to which this form submission is mapped/saved
   */
-  public function get_form_field_script($nonce, $cf7_2_post_id=''){
+  public function get_form_field_script($nonce){
     ob_start();
+    $factory = $this;
     include( plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-script.php');
     $script = ob_get_contents ();
     ob_end_clean();
-    //save to file
-    /*$result = file_put_contents( plugin_dir_path( __DIR__ ) . 'public/js/cf7_2_post-'.$this->cf7_post_ID.'.js',  $script);
-    if(false === $result){
-      debug_msg(plugin_dir_path( __DIR__ ) . 'js/cf7_2_post-'.$this->cf7_post_ID.'.js', "Unable to save script file: ");
-    }*/
     return $script;
   }
   /**

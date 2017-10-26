@@ -13,8 +13,29 @@ function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
   //$post_id is the ID of the post to which the form values are being mapped to
   // $form_data is the submitted form data as an array of field-name=>value pairs
   //$cf7form_key unique form key to identify your form.
-  return $value;
+
 }" href="javascript:void(0);">Action</a> after submission is saved to mapped post.
+      </li>
+      <li>
+        <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value','field_default_value',10,4);
+function field_default_value($value, $cf7_id, $field, $cf7form_key){
+  //$value to be filtered
+  // $field is the current field being loaded.
+  //$cf7form_key unique form key to identify your form, $cf7_id is its post_id.
+  if('contact-us'!==$cf7form_key ){
+    return $value;
+  }
+  //assuming my target visitors are from Chennai, India, I could pre-fill the fields your-location and your-country as,
+  switch($field){
+    case 'your-location':
+      $value = 'Chennai';
+      break;
+    case 'your-country':
+      $value = 'India';
+      break;
+  }
+  return $value;
+}" href="javascript:void(0);">Filter</a> default field value when form is displayed.
       </li>
     </ul>
   </div>

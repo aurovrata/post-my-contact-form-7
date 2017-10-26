@@ -1,6 +1,9 @@
 <?php
-$form_values = $this->get_form_values($cf7_2_post_id);
-//debug_msg($form_values);
+//prevent direct access
+if ( ! defined( 'ABSPATH' ) ) {
+  die();
+}
+//header( "Content-type: application/javascript; charset: UTF-8" );
 ?>
 <script type="text/javascript">
 (function( $ ) {
@@ -8,8 +11,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
    (function(){ //make scope local to this script
      $( document).ready(function() {
        var fname;
-       var data = <?php echo wp_json_encode($form_values);?>;
-       var cf7Form = $("div#<?php echo $nonce ?> form.wpcf7-form");
+       var cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
        if(cf7Form.is('div.cf7-smart-grid form.wpcf7-form')){
          //if the smart grid is enabled, execute the loading once the grid is ready
          cf7Form.on('cf7SmartGridReady', function(){
@@ -20,18 +22,20 @@ $form_values = $this->get_form_values($cf7_2_post_id);
        }
        // function to load all the data into the form
        function preloadForm(cf7Form){
+         var data = cf7Form.post2CF7FormData('<?=$nonce?>');
+         if(0 === data.length){
+           return false;
+         }
   <?php
     /**
     * filter fields mapped to taxonomy (in case mapping is done on a system post)
     * @since 1.3.2
     */
     $taxonomies = array();
-    $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $this->cf7_key );
-    $taxonomies = array_merge($this->post_map_taxonomy, $taxonomies);
-
-    $this->load_form_fields(); //this loads the cf7 form fields and their type
-    //debug_msg($this->cf7_form_fields, 'fields');
-    foreach($this->cf7_form_fields as $field=>$type){
+    $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $factory->cf7_key );
+    $taxonomies = array_merge($factory->get_mapped_taxonomy(), $taxonomies);
+    $form_fields = $factory->get_form_fields();
+    foreach($form_fields as $field=>$type){
       if(isset($taxonomies[$field]) ) continue;
 
       $json_var = str_replace('-','_',$field);
@@ -39,7 +43,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
       $js_form = 'cf7Form';
       $json_value = 'data.'.$json_var;
       $default_script = true;
-      $form_id = $this->cf7_post_ID;
+      $form_id = $factory->cf7_post_ID;
       /**
       * @since 2.0.0
       * filter to modify the way the field is set.  This is introduced for plugin developers
@@ -105,7 +109,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
     //load the taxonomy required
     //legacy
 
-    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $form_field);
+    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $factory->cf7_post_ID, $form_field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $factory->cf7_post_ID, $form_field);
 
     if($load_chosen){
       $load_chosen_script = true;
@@ -115,11 +119,11 @@ $form_values = $this->get_form_values($cf7_2_post_id);
     if( 0 === strpos($form_field,'cf7_2_post_filter-') ) continue;
     $terms_id = array();
 
-    $field_type = $this->cf7_form_fields[$form_field];
+    $field_type = $form_fields[$form_field];
 
     switch($field_type){
       case 'select':
-        if( $this->field_has_option($form_field, 'multiple') ){
+        if( $factory->field_has_option($form_field, 'multiple') ){
           $form_field = '"'.$form_field.'[]"';
         }
         if($load_chosen){
@@ -150,7 +154,7 @@ $form_values = $this->get_form_values($cf7_2_post_id);
     }
   }
   if($load_chosen_script):
-    $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $this->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $this->cf7_post_ID);
+    $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $factory->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $factory->cf7_post_ID);
     if(!$delay_chosen_script):
     ?>
       $(".js-select2", cf7Form).each(function(){
@@ -174,8 +178,8 @@ $form_values = $this->get_form_values($cf7_2_post_id);
 <?php endif;?>
         /* trigger the formMapped event to let other scripts that the form is now ready */
         cf7Form.trigger("<?php echo $nonce ?>");
-      }
-    });
+      }//end preloadForm()
+    }); //document ready
   })(); //call local function to execute it.
 })( jQuery );
 </script>

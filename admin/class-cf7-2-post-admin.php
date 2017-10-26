@@ -297,6 +297,7 @@ class Cf7_2_Post_Admin {
     //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
       wp_send_json_error("Security failed, try to reload the page");
+      die();
     }
     if( isset( $_POST['cf7_post_id'] ) ){
 
@@ -359,7 +360,7 @@ class Cf7_2_Post_Admin {
     }
     die();
   }
-  
+
   /**
   * Loads the custom posts created into the dashboard.
   * @since 1.0.0
