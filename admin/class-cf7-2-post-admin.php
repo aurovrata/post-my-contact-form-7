@@ -40,7 +40,7 @@ class Cf7_2_Post_Admin {
 	 */
 	private $version;
   /**
-	 * A factory object o handle the create of mapping posts.
+	 * A factory object or handle the create of mapping posts.
 	 *
 	 * @since    1.0.0
 	 * @access   private
@@ -55,6 +55,13 @@ class Cf7_2_Post_Admin {
 	 * @var      Cf7_WP_Post_Table    $cf7_list_table   cf7 admin list table object.
 	 */
 	private $cf7_list_table;
+  /**
+  * The screen ID of our custom admin page.
+  * @since 3.0.0
+  * @access public
+  * constant string   the id of the screen, which is dependent on the CF7 main menu.
+  */
+  public const MAP_SCREEN_ID = 'contact_page_map_cf7_2_post';
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -109,6 +116,10 @@ class Cf7_2_Post_Admin {
 	public function enqueue_styles($hook) {
     if ('contact_page_cf7_post' == $hook){
   		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
+
+    }else if(self::MAP_SCREEN_ID == $hook){
+      wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
+      wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }else{
       $screen = get_current_screen();
       if(WPCF7_ContactForm::post_type != $screen->post_type){
@@ -128,11 +139,16 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
-
     if ('contact_page_cf7_post' == $hook){
-  		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery' ), $this->version, true );
-      wp_enqueue_script('jquery-clibboard', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
+  		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
+      wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+
+    }else if(self::MAP_SCREEN_ID == $hook){
+      wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
+      wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
+      wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+      wp_enqueue_script('jquery-nice-select', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/js/jquery.nice-select.min.js', array( 'jquery' ), $this->version, true );
     }else{
       $screen = get_current_screen();
       if(WPCF7_ContactForm::post_type != $screen->post_type){
@@ -164,6 +180,7 @@ class Cf7_2_Post_Admin {
   *
   */
   public function add_cf7_sub_menu(){
+    // add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $function = '' )
     $hook = add_submenu_page(
       'wpcf7',
       'CF7 Form to post',
@@ -171,6 +188,97 @@ class Cf7_2_Post_Admin {
       'manage_options',
       'cf7_post',
       array($this,'display_mapping_page'));
+      $hook2 = add_submenu_page(
+        'wpcf7', //parent slug
+        'CF7 Form to post', //page title
+        'Map CF7 to Post', //menu title
+        'manage_options', //capability
+        'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::MAP_SCREEN_ID
+        array($this,'display_mapping_page2')); //fn
+  }
+  /**
+  * Function to load custom admin page metabox.
+  * Hooked on 'load-{self::MAP_SCREEN_ID}'
+  *@since 3.0.0
+  */
+  public function load_admin_page(){
+    /* Trigger the add_meta_boxes hooks to allow meta boxes to be added */
+    do_action('add_meta_boxes_'.self::MAP_SCREEN_ID, null);
+    do_action('add_meta_boxes', self::MAP_SCREEN_ID, null);
+
+    /* Add screen option: user can choose between 1 or 2 columns (default 2) */
+    add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
+  }
+  /**
+  * Function to add a few metabox
+  * Hooked to 'add_meta_box_{self::MAP_SCREEN_ID}'
+  *@since 3.0.0
+  */
+  public function add_metabox(){
+    //submit
+    add_meta_box(
+        'submit', //Meta box ID
+        __('Save form to post','cf7-2-post'), //Meta box Title
+        array($this,'show_submit_metabox'), //Callback defining the plugin's innards
+        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        'side' // Context
+    );
+    //helper
+    add_meta_box(
+        'helper', //Meta box ID
+        __('Actions &amp; Filers','cf7-2-post'), //Meta box Title
+        array($this,'show_helper_metabox'), //Callback defining the plugin's innards
+        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        'side' // Context
+    );
+    //field
+    add_meta_box(
+        'field', //Meta box ID
+        __('Custom Meta Fields','cf7-2-post'), //Meta box Title
+        array($this,'show_field_metabox'), //Callback defining the plugin's innards
+        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        'normal' // Context
+    );
+    //taxonomy
+    add_meta_box(
+        'taxonomy', //Meta box ID
+        __('Taxonomies','cf7-2-post'), //Meta box Title
+        array($this,'show_taxonomy_metabox'), //Callback defining the plugin's innards
+        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        'normal' // Context
+    );
+  }
+  /**
+  * Display submit metabox
+  * Callback fn above.
+  *@since 3.0.0
+  */
+  public function show_submit_metabox(){
+    include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-submit-metabox.php';
+  }
+  /**
+  * Display helper metabox
+  * Callback fn above.
+  *@since 3.0.0
+  */
+  public function show_helper_metabox(){
+    include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-helper-metabox.php';
+  }
+  /**
+  * Display metafield metabox
+  * Callback fn above.
+  *@since 3.0.0
+  */
+  public function show_field_metabox(){
+    include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-field-metabox.php';
+  }
+  /**
+  * Display taxonomy metabox
+  * Callback fn above.
+  *@since 3.0.0
+  */
+  public function show_taxonomy_metabox(){
+    include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-taxonomy-metabox.php';
   }
   /**
   * Modify cf7 post type list table columns
@@ -181,6 +289,7 @@ class Cf7_2_Post_Admin {
   */
   public function modify_cf7_list_columns($columns){
     $columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
+    $columns['map_cf7_2_post']= __( 'Form to post', 'cf7-2-post');
     return $columns;
   }
   /**
@@ -201,6 +310,19 @@ class Cf7_2_Post_Admin {
             echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
           }else{
             $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=new' );
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
+          }
+          break;
+      case 'map_cf7_2_post' :
+          $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
+          //$form = WPCF7_ContactForm::get_instance($post_id);
+          if ($post_type){
+            $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
+            $url = admin_url( 'admin.php?page=map_cf7_2_post&id=' . $post_id . '&action=edit' );
+            echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+            echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
+          }else{
+            $url = admin_url( 'admin.php?page=map_cf7_2_post&id=' . $post_id . '&action=new' );
             echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
           }
           break;
@@ -282,6 +404,28 @@ class Cf7_2_Post_Admin {
         $this->post_mapping_factory = $factory_mapping;
       }
       include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-admin-display.php');
+    }else{
+      $adminUrl = admin_url('edit.php?post_type=wpcf7_contact_form');
+      echo '<div><h2>Ooops! Have you taken a wrong turn?</h2>';
+      echo '<p>This page is for mapping a CF7 form to a custom post,';
+      echo ' please access it from the from <a href="'.$adminUrl.'">table list page</a>.</p></div>';
+    }
+  }
+  /**
+  * Display the custom admin page for creating post
+  * This is a call back function based on the admin menu hook
+  * @since 1.0.0
+  */
+  public function display_mapping_page2(){
+    if( isset($_GET['id']) ){
+      $cf7_post_id = $_GET['id'];
+      if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
+        $factory_mapping = $this->post_mapping_factory;
+      }else{
+        $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
+        $this->post_mapping_factory = $factory_mapping;
+      }
+      include( plugin_dir_path( __FILE__ ) . 'partials/mapping-test.php');
     }else{
       $adminUrl = admin_url('edit.php?post_type=wpcf7_contact_form');
       echo '<div><h2>Ooops! Have you taken a wrong turn?</h2>';

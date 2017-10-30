@@ -35,9 +35,12 @@ $source = $factory_mapping->get('type_source');
     <input type="hidden" name="action" value="save_post_mapping"/>
 <?php  //wp_nonce_field( $action, $field_name, $show_referer_field, $echo_field )
     wp_nonce_field('cf7_2_post_mapping', 'cf7_2_post_nonce', false, true);
+    /* Used to save closed meta boxes and their order */
+    wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+    wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 ?>
     <div id="poststuff">
-      <div id="post-body" class="metabox-holder columns-2">
+      <div id="post-body" class="metabox-holder columns-<?php echo 1 == get_current_screen()->get_columns() ? '1' : '2'; ?>">
         <div id="postbox-container-1" class="postbox-container">
             <!-- Post the post type and udpate button here -->
           <div style="" id="side-sortables" class="meta-box-sortables ui-sortable">
@@ -150,6 +153,8 @@ include plugin_dir_path(__FILE__).'/cf7-2-post-helper-metabox.php';
         </div><!-- #postbox-container-1 end -->
         <?php if('filter'!==$source):?> <!-- postbox-container-2 -->
         <div id="postbox-container-2" class="postbox-container">
+          <?php do_meta_boxes('','normal',null); ?>
+          <?php do_meta_boxes('','advanced',null); ?>
           <div id="normal-sortables" class="meta-box-sortables ui-sortable">
             <div style="display: block;" id="postcustom" class="postbox  hide-if-js">
               <button type="button" class="handlediv button-link" aria-expanded="true">

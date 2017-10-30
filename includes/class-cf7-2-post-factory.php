@@ -1101,7 +1101,7 @@ class Cf7_2_Post_Factory {
       $post['post_status'] = $wp_post->post_status;
     }else{
       //this is a new mapping.
-      $post['post_author'] = apply_filters('cf7_2_post_author_'.$this->post_properties['type'], $author, $this->cf7_post_ID, $cf7_form_data );
+      $post['post_author'] = apply_filters('cf7_2_post_author_'.$this->post_properties['type'], $author, $this->cf7_post_ID, $cf7_form_data, $this->cf7_key );
       //wp_insert_post ( array $postarr, bool $wp_error = false )
       $post_id = wp_insert_post ( $post );
     }
@@ -1412,7 +1412,7 @@ class Cf7_2_Post_Factory {
             $terms_id[] = $term->term_id;
           }
         }else{
-          $terms_id = apply_filters('cf7_2_post_filter_cf7_taxonomy_terms',$terms_id, $this->cf7_post_ID, $form_field);
+          $terms_id = apply_filters('cf7_2_post_filter_cf7_taxonomy_terms',$terms_id, $this->cf7_post_ID, $form_field, $this->cf7_key);
           if( is_string($terms_id) ){
             $terms_id = array($terms_id);
           }
@@ -1431,7 +1431,7 @@ class Cf7_2_Post_Factory {
 
       }
     //filter the values
-    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'] );
+    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'], $this->cf7_key );
     //make sure the field names are with underscores
     $return_values = array();
     foreach($field_and_values as $field=>$value){

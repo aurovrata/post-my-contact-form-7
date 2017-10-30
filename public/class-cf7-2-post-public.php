@@ -39,7 +39,7 @@ class Cf7_2_Post_Public {
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
-
+  private $not_form_page;
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -51,7 +51,7 @@ class Cf7_2_Post_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+    $this->not_form_page = true;
 	}
 
 	/**
@@ -63,6 +63,7 @@ class Cf7_2_Post_Public {
     $plugin_dir = plugin_dir_url( __FILE__ );
     wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
 		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
+
     // wp_register_script(
     //     'cf7-2-post-loader', //handle
     //     plugin_dir_url( __DIR__ ) . 'includes/partials/cf7-2-post-script.php', // src
@@ -131,8 +132,8 @@ class Cf7_2_Post_Public {
     //let get the corresponding factory object,
     if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
       //let's ensure the page does not cache our values.
-			debug_msg('setting up metas');
-      add_action('wp_head', array($this, 'disable_browser_page_cache'), 1);
+      $this->not_form_page = false;
+
       //$plugin_dir = plugin_dir_url( __FILE__ );
       $factory = Cf7_2_Post_System::get_factory($cf7_id);
       //unique nonce
@@ -158,7 +159,8 @@ class Cf7_2_Post_Public {
   *@since 2.5.0
   */
   public function disable_browser_page_cache(){
-		debug_msg('printing metas');
+    if(!$this->scan_for_mapped_forms()) return;
+    if(!apply_filters('cf7_2_post_print_page_nocache_metas', true)) return;
       ?>
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="cache-control" content="no-cache" />
@@ -167,29 +169,54 @@ class Cf7_2_Post_Public {
     <meta http-equiv="pragma" content="no-cache" />
       <?php
   }
-	/**
-	* Function to load dynamic script for post 2 map form filling.
-	* Hooked to 'wp_ajax_load_post_2_cf7'
-	*@since 2.5.0
-	*/
-	public function load_dynamic_script(){
-		if(!isset($_REQUEST['wpnonce']) || !isset($_REQUEST['form'])){
-			die('CF72POST: wrong ajax call, no attributes found!');
-		}
-		$nonce = $_REQUEST['wpnonce'];
-		$cf7_id = $_REQUEST['form'];
-    debug_msg($_REQUEST, 'request ');
-    debug_msg($_GET, 'get ');
-    debug_msg('nonce: '.wp_verify_nonce( $nonce, 'post-2-cf7-'.$cf7_id ));
-		if( ! wp_verify_nonce( $nonce, 'post-2-cf7-'.$cf7_id ) ) {
-      debug_msg('incalid nonce');
-			die( 'CF72POST: invalid nonce' );
-		} else {
-			$factory = Cf7_2_Post_System::get_factory($cf7_id);
-			require_once  plugin_dir_path( __DIR__ ) . '/includes/partials/cf7-2-post-script.php';
-		}
-		exit;
-	}
+  /**
+  * Function to scan the current post content for mapped cf7 forms.
+  *
+  *@since 2.5.0
+  *@param string $content content to check, else it will try to get the global $post object's content.
+  *@return boolean true if found.
+  */
+  public function scan_for_mapped_forms($content=null){
+    global $post;
+    $has_mapped_form = false;
+    if(null === $content){
+      if(isset($post)) $content = $post->post_content;
+      else $content = '';
+    }
+    if(empty($content)){
+      return $has_mapped_form;
+    }
+    $shortcodes = array('cf7-form', 'contact-form-7');
+    $pattern = get_shortcode_regex();
+
+    // if shortcode 'book' exists
+    if ( preg_match_all( '/'. $pattern .'/s', $content, $matches )
+      && array_key_exists( 2, $matches )
+      && !empty(array_intersect( $shortcodes, $matches[2] )) )  {
+        $shortcode_atts = array();
+        foreach($shortcodes as $shortcode){
+          $shortcode_atts = array_merge( $shortcode_atts, array_keys($matches[2], $shortcode));
+        }
+       // if shortcode has attributes
+       $cf7_forms = array();
+       if (!empty($shortcode_atts)) {
+        foreach($shortcode_atts as $idx) {
+          preg_match('/id="(\d+)"/', $matches[3][$idx], $cf7_id);
+          preg_match('/cf7key="(.*)"/', $matches[3][$idx], $cf7_key);
+          if(!empty($cf7_id)){
+            $cf7_forms[]= $cf7_id[1];
+          }else if(!empty($cf7_key)){
+            $cf7_forms[]= Cf7_WP_Post_Table::form_id($cf7_key[1]);
+          }
+        }
+      }
+      foreach($cf7_forms as $form_id){
+        $has_mapped_form = Cf7_2_Post_Factory::is_mapped($form_id);
+        if($has_mapped_form) break;
+      }
+    }
+    return $has_mapped_form;
+  }
   /**
    * Register a [save] shortcode with CF7.
    * Hooked  on 'wpcf7_init'

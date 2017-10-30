@@ -12,6 +12,13 @@
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
     var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
     var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
+
+    //since 2.5.0
+    var $mapForm = $('#cf7-post-mapping-form');
+    $('.nice-select', $mapForm).each(function(){
+      $(this).niceSelect();
+    });
+    postboxes.add_postbox_toggles(pagenow);
     //since 1.3
     function taxonomySelected(){
       var option = $("option:selected", this);

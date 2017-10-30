@@ -233,6 +233,9 @@ When you map your form fields to the custom post meta fields, you need to to ens
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=2.5.0=
+* introduce front-end no-cache meta tags in head to disable page caching on mapped forms.
+* added filter `cf7_2_post_print_page_nocache_metas`
 =2.4.1=
 * default helper bug fix
 =2.4.0=
@@ -333,67 +336,8 @@ When you map your form fields to the custom post meta fields, you need to to ens
 * Allows for mapping of any CF7 form to a custom post
 
 
-== Filters & Actions ==
-<div id="#documentation">
-</div>
-The following filters are provided in this plugin,
-
-= `cf7_2_post_supports_{$post_type}` =
-
-Set custom post type support attributes (see [documentation](https://codex.wordpress.org/Function_Reference/register_post_type#supports)),
-`
-add_filter('cf7_2_post_supports_quick-contact','set_supports');
-function set_supports($default_supports){
-  $default_supports[]='comments';
-  return $default_supports;
-}
-`
-= `cf7_2_post_capabilities_{$post_type}` =
-
-Set [custom post capabilities](http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types) for user access,
-`
-add_filter('cf7_2_post_capabilities_quick-contact','set_capabilities');
-function set_capabilities($capabilities){
-$capabilities = array(
-    'edit_post' => 'edit_contact',
-    'edit_posts' => 'edit_contacts',
-    'edit_others_posts' => 'edit_others_contacts',
-    'publish_posts' => 'publish_contacts',
-    'read_post' => 'read_contacts',
-    'read_private_posts' => 'read_private_contacts',
-    'delete_post' => 'delete_contact'
-);
-  return $capabilities;
-}
-`
-All capabilities must be set, else the plugin will default back to default `post` capabilities.  Also, make sure you assign each of these capabilities to the admin role (or other roles/users) else you won't be able to access your custom post.
-
-= `cf7_2_post_form_mapped_to_{$post_type}` =
-
-Action fired when a submitted form is saved to a new custom post, for example if your custom post type is `my-cpt`,
-
-`
-add_action('cf7_2_post_form_mapped_to_my-cpt','modify_form_posts',10,2);
-function modify_form_posts($post_id, $cf7_form_data){
-  //cf7_form_data is the submitted data from your form
-  //post_id is the id of the post to which it has been saved.
-  //... do something here
-}
-`
-NOTE: all posts are saved in `draft` mode, so if you wanted this to be changed and published immediately, you could do it with the above example.
-
-= `cf7_2_post_author_{$post_type}` =
-Allows you to set a custom author ID for a new post based on the form being submitted.
-`
-add_filter('cf7_2_post_author_my-cpt','set_my_post_author',10,3);
-function set_my_post_author($author_id, $cf7_form_id, $cf7_form_data){
-  //$cf7_form_data is the submitted data from your form
-  //$cf7_form_id is the id of the form being saved to a custom post my-cpt.
-  //... do something here and set a new author ID
-  return $author_id;
-}
-`
-This filter expects the author ID to be returned.
+== Filters & Actions for Developers ==
+The following are hooks preimarly aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
 
 = 'cf7_2_post_filter_taxonomy_registration-{$taxonomy_slug}' =
 This filter allows you to customise [taxonomies arguments](https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments) before they are registered.
@@ -425,36 +369,6 @@ function modify_my_categories($taxonomy_arg){
   return args;
 }
 `
-
-= 'cf7_2_post_filter_cf7_field_value' =
-
-This filter allows you to pre-fill form fields with custom values for **new submissions**.
-`
-add_filter('cf7_2_post_filter_cf7_field_value','modify_my_field',10,3);
-function modify_my_field($value, $cf7_post_id, $field){
-  //assuming you have defined a text field called city-location for cf7 form ID=20
-  if(20 == $cf7_post_id && 'city-location' == $field){
-    $value = 'London';
-  }
-  return $value;
-}
-`
-= 'cf7_2_post_filter_cf7_taxonomy_terms' =
-
-This filter allows you to pre-fill/select taxonomy terms fields for new submissions.
-`
-add_filter('cf7_2_post_filter_cf7_taxonomy_terms','modify_my_terms',10,3);
-function modify_my_terms($terms_id, $cf7_post_id, $field){
-  //assuming you have defined a checkbox field called city-locations for cf7 form ID=20
-  if(20 == $cf7_post_id && 'city-locations' == $field){
-    $term = get_term_by('name','London','location_categories');
-    $terms_id = array();
-    $terms_id[] = $term->term_id;
-  }
-  return $terms_id;
-}
-`
-The filter expects an array of terms id.
 
 = 'cf7_2_post_filter_taxonomy_query' =
 
@@ -572,11 +486,11 @@ This filter allows you to load default values into your mapped forms. If the cur
 
 `
 add_filter('cf7_2_post_form_values', 'set_default_location', 10, 3);
-function set_default_location($values, $$cf7_id, $mapped_post_type){
+function set_default_location($values, $$cf7_id, $mapped_post_type, $cf7_key){
   if('travel_post' != mapped_post_type){
     return values;
   }
-  if(19 == $cf7_id){ //check this is your form
+  if('contact-us' == cf7_key){ //check this is your form
     $field_name = 'location-rental';
     $values[$field_name] .= 'Paris';
   }
@@ -596,101 +510,14 @@ function set_rewrite_slug($args){
   return $args;
 }
 `
-= `cf7_2_post_map_extra_taxonomy` =
-
-this filter allows you to add extra taxonomy to the list of mapped taxonomies.  This is useful when you are mapping your form to an existing post_type. Currently this is only possible using the hooks as the UI implementation will be done later on.  So in order to pre-load your form with taxonomy terms for a dropdown/check/radio field, you need to first register the taxonomy slug with the plugin,
-
-`
-//assume you have a form to post to your blog (post_type=post)
-add_filter('cf7_2_post_map_extra_taxonomy', 'register_category',10,2);
-function register_category( $taxonomies, $cf7_key){
-  if($cf7_key != 'my-posted-form'){
-    return $taxonomies;
-  }
-  //assume you have a field called your-category,
-  //so users select a term from the category taxonomy
-  $taxonomies['your-category'] = 'category';
-  return $taxonomies;
-}
-`
-= `cf7_2_post_pre_load-{$post_type}` =
-
-using the above example, we now want to pre-load our form with the existing terms in the category taxonomy,
-`
-add_filter('cf7_2_post_pre_load-post', 'pre_load_taxonomy', 10,6);
-function pre_load_taxonomy($post_values, $cf7_key, $cf7_2_post_factory){
-  if($cf7_key != 'my-posted-form'){
-    return $post_values;
-  }
-  //$cf7_2_post_factory is the internal factory object used to handle the mapping
-  //the method, get_taxonomy_mapping($taxonomy_slug, $parent, $term_ids, $form_field)
-  // is used to pre_load values in your field, and if you supply an array of term_ids, these will be pre-selected too.
-  $post_values['your-category'] = $cf7_2_post_factory->get_taxonomy_mapping('category', 0, array(), 'your-category');
-
-  return $post_values;
-}
-`
-= `cf7_2_post_draft_skips_validation` =
-For forms which have a save button, the validation of draft forms are skipped by default. This filter allows you to force validation of draft forms.
-
-`add_fitler('cf7_2_post_draft_skips_validation', 'force_validation');
-function force_validation($skip_validation, $cf7_key){
-  if('my-form' == $cf7_key){
-    skip_validation = false;
-  }
-  return skip_validation;
-}
-`
-= `cf7_2_post_draft_skips_mail` =
-For forms which have a save button, the mail sending of draft forms is skipped by default. This filter allows you to force mail notification of draft forms.
-
-`add_fitler('cf7_2_post_draft_skips_mail', 'force_notification');
-function force_notification($skip_mail, $cf7_key){
-  if('my-form' == $cf7_key){
-    skip_mail = false;
-  }
-  return skip_mail;
-}
-`
-= `cf7_2_post_display_system_posts` =
-In v2.0 the plugin allows users to map their forms to existing system posts.  By default, only system posts which are visible in the dashboard are listed.  This list can be modified by this filter,
-
-`add_filter('cf7_2_post_display_system_posts', 'filter_posts', 10, 2);
-function filter_posts($displayed_posts, $form_id){
-  // the form_id is the post id of the current cf7 form being mapped
-  //displayed_posts is an array of $post_type => $post_label key value pairs
-  return displayed_posts;
-}`
-
-= `cf7_2_post_skip_system_metakey` =
-In v2.0 the plugin allows users to map their forms to existing system posts through a UI interface.  The form fields can be mapped to the post fields, as well as existing post meta-fields, in addition to being able to add new ones too.  The list of existing meta-fields available is built by ignoring meta-fields with names starting with the '_' character which by convention is used to denote an internal meta-field.  This filter permits to include these meta-fields on a field by field mode,
-`add_filter('cf7_2_post_skip_system_metakey', 'filter_post_metas', 10, 3);
-function filter_post_metas($skip, $post_type, $meta_field_name){
-  // boolean $skip flag is set to true by default
-  //the $post_type of the post to which the form is being mapped to
-  //$meta_field_name is the name of the field which is being skipped.
-  return $skip;
-}`
-
 
 = `cf7_2_post_form_posted` =
 
 action introduced for plugin developers specifically.  Fired at the end of the submission mapping process, once a new post has been created for a new submission.  The current mapping of the form fields is exposed, along with the data values submitted in the form and the files uploaded.  For developers interested in using this hook, please lookup in the inline documentation in the code itself.  The action is located in the includes/class-cf7-2-post-factory.php file.
 
-= `cf7_2_post_status_{$post_type}`=
-The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values),
-
-`add_filter('cf7_2_post_status_my-custom-post', 'publish_by_default', 10,3);
-function publish_by_default($status, $ckf7_key, $submitted_data){
-  //$status to filter
-  //$cf7_key the form's unique key, you can get its id with the following function call,
-  $cf7_post_id = get_cf7form_id($ckf7_key);
-  //$submitted_data form submitted fields as field-name=>value pairs
-  return 'publish';
-}``
 
 = `cf72post_register_mapped_post` =
-This action is fired each time the a mapped post is registered with the WP framework. This is mainly added for plugin developers to extend this plugin and target custom post types that created by this plug.
+This action is fired each time the a mapped post is registered with the WP framework. This is mainly added for plugin developers to extend this plugin and target custom post types that are created by this plugin.
 `add_action('cf72post_register_mapped_post', 'custom_mapped_post');
 function custom_mapped_post($post_type){
   //$post_type the post type being registered in the backend.

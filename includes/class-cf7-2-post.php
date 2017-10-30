@@ -176,7 +176,9 @@ class Cf7_2_Post {
     $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
     //save quick edit
     $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_quick_edit', 10);
-
+    //new page loading to trigger meta box
+    $this->loader->add_action('load-'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'load_admin_page', 10);
+		$this->loader->add_action('add_meta_boxes_'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'add_metabox', 10);
     /* CF7 Hooks */
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
@@ -200,9 +202,8 @@ class Cf7_2_Post {
 		//$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
     $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
-    //dynamic script ajax.
-    $this->loader->add_action( 'wp_ajax_load_post_2_cf7', $plugin_public, 'load_dynamic_script' );
-    $this->loader->add_action( 'wp_ajax_nopriv_load_post_2_cf7', $plugin_public, 'load_dynamic_script' );
+		//no cahing metas
+		$this->loader->add_action('wp_head', $plugin_public, 'disable_browser_page_cache', 1);
 
     /*CF7 Hooks*/
     //use before_send_mail to ensure mapping post form validation

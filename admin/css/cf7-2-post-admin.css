@@ -264,3 +264,6 @@ option.system-taxonomy {
   background:none;
   margin-left: 0;
 }
+#helperdiv p, #helperdiv ul {
+    margin: 0;
+}
