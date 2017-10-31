@@ -425,7 +425,7 @@ class Cf7_2_Post_Admin {
         $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
         $this->post_mapping_factory = $factory_mapping;
       }
-      include( plugin_dir_path( __FILE__ ) . 'partials/mapping-test.php');
+      include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-edit-mapping.php');
     }else{
       $adminUrl = admin_url('edit.php?post_type=wpcf7_contact_form');
       echo '<div><h2>Ooops! Have you taken a wrong turn?</h2>';

@@ -8,16 +8,17 @@
 
   /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
-    var parent,keyName, newField,idx;
-    var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
-    var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
-    var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
-
     //since 2.5.0
     var $mapForm = $('#cf7-post-mapping-form');
     $('.nice-select', $mapForm).each(function(){
       $(this).niceSelect();
     });
+
+    var parent,keyName, newField,idx;
+    var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
+    var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
+    var newTaxonomyDetails = $('#post_taxonomy_map div.custom-taxonomy-input-fields').last().clone();
+
     postboxes.add_postbox_toggles(pagenow);
     //since 1.3
     function taxonomySelected(){
@@ -62,7 +63,7 @@
       //fieldName = fieldName.replace('cf7_2_post_map_taxonomy_names','cf7_2_post_map_taxonomy_name')
       //details.find('input[name='+fieldName+']').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+slug);
-      parent.find('select').prop('disabled',false);
+      parent.find('select').prop('disabled',false).niceSelect('update');
 
       //add new field
       var cloneField = newTaxonomy.clone();
@@ -85,7 +86,7 @@
 
       var cloneField;
 
-      if($('#system-post-type').is(':visible') && $newSystemField.length>0){
+      if($('#post-type-exists').is(':visible') && $newSystemField.length>0){
         $('select.cf7-2-post-map-labels' ,$newSystemField).attr('name','');
         $('select.field-options' ,$newSystemField).attr('name','');
         keyName = '';
@@ -105,7 +106,7 @@
       var postType = $('input#mapped_post_type').val();
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
       parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
-      parent.find('select.field-options').prop('disabled',false);
+      parent.find('select').prop('disabled',false).niceSelect('update');
       //add new field
       parent.parent().append(cloneField).append(errorBox);
       //bind event handlers
@@ -189,6 +190,7 @@
       }else if($target.is('select.cf7-2-post-map-labels')){
 				if('cf72post-custom-meta-field'===$target.val()){
 					$target.hide();
+          $target.next('.nice-select').hide();
 					var $input = $target.siblings('input.cf7-2-post-map-label-custom').show();
 					$input.prop('disabled', false).addClass('cf7-2-post-map-labels');
           $input.on('change', metaKeyChange);
@@ -476,7 +478,6 @@
             var disable = '';
             if($(this).is('.custom-meta-field:last')){
 							disable = ' disabled="disabled"';
-							$newSystemField = $(this);//reset for field cloning
 						}
             var $label = $('<select class="cf7-2-post-map-labels metas-'+postType+'" '+ disable +'>');
             $label.append('<option value="">Select a field</option>')
@@ -485,8 +486,12 @@
             $('.spinner' , $(this)).hide().after($label);
             $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
 						$label.after('<input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>');
+            $label.niceSelect();
+            if($(this).is('.custom-meta-field:last')){
+              $newSystemField = $(this).clone();//reset for field cloning
+            }
           });
-          $newSystemField = $newSystemField.clone();
+          //$newSystemField = $newSystemField.clone();
         },
         error:function(data){
           var $label = $('<em>error in getting fields</em>');
@@ -496,7 +501,8 @@
 
       var $system = $('#system-poststuff');
       var $mapped_type = $('input#mapped_post_type');
-      var postType = $(this).val();
+      var postName = $('option[value="'+$(this).val()+'"]', $(this)).text();
+      $('#custom-post-title').text(postName);
       $mapped_type.val( postType );
       $('h3', $system).text('This form is mapped to an existing post: '+ $(this).val() );
       var anime = $('p span.action-form-map', $system).text( 'cf7_2_post_save-'+postType ).closest('p');

@@ -4,7 +4,7 @@
 <p>Click on a link to copy the helper snippet code and paste it in your <em>functions.php</em> file.</p>
 <div id="admin-hooks" class="postbox closed">
   <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text">Toggle panel: Helper</span><span class="toggle-indicator" aria-hidden="true"></span></button>
-    <h3 class="hndle ui-sortable-handle">Admin hooks</h3>
+    <h3 class="hndle">Admin hooks</h3>
 
     <div class="inside">
       <ul class="helper-list">
@@ -102,7 +102,7 @@ function filter_posts($displayed_posts, $form_id){
 </div>
 <div id="loading-hooks" class="postbox closed">
   <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text">Toggle panel: Loading Hooks</span><span class="toggle-indicator" aria-hidden="true"></span></button>
-    <h3 class="hndle ui-sortable-handle">Form loading hooks</h3>
+    <h3 class="hndle">Form loading hooks</h3>
 
     <div class="inside">
       <ul class="helper-list">

@@ -182,7 +182,7 @@ class Cf7_2_Post_Factory {
     if('publish' == $this->post_properties['map']){
       $result .= '<select disabled>';
     }else{
-        $result .= '<select class="taxonomy-list">';
+        $result .= '<select class="taxonomy-list nice-select">';
     }
     if('' === $taxonomy_slug){
       $result .= '<option value="" data-name="" >Choose a Taxonomy</option>';

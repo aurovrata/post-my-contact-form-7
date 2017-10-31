@@ -1,0 +1,337 @@
+.default-post-fields{
+    padding: 0 12px 12px 12px;
+}
+form#cf7-post-mapping-form .default-post-fields .cf7-2-post-map-labels {
+    display: inline-block;
+    font-size: 1.1em;
+    width: 100px;
+}
+.default-post-fields .post-meta-field{
+    display: inline-block;
+}
+.default-post-fields .nice-select.field-options.post-options {
+    display: inline-block;
+    float: none;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+.default-post-fields .cf7-post-error-msg {
+    display: inline-block;
+    margin: 0 5px;
+    width: calc(100% - 325px);
+    line-height: 15px;
+    vertical-align: middle;
+    position: relative;
+}
+.default-post-fields .field-options.post-options{
+  width: 220px;
+}
+#helper .postbox {
+    margin-bottom: 2px;
+    border: none;
+}
+#helper .postbox .toggle-indicator {
+    float: right;
+}
+#helper .postbox h3.hndle {
+    padding-left: 0;
+    padding-right: 0;
+}
+#helper .postbox .inside,
+.helper-list {
+    padding: 0;
+    margin: 0;
+}
+.helper {
+    color: #006800;
+}
+label{
+  cursor: default;
+}
+.nice-select .current {
+    display: block;
+    overflow: hidden;
+}
+.nice-select.disabled {
+    float: none;
+    clear: unset;
+    display: inline-block;
+    vertical-align: middle;
+}
+#postbox-container-1 .nice-select {
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+    clear: unset;
+}
+.post_type_labels {
+    font-size: 1.1em;
+}
+.display-none,
+form#cf7-post-mapping-form .cf7-2-post-map-labels.hide{
+  display:none;
+}
+#adminmenu ul.wp-submenu li a[href="admin.php?page=map_cf7_2_post"] {
+   display: none;
+}
+#save_post {
+    float: right;
+    margin-bottom: 10px;
+}
+#creation-action{
+  display: inline-block;
+  float: right;
+}
+#ajax-response{
+  display: inline-block;
+  padding: 0 5px;
+  width: 57%;
+}
+#save-draft-actions {
+    display: inline-block;
+}
+#save-draft-action .spinner{
+  margin: 4px 5px;
+}
+label[for="post_type"] {
+    min-width: 90px;
+    display: inline-block;
+}
+form#cf7-post-mapping-form .cf7-2-post-map-labels{
+  display:inline-block;
+  width: 200px;
+  padding: 3px 0;
+  vertical-align: middle;
+}
+form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
+    display: none;
+}
+.add-more-field {
+  color: blue;
+  border: 2.5px solid blue;
+  border-radius: 50%;
+  font-size: 1.4em;
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: -1px;
+  line-height: 1.3;
+}
+.remove-field {
+  color: red;
+  border: 2.5px solid red;
+  border-radius: 50%;
+  line-height: 1.1;
+  font-size: 1.5em;
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: -1px;
+  margin-bottom: 3px;
+}
+.remove-field:hover,.add-more-field:hover { cursor: pointer; }
+form#cf7-post-mapping-form .cf7-post-error-msg{
+  display: inline-block;
+  margin: 0 5px;
+  width: calc(100% - 345px);
+  line-height: 15px;
+  vertical-align: middle;
+  position: relative;
+}
+form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
+form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
+  width: calc(100% - 480px);
+  min-width: 200px;
+  margin-left: 2px;
+  vertical-align: middle;
+  line-height: 15px;
+}
+form#cf7-post-mapping-form .cf7-post-error-msg a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: calc(100% - 50px);
+    vertical-align: middle;
+    margin-left: 0;
+    padding-right: 0;
+}
+.cf7-post-error-msg a.code:hover {
+    position: fixed;
+}
+.field-options.post-options{
+  width: 200px;
+}
+.custom-meta-field, .post-meta-field, .custom-taxonomy-field{
+  display: inline-block;
+  box-sizing: border-box;
+}
+.custom-meta-field select.field-options {
+    width: 200px;
+    padding: 3px 0;
+}
+form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
+form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
+  min-width: 460px;
+}
+
+form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field,
+form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .custom-taxonomy-field {
+  max-width: 80%;
+  width: auto;
+}
+form#cf7-post-mapping-form  #custom-meta-fields.mapping-published .cf7-post-error-msg,
+form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .cf7-post-error-msg{
+  width: auto;
+  min-width: 0;
+  max-width: calc(100% - 475px);
+  margin-right: 0;
+}
+form#cf7-post-mapping-form #custom-meta-fields.mapping-published .cf7-post-error-msg .cf7-2-post-map-labels {
+    min-width: 0;
+    width: auto;
+}
+form#cf7-post-mapping-form .mapping-published .cf7-2-post-map-labels:disabled {
+    max-width: 260px;
+    width: auto;
+}
+form#cf7-post-mapping-form .custom-taxonomy-input-fields input {
+  width: 100px;
+}
+orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
+    width: 170px;
+}
+.custom-taxonomy-input-fields label {
+    margin: 0 5px;
+}
+.misc-pub-section.misc-pub-post-type label[for="post_type"]::before{
+  font-family: "dashicons";
+  content: "\f537";
+}
+#post-type-display, p.post-type-display{
+  font-weight: 600;
+  margin-top:0;
+  margin-bottom:0;
+}
+#post-type-select input[type="text"],
+select#post_type_source,
+select#system-post-type {
+    width: 130px;
+}
+#system-poststuff span.code {
+    background-color: #eaeaea;
+    display: inline-block;
+    padding: 5px 10px;
+}
+.post_type_labels {
+    min-width: 90px;
+    display: inline-block;
+}
+#post_type_is_menu_position{
+  display: none;
+}
+input[name="mapped_post_type_show_in_menu"]:checked ~ div#post_type_is_menu_position{
+  display: block;
+}
+select.field-options option{
+  text-align: right;
+}
+select.field-options option.filter-option{
+  color: red;
+}
+p.cf7-post-error-msg span.code{
+  font-size: 1.1em;
+}
+#postcustomstuff p.animate-color,
+#postbox-container-2  span.animate-change{
+    -webkit-animation: color-change 1s 3;
+    -moz-animation: color-change 1s 3;
+    -o-animation: color-change 1s 3;
+    -ms-animation: color-change 1s 3;
+    animation: color-change 1s 3;
+}
+
+@-webkit-keyframes color-change {
+    0% { background-color: red; }
+    50% { background-color: inherit; }
+    100% { background-color: red; }
+}
+@-moz-keyframes color-change {
+  0% { background-color: red; }
+  50% { background-color: inherit; }
+  100% { background-color: red; }
+}
+@-ms-keyframes color-change {
+  0% { background-color: red; }
+  50% { background-color: inherit; }
+  100% { background-color: red; }
+}
+@-o-keyframes color-change {
+  0% { background-color: red; }
+  50% { background-color: inherit; }
+  100% { background-color: red; }
+}
+@keyframes color-change {
+  0% { background-color: red; }
+  50% { background-color: inherit; }
+  100% { background-color: red; }
+}
+
+span.link-button.disabled{
+  color: grey;
+  cursor: not-allowed;
+}
+span.link-button.enabled{
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+button.button-link.close-details {
+    vertical-align: middle;
+}
+.error-msg{
+  color:red;
+}
+option.system-taxonomy {
+    color: blue;
+}
+.popup {
+    display: none;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    margin-left: -50px;
+    background: #515151;
+    color: white;
+    padding: 5px;
+}
+.cf7-post-error-msg a.code:hover + span.popup{
+  display:block;
+}
+.spinner.meta-label {
+    float: none;
+    margin: 4px 57px;
+    display:none;
+    visibility: visible;
+}
+.code {
+    padding: 5px;
+    display: inline-block;
+    background: #efefef;
+    margin-left: 10px;
+}
+.code >.code {
+  padding:0px;
+  background:none;
+  margin-left: 0;
+}
+#helperdiv p, #helperdiv ul {
+    margin: 0;
+}
+.helper-list p {
+    margin: 0;
+    text-align: justify;
+}
+.custom-meta-field .nice-select, #post_taxonomy_map .nice-select {
+    float: none;
+    clear: unset;
+    display: inline-block;
+    vertical-align: middle;
+}
