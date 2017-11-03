@@ -23,9 +23,9 @@
 			var $post_row = $( '#post-' + $post_id );
       var $warn = $('<div class="cf7-2-post-delete-warning"><em>This will reset the mapping</em></div>');
 			// get the status
-      var $status = $('.mapped_post input.cf7-2-post-status', $post_row);
+      var $status = $('.map_cf7_2_post input.cf7-2-post-status', $post_row);
       var $select = $('select.cf7-2-post-map', $edit_row);
-      var $link = $('.mapped_post a.cf7-2-post-map-link', $post_row);
+      var $link = $('.map_cf7_2_post a.cf7-2-post-map-link', $post_row);
       $('.cf7-2-post-delete-warning', $edit_row).hide();
       if($status.length > 0){
         $select.find('option[value="'+$status.val()+'"]').prop('selected', true);

@@ -1,3 +1,6 @@
+.add-more-field::before {
+    padding-right: 2px;
+}
 .default-post-fields{
     padding: 0 12px 12px 12px;
 }

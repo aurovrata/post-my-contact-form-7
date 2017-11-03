@@ -114,10 +114,7 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
-    if ('contact_page_cf7_post' == $hook){
-  		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-admin.css', array('dashicons'), $this->version, 'all' );
-
-    }else if(self::MAP_SCREEN_ID == $hook){
+    if(self::MAP_SCREEN_ID == $hook){
       wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
       wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }else{
@@ -180,21 +177,30 @@ class Cf7_2_Post_Admin {
   *
   */
   public function add_cf7_sub_menu(){
+    /**
+    *change capability for plugin, defaut to admin users.
+    *@since 3.0.0
+    */
+    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
+    if('manage_options'!== $capability){ //validate capability.
+        $roles = wp_roles();
+        $is_valid=false;
+        foreach($roles as $role){
+            if(in_array($capability, $role['capabilities'])){
+                $is_valid=true;
+                break;
+            }
+        }
+        if(!$is_valid) $cabability = 'manage_options';
+    }
     // add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $function = '' )
-    $hook = add_submenu_page(
-      'wpcf7',
-      'CF7 Form to post',
-      'CF7->Post',
-      'manage_options',
-      'cf7_post',
-      array($this,'display_mapping_page'));
-      $hook2 = add_submenu_page(
-        'wpcf7', //parent slug
-        'CF7 Form to post', //page title
-        'Map CF7 to Post', //menu title
-        'manage_options', //capability
-        'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::MAP_SCREEN_ID
-        array($this,'display_mapping_page2')); //fn
+    $hook2 = add_submenu_page(
+      'wpcf7', //parent slug
+      'CF7 Form to post', //page title
+      'Map CF7 to Post', //menu title
+      $capability, //capability
+      'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::MAP_SCREEN_ID
+      array($this,'display_mapping_page')); //fn
   }
   /**
   * Function to load custom admin page metabox.
@@ -288,8 +294,11 @@ class Cf7_2_Post_Admin {
   * @return     Array    $columns       IDs of table columns.
   */
   public function modify_cf7_list_columns($columns){
-    $columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
-    $columns['map_cf7_2_post']= __( 'Form to post', 'cf7-2-post');
+    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
+    if(current_user_can($capability)){
+      //$columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
+      $columns['map_cf7_2_post']= __( 'Form to post', 'cf7-2-post');
+    }
     return $columns;
   }
   /**
@@ -299,20 +308,11 @@ class Cf7_2_Post_Admin {
   * @param      int    $post_id    CF7 post ID for the row to fill.
   */
   public function populate_custom_column( $column, $post_id ) {
+    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
+    if(!current_user_can($capability)){
+      return;
+    }
     switch ( $column ) {
-      case 'mapped_post' :
-          $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
-          //$form = WPCF7_ContactForm::get_instance($post_id);
-          if ($post_type){
-            $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
-            $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=edit' );
-            echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
-            echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
-          }else{
-            $url = admin_url( 'admin.php?page=cf7_post&id=' . $post_id . '&action=new' );
-            echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
-          }
-          break;
       case 'map_cf7_2_post' :
           $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
           //$form = WPCF7_ContactForm::get_instance($post_id);
@@ -341,14 +341,18 @@ class Cf7_2_Post_Admin {
     if("wpcf7_contact_form" != $post_type){
       return;
     }
+    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
+    if(!current_user_can($capability)){
+      return;
+    }
     static $printNonce = TRUE;
     if ( $printNonce ) {
         $printNonce = FALSE;
         wp_nonce_field('cf7_2_post_quick_edit' , 'cf7_2_post_quick_edit' );
     }
     switch ( $column_name ) {
-      case 'mapped_post':
-        include(plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php');
+      case 'map_cf7_2_post':
+        include_once( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php' );
         break;
     }
   }
@@ -392,31 +396,9 @@ class Cf7_2_Post_Admin {
   /**
   * Display the custom admin page for creating post
   * This is a call back function based on the admin menu hook
-  * @since 1.0.0
+  * @since 3.0.0
   */
   public function display_mapping_page(){
-    if( isset($_GET['id']) ){
-      $cf7_post_id = $_GET['id'];
-      if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
-        $factory_mapping = $this->post_mapping_factory;
-      }else{
-        $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
-        $this->post_mapping_factory = $factory_mapping;
-      }
-      include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-admin-display.php');
-    }else{
-      $adminUrl = admin_url('edit.php?post_type=wpcf7_contact_form');
-      echo '<div><h2>Ooops! Have you taken a wrong turn?</h2>';
-      echo '<p>This page is for mapping a CF7 form to a custom post,';
-      echo ' please access it from the from <a href="'.$adminUrl.'">table list page</a>.</p></div>';
-    }
-  }
-  /**
-  * Display the custom admin page for creating post
-  * This is a call back function based on the admin menu hook
-  * @since 1.0.0
-  */
-  public function display_mapping_page2(){
     if( isset($_GET['id']) ){
       $cf7_post_id = $_GET['id'];
       if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
