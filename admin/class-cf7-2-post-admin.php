@@ -136,12 +136,7 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
-    if ('contact_page_cf7_post' == $hook){
-  		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
-      wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
-      wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
-
-    }else if(self::MAP_SCREEN_ID == $hook){
+    if(self::MAP_SCREEN_ID == $hook){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
@@ -466,6 +461,22 @@ class Cf7_2_Post_Admin {
       wp_send_json_error($json_data);
     }
     die();
+  }
+  /**
+  *Disables browser page caching for forms which are mapped to a post.
+  * Hooked on 'wp_head' in fn load_cf7_script.
+  *@since 3.0.0
+  */
+  public function disable_browser_page_cache(){
+    $screen = get_current_screen();
+    if(self::MAP_SCREEN_ID !== $screen->id) return;
+      ?>
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
+      <?php
   }
   /**
    * Ajax Load system post options

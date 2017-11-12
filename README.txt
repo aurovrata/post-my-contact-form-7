@@ -222,6 +222,15 @@ If you have created a custom taxonomy for your post, you can include these into 
 
 When you map your form fields to the custom post meta fields, you need to to ensure that these meta-fields are displayed in the post edit page of yoru dashboard using [meta-boxes](https://developer.wordpress.org/reference/functions/add_meta_box/).  You can custom [create these meta-boxes](https://www.smashingmagazine.com/2011/10/create-custom-post-meta-boxes-wordpress/) in  your functions.php file or you can also use a plugin.  However, without these meta-boxees you won't be able to see your field values when you edit your posts.
 
+= Why does my form page have no-cache metas ? =
+As of v3.0.0 the no-cache metas have been added by default to pages with embeded forms that are being mapped by this plugin.  Note this does not affect pages with forms which are not mapped.  This is done to ensure that forms with pre-loaded field values (saved draft forms or forms with pre-filled values) are not being cached by the browser and as a result load spurious values.
+
+If your form is not being saved by users and not being pre-filled, then you may decide to disable the no-cache metas with the following filter,
+`
+add_filter('cf7_2_post_print_page_nocache_metas', '__return_false'));
+`
+It is not possible to target pages with specific forms.
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -233,7 +242,13 @@ When you map your form fields to the custom post meta fields, you need to to ens
 7. making custom posts publicly queryable.
 
 == Changelog ==
-=2.5.0=
+=3.0.0=
+* use WP core admin page construct for mapping page, allowing other plugins to build on top.
+* clean up of mapping page, with improved look & feel.
+* introduce helper mtabox for quick reference to available hooks.
+* changed front-end saved form loading mechanism to overcome  page-caching issues.
+* fix bug for empty file upload fields.
+* fix meta_field file bug which stored paths to uploaded file, now stores url.
 * introduce front-end no-cache meta tags in head to disable page caching on mapped forms.
 * added filter `cf7_2_post_print_page_nocache_metas`
 =2.4.1=

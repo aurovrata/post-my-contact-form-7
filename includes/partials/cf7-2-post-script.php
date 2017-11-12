@@ -177,7 +177,8 @@ if ( ! defined( 'ABSPATH' ) ) {
           cf7Form.find('input[name=_wpcf7]').parent().append(fname);
 <?php endif;?>
         /* trigger the formMapped event to let other scripts that the form is now ready */
-        cf7Form.trigger("<?php echo $nonce ?>");
+        cf7Form.trigger("<?php echo $nonce ?>", data);
+        //console.log('<?php echo $nonce ?> form ready');
       }//end preloadForm()
     }); //document ready
   })(); //call local function to execute it.

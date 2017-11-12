@@ -37,7 +37,7 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
     <?php if('system' == $source):?>
       <select <?php $factory_mapping->is_published('select');?> class="nice-select cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
         <option value="">Select a field</option>
-        <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
+        <?= $factory_mapping->get_system_post_metas($factory_mapping->get('type'), $post_field)?>
         <option value="cf72post-custom-meta-field">Custom field</option>
       </select>
       <input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>
@@ -63,7 +63,7 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
     <?php if('system' == $source): //post meta field names are saved in the form field option select name?>
       <select disabled="disabled" class="nice-select cf7-2-post-map-labels options-<?php echo $factory_mapping->get('type')?>">
         <option value="">Select a field</option>
-        <?php echo $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
+        <?= $factory_mapping->get_system_post_metas($factory_mapping->get('type'))?>
         <option value="cf72post-custom-meta-field">Custom field</option>
       </select>
       <input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>

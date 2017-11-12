@@ -64,13 +64,6 @@ class Cf7_2_Post_Public {
     wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
 		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
 
-    // wp_register_script(
-    //     'cf7-2-post-loader', //handle
-    //     plugin_dir_url( __DIR__ ) . 'includes/partials/cf7-2-post-script.php', // src
-    //     array('jquery'), // dependencies, I use jquery in dynamic-javascript.php
-    //     $this->version, // version number,
-    //     false //in footer
-    // );
 	}
   /**
   * Saves a cf7 form submission to its mapped post
@@ -156,7 +149,7 @@ class Cf7_2_Post_Public {
   /**
   *Disables browser page caching for forms which are mapped to a post.
   * Hooked on 'wp_head' in fn load_cf7_script.
-  *@since 2.5.0
+  *@since 3.0.0
   */
   public function disable_browser_page_cache(){
     if(!$this->scan_for_mapped_forms()) return;
@@ -172,7 +165,7 @@ class Cf7_2_Post_Public {
   /**
   * Function to scan the current post content for mapped cf7 forms.
   *
-  *@since 2.5.0
+  *@since 3.0.0
   *@param string $content content to check, else it will try to get the global $post object's content.
   *@return boolean true if found.
   */

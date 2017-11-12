@@ -155,6 +155,8 @@ class Cf7_2_Post {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
     //on save cf7 post type
     //$this->loader->add_action( 'save_post_wpcf7_contact_form', $plugin_admin,'reset_mapped_scripts', 30, 2 );
+    //no cahing metas
+		$this->loader->add_action('admin_head', $plugin_admin, 'disable_browser_page_cache', 1);
     //modify the CF7 post type
     $this->loader->add_action('init', $plugin_admin, 'modify_cf7_post_type',20);
     //cf7 sub-menu
@@ -201,7 +203,7 @@ class Cf7_2_Post {
     /* WP hooks */
 		//$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-    $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 10,3 );
+    $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 100,3 );
 		//no cahing metas
 		$this->loader->add_action('wp_head', $plugin_public, 'disable_browser_page_cache', 1);
 

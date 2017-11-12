@@ -8,12 +8,11 @@
 
   /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
-    //since 2.5.0
+    //since 3.0.0
     var $mapForm = $('#cf7-post-mapping-form');
     $('.nice-select', $mapForm).each(function(){
       $(this).niceSelect();
     });
-
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
     var newTaxonomy = $('#post_taxonomy_map div.custom-taxonomy-field').last().clone();
@@ -193,9 +192,14 @@
           $target.next('.nice-select').hide();
 					var $input = $target.siblings('input.cf7-2-post-map-label-custom').show();
 					$input.prop('disabled', false).addClass('cf7-2-post-map-labels');
-          $input.on('change', metaKeyChange);
-          $input.trigger('change');
-				}
+          $input.on('change', function(){
+            $target.append('<option value="'+$(this).val()+'">').val($(this).val());
+            $(this).each(metaKeyChange);
+          });
+          $input.each(metaKeyChange); //udpate with the default meta field.
+				}else{
+          $target.each(metaKeyChange);
+        }
 			}
     });
     //switch-off auto-fill if the name is manually edited.
@@ -223,7 +227,7 @@
             $select.addClass('autofill-field-name'); //allows change to autofill.
             var $nextOption = $select.find('option[value="'+$previous.val()+'"]').next();
             $nextOption.prop('selected','true'); //select.
-            $select.trigger('change');
+            $select.val($nextOption.val()).trigger('change');
             var name = $nextOption.val().replace(/-/g,'_');
             $parent.find('input.cf7-2-post-map-labels').val(name).trigger('change');
             if( $nextOption.next().val() != $select.find('option:last').val()){

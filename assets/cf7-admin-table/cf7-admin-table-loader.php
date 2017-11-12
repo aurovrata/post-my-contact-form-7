@@ -17,7 +17,7 @@ if(!$cf7_admin->hooks()){
   add_action('manage_wpcf7_contact_form_posts_custom_column', array( $cf7_admin, 'populate_custom_column') ,10,2 );
   add_filter('post_row_actions', array( $cf7_admin, 'modify_cf7_list_row_actions') , 10, 2 );
   //change the 'Add New' button link.
-  add_action('admin_print_footer_scripts', array( $cf7_admin, 'change_add_new_button' ));
+  add_action('admin_print_footer_scripts', array( $cf7_admin, 'change_add_new_button' ),1);
   //catch cf7 delete redirection
   add_filter('wp_redirect', array( $cf7_admin, 'filter_cf7_redirect'),10,2 );
   //add quick edit

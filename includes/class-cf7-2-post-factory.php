@@ -1217,18 +1217,22 @@ class Cf7_2_Post_Factory {
       }else{
         if( 'file' == $this->cf7_form_fields[$form_field] ){
           $cf7_files = $submission->uploaded_files();
-          $file = $cf7_files[$form_field];
-          $filename = $cf7_form_data[$form_field]; //path
-          //wp_upload_bits( $name, $deprecated, $bits, $time )
-          //debug_msg(, "uploading file to meta field... ");
-          $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
-
-          if (!$upload_file['error']) {
-            update_post_meta($post_id, $post_field, $upload_file['file']);
-          }else{
-            //debug_msg($upload_file['error']);
-            debug_msg($file, "Unable to upload file ".$filename);
+          $file_url = '';
+          if(isset($cf7_files[$form_field]) && !empty($cf7_files[$form_field])){
+            $file = $cf7_files[$form_field];
+            $filename = $cf7_form_data[$form_field]; //path
+            //wp_upload_bits( $name, $deprecated, $bits, $time )
+            //debug_msg(, "uploading file to meta field... ");
+            $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
+            if (!$upload_file['error']) {
+              $file_url = $upload_file['url'];
+            }else{
+              debug_msg($file, "Unable to upload file ".$filename);
+            }
           }
+          //if(isset($cf7_form_data[$form_field])){ //if not submitted=disabled.
+          update_post_meta($post_id, $post_field, $file_url);
+          //}
         }else{
           if( isset($cf7_form_data[$form_field]) ){
             update_post_meta($post_id, $post_field, $cf7_form_data[$form_field]);
