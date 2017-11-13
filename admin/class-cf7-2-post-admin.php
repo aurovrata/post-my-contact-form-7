@@ -61,7 +61,7 @@ class Cf7_2_Post_Admin {
   * @access public
   * constant string   the id of the screen, which is dependent on the CF7 main menu.
   */
-  public const MAP_SCREEN_ID = 'contact_page_map_cf7_2_post';
+  const MAP_SCREEN_ID = 'contact_page_map_cf7_2_post';
 	/**
 	 * Initialize the class and set its properties.
 	 *
