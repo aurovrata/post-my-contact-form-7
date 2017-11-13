@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 4.8.2
+Tested up to: 4.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,9 +12,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
-**WARNING**: Upgrading to Contact Form 7 v4.8 may break this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!  I have been testing with CF7 v4.9 and so far it is stable, however I believe the issues are related to the implementation of REST API in the CF7 plugin which I am yet to investigate.
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
+
+**WARNING**: If you are using the REST API on your website, then upgrading to Contact Form 7 v4.8 may break this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!  I have been testing with CF7 v4.9 and so far it is stable for websites which do not use the REST API. If you are not sure about what the REST API, check your main Theme documentation, it would mention it very prominently, however only very few themes make use of this api, so this may very well not apply to your site.
 
 You can submit and map to a post all of the following fields,
 
@@ -27,10 +28,16 @@ You can submit and map to a post all of the following fields,
 * this plugin allows your users to manage multiple draft submissions from a single page.
 * for large forms with multiple fields, an auto-create functionality has been added for meta-field mapping.  See the installation instruction for details.
 
+v3.0 of this plugin introduces many changes to enable other plugin developers to leverage the functionality available in this plugin.  If you a developer, please look at the code where ample comments are provided.
+
 = Make your CF7 Form more portable =
 
  this plugin introduces form keys (which you can modify in the CF7 admin table).  Keys are unique for each form, allowing you identify a form my its key rather than an ID.  Why is this priceless?  IDs changes from one server to the next because they are the custom post ID attributed by the WordPress installation, and therefore you develop your form in a local machine only to find out that the IDs are different when you move your form to your production server.  To overcome this problem, we suggest you use a form key along with this plugin's contact form shortcode, `[cf7-2-post key="contact-us"]`.  Don't worry your old contact form 7 shortcodes will still work too, behind the scenes we simply map the key to the ID and call the regular contact form 7 shortcode.
 
+= Powerful form designs =
+This plugin is now fully compatible with Smart Grid-Layout Designs for Contact Form 7.  The Smart Grid for CF7 allows responsive grid-layout designed forms, as well as powerful features such as repetitive field inputs (using table structures with multiple row inputs), repetitive form sections using multiple tabbed inputs, as well as optional input sections using toggled collapsible sections.  Furthermore the plugin offers a modular approach to form design, where existing forms can be inserted as sub-sections.
+
+Post my CF7 Form now saves these complex forms designs seamlessly into your dashboard posts.
 
 = Filters for fields =
 
@@ -243,6 +250,7 @@ It is not possible to target pages with specific forms.
 
 == Changelog ==
 =3.0.0=
+* multiple changes for plugin developers to build on top of this plugin.
 * use WP core admin page construct for mapping page, allowing other plugins to build on top.
 * clean up of mapping page, with improved look & feel.
 * introduce helper mtabox for quick reference to available hooks.
