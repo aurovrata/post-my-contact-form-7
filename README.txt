@@ -35,7 +35,7 @@ v3.0 of this plugin introduces many changes to enable other plugin developers to
  this plugin introduces form keys (which you can modify in the CF7 admin table).  Keys are unique for each form, allowing you identify a form my its key rather than an ID.  Why is this priceless?  IDs changes from one server to the next because they are the custom post ID attributed by the WordPress installation, and therefore you develop your form in a local machine only to find out that the IDs are different when you move your form to your production server.  To overcome this problem, we suggest you use a form key along with this plugin's contact form shortcode, `[cf7-2-post key="contact-us"]`.  Don't worry your old contact form 7 shortcodes will still work too, behind the scenes we simply map the key to the ID and call the regular contact form 7 shortcode.
 
 = Powerful form designs =
-This plugin is now fully compatible with Smart Grid-Layout Designs for Contact Form 7.  The Smart Grid for CF7 allows responsive grid-layout designed forms, as well as powerful features such as repetitive field inputs (using table structures with multiple row inputs), repetitive form sections using multiple tabbed inputs, as well as optional input sections using toggled collapsible sections.  Furthermore the plugin offers a modular approach to form design, where existing forms can be inserted as sub-sections.
+This plugin is now fully compatible with [Smart Grid-Layout Designs for Contact Form 7](https://wordpress.org/plugins/cf7-grid-layout/).  The Smart Grid for CF7 allows responsive grid-layout designed forms, as well as powerful features such as repetitive field inputs (using table structures with multiple row inputs), repetitive form sections using multiple tabbed inputs, as well as optional input sections using toggled collapsible sections.  Furthermore the plugin offers a modular approach to form design, where existing forms can be inserted as sub-sections.
 
 Post my CF7 Form now saves these complex forms designs seamlessly into your dashboard posts.
 
@@ -249,6 +249,10 @@ It is not possible to target pages with specific forms.
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=3.1.0=
+* added filter 'cf7_2_post_saving_tag_{$tag_type}' for plugin developers.
+* added transient post ID on submission for ease of redirection.
+* bug fix loading empty forms.
 =3.0.0=
 * multiple changes for plugin developers to build on top of this plugin.
 * use WP core admin page construct for mapping page, allowing other plugins to build on top.

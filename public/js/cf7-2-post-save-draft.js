@@ -2,12 +2,18 @@
 	'use strict';
 
 	$(document).ready(function(){
-    var cf7Form = $('div.cf7_2_post form.wpcf7-form input[type=submit].cf7_2_post_save').closest("form.wpcf7-form");
-    cf7Form.each(function(){
-			var $form = $(this);
-      $('input[type=submit].wpcf7-submit', cf7Form).on('click', function(){
+    var $save = $('form.wpcf7-form input[type=submit].cf7_2_post_save');
+    $save.each(function(){
+			var $form = $(this).closest("form.wpcf7-form");
+      //localized cf72post_save.disabled = true if form is not mapped.
+      $('input[type=submit].wpcf7-submit', $form).on('click', function(event){
         var isSave = 'false';
         if($(this).is('.cf7_2_post_save')){
+          if(cf72post_save.disabled) {
+            $(this).parent().append('<span class="wpcf7-warning">'+cf72post_save.error+'</span>')
+            event.stopPropagation();
+            return false;
+          }
           isSave = 'true';
 					$(':input',$form).each(function(){
             switch(true){
@@ -30,11 +36,11 @@
             }
 					});
         }
-        $('input[type=hidden].cf7_2_post_draft', cf7Form).val(isSave);
+        $('input[type=hidden].cf7_2_post_draft', $form).val(isSave);
 
       });
       //verify if a message box is available
-      if( ! $('div.wpcf7-response-output', cf7Form).length){
+      if( ! $('div.wpcf7-response-output', $form).length){
         cf7Form.append('<div class="wpcf7-response-output wpcf7-display-none"></div>')
       }
     });

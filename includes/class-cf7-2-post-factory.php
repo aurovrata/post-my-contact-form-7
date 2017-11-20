@@ -1049,10 +1049,11 @@ class Cf7_2_Post_Factory {
   * Save the submitted form data to a new/existing post
   * calling this function assumes the mapped post_type exists and is published
   *@since 1.0.0
-  *@param Array $cf7_form_data data submitted from cf7 form
+  *@param WPCF7_Submission $submission cf7 submission object.
   */
   public function save_form_2_post($submission){
     $cf7_form_data = $submission->get_posted_data();
+    $this->load_form_fields(); //this loads the form fields and their type
     //debug_msg($cf7_form_data);
     //check if this is a system post which are mapped using an action.
     if( has_action('cf7_2_post_save-'.$this->get('type')) ){
@@ -1176,10 +1177,19 @@ class Cf7_2_Post_Factory {
         $post[$post_key] = apply_filters($form_field,'', $post_id, $cf7_form_data);
       }else{
         if( isset($cf7_form_data[$form_field]) ){
-          if(is_array($cf7_form_data[$form_field])){
-            $post[$post_key] = implode(',', $cf7_form_data[$form_field] );
+          $submitted = $cf7_form_data[$form_field];
+          /**
+          * Filter introduced for plugin developers to map custom plugin tag fields, allows for submitted values to be filtered before being stored.
+          * @since 3.1.0
+          * @param mixed $submitted  submitted value for the field
+          * @param string $field_name  the field name
+          * @return mixed value to store for the field.
+          */
+          $submitted = apply_filters('cf7_2_post_saving_tag_'.$this->cf7_form_fields[$form_field], $submitted, $form_field);
+          if(is_array($submitted)){
+            $post[$post_key] = implode(',', $submitted );
           }else{
-            $post[$post_key] = $cf7_form_data[$form_field];
+            $post[$post_key] = $submitted;
           }
         }
       }
@@ -1205,7 +1215,6 @@ class Cf7_2_Post_Factory {
     }else{
       update_post_meta($post_id, '_cf7_2_post_form_submitted','yes'); //form is submitted
     }
-    $this->load_form_fields(); //this loads the form fields and their type
 
     //debug_msg($cf7_form_data, "submitted data ");
 
@@ -1235,7 +1244,17 @@ class Cf7_2_Post_Factory {
           //}
         }else{
           if( isset($cf7_form_data[$form_field]) ){
-            update_post_meta($post_id, $post_field, $cf7_form_data[$form_field]);
+            $submitted = $cf7_form_data[$form_field];
+            /**
+            * Filter introduced for plugin developers to map custom plugin tag fields, allows for submitted values to be filtered before being stored.
+            * @since 3.1.0
+            * @param mixed $submitted  submitted value for the field
+            * @param string $field_name  the field name
+            * @return mixed value to store for the field.
+            */
+            $submitted = apply_filters('cf7_2_post_saving_tag_'.$this->cf7_form_fields[$form_field], $submitted, $form_field);
+
+            update_post_meta($post_id, $post_field, $submitted);
           }
         }
       }
@@ -1265,7 +1284,7 @@ class Cf7_2_Post_Factory {
     }
     do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     /**
-    * action introduced for plugin developers to map custom plugin tag fields
+    * action introduced for plugin developers to map custom plugin fields
     * @since 2.0.0
     * general action for other plugins to hook custom functionality
     * @param string $post_id  the id of the post to which this submission was mapped
@@ -1276,6 +1295,15 @@ class Cf7_2_Post_Factory {
     * @param array $uploaded_files an array of uploaded files if any file submission fields are available in this form.
     */
     do_action('cf7_2_post_form_posted', $post_id, $this->cf7_key, $this->post_map_fields, $this->post_map_meta_fields, $cf7_form_data, $submission->uploaded_files());
+
+    /**
+    *@since 3.1.0 - store the post_id in a transietn field for page redirect.
+    */
+    if( isset($cf7_form_data['_cf72post_nonce']) && !empty($cf7_form_data['_cf72post_nonce'])){
+      $time = apply_filters('cf7_2_post_transient_submission_expiration', 300, $this->cf7_key);
+      if(!is_numeric($time)) $time = 300;
+      set_transient( $cf7_form_data['_cf72post_nonce'], $post_id, $time );
+    }
   }
   /**
   * Builds a set of field=>value pairs to pre-populate a mapped form
@@ -1435,7 +1463,7 @@ class Cf7_2_Post_Factory {
 
       }
     //filter the values
-    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'], $this->cf7_key );
+    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $this->cf7_post_ID , $this->post_properties['type'], $this->cf7_key, $post);
     //make sure the field names are with underscores
     $return_values = array();
     foreach($field_and_values as $field=>$value){
@@ -1636,7 +1664,6 @@ class Cf7_2_Post_Factory {
    * Delete a post mapping
    *
    * @since 1.0.0
-   * @param      int    $cf7_post_id    form post id whose mapping is to be deleted .
    * @param     boolean    $delete_all_posted_data     .
   **/
   public function delete_mapping($delete_all_posted_data){

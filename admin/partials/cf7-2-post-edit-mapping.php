@@ -29,9 +29,6 @@ switch($source){
 
 ?>
 <div class="wrap">
-
-    <?php screen_icon(); ?>
-
     <h2><?php esc_html_e('Save Submissions as ','cf7-2-post'); ?>&quot;<span id="custom-post-title"><?= $post_name ;?>&nbsp;(<?= $post_type?>)</span>&quot;</h2>
     <form id="cf7-post-mapping-form" name="map_cf7_2_post" method="post">
         <input type="hidden" name="action" value="save_post_mapping"/>

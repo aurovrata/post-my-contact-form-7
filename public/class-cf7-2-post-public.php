@@ -235,32 +235,45 @@ class Cf7_2_Post_Public {
 	 * @return string a set of html fields to capture the googleMap information
 	 */
 	public function save_button_display( $tag ) {
-      //enqueue required scripts and styles
-      wp_enqueue_script( $this->plugin_name.'-save');
+    //check if this form is currently mapped;
+    $atts = array();
+    $disabled = false;
+    $cf7_form = wpcf7_get_current_contact_form();
+    if(!Cf7_2_Post_Factory::is_mapped($cf7_form->id())){
+      $disabled = true;
+    }
+    //enqueue required scripts and styles
+    wp_enqueue_script( $this->plugin_name.'-save');
+    wp_localize_script($this->plugin_name.'-save',
+      'cf72post_save',
+      array(
+        'disabled'=>$disabled,
+        'error' => __('save is disabled, form is not mapped.','cf7-2-post')
+      )
+    );
+    $tag = new WPCF7_FormTag( $tag );
+    $class = wpcf7_form_controls_class( $tag->type );
 
-	    $tag = new WPCF7_FormTag( $tag );
-      $class = wpcf7_form_controls_class( $tag->type );
 
-    	$atts = array();
+  	$atts['class'] = $tag->get_class_option( $class );
+    $atts['class'] .=' wpcf7-submit cf7_2_post_save';
+  	$atts['id'] = $tag->get_id_option();
+  	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
 
-    	$atts['class'] = $tag->get_class_option( $class );
-      $atts['class'] .=' wpcf7-submit cf7_2_post_save';
-    	$atts['id'] = $tag->get_id_option();
-    	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
+  	$value = isset( $tag->values[0] ) ? $tag->values[0] : '';
 
-    	$value = isset( $tag->values[0] ) ? $tag->values[0] : '';
+  	if ( empty( $value ) ) {
+  		$value = __( 'Save', 'contact-form-7' );
+  	}
 
-    	if ( empty( $value ) ) {
-    		$value = __( 'Save', 'contact-form-7' );
-    	}
+  	$atts['type'] = 'submit';
+  	$atts['value'] = $value;
 
-    	$atts['type'] = 'submit';
-    	$atts['value'] = $value;
+  	$atts = wpcf7_format_atts( $atts );
 
-    	$atts = wpcf7_format_atts( $atts );
-    	$html = sprintf( '<input %1$s />', $atts );
-      $html .=PHP_EOL.'<input type="hidden" name="save_cf7_2_post" class="cf7_2_post_draft" value="false"/>';
-	    return $html;
+  	$html = sprintf( '<input %1$s />', $atts );
+    $html .=PHP_EOL.'<input type="hidden" name="save_cf7_2_post" class="cf7_2_post_draft" value="false"/>';
+    return $html;
 	}
   /**
    * Reset cf7 validation if this form is being saved as a draft.

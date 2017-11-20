@@ -24,7 +24,7 @@
 function set_supports($supports){
   $default_supports[]='comments';
   return $default_supports;
-}" href="javascript:void(0);">Filter</a> custom post <code>supports</code> attributes (<a href="https://codex.wordpress.org/Function_Reference/register_post_type#supports">documentation</a>).
+}" href="javascript:void(0);">Post Supports Filter</a> custom post <code>supports</code> attributes (<a href="https://codex.wordpress.org/Function_Reference/register_post_type#supports">documentation</a>).
       </li>
       <li class="factory-hook">
         <a class="helper" data-cf72post="add_filter('cf7_2_post_capabilities_{$post_type}', 'set_capabilities');
@@ -46,7 +46,7 @@ $capabilities = array(
 );
 /*All capabilities must be set, else the plugin will default back to default `post` capabilities.  Also, make sure you assign each of these capabilities to the admin role (or other roles/users) else you won't be able to access your custom post.*/
   return $capabilities;
-}" href="javascript:void(0);">Filter</a> custom post access <code>capabilities</code> (<a href="http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types">documentation</a>).
+}" href="javascript:void(0);">Post Access Filter</a> custom post access <code>capabilities</code> (<a href="http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types">documentation</a>).
       </li>
       <li class="taxonomy-hook">
         <a class="helper" data-cf72post="add_filter('cf7_2_post_filter_taxonomy_registration-{$taxonomy_slug}', 'register_custom_tags');
@@ -60,7 +60,7 @@ $capabilities = array(
 function register_custom_tags($taxonomy_arg){
   $taxonomy_arg['hierarchical'] = false;
   return $taxonomy_arg;
-}" href="javascript:void(0);">Filter</a> to change custom taxonomy like tags (<a href="https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments">documentation</a>).
+}" href="javascript:void(0);">Taxonomy Registration Filter</a> to change custom taxonomy like tags (<a href="https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments">documentation</a>).
       </li>
       <li class="system-hook">
         <a class="helper" data-cf72post="add_filter('cf7_2_post_skip_system_metakey', 'filter_post_metas', 10, 3);
@@ -79,7 +79,7 @@ function filter_post_metas($skip, $post_type, $meta_field_name){
     $skip = false;
   }
   return $skip;
-}" href="javascript:void(0);">Filter</a> to show system post internal meta-fields.
+}" href="javascript:void(0);">Internal Meta Filter</a> to show system post internal meta-fields.
       </li>
       <li class="system-hook">
         <a class="helper" data-cf72post="add_filter('cf7_2_post_display_system_posts', 'filter_posts', 10, 2);
@@ -95,7 +95,7 @@ function filter_posts($displayed_posts, $form_id){
   //add an existing post type and label,
   displayed_posts['some_post'] = 'Some Post';
   return displayed_posts;
-}" href="javascript:void(0);">Filter</a> to show hidden system post for mapping.
+}" href="javascript:void(0);">System Post Filter</a> to show hidden system post for mapping.
       </li>
     </ul>
   </div>
@@ -137,7 +137,7 @@ function field_default_value($value, $cf7_id, $field, $cf7form_key){
       break;
   }
   return $value;
-}" href="javascript:void(0);">Filter</a> default field value when form is displayed.
+}" href="javascript:void(0);">Default Values Filter</a> default field value when form is displayed.
         </li>
         <li>
           <a class="helper" data-cf72post="add_filter('cf7_2_post_filter_cf7_taxonomy_terms', 'modify_my_terms',10,4);
@@ -159,7 +159,7 @@ function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
     $terms_id[] = $term->term_id;
   }
   return $terms_id;
-}" href="javascript:void(0);">Filter</a> taxonomy terms in dropdown/radio/checkbox.
+}" href="javascript:void(0);">Term Values Filter</a> taxonomy terms in dropdown/radio/checkbox.
         </li>
         <li>
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_print_page_nocache_metas','disable_page_cache_metas',10);
@@ -175,7 +175,7 @@ function disable_page_cache_metas($print_on_page){
   //or you can check if perticular page template is used.
   if(is_page_template( 'page-contact.php')) $print_on_page = false;
   return $print_on_page;
-}" href="javascript:void(0);">Filter</a> to remove nocache meta tags in &lt;head&gt;.
+}" href="javascript:void(0);">Page Cache Filter</a> to remove nocache meta tags in &lt;head&gt;.
       </li>
     </ul>
   </div>
@@ -205,7 +205,7 @@ function disable_page_cache_metas($print_on_page){
 function set_{$post_type}_author($author_id, $cf7_id, $submitted_data, $cf7_key){
   //... do something here and set a new author ID with a valid user id which exists in the user table.
   return $author_id;
-}" href="javascript:void(0);">Filter</a> the author of the submitted post .
+}" href="javascript:void(0);">Author Filter</a> the author of the submitted post .
         </li>
         <li>
           <a class="helper" data-cf72post="add_action( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type}',10,3);
@@ -219,7 +219,7 @@ function set_{$post_type}_author($author_id, $cf7_id, $submitted_data, $cf7_key)
 function publish_by_default($status, $ckf7_key, $submitted_data){
   /*The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return a valid post status: 'publish'|'draft'|'pending'|'trash'*/
   return 'publish';
-}" href="javascript:void(0);">Filter</a> to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).
+}" href="javascript:void(0);">Post Status Filter</a> to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).
         </li>
         <li>
           <a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_validation', 'force_validation', 10, 2);
@@ -232,11 +232,27 @@ function publish_by_default($status, $ckf7_key, $submitted_data){
 function force_validation($skip_validation, $cf7_key){
   /*For forms which have a save button, the validation of draft forms are skipped by default. This filter allows you to force validation of draft forms.*/
   if('my-form' == $cf7_key){
-    skip_validation = false;
+    $skip_validation = false;
   }
   return skip_validation;
-}" href="javascript:void(0);">Filter</a> to send cf7 mail for draft form saved.
+}" href="javascript:void(0);">Draft Validation Filter</a> to send cf7 mail for draft form saved.
         </li>
+        <li>
+          <a class="helper" data-cf72post="add_fitler('cf7_2_post_transient_submission_expiration', 'keep_transient',10,2);
+/**
+* Function change the expiration of transient saved post ID after a submission.
+* @param int $time value in seconds, default is 300 = 5 mins.
+* @param string $cf7_key unique key to identify your form.
+* @return int time in seconds to expiration of the transient post ID.
+*/
+function force_notification($time, $cf7_key){
+  /*The post ID to which a submission is saved to is stored as a transient value in the WordPress database cache.  This is helpful is you want to redirect your form submission to another page and display the results.  You can access the saved post ID on the redirected page. This transient value is cached for 5 minutes, but you may need to keep this value in the cache for a longer period if you expect your users to visit the redirected page at a later state. */
+  if('my-form' == $cf7_key){
+    $time = 60*60*1; //this is 1 hour.
+  }
+  return $time;
+}" href="javascript:void(0);">Cache Time Filter</a> period to track anonymous submissions.
+      </li>
         <li>
           <a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_mail', 'force_notification');
 /**
@@ -251,7 +267,7 @@ function force_notification($skip_mail, $cf7_key){
     skip_mail = false;
   }
   return skip_mail;
-}" href="javascript:void(0);">Filter</a> to send cf7 mail for draft form saved.
+}" href="javascript:void(0);">Draft Mail Filter</a> to send cf7 mail for draft form saved.
       </li>
       <li>
         <a class="helper" data-cf72post="add_action('cf7_2_post_form_mapped_to_{$post_type}', 'new_{$post_type}_mapped',10,3);
