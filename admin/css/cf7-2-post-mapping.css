@@ -29,25 +29,7 @@ form#cf7-post-mapping-form .default-post-fields .cf7-2-post-map-labels {
 .default-post-fields .field-options.post-options{
   width: 220px;
 }
-#helper .postbox {
-    margin-bottom: 2px;
-    border: none;
-}
-#helper .postbox .toggle-indicator {
-    float: right;
-}
-#helper .postbox h3.hndle {
-    padding-left: 0;
-    padding-right: 0;
-}
-#helper .postbox .inside,
-.helper-list {
-    padding: 0;
-    margin: 0;
-}
-.helper {
-    color: #006800;
-}
+
 label{
   cursor: default;
 }
@@ -324,13 +306,7 @@ option.system-taxonomy {
   background:none;
   margin-left: 0;
 }
-#helperdiv p, #helperdiv ul {
-    margin: 0;
-}
-.helper-list p {
-    margin: 0;
-    text-align: justify;
-}
+
 .custom-meta-field .nice-select, #post_taxonomy_map .nice-select {
     float: none;
     clear: unset;

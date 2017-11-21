@@ -84,6 +84,13 @@ class Cf7_2_Post_Factory {
 	 */
   protected $localise_values;
   /**
+   * An array of wpcf7_type taxonomy terms this form belongs to.
+   * @since 3.2.0
+   * @access protected
+   * @var array $form_terms an array of terms.
+   **/
+   protected $form_terms;
+  /**
    * Default Construct a Cf7_2_Post_Factory object.
    *
    * @since    1.0.0
@@ -99,6 +106,13 @@ class Cf7_2_Post_Factory {
     $this->cf7_post_ID = $cf7_post_id;
     $post = get_post($cf7_post_id);
     $this->cf7_key = $post->post_name;
+    /** @since 3.2.0 get the form terms if any */
+    $this->form_terms = array();
+    $terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array('fields'=>'id=>slug') );
+    if(!is_wp_error( $terms )){
+      //debug_msg($terms, $cf7_post_id);
+      $this->form_terms = $terms;
+    }
   }
   /**
    *Enqueue the localised script
@@ -1386,7 +1400,7 @@ class Cf7_2_Post_Factory {
         if($load_saved_values) {
           $post_value = $post->{$post_key};
         }else{
-          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field);
+          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field, $this->cf7_key, $this->form_terms);
         }
 
         if(!empty($post_value)){
@@ -1408,7 +1422,7 @@ class Cf7_2_Post_Factory {
           $post_value = get_post_meta($post->ID, $post_field, true);
         }else{
           //debug_msg('spllygin filter cf7_2_post_filter_cf7_field_value'. $form_field);
-          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field);
+          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field, $this->cf7_key, $this->form_terms);
         }
         if(!empty($post_value)){
           $field_and_values[str_replace('-','_',$form_field)] = $post_value;
@@ -1423,7 +1437,7 @@ class Cf7_2_Post_Factory {
           continue;
         }
         $post_value='';
-        $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field);
+        $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $this->cf7_post_ID, $form_field, $this->cf7_key, $this->form_terms);
         //$script .= $this->get_field_script($form_field, $post_value);
         if(!empty($post_value)){
           $field_and_values[str_replace('-','_',$form_field)] = $post_value;

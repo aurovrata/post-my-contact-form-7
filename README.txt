@@ -100,6 +100,35 @@ The plugin has been coded with additional actions and filters to allow you to ho
 
 
 == Frequently Asked Questions ==
+= How do I redirect to a page and access the saved post? =
+Place the following in your `functions.php` file,
+
+`add_filter('cf7_2_post_form_append_output', 'redirect_on_submit', 10, 3);
+function redirect_on_submit($script, $attr, $nonce){
+  //$attr cf7 shortcode attributes to check if this is the correct form.
+  $url = site_url('/submitted'); //page slug to redirect to.
+  $url = add_query_arg( array('cf72post' => $nonce,), $url);
+  $url = esc_url($url);
+  $script = '<script>'.PHP_EOL;
+  $script .= 'document.addEventListener( "wpcf7mailsent", function( event ) {'.PHP_EOL;
+  $script .= '  var save = document.getElementsByClassName("cf7_2_post_draft");'.PHP_EOL;
+  $script .= '  if(save.length == 0  || "false" === save[0].value){'.PHP_EOL;
+  $script .= '    location = "'.$url.'";'.PHP_EOL;
+  $script .= '  }'.PHP_EOL;
+  $script .= '}, false );'.PHP_EOL;
+  $script .= '</script>'.PHP_EOL;
+  return $script;
+}`
+
+where you need to change the slug of your page to which you want to redirect.
+
+Now the submitted form is saved to a post and its ID is stored in a transient field by the plugin.  You can access this transient field with the following code in your page template,
+
+`
+if(isset($_GET['cf72post'])){
+  $post_id = get_transient($_GET['cf72post']);
+  echo 'form submission saved to post:'.$post_id;
+}`
 
 = How do I map a form to a post? =
 
@@ -249,6 +278,9 @@ It is not possible to target pages with specific forms.
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=3.2.0=
+* added click-to-copy css to helper links.
+* added form terms to filter cf7_2_post_filter_cf7_field_value for cf7-smart-grid plugin.
 =3.1.0=
 * added filter 'cf7_2_post_saving_tag_{$tag_type}' for plugin developers.
 * added transient post ID on submission for ease of redirection.

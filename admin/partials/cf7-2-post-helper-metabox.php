@@ -112,18 +112,19 @@ function filter_posts($displayed_posts, $form_id){
           </p>
         </li>
         <li>
-          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value', 'field_default_value',10,4);
+          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value', 'field_default_value',10,5);
 /**
 * Function to pre-fill form fields when form is loading.
 * Note: for saved draft-forms values found in the database this filter will not be fired.
-* Hooked to 'cf7_2_post_filter_cf7_field_value'.
+* Hooked to 'cf7_2_post_filter_cf7_field_value'. As of v3.2 this plugin integrates with the Smart Grid-Layout designs for CF7 plugin extension which introduces the wpf7_type taxonomy for forms.
 * @param mixed $value value to to be filtered/pre-filled.
 * @param $cf7_id  the form id being loaded.
 * @param $field  the field name for which the value is being filtered.
 * @param string $cf7form_key unique key identifying your form.
+* @param array $form_terms an array of form taxonomy term slugs if any, else empty arrya.
 * @return mixed value of field.  For fields than can accept array values, an array can be returned.
 */
-function field_default_value($value, $cf7_id, $field, $cf7form_key){
+function field_default_value($value, $cf7_id, $field, $cf7form_key, $form_terms){
   if('contact-us'!==$cf7form_key ){
     return $value;
   }
@@ -322,3 +323,52 @@ function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
   });
 })(jQuery)
 </script>
+<style>
+.helper-list li{
+  position: relative;
+}
+.helper-list li .helper::before {
+    content: 'Click to copy!';
+    display: none;
+    position: absolute;
+    top: -22px;
+    left: 10px;
+    background: #323232;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.helper-list li .helper:hover::before {
+    display: inline-block;
+}
+.helper-list li.no-post-my-form{
+  display: none;
+}
+#helper .postbox {
+    margin-bottom: 2px;
+    border: none;
+}
+#helper .postbox .toggle-indicator {
+    float: right;
+}
+#helper .postbox h3.hndle {
+    padding-left: 0;
+    padding-right: 0;
+}
+#helper .postbox .inside,
+.helper-list {
+    padding: 0;
+    margin: 0;
+}
+.helper {
+    color: #006800;
+}
+#helperdiv p, #helperdiv ul {
+    margin: 0;
+}
+.helper-list p {
+    margin: 0;
+    text-align: justify;
+}
+</style>
