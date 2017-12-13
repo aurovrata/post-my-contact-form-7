@@ -278,6 +278,8 @@ It is not possible to target pages with specific forms.
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=3.2.1=
+* fix WP_GURUS_DEBUG constant warning.
 =3.2.0=
 * added click-to-copy css to helper links.
 * added form terms to filter cf7_2_post_filter_cf7_field_value for cf7-smart-grid plugin.

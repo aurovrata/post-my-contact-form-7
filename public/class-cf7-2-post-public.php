@@ -113,7 +113,6 @@ class Cf7_2_Post_Public {
    * @return     string    shortcode html string.
   **/
   public function load_cf7_script($output, $tag, $attr){
-
     if('contact-form-7' != $tag){
       return $output;
     }
