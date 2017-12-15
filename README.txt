@@ -267,6 +267,9 @@ add_filter('cf7_2_post_print_page_nocache_metas', '__return_false'));
 `
 It is not possible to target pages with specific forms.
 
+= How can I reload forms already submitted? =
+Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated (from 'no' to 'yes') in the post to which the form was saved.  As of v3.3.0 a metabox is introduced in the post admin page which allows an administrator to toggle the status back to 'no' and therefore allow your user to re-load the form with the submitted values (same functionality as a saved draft form).  
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -278,6 +281,12 @@ It is not possible to target pages with specific forms.
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=3.3.0=
+* added new action 'cf7_2_post_form_submitted_to_{$post_type}'.
+* fixed some typos in helper metabox.
+* styling improvements in mapping admin page.
+* code clean up in post factory.
+* added submitted status metabox in mapped post admin page.
 =3.2.1=
 * fix WP_GURUS_DEBUG constant warning.
 =3.2.0=

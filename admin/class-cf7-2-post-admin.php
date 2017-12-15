@@ -555,4 +555,76 @@ class Cf7_2_Post_Admin {
   public function inject_footer_script(){
     include( plugin_dir_path( __FILE__ ) . '/partials/cf72post-footer-script.php');
   }
+  /**
+  * Function to add a metabox
+  * Hooked to 'cf72post_register_mapped_post'
+  *@since 3.3.0
+  *@param string $post_type post type being mapped to.
+  */
+  public function cf72post_metabox($post_type){
+    add_action('add_meta_boxes_'.$post_type, array($this, 'add_cf72post_metabox'));
+    add_action('save_post_'.$post_type, array($this, 'save_cf72post_metabox'));
+    /*add_action('save_post_'.$post_type, function($post_id, $post, $update){
+      if($update) return $post_id;
+      debug_msg($_POST);
+    }, 10,3);*/
+  }
+  /**
+  * Function to add metaboxes to enable the submitted flag to be reset.
+  * Callback function from action 'add_meta_boxes_'.$post_type above.
+  *@since 3.3.0
+  *@param WP_Post $post post object
+  */
+  public function add_cf72post_metabox($post){
+    add_meta_box(
+        'cf72post_submitted', //Meta box ID
+        __('Submitted form','cf7-2-post'), //Meta box Title
+        array($this,'display_cf72post_metabox'), //Callback defining the plugin's innards
+        $post->post_type, //Screen to which to add the meta box
+        'side' // Context
+    );
+  }
+  /**
+  * Display a metabox to enable the submitted flag to be reset.
+  * Callback function from action add_meta_box() function above.
+  *@since 3.3.0
+  */
+  public function display_cf72post_metabox($post){
+    $submitted = get_post_meta($post->ID,'_cf7_2_post_form_submitted', true);
+    $checked = ' disabled';
+    if('yes'===$submitted ){
+      $checked = ' checked';
+    }
+    ?>
+    <span>Form:&nbsp;</span>
+    <input id="cf72post_submitted" type="checkbox" <?= $checked?>/>
+    <label for="cf7_2_post_submitted">submitted.</label>
+    <input type="hidden" id="cf72post_submitted_hidden" name="cf7_2_post_submitted" value="<?= $submitted?>" />
+    <script type="text/javascript">
+    (function( $ ) {
+      $(document).ready(function(){
+        $('#cf72post_submitted').on('change', function(){
+          if( $(this).is(':checked') ){
+            $('#cf72post_submitted_hidden').val('yes');
+          }else{
+            $('#cf72post_submitted_hidden').val('no');
+          }
+        });
+      });
+    })( jQuery );
+    </script>
+    <?php
+  }
+  /**
+  *
+  *
+  *@since 3.3.0
+  *@param string $post_id post id
+  */
+  public function save_cf72post_metabox($post_id){
+    if(isset($_POST['cf7_2_post_submitted']) ){
+      $value = sanitize_text_field($_POST['cf7_2_post_submitted']);
+      update_post_meta($post_id, '_cf7_2_post_form_submitted', $value); //form is in saved mode
+    }
+  }
 }

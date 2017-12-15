@@ -1019,8 +1019,8 @@ class Cf7_2_Post_Factory {
     }
   }
   /**
-  * Dynamically registers new custom post
-  * Hooks 'init'action in the admin section
+  * Dynamically registers new custom post.
+  * Hooks 'init' action in the admin section.
   * @since 1.0.0
   */
   public static function register_cf7_post_maps(){
@@ -1045,7 +1045,7 @@ class Cf7_2_Post_Factory {
       * @param string $post_type   the post type being mapped to
       * @param boolean $system   true if form is mapped to an existing post, false if it is being registered by this plugin.
       * @param string $cf7_key   the form key value which is being mapped to the post type
-      * @param string $cf7_id   the form post ID value which is being mapped to the post type
+      * @param string $post_id   the form post ID value which is being mapped to the post type
       */
       do_action('cf72post_register_mapped_post', $cf7_2_post_map->get('type'), $system, $cf7_2_post_map->cf7_key, $post_id);
       //add a filter for newly saved posts of this type.
@@ -1067,6 +1067,10 @@ class Cf7_2_Post_Factory {
   */
   public function save_form_2_post($submission){
     $cf7_form_data = $submission->get_posted_data();
+    $is_submitted = true;
+    if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
+      $is_submitted = false;
+    }
     $this->load_form_fields(); //this loads the form fields and their type
     //debug_msg($cf7_form_data);
     //check if this is a system post which are mapped using an action.
@@ -1094,15 +1098,18 @@ class Cf7_2_Post_Factory {
         if($user) $author = $user->ID;
       }
     }
-    /**
-    * Filter the post status of the cusotm post created when a form is submitted, default ot 'draft';
-    * @since 2.0.2
-    * @param  string  $status  the post status values,default 'draft'
-    * @param  string  $cf7_key  the unique key to indetify the form
-    * @param  String  $data  array of key value pairs of submitted form fields
-    * @return string  the post status required.
-    */
-    $post_status = apply_filters('cf7_2_post_status_'.$this->post_properties['type'],'draft', $this->cf7_key, $cf7_form_data);
+    $post_status = 'draft';
+    if($is_submitted){ //allow programs to publish directly.
+      /**
+      * Filter the post status of the cusotm post created when a form is submitted, default ot 'draft';
+      * @since 2.0.2
+      * @param  string  $status  the post status values,default 'draft'
+      * @param  string  $cf7_key  the unique key to indetify the form
+      * @param  string  $data  array of key value pairs of submitted form fields
+      * @return string  the post status required.
+      */
+      $post_status = apply_filters('cf7_2_post_status_'.$this->post_properties['type'], $post_status, $this->cf7_key, $cf7_form_data);
+    }
 
     $post = array('post_type'  =>$this->post_properties['type'],
                   'post_author'=>$author,
@@ -1187,7 +1194,6 @@ class Cf7_2_Post_Factory {
        }
 
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
-        debug_msg($form_field);
         $post[$post_key] = apply_filters($form_field,'', $post_id, $cf7_form_data);
       }else{
         if( isset($cf7_form_data[$form_field]) ){
@@ -1223,8 +1229,7 @@ class Cf7_2_Post_Factory {
     //
     //-------------- meta fields
     //
-    $publish_post = false;
-    if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
+    if(!$is_submitted){
       update_post_meta($post_id, '_cf7_2_post_form_submitted','no'); //form is saved
     }else{
       update_post_meta($post_id, '_cf7_2_post_form_submitted','yes'); //form is submitted
@@ -1296,6 +1301,9 @@ class Cf7_2_Post_Factory {
         }
       }
     }
+    /**
+    * action to notify submission is mapped to post.
+    */
     do_action('cf7_2_post_form_mapped_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     /**
     * action introduced for plugin developers to map custom plugin fields
@@ -1317,6 +1325,12 @@ class Cf7_2_Post_Factory {
       $time = apply_filters('cf7_2_post_transient_submission_expiration', 300, $this->cf7_key);
       if(!is_numeric($time)) $time = 300;
       set_transient( $cf7_form_data['_cf72post_nonce'], $post_id, $time );
+    }
+    if($is_submitted){
+      /**
+      * @since 3.3.0
+      */
+      do_action('cf7_2_post_form_submitted_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     }
   }
   /**

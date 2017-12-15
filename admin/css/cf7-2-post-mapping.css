@@ -1,6 +1,17 @@
 .add-more-field::before {
     padding-right: 2px;
 }
+.nice-select ul.list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+form#cf7-post-mapping-form .cf7-2-post-map-labels:hover {
+    width: auto;
+}
+form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field:hover .cf7-2-post-map-labels {
+    width: auto;
+    min-width: 200px;
+}
 .default-post-fields{
     padding: 0 12px 12px 12px;
 }

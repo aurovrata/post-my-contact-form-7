@@ -181,6 +181,11 @@ class Cf7_2_Post {
     //new page loading to trigger meta box
     $this->loader->add_action('load-'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'load_admin_page', 10);
 		$this->loader->add_action('add_meta_boxes_'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'add_metabox', 10);
+    /**
+    * add metabox to mapped posts.
+    * @since 3.3.0
+    */
+    $this->loader->add_action('cf72post_register_mapped_post', $plugin_admin, 'cf72post_metabox');
     /* CF7 Hooks */
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
