@@ -268,7 +268,7 @@ add_filter('cf7_2_post_print_page_nocache_metas', '__return_false'));
 It is not possible to target pages with specific forms.
 
 = How can I reload forms already submitted? =
-Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated (from 'no' to 'yes') in the post to which the form was saved.  As of v3.3.0 a metabox is introduced in the post admin page which allows an administrator to toggle the status back to 'no' and therefore allow your user to re-load the form with the submitted values (same functionality as a saved draft form).  
+Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated (from 'no' to 'yes') in the post to which the form was saved.  As of v3.3.0 a metabox is introduced in the post admin page which allows an administrator to toggle the status back to 'no' and therefore allow your user to re-load the form with the submitted values (same functionality as a saved draft form).
 
 == Screenshots ==
 
@@ -281,6 +281,8 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+=3.3.1=
+* bug fix which prevented filtering taxonomy mappings.
 =3.3.0=
 * added new action 'cf7_2_post_form_submitted_to_{$post_type}'.
 * fixed some typos in helper metabox.

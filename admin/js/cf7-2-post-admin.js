@@ -150,7 +150,6 @@
       $(this).parent().addClass('hide-if-js');
       $(this).parent().prevAll('p.cf7-post-error-msg').eq(0).show();
       $(this).parent().prevAll('div.custom-taxonomy-field').eq(0).show();
-
     }
 
     //function to update selected hook messages
@@ -328,6 +327,7 @@
       //$fieldSelect.prop('selectedIndex',0);
       var option = $fieldSelect.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+slug);
+      $fieldSelect.niceSelect('update');
       //reset the msg box
       taxonmyField.next('p.cf7-post-error-msg').empty();
       //change the other input names
