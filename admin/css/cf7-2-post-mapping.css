@@ -148,8 +148,10 @@ form#cf7-post-mapping-form .cf7-post-error-msg a {
     margin-left: 0;
     padding-right: 0;
 }
-.cf7-post-error-msg a.code:hover {
-    position: fixed;
+form#cf7-post-mapping-form .cf7-post-error-msg a.code:hover {
+    position: absolute;
+    width: auto;
+    top: -5px;
 }
 .field-options.post-options{
   width: 200px;
@@ -290,15 +292,15 @@ option.system-taxonomy {
 .popup {
     display: none;
     position: absolute;
-    top: -25px;
-    left: 50%;
-    margin-left: -50px;
+    top: -28px;
+    margin-left: 120px;
     background: #515151;
     color: white;
     padding: 5px;
 }
 .cf7-post-error-msg a.code:hover + span.popup{
   display:block;
+  width: 79px;
 }
 .spinner.meta-label {
     float: none;

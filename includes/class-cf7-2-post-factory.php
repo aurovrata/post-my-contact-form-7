@@ -1035,9 +1035,17 @@ class Cf7_2_Post_Factory {
     foreach($cf7_post_ids as $post_id){
       $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
       $system = true;
-      if('factory'==$cf7_2_post_map->get('type_source')){
-        $cf7_2_post_map->create_cf7_post_type();
-        $system = false;
+      switch($cf7_2_post_map->get('type_source')){
+        case 'factory':
+          $cf7_2_post_map->create_cf7_post_type();
+          $system = false;
+          break;
+        case 'system': /** @since 3.3.1 link system taxonomy*/
+          //link the taxonomy and the post
+          foreach($cf7_2_post_map->post_properties['taxonomy'] as $taxonomy_slug){
+            register_taxonomy_for_object_type( $taxonomy_slug, $cf7_2_post_map->post_properties['type'] );
+          }
+          break;
       }
       /**
       * action to notify other plugins for mapped post creation

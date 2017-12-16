@@ -283,6 +283,7 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 == Changelog ==
 =3.3.1=
 * bug fix which prevented filtering taxonomy mappings.
+* register_taxonomy_for_object_type for system taxonomies.
 =3.3.0=
 * added new action 'cf7_2_post_form_submitted_to_{$post_type}'.
 * fixed some typos in helper metabox.
