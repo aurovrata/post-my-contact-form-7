@@ -281,25 +281,25 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
-=3.3.1=
+= 3.3.1 =
 * bug fix which prevented filtering taxonomy mappings.
 * register_taxonomy_for_object_type for system taxonomies.
-=3.3.0=
+= 3.3.0 =
 * added new action 'cf7_2_post_form_submitted_to_{$post_type}'.
 * fixed some typos in helper metabox.
 * styling improvements in mapping admin page.
 * code clean up in post factory.
 * added submitted status metabox in mapped post admin page.
-=3.2.1=
+= 3.2.1 =
 * fix WP_GURUS_DEBUG constant warning.
-=3.2.0=
+= 3.2.0 =
 * added click-to-copy css to helper links.
 * added form terms to filter cf7_2_post_filter_cf7_field_value for cf7-smart-grid plugin.
-=3.1.0=
+= 3.1.0 =
 * added filter 'cf7_2_post_saving_tag_{$tag_type}' for plugin developers.
 * added transient post ID on submission for ease of redirection.
 * bug fix loading empty forms.
-=3.0.0=
+= 3.0.0 =
 * multiple changes for plugin developers to build on top of this plugin.
 * use WP core admin page construct for mapping page, allowing other plugins to build on top.
 * clean up of mapping page, with improved look & feel.
@@ -309,37 +309,37 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 * fix meta_field file bug which stored paths to uploaded file, now stores url.
 * introduce front-end no-cache meta tags in head to disable page caching on mapped forms.
 * added filter `cf7_2_post_print_page_nocache_metas`
-=2.4.1=
+= 2.4.1 =
 * default helper bug fix
-=2.4.0=
+= 2.4.0 =
 * introduction of inline helper
 * css error fix
 * improved in-page filter helper.
-=2.3.0=
+= 2.3.0 =
 * bug fix which prevent radio/checkbox being saved
 * bug fix for system post meta-fields selection.
 * bug fix on taxonomy field select
 * improved styling of post mapping page
 * save draft prevents form fields from clearing
-=2.2.2=
+= 2.2.2 =
 * fixed current logged in user author bug.
-=2.2.1=
+= 2.2.1 =
 * cf7-form shortcode bug fix
-=2.2.0=
+= 2.2.0 =
 * fixed some bugs that prevented draft submissions to system post from saving properly
 * fixed bug that prevented system taxonomy from being saved in submitted forms
 * improved system post mapping to allow custom meta-field addition.
 
-=2.1.0=
+= 2.1.0 =
 * introduce menu-position field in custom mapping
 * bug fix in some post registration attributes
-=2.0.4=
+= 2.0.4 =
 * added action 'cf72post_register_mapped_post'
-=2.0.3=
+= 2.0.3 =
 * bug fix wp_reset_postdata called regardless of query success.
-=2.0.2=
+= 2.0.2 =
 * introduced post status filter
-=2.0.1=
+= 2.0.1 =
 * bug fix when saving system post mapping without fields as reported by @michent1
 
 = 2.0.0 =
