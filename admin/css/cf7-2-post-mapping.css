@@ -126,7 +126,7 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
 form#cf7-post-mapping-form .cf7-post-error-msg{
   display: inline-block;
   margin: 0 5px;
-  width: calc(100% - 345px);
+  width: calc(100% - 435px);
   line-height: 15px;
   vertical-align: middle;
   position: relative;
