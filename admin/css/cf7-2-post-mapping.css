@@ -95,7 +95,7 @@ label[for="post_type"] {
 }
 form#cf7-post-mapping-form .cf7-2-post-map-labels{
   display:inline-block;
-  width: 200px;
+  min-width: 200px;
   vertical-align: middle;
 }
 form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
