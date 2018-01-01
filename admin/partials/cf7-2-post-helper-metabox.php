@@ -217,7 +217,7 @@ function set_{$post_type}_author($author_id, $cf7_id, $submitted_data, $cf7_key)
 * @param array $submitted_data complete set of data submitted in the form as an array of field-name=>value pairs.
 * @return string a valid post status ('publish'|'draft'|'pending'|'trash')
 */
-function publish_by_default($status, $ckf7_key, $submitted_data){
+function publish_new_{$post_type}($status, $ckf7_key, $submitted_data){
   /*The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return a valid post status: 'publish'|'draft'|'pending'|'trash'*/
   return 'publish';
 }" href="javascript:void(0);">Post Status Filter</a> to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).

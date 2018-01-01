@@ -281,6 +281,8 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+= 3.3.2 =
+* bug fix on post status helper code.
 = 3.3.1 =
 * bug fix which prevented filtering taxonomy mappings.
 * register_taxonomy_for_object_type for system taxonomies.
