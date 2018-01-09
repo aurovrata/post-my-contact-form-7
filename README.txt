@@ -281,6 +281,8 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+= 3.3.3 =
+* bug fix on mapping admin page for different locales.
 = 3.3.2 =
 * bug fix on post status helper code.
 = 3.3.1 =

@@ -178,9 +178,6 @@ class Cf7_2_Post {
     $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
     //save quick edit
     $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_quick_edit', 10);
-    //new page loading to trigger meta box
-    $this->loader->add_action('load-'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'load_admin_page', 10);
-		$this->loader->add_action('add_meta_boxes_'.Cf7_2_Post_Admin::MAP_SCREEN_ID, $plugin_admin, 'add_metabox', 10);
     /**
     * add metabox to mapped posts.
     * @since 3.3.0

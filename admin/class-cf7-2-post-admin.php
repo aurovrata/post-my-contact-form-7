@@ -59,9 +59,9 @@ class Cf7_2_Post_Admin {
   * The screen ID of our custom admin page.
   * @since 3.0.0
   * @access public
-  * constant string   the id of the screen, which is dependent on the CF7 main menu.
+  * @var string   the id of the screen, which is dependent on the CF7 main menu.
   */
-  const MAP_SCREEN_ID = 'contact_page_map_cf7_2_post';
+  private static $map_screen_id;
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -76,6 +76,7 @@ class Cf7_2_Post_Admin {
     $this->cf7_list_table = Cf7_WP_Post_Table::set_table();
     $this->load_dependencies();
 	}
+  
   /**
   * Deactivate this plugin if CF7 plugin is deactivated
   * Hooks on action 'admin_init'
@@ -114,7 +115,7 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
-    if(self::MAP_SCREEN_ID == $hook){
+    if(self::$map_screen_id == $hook){
       wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
       wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }else{
@@ -136,7 +137,7 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
-    if(self::MAP_SCREEN_ID == $hook){
+    if(self::$map_screen_id == $hook){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
@@ -194,25 +195,31 @@ class Cf7_2_Post_Admin {
       'CF7 Form to post', //page title
       'Map CF7 to Post', //menu title
       $capability, //capability
-      'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::MAP_SCREEN_ID
+      'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::map_screen_id
       array($this,'display_mapping_page')); //fn
+      self::$map_screen_id = $hook2;
+      //new page loading to trigger meta box
+      add_action('load-'.$hook2, array($this, 'load_admin_page'), 10);
+      add_action('add_meta_boxes_'.$hook2, array($this, 'add_metabox'), 10);
   }
+
   /**
   * Function to load custom admin page metabox.
-  * Hooked on 'load-{self::MAP_SCREEN_ID}'
+  * Hooked on 'load-{self::map_screen_id}'
   *@since 3.0.0
   */
   public function load_admin_page(){
     /* Trigger the add_meta_boxes hooks to allow meta boxes to be added */
-    do_action('add_meta_boxes_'.self::MAP_SCREEN_ID, null);
-    do_action('add_meta_boxes', self::MAP_SCREEN_ID, null);
+    //debug_msg(get_current_screen(), 'setup metabox, ->'.self::$map_screen_id.':');
+    do_action('add_meta_boxes_'.self::$map_screen_id, null);
+    do_action('add_meta_boxes', self::$map_screen_id, null);
 
     /* Add screen option: user can choose between 1 or 2 columns (default 2) */
     add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
   }
   /**
   * Function to add a few metabox
-  * Hooked to 'add_meta_box_{self::MAP_SCREEN_ID}'
+  * Hooked to 'add_meta_box_{self::$map_screen_id}'
   *@since 3.0.0
   */
   public function add_metabox(){
@@ -221,7 +228,7 @@ class Cf7_2_Post_Admin {
         'submit', //Meta box ID
         __('Save form to post','cf7-2-post'), //Meta box Title
         array($this,'show_submit_metabox'), //Callback defining the plugin's innards
-        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        self::$map_screen_id, // Screen to which to add the meta box
         'side' // Context
     );
     //helper
@@ -229,7 +236,7 @@ class Cf7_2_Post_Admin {
         'helper', //Meta box ID
         __('Actions &amp; Filers','cf7-2-post'), //Meta box Title
         array($this,'show_helper_metabox'), //Callback defining the plugin's innards
-        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        self::$map_screen_id, // Screen to which to add the meta box
         'side' // Context
     );
     //field
@@ -237,7 +244,7 @@ class Cf7_2_Post_Admin {
         'field', //Meta box ID
         __('Custom Meta Fields','cf7-2-post'), //Meta box Title
         array($this,'show_field_metabox'), //Callback defining the plugin's innards
-        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        self::$map_screen_id, // Screen to which to add the meta box
         'normal' // Context
     );
     //taxonomy
@@ -245,7 +252,7 @@ class Cf7_2_Post_Admin {
         'taxonomy', //Meta box ID
         __('Taxonomies','cf7-2-post'), //Meta box Title
         array($this,'show_taxonomy_metabox'), //Callback defining the plugin's innards
-        self::MAP_SCREEN_ID, // Screen to which to add the meta box
+        self::$map_screen_id, // Screen to which to add the meta box
         'normal' // Context
     );
   }
@@ -469,7 +476,7 @@ class Cf7_2_Post_Admin {
   */
   public function disable_browser_page_cache(){
     $screen = get_current_screen();
-    if(self::MAP_SCREEN_ID !== $screen->id) return;
+    if(self::$map_screen_id !== $screen->id) return;
       ?>
     <meta http-equiv="cache-control" content="max-age=0" />
     <meta http-equiv="cache-control" content="no-cache" />

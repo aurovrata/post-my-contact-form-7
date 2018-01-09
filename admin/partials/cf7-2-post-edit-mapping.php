@@ -4,6 +4,7 @@
 *@since 2.5.0
 */
 require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-cf7-2-post-factory.php' ;
+//require_once plugin_dir_path (dirname(__FILE__)) . 'class-cf7-2-post-admin.php';
 //action
 $is_new_mapping = true;
 switch($factory_mapping->get('map')){
@@ -48,7 +49,8 @@ switch($source){
                 </div><!-- #post-body-content -->
 
                 <div id="postbox-container-1" class="postbox-container">
-                    <?php do_meta_boxes('','side',null); ?>
+                    <?php
+                    do_meta_boxes('','side',null); ?>
                 </div>
 
                 <div id="postbox-container-2" class="postbox-container">
