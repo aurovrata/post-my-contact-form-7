@@ -1103,9 +1103,9 @@ class Cf7_2_Post_Factory {
     foreach($cf7_post_ids as $post_id=>$type){
       $system = true;
       $post_type = key($type);
+      $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
       switch($type[$post_type]){
         case 'factory':
-        $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
           $cf7_2_post_map->create_cf7_post_type();
           $system = false;
           break;
@@ -1125,9 +1125,9 @@ class Cf7_2_Post_Factory {
       * @param string $cf7_key   the form key value which is being mapped to the post type
       * @param string $post_id   the form post ID value which is being mapped to the post type
       */
-      do_action('cf72post_register_mapped_post', $cf7_2_post_map->get('type'), $system, $cf7_2_post_map->cf7_key, $post_id);
+      do_action('cf72post_register_mapped_post', $post_type, $system, $cf7_2_post_map->cf7_key, $post_id);
       //add a filter for newly saved posts of this type.
-      add_action('save_post_'.$cf7_2_post_map->get('type'), function($post_id, $post, $update){
+      add_action('save_post_'.$post_type, function($post_id, $post, $update){
         if($update) return $post_id;
         $cf7_flag = get_post_meta($post_id, '_cf7_2_post_form_submitted', true);
         if(empty($cf7_flag)){
