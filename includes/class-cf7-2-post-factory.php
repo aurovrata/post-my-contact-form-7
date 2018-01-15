@@ -90,6 +90,13 @@ class Cf7_2_Post_Factory {
    * @var array $form_terms an array of terms.
    **/
    protected $form_terms;
+   /**
+   * an array of post_id=>array($post_type =>[factory|system])); key value pairs.
+   * @since 3.4.0
+   * @access protected
+   * @var array $mapped_post_types an array of key value pairs.
+   */
+   protected static $mapped_post_types;
   /**
    * Default Construct a Cf7_2_Post_Factory object.
    *
@@ -760,7 +767,7 @@ class Cf7_2_Post_Factory {
     if(empty($this->cf7_form_fields)){
       $form = WPCF7_ContactForm::get_instance($this->cf7_post_ID);
       $form_elements = $form->scan_form_tags();
-      //debug_msg($form_elements, " cf7 form elements ");
+      //debug_msg($form_elements, " scanning cf7 form elements ");
       foreach ($form_elements as $element) {
           $type = $element['type'];
           if('' == $element['name']) continue; //save | submit type.
@@ -1012,10 +1019,78 @@ class Cf7_2_Post_Factory {
     $args = apply_filters('cf7_2_post_register_post_'.$this->post_properties['type'], $args );
 
   	register_post_type( $this->post_properties['type'], $args );
-
     //link the taxonomy and the post
     foreach($this->post_properties['taxonomy'] as $taxonomy_slug){
       register_taxonomy_for_object_type( $taxonomy_slug, $this->post_properties['type'] );
+    }
+  }
+  /**
+  * Return the post_types to which forms are mapped
+  *@since 3.4.0
+  *@return array $cf7_post_id=>array($psot_type=>[factory|system|filter]) key value pairs
+  */
+  public static function get_mapped_post_types(){
+    if(isset(self::$mapped_post_types)){
+      return self::$mapped_post_types;
+    }
+    global $wpdb;
+    $cf7_posts = $wpdb->get_results(
+      "SELECT posts.ID, pmap.type, psource.origin FROM $wpdb->postmeta AS meta, $wpdb->posts AS posts,
+      (SELECT post_id AS id, meta_value AS origin FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-type_source') AS psource,
+      (SELECT post_id AS id, meta_value AS type FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-type') AS pmap WHERE meta_key='_cf7_2_post-map'
+      AND meta_value='publish'
+      AND posts.ID=post_id
+      AND post_status LIKE 'publish'
+      AND posts.ID=psource.id
+      AND posts.ID = pmap.id"
+    );
+    self::$mapped_post_types = array();
+    foreach($cf7_posts as $post){
+      self::$mapped_post_types[$post->ID]=array($post->type=>$post->origin);
+    }
+    return self::$mapped_post_types;
+  }
+  /**
+  * Function to check post types to which forms have been mapped.
+  *
+  *@since 3.4.0
+  *@param string $post_type post type to check
+  *@param string $source origin of post, default is 'factory', ie the origin is this class.
+  *@return boolean true if mapped.
+  */
+  public static function is_mapped_post_types($post_type, $source='factory'){
+    $is_mapped = false;
+    if(isset(self::$mapped_post_types)){
+      foreach(self::$mapped_post_types as $post_id=>$type){
+        $ptype = key($type);
+        if($post_type == $ptype && $source == $type[$ptype]){
+          $is_mapped = $post_id;
+        }
+      }
+    }
+    return $is_mapped;
+  }
+  /**
+  * Update the mapped post types when their status change.
+  * @since 3.4.0.
+  * @param $cf7_post_id form post id.
+  * @param $status mapping status, publish|draft|delete, defaults to delete.
+  */
+  public static function update_mapped_post_types($cf7_post_id, $status='delete'){
+    switch($status){
+      case 'delete':
+        unset( self::$mapped_post_types[$cf7_post_id] );
+        break;
+      case 'publish':
+        update_post_meta($cf7_post_id, '_cf7_2_post-map', $status);
+        $type = get_post_meta($cf7_post_id, '_cf7_2_post-type', true);
+        $source = get_post_meta($cf7_post_id, '_cf7_2_post-type_source', true);
+        self::$mapped_post_types[$cf7_post_id]=array($type, $source);
+        break;
+      case 'draft':
+        update_post_meta($cf7_post_id, '_cf7_2_post-map', $status);
+        unset( self::$mapped_post_types[$cf7_post_id] );
+        break;
     }
   }
   /**
@@ -1024,26 +1099,21 @@ class Cf7_2_Post_Factory {
   * @since 1.0.0
   */
   public static function register_cf7_post_maps(){
-    global $wpdb;
-    $cf7_post_ids = $wpdb->get_col(
-      "SELECT post_id FROM $wpdb->postmeta, $wpdb->posts
-      WHERE meta_key='_cf7_2_post-map'
-      AND meta_value='publish'
-      AND ID=post_id
-      AND post_status LIKE 'publish'"
-    );
-    foreach($cf7_post_ids as $post_id){
-      $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
+    $cf7_post_ids = self::get_mapped_post_types();
+    foreach($cf7_post_ids as $post_id=>$type){
       $system = true;
-      switch($cf7_2_post_map->get('type_source')){
+      $post_type = key($type);
+      switch($type[$post_type]){
         case 'factory':
+        $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
           $cf7_2_post_map->create_cf7_post_type();
           $system = false;
           break;
         case 'system': /** @since 3.3.1 link system taxonomy*/
           //link the taxonomy and the post
-          foreach($cf7_2_post_map->post_properties['taxonomy'] as $taxonomy_slug){
-            register_taxonomy_for_object_type( $taxonomy_slug, $cf7_2_post_map->post_properties['type'] );
+          $taxonomies = get_post_meta($post_id, '_cf7_2_post-taxonomy', true);
+          foreach($taxonomies as $taxonomy_slug){
+            register_taxonomy_for_object_type( $taxonomy_slug, $post_type );
           }
           break;
       }

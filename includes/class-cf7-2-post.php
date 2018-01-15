@@ -153,8 +153,6 @@ class Cf7_2_Post {
     /* WP hooks */
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-    //on save cf7 post type
-    //$this->loader->add_action( 'save_post_wpcf7_contact_form', $plugin_admin,'reset_mapped_scripts', 30, 2 );
     //no cahing metas
 		$this->loader->add_action('admin_head', $plugin_admin, 'disable_browser_page_cache', 1);
     //modify the CF7 post type
@@ -189,7 +187,25 @@ class Cf7_2_Post {
     //add the 'save' button tag
     $this->loader->add_action( 'wpcf7_admin_init', $plugin_admin, 'cf7_shortcode_tags' );
 
-
+    /**
+    * hook to modify custom post in dashboard
+    * @since 3.4.0
+    */
+    $cf7_post_ids = Cf7_2_Post_Factory::get_mapped_post_types();
+    foreach($cf7_post_ids as $post_id=>$type){
+      $post_type = key($type);
+      switch($type[$post_type]){
+        case 'factory':
+          $this->loader->add_filter('manage_' . $post_type . '_posts_columns', $plugin_admin, 'modify_cf72post_columns',5,1);
+					$this->loader->add_action('manage_' . $post_type . '_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
+          //on save cf7 post type
+          $this->loader->add_action( 'save_post_'. $post_type, $plugin_admin,'save_quick_custompost', 10, 2 );
+          $this->loader->add_action( 'add_meta_boxes_'. $post_type, $plugin_admin,'custom_post_metabox' );
+          break;
+        default:
+          break;
+      }
+    }
 	}
 
 	/**

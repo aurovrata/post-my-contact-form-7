@@ -281,6 +281,9 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+= 3.4.0 =
+* metabox of form fields in custom posts.
+* jquery select2 dropdowns in mapping pages with number of fields > 10.
 = 3.3.3 =
 * bug fix on mapping admin page for different locales.
 = 3.3.2 =
@@ -537,8 +540,8 @@ function load_published_submissions($query_args, $post_type){
 
 this filter is fired when the cf7 shortcode output is printed, it allows you to add a custom script at the end of your form should you need it,
 `
-add_filter('cf7_2_post_form_append_output', 'append_my_script', 10, 3);
-function append_my_script($output, $attr, $nonce){
+add_filter('cf7_2_post_form_append_output', 'append_my_script', 10, 4);
+function append_my_script($output, $attr, $nonce, $cf7form_key){
   if(!isset($attr['id'])){
     return $output;
   }

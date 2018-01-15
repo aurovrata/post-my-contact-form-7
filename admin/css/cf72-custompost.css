@@ -1,0 +1,15 @@
+.cf72post-field label {
+    font-weight: bold;
+    min-width: 175px;
+    display: inline-block;
+}
+.cf72post-field label + div {
+    display: inline-block;
+}
+field-value {
+    vertical-align: middle;
+    display: inline-block;
+}
+.cf72post-field {
+    padding: 1px 0;
+}

@@ -11,7 +11,7 @@
     //since 3.0.0
     var $mapForm = $('#cf7-post-mapping-form');
     $('.nice-select', $mapForm).each(function(){
-      $(this).niceSelect();
+      $(this).select2();
     });
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
@@ -62,7 +62,9 @@
       //fieldName = fieldName.replace('cf7_2_post_map_taxonomy_names','cf7_2_post_map_taxonomy_name')
       //details.find('input[name='+fieldName+']').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+slug);
-      parent.find('select').prop('disabled',false).niceSelect('update');
+      parent.find('select').each(function(){
+        $(this).prop('disabled',false).trigger('change');
+      });
 
       //add new field
       var cloneField = newTaxonomy.clone();
@@ -101,13 +103,19 @@
         select.attr('name','cf7_2_post_map_meta_value-meta_key_'+idx);
         cloneField = newField.clone();
       }
+      cloneField.find('.select2').remove();
       //enable the new field
       var postType = $('input#mapped_post_type').val();
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
       parent.find('.cf7-2-post-map-labels:first').prop('disabled',false);
-      parent.find('select').prop('disabled',false).niceSelect('update');
+      parent.find('select').each(function(){
+        $(this).prop('disabled',false).trigger('change');
+      });
       //add new field
       parent.parent().append(cloneField).append(errorBox);
+      cloneField.find('select').each(function(){
+        $(this).select2();
+      });
       //bind event handlers
       cloneField.find('.add-more-field').on('click',createNewField);
       $(this).css('display','none'); //hide the add button
@@ -327,7 +335,7 @@
       //$fieldSelect.prop('selectedIndex',0);
       var option = $fieldSelect.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+slug);
-      $fieldSelect.niceSelect('update');
+      if(!longLists) $fieldSelect.niceSelect('update');
       //reset the msg box
       taxonmyField.next('p.cf7-post-error-msg').empty();
       //change the other input names
@@ -490,7 +498,7 @@
             $('.spinner' , $(this)).hide().after($label);
             $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
 						$label.after('<input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>');
-            $label.niceSelect();
+            $label.select2();
             if($(this).is('.custom-meta-field:last')){
               $newSystemField = $(this).clone();//reset for field cloning
             }

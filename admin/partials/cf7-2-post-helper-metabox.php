@@ -112,6 +112,43 @@ function filter_posts($displayed_posts, $form_id){
           </p>
         </li>
         <li>
+          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_form_append_output', 'custom_cf7_script',10,5);
+/**
+* Function to append an inline script at the end of the cf7 form.
+* Note: you can also add a script inside your theme js/ folder in a file with the name of your form unique key <unique-key>.js which will be automatically loaded.
+* Hooked to 'cf7_2_post_form_append_output'.
+* @param string $script script to append.
+* @param array $shortcode_attrs the shortcode attributes.
+* @param string $nonce  a unique nonce string which is triggered as an event on the form once the plugin has completed loading values into the form fields.  It is best to execute your script once this event has fired.
+* @param string $cf7form_key unique key identifying your form.
+* @param array $form_values array of <field-name>=>$value pairs loaded in the form if any. If this form is a draft being loaded, you will find the post id of the draft mapped to the key 'map_post_id'.
+* @return string an inline script to append at the end of the form.
+*/
+function custom_cf7_script($script, $shortcode_attrs, $nonce, $cf7form_key, $form_values){
+  if(!isset($shortcode_attrs['id'])){
+    return $script;
+  }
+  $cf7_id = $shortcode_attrs['id'];
+  if('contact-us' == $cf7form_key){ //check this is your form if need be
+  ob_start();
+    ?>
+    <script type=&quot;text/javascript&quot;>
+    (function( $ ) {
+      //execute your script once the form nonce event is triggered
+      $(document).on('&lt?=$nonce?>', $('div#&lt;?=$nonce?> form.wpcf7-form'), function() {
+        var cf7Form = $('div#&lt;?=$nonce?> form.wpcf7-form');
+        ... //your custom scripting
+      });
+    })( jQuery );
+    </script>
+    &lt;?php
+    $script = ob_get_contents();
+    ob_end_clean();
+  }
+  return $script;
+}" href="javascript:void(0);">Custom javascript</a> appended at the end of your form.
+        </li>
+        <li>
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value', 'field_default_value',10,5);
 /**
 * Function to pre-fill form fields when form is loading.
