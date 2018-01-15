@@ -283,7 +283,7 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 == Changelog ==
 = 3.4.0 =
 * metabox of form fields in custom posts.
-* jquery select2 dropdowns in mapping pages with number of fields > 10.
+* jquery select2 dropdowns in mapping pages.
 = 3.3.3 =
 * bug fix on mapping admin page for different locales.
 = 3.3.2 =
