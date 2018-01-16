@@ -100,7 +100,7 @@ The plugin has been coded with additional actions and filters to allow you to ho
 
 
 == Frequently Asked Questions ==
-= How do I redirect to a page and access the saved post? =
+= 1. How do I redirect to a page and access the saved post? =
 Place the following in your `functions.php` file,
 
 `add_filter('cf7_2_post_form_append_output', 'redirect_on_submit', 10, 3);
@@ -130,31 +130,32 @@ if(isset($_GET['cf72post'])){
   echo 'form submission saved to post:'.$post_id;
 }`
 
-= How do I map a form to a post? =
+= 2. map a form to a post? =
 
 In the Contact Form 7 table list you will notice a new column has been added which allows you to create a new custom post mapping.  This will take you to a new screen where you will see your existing fields listed in select dropdowns.  Map your form fields to either a default field (eg title, content, excerpt, or author), or create a custom (meta) field, or even create a new taxonomy for your post.  Once you have mapped your form you can save it as a draft or publish it.  Once published you cannot edit the mapping anymore, so be warned.  As of version 1.2.0 you will have to delete the whole form and start again to remap it.  Subsequent versions may introduce a 'delete' button.
 
-= How do I edit an existing mapping ? =
-Existing 'published' mappings cannot be edited, you can only add new fields to them.
+= 3. I made a mistake in my form mapping, how do I correct it once it is created? =
 
-= How do remove a mapping? =
+as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
+
+= 4. How do remove a mapping? =
 At this point it is not possible, you can either delete the form and start again, or if you can search your cf7 form ID's in the `wp_post_meta` table and edit the meta field '_cf7_2_post-map' to 'draft'.
 
-= How do I map a field to a taxonomy ? =
+= 5. How do I map a field to a taxonomy ? =
 
 You create a new taxonomy and map your field to it.  Note however that only select/checkbox/radio type of fields can be mapped to taxonomies.  Once mapped and published you will see your taxonomy appear in your custom post menu.  You can add terms to your taxonomy and these will be made pre-filled into your mapped field.  Users can select a term and when the form is submitted, the post will be created with those terms assigned to it.
 
-= How do I create non-hierarchical taxonomies ? =
+= 6. How do I create non-hierarchical taxonomies ? =
 
 You need to use a special filter for this, 'cf7_2_post_filter_taxonomy_registration-{$taxonomy_slug}', see the [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) section for more details.
 
-= Why filter the taxonomy mapping ? =
+= 7. Why filter the taxonomy mapping ? =
 You may have noticed that in addition to mapping a post field or taxonomy to one of your form fields, you can also use a filter to hook your own custom values.  In the case of taxonomies, you can actually map a form submission to a specific set of terms depending on the submission of other fields.
 
-= How do I allow my form users to create a new term for a taxonomy? =
+= 8. How do I allow my form users to create a new term for a taxonomy? =
 This is a little more complex.  You will need to create an input field in your form in which users can submit a new term.  You will then need to hook the action `cf7_2_post_form_mapped_to_{$post_type}` which is fired right at the end of the saving process.  The hook parses the newly created `$post_ID` as well as the submitted `$cf7_form_data` form data array.  You can then check if your user has submitted a new value and [include it in taxonomy](https://codex.wordpress.org/Function_Reference/wp_insert_term) and [assign the new term to the post](https://codex.wordpress.org/Function_Reference/wp_set_object_terms).
 
-= How can I pre-fill a form from a WordPress page template that contains a CF7 form ? =
+= 9. How can I pre-fill a form from a WordPress page template that contains a CF7 form ? =
 
 This can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in,
 
@@ -192,7 +193,7 @@ if(!empty($args) && isset($args[0]['id'])){
   }
 }
 `
-= How to use custom javascript script on the form front-end ? =
+= 10. How to use custom javascript script on the form front-end ? =
 
 The plugin fires a number of jQuery scripts in order to map saved submissions back to draft forms.  So if you have a form which your users can save before submitting and you need to customise some additional functionality on your form on `$(document).ready()`, then you need to make sure it fires after the plugin's scripts have finished.  In order to achieve this, the script fires a custom event on the form, `cf7Mapped`, which you can use to ensure you script fires in the right order, here is how you would enable this,
 `
@@ -206,18 +207,18 @@ The plugin fires a number of jQuery scripts in order to map saved submissions ba
   });
 })( jQuery );
 `
-= Is it possible to save my form to an existing post type? =
+= 11. Is it possible to save my form to an existing post type? =
 
 yes, but you need to know how to use WordPress hooks in your functions.php file in order to get it to work.  If you map your form, you now have a dropdown to select the type of post to which you want to save it to.  When you select 'Existing Post' from the option, instructions will show up on screen to map your form.
 
-= I am saving my form to an existing post, can I pre-load taxonomy terms in my form? =
+= 12. I am saving my form to an existing post, can I pre-load taxonomy terms in my form? =
 
 Sure you can, again you need to use the hooks `cf7_2_post_map_extra_taxonomy` & `cf7_2_post_pre_load-{$post_type}` to get it to work, see the example in the section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/).
 
-= Is there any advanced documentation for developers ? =
+= 13. Is there any advanced documentation for developers ? =
 sure, there is a section [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) which lists all the hooks (filters & actions) available for developers with examples of how to use them.  These expose a lot of the default functionality for further fine-tuning.  If you see a scope for improvement and/or come across a bug, please report it in the support forum.
 
-= Is it possible to have multiple forms submitted from a single page ? =
+= 14. Is it possible to have multiple forms submitted from a single page ? =
 yes, as of v1.4 of this plugin you can now have multiple saved/draft submissions on a single page.  To get it to work you need to track which forms are mapped to which post yourself.  Introduce a hidden variable in your form to store your mapped post ids.  For example you have a custom post which maps/stores submitted faults  reported by your users.  On  page load, you need to pass the mapped post id to this plugin via your cf7 shortcode by dynamically calling the shortcode using `do_shortcode` and the attribute `cf7_2_post_id`,
 `
 $args = array(
@@ -236,29 +237,26 @@ foreach($faults as $post){
 //$cf7_attr = ' cf7_2_post_id="-1"';
 //echo do_shortcode('[cf7-2-post key="user-fault" title="Faults" '.$cf7_attr.']');
 `
-= I made a mistake in my form mapping, how do I correct it once it is created? =
 
-as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
-
-= I have enabled a save button on my form, but draft submissions are not being validated! =
+= 15. I have enabled a save button on my form, but draft submissions are not being validated! =
 
 This is the default functionality for saving draft submissions.  This is especially useful for avery large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
 
-= How do I publish posts automatically on form submission ? =
+= 16. How do I publish posts automatically on form submission ? =
 
 The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use the filter 'cf7_2_post_status_{$post_type}' and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values). See the Filters & Hooks section of this documentation for more information.
 
-= How do I make custom posts publicly visible on the front-end ?=
+= 17. How do I make custom posts publicly visible on the front-end ?=
 
 the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See this [screenshot](https://ps.w.org/post-my-contact-form-7/assets/screenshot-7.png) for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
 
 If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen opttions](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
 
-= I mapped some fields to post meta-fields, why can't I see them in the dashboard? =
+= 18. I mapped some fields to post meta-fields, why can't I see them in the dashboard? =
 
 When you map your form fields to the custom post meta fields, you need to to ensure that these meta-fields are displayed in the post edit page of yoru dashboard using [meta-boxes](https://developer.wordpress.org/reference/functions/add_meta_box/).  You can custom [create these meta-boxes](https://www.smashingmagazine.com/2011/10/create-custom-post-meta-boxes-wordpress/) in  your functions.php file or you can also use a plugin.  However, without these meta-boxees you won't be able to see your field values when you edit your posts.
 
-= Why does my form page have no-cache metas ? =
+= 19. Why does my form page have no-cache metas ? =
 As of v3.0.0 the no-cache metas have been added by default to pages with embeded forms that are being mapped by this plugin.  Note this does not affect pages with forms which are not mapped.  This is done to ensure that forms with pre-loaded field values (saved draft forms or forms with pre-filled values) are not being cached by the browser and as a result load spurious values.
 
 If your form is not being saved by users and not being pre-filled, then you may decide to disable the no-cache metas with the following filter,
@@ -267,7 +265,7 @@ add_filter('cf7_2_post_print_page_nocache_metas', '__return_false'));
 `
 It is not possible to target pages with specific forms.
 
-= How can I reload forms already submitted? =
+= 20. How can I reload forms already submitted? =
 Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated (from 'no' to 'yes') in the post to which the form was saved.  As of v3.3.0 a metabox is introduced in the post admin page which allows an administrator to toggle the status back to 'no' and therefore allow your user to re-load the form with the submitted values (same functionality as a saved draft form).
 
 == Screenshots ==
