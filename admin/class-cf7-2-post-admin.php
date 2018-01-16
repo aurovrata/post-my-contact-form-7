@@ -149,6 +149,9 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
+    //default for all admin screens to hide submenu.
+    wp_enqueue_script( 'hide-mapping-menu', plugin_dir_url( __FILE__ ) . 'js/cf72post-hide-menu.js', array( 'jquery'), $this->version, true );
+
     if(self::$map_screen_id == $hook){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
@@ -225,7 +228,6 @@ class Cf7_2_Post_Admin {
       add_action('load-'.$hook2, array($this, 'load_admin_page'), 10);
       add_action('add_meta_boxes_'.$hook2, array($this, 'add_metabox'), 10);
   }
-
   /**
   * Function to load custom admin page metabox.
   * Hooked on 'load-{self::map_screen_id}'

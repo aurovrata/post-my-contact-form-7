@@ -176,6 +176,8 @@ class Cf7_2_Post {
     $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
     //save quick edit
     $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_quick_edit', 10);
+    //hide mapping submenu page.
+    //$this->loader->add_filter( 'custom_menu_order', $plugin_admin, 'hide_mapping_menu', 10);
     /**
     * add metabox to mapped posts.
     * @since 3.3.0

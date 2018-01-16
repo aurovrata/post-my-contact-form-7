@@ -279,6 +279,8 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+= 3.4.2 =
+* hide the mapping page sub-menu.
 = 3.4.1 =
 * factory bug fix.
 = 3.4.0 =
