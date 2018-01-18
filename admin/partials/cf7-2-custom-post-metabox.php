@@ -16,7 +16,8 @@ if(!empty($mapped_fields)){
         if(is_array($avalue)){
           echo $key.":";
           foreach($avalue as $row=>$rvalue){
-            $out = implode(',', $rvalue);
+            $out = '';
+            if(!empty($rvalue)) $out = implode(',', $rvalue);
             output_cf72post_field($out);
           }
           echo '</div><div>';

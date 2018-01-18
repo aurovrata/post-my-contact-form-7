@@ -336,8 +336,7 @@ class Cf7_2_Post_Admin {
   * @return     Array    $columns       IDs of table columns.
   */
   public function modify_cf7_list_columns($columns){
-    $screen = get_current_screen();
-    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options', $screen->post_type);
+    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
     if(current_user_can($capability)){
       //$columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
       $columns['map_cf7_2_post']= __( 'Form to post', 'cf7-2-post');
@@ -392,7 +391,7 @@ class Cf7_2_Post_Admin {
   public function quick_edit_box( $column_name, $post_type ) {
     switch($post_type){
       case 'wpcf7_contact_form':
-        $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options', $post_type);
+        $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
         if(!current_user_can($capability)){
           return;
         }
@@ -415,7 +414,7 @@ class Cf7_2_Post_Admin {
         }
         switch($column_name){
           case 'cf7_2_post' :
-          $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options', $post_type);
+          $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
           if(!current_user_can($capability)){
             return;
           }
