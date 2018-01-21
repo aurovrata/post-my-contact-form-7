@@ -1058,13 +1058,17 @@ class Cf7_2_Post_Factory {
   *@param string $source origin of post, default is 'factory', ie the origin is this class.
   *@return boolean true if mapped.
   */
-  public static function is_mapped_post_types($post_type, $source='factory'){
+  public static function is_mapped_post_types($post_type, $source=null){
     $is_mapped = false;
     if(isset(self::$mapped_post_types)){
       foreach(self::$mapped_post_types as $post_id=>$type){
         $ptype = key($type);
-        if($post_type == $ptype && $source == $type[$ptype]){
-          $is_mapped = $post_id;
+        if($post_type == $ptype){
+          if(empty($source)){
+            $is_mapped = $post_id;
+          }else if( $source == $type[$ptype] ){
+            $is_mapped = $post_id;
+          }
         }
       }
     }

@@ -142,7 +142,7 @@ function custom_cf7_script($script, $shortcode_attrs, $nonce, $cf7form_key, $for
     })( jQuery );
     </script>
     &lt;?php
-    $script = ob_get_contents();
+    $script .= ob_get_contents();
     ob_end_clean();
   }
   return $script;

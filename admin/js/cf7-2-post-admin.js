@@ -72,6 +72,14 @@
       parent.parent().append(cloneField).append(errorBox).append(cloneDetails);
       //bind event handlers
       cloneField.find('.add-more-field').on('click',createNewTaxonomy);
+      cloneField.find('.select2').remove();
+      cloneDetails.find('.select2').remove();
+      $('select', cloneField).each(function(){
+        $(this).select2();
+      });
+      $('select', cloneDetails).each(function(){
+        $(this).select2();
+      });
       //}
       $(this).css('display','none'); //hide the add button
       //add remove button
@@ -335,7 +343,6 @@
       //$fieldSelect.prop('selectedIndex',0);
       var option = $fieldSelect.find('option.filter-option');
       option.attr('value','cf7_2_post_filter-'+slug);
-      if(!longLists) $fieldSelect.niceSelect('update');
       //reset the msg box
       taxonmyField.next('p.cf7-post-error-msg').empty();
       //change the other input names

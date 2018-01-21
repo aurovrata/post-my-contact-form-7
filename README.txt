@@ -109,7 +109,7 @@ function redirect_on_submit($script, $attr, $nonce){
   $url = site_url('/submitted'); //page slug to redirect to.
   $url = add_query_arg( array('cf72post' => $nonce,), $url);
   $url = esc_url($url);
-  $script = '<script>'.PHP_EOL;
+  $script .= '<script>'.PHP_EOL;
   $script .= 'document.addEventListener( "wpcf7mailsent", function( event ) {'.PHP_EOL;
   $script .= '  var save = document.getElementsByClassName("cf7_2_post_draft");'.PHP_EOL;
   $script .= '  if(save.length == 0  || "false" === save[0].value){'.PHP_EOL;
@@ -279,6 +279,8 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 7. making custom posts publicly queryable.
 
 == Changelog ==
+= 3.4.4 =
+* bug fix on taxonomy mapping drop-down select2.
 = 3.4.3 =
 * screen object bug fix.
 = 3.4.2 =
