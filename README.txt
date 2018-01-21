@@ -139,7 +139,7 @@ In the Contact Form 7 table list you will notice a new column has been added whi
 as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
 
 = 4. How do remove a mapping? =
-At this point it is not possible, you can either delete the form and start again, or if you can search your cf7 form ID's in the `wp_post_meta` table and edit the meta field '_cf7_2_post-map' to 'draft'.
+You can quick-edit a form in the Contact Form table and delete the mapping.
 
 = 5. How do I map a field to a taxonomy ? =
 
