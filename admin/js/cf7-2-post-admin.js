@@ -63,7 +63,7 @@
       //details.find('input[name='+fieldName+']').prop('disabled',false);
       parent.find('select option.filter-option').val('cf7_2_post_filter-'+slug);
       parent.find('select').each(function(){
-        $(this).prop('disabled',false).trigger('change');
+        $(this).prop('disabled',false);
       });
 
       //add new field
@@ -204,7 +204,7 @@
       }else if($target.is('select.cf7-2-post-map-labels')){
 				if('cf72post-custom-meta-field'===$target.val()){
 					$target.hide();
-          $target.next('.nice-select').hide();
+          $target.next('.select2').hide();
 					var $input = $target.siblings('input.cf7-2-post-map-label-custom').show();
 					$input.prop('disabled', false).addClass('cf7-2-post-map-labels');
           $input.on('change', function(){
@@ -334,9 +334,10 @@
     }
     //change in slug of taxonomy
     function taxonomySlug(){
-      var taxonmyField = $(this).parent().prevAll('div.custom-taxonomy-field').eq(0);
+      var $this = $(this);
+      var taxonmyField = $this.parent().prevAll('div.custom-taxonomy-field').eq(0);
       var $fieldSelect = taxonmyField.find('select');
-      var slug = $(this).val();
+      var slug = $this.val();
       //var mapped = $fieldSelect.val();
       $fieldSelect.attr('name','cf7_2_post_map_taxonomy_value-'+slug);
       //reset the select box
@@ -346,10 +347,10 @@
       //reset the msg box
       taxonmyField.next('p.cf7-post-error-msg').empty();
       //change the other input names
-      $(this).parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
-      $(this).parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
-      $(this).parent().find('input.taxonomy-source').attr('name','cf7_2_post_map_taxonomy_source-'+slug);
-      $(this).parent().find('input.taxonomy-slug').attr('name','cf7_2_post_map_taxonomy_slug-'+slug);
+      $this.parent().find('input.singular-name').attr('name','cf7_2_post_map_taxonomy_name-'+slug);
+      $this.parent().find('input.plural-name').attr('name','cf7_2_post_map_taxonomy_names-'+slug);
+      $this.parent().find('input.taxonomy-source').attr('name','cf7_2_post_map_taxonomy_source-'+slug);
+      $this.parent().find('input.taxonomy-slug').attr('name','cf7_2_post_map_taxonomy_slug-'+slug);
     }
     //function called when the taxonomy name changes
     function pluralName(){
