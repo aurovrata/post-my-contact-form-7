@@ -95,7 +95,9 @@ if ( ! defined( 'ABSPATH' ) ) {
           case 'checkbox':
             $suffix = ("checkbox"===$type)?"[]":"";
             $format .= 'fname = "%1$s' . $suffix . '";'.PHP_EOL;
-            $format .= '$.each(data.%2$s , function(index, value){'.PHP_EOL;
+            $format .= 'var arr = data.%2$s;'.PHP_EOL;
+            $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
+            $format .= '$.each(arr , function(index, value){'.PHP_EOL;
             //$format .= '  var search = +value;'.PHP_EOL;
             $format .= "  cf7Form.find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true);".PHP_EOL;
             $format .= '});';

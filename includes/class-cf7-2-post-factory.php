@@ -1325,6 +1325,13 @@ class Cf7_2_Post_Factory {
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($post_id, $post_field, $value);
       }else{
+        /**
+        * Fix issue of conditional fields in CF7 Smart Grid toggle sections not being submitted.
+        *@since 3.4.6
+        */
+        if(!isset($this->cf7_form_fields[$form_field])){
+          continue;
+        }
         if( 'file' == $this->cf7_form_fields[$form_field] ){
           $cf7_files = $submission->uploaded_files();
           $file_url = '';
