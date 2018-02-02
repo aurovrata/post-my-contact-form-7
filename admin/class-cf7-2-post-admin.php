@@ -520,7 +520,7 @@ class Cf7_2_Post_Admin {
       if($this->post_mapping_factory->is_system_published()){
         $json_data = array('msg'=>'Nothing to update');
         wp_send_json_error($json_data);
-        die();
+        wp_die();
       }
       $create_or_update = false;
       $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');;
@@ -553,7 +553,7 @@ class Cf7_2_Post_Admin {
       $json_data = array('msg'=>'No CF7 post ID, try to reload the page');
       wp_send_json_error($json_data);
     }
-    die();
+    wp_die();
   }
   /**
   *Disables browser page caching for forms which are mapped to a post.
