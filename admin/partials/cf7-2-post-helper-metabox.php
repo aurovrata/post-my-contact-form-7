@@ -7,7 +7,7 @@
     <h3 class="hndle">Admin hooks</h3>
 
     <div class="inside">
-      <ul class="helper-list">
+      <ol class="helper-list">
         <li>
           <p>
             these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.
@@ -97,7 +97,7 @@ function filter_posts($displayed_posts, $form_id){
   return displayed_posts;
 }" href="javascript:void(0);">System Post Filter</a> to show hidden system post for mapping.
       </li>
-    </ul>
+    </ol>
   </div>
 </div>
 <div id="loading-hooks" class="postbox closed">
@@ -105,7 +105,7 @@ function filter_posts($displayed_posts, $form_id){
     <h3 class="hndle">Form loading hooks</h3>
 
     <div class="inside">
-      <ul class="helper-list">
+      <ol class="helper-list">
         <li>
           <p>
             these are triggered when your form is being loaded on the front-end and are useful to customise the form.
@@ -215,14 +215,14 @@ function disable_page_cache_metas($print_on_page){
   return $print_on_page;
 }" href="javascript:void(0);">Page Cache Filter</a> to remove nocache meta tags in &lt;head&gt;.
       </li>
-    </ul>
+    </ol>
   </div>
 </div>
 <div id="submit-hooks" class="postbox closed">
   <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text">Toggle panel: Submitted hooks</span><span class="toggle-indicator" aria-hidden="true"></span></button>
     <h3 class="hndle ui-sortable-handle">Form submitted hooks</h3>
     <div class="inside">
-      <ul class="helper-list">
+      <ol class="helper-list">
         <li>
           <p>
             these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.
@@ -319,7 +319,7 @@ function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
   //do something.
 }" href="javascript:void(0);">Action</a> after <em>submitted</em> form is saved to post.
       </li>
-    </ul>
+    </ol>
   </div>
 </div>
 <script type="text/javascript">
