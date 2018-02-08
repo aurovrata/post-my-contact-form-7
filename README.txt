@@ -283,9 +283,9 @@ Use the filer provided in the filter & actions helper metabox of the mapping pag
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
-= 3.4.8 =
+= 3.5.0 =
 * additional faq #21
-* additional filter 'cf72post_filter_taxonomy_options'.
+* improved filter 'cf7_2_post_filter_taxonomy_query' and added to helper.
 = 3.4.7 =
 * helper metabox cleanup.
 * additional of helper screenshot 8 to assets.
