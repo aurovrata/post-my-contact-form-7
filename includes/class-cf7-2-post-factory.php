@@ -1636,7 +1636,14 @@ class Cf7_2_Post_Factory {
       'parent' => $parent,
       'hide_empty' => 0,
     );
-    $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $this->cf7_post_ID, $taxonomy);
+    $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $this->cf7_post_ID, $taxonomy, $field, $this->cf7_key);
+    /**
+    * allows for more felxibility in filtering taxonomy options.
+    *@since 3.5.0
+    */
+    if(empty($args)){
+      return '';
+    }
     //check the WP version
     global $wp_version;
 	  if ( $wp_version >= 4.5 ) {
@@ -1672,7 +1679,7 @@ class Cf7_2_Post_Factory {
           //debug_msg("Checking option: ".$this->cf7_post_ID." field(".$field."), term ".$term->name);
           //check if we group these terms
           if(0==$parent){
-            //do we gorup top level temrs as <optgroup/> ?
+            //do we group top level temrs as <optgroup/> ?
             $groupOptions = false;
             $children = get_term_children($term_id, $taxonomy);
             if($children) $groupOptions = true;

@@ -5,6 +5,9 @@
     max-height: 300px;
     overflow-y: auto;
 }
+ol.helper-list {
+    padding-left: 13px;
+}
 form#cf7-post-mapping-form .cf7-2-post-map-labels:hover {
     width: auto;
 }

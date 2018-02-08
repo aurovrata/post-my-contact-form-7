@@ -268,6 +268,9 @@ It is not possible to target pages with specific forms.
 = 20. How can I reload forms already submitted? =
 Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated (from 'no' to 'yes') in the post to which the form was saved.  As of v3.3.0 a metabox is introduced in the post admin page which allows an administrator to toggle the status back to 'no' and therefore allow your user to re-load the form with the submitted values (same functionality as a saved draft form).
 
+= 21. How can I filter the terms of a mapped taxonomy field ? =
+Use the filer provided in the filter & actions helper metabox of the mapping page in the dashboard (see [screenshot 8](https://ps.w.org/post-my-contact-form-7/assets/screenshot-8.png)). Use the *filter terms list* (#4 in the section Form Loading Hooks),
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -280,6 +283,9 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
+= 3.4.8 =
+* additional faq #21
+* additional filter 'cf72post_filter_taxonomy_options'.
 = 3.4.7 =
 * helper metabox cleanup.
 * additional of helper screenshot 8 to assets.

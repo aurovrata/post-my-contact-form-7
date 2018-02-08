@@ -7,12 +7,10 @@
     <h3 class="hndle">Admin hooks</h3>
 
     <div class="inside">
+      <p>
+        these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.
+      </p>
       <ol class="helper-list">
-        <li>
-          <p>
-            these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.
-          </p>
-        </li>
         <li class="factory-hook">
           <a class="helper" data-cf72post="add_filter('cf7_2_post_supports_{$post_type}','set_supports');
 /**
@@ -105,12 +103,10 @@ function filter_posts($displayed_posts, $form_id){
     <h3 class="hndle">Form loading hooks</h3>
 
     <div class="inside">
+      <p>
+        these are triggered when your form is being loaded on the front-end and are useful to customise the form.
+      </p>
       <ol class="helper-list">
-        <li>
-          <p>
-            these are triggered when your form is being loaded on the front-end and are useful to customise the form.
-          </p>
-        </li>
         <li>
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_form_append_output', 'custom_cf7_script',10,5);
 /**
@@ -197,8 +193,44 @@ function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
     $terms_id[] = $term->term_id;
   }
   return $terms_id;
-}" href="javascript:void(0);">Term Values Filter</a> taxonomy terms in dropdown/radio/checkbox.
+}" href="javascript:void(0);">Default Term Values Filter</a> taxonomy terms in dropdown/radio/checkbox.
         </li>
+        <li>
+          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_taxonomy_query', 'filter_taxonomy_terms',10, 5);
+  /**
+  * Function to filter the list of terms shown in a mapped taxonomy field.  For example if you have a select field you can restrict the options listed to a select set of terms.
+  * @param array $query an array of query attributes for the taxonomy.
+  * @param string $cf7_id  the form id being loaded.
+  * @param string $taxonomy the taxonomy slug being queried.
+  * @param string $field the field name in the form being loaded.
+  * @param string $cf7_key unique key identifying your form.
+  * @return array an array taxonomy query attributes (see codex page:https://developer.wordpress.org/reference/functions/get_terms/).
+  */
+  function filter_taxonomy_terms($query, $cf7_id, $taxonomy, $field, $cf7_key){
+  // NOTE: the plugin iterates through each terms it finds to get its children.
+  //so for hierarchical taxonomy this filter will be recursively called on each term and its children.
+  //in the example below I am assuming that I have a dropdown field which map to my (hierarchical) locations taxonomy.  I want restrict the listed options to my top level terms 'UK', 'France' and 'Germany'.Furthermore, I don't want to list the children of these capital cities, namely 'London', 'Paris', 'Berlin'.
+  if($cf7_key == 'travel-form' && $field=='locations'){//verify this is the correct form.
+    switch($query['parent']){
+      case 0: //this is the first (top-level) iteration of this filter.
+        $query['slug'] = array('uk', 'france', 'germany');//restrict our top level terms.
+        break;
+      default: //this is an iteration through a child-term.
+        //let's find which term,
+        $term = get_term_by('id', $query['parent'], $taxonomy);
+        switch($term->slug){
+          case 'london':
+          case 'paris':
+          case 'berlin':
+            $query = array(); //an emtpy array will stop loading their children.
+            break;
+        }
+        break;
+    }
+  }
+  return $query;
+}" href="javascript:void(0);">Filter term list</a> in mapped taxonomy field.
+      </li>
         <li>
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_print_page_nocache_metas','disable_page_cache_metas',10);
 /**
@@ -222,12 +254,10 @@ function disable_page_cache_metas($print_on_page){
   <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text">Toggle panel: Submitted hooks</span><span class="toggle-indicator" aria-hidden="true"></span></button>
     <h3 class="hndle ui-sortable-handle">Form submitted hooks</h3>
     <div class="inside">
+      <p>
+        these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.
+      </p>
       <ol class="helper-list">
-        <li>
-          <p>
-            these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.
-          </p>
-        </li>
         <li>
           <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type}_author',10,4);
 /**

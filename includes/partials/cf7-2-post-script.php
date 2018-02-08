@@ -34,6 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     /**
     * filter fields mapped to taxonomy (in case mapping is done on a system post)
     * @since 1.3.2
+    * this can now be deprecated.
     */
     $taxonomies = array();
     $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $factory->cf7_key );
