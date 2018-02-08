@@ -277,7 +277,7 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 7. making custom posts publicly queryable.
-8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.
+8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
 = 3.4.7 =
