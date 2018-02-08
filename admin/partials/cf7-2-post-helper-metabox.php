@@ -308,18 +308,6 @@ function force_notification($skip_mail, $cf7_key){
 }" href="javascript:void(0);">Draft Mail Filter</a> to send cf7 mail for draft form saved.
       </li>
       <li>
-        <a class="helper" data-cf72post="add_action('cf7_2_post_form_mapped_to_{$post_type}', 'new_{$post_type}_mapped',10,3);
-/**
-* Function to take further action once form has been saved as a post.  Note this action is also fired for draft form submissions.
-* @param string $post_id new post ID to which submission was saved.
-* @param array $cf7_form_data complete set of data submitted in the form as an array of field-name=>value pairs.
-* @param string $cf7form_key unique key to identify your form.
-*/
-function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
-  //do something.
-}" href="javascript:void(0);">Action</a> after form is saved to post.
-      </li>
-      <li>
         <a class="helper" data-cf72post="add_action('cf7_2_post_form_submitted_to_{$post_type}', 'new_{$post_type}_mapped',10,3);
 /**
 * Function to take further action once form has been submitted and saved as a post.  Note this action is only fired for submission which has been submitted as opposed to saved as drafts.
