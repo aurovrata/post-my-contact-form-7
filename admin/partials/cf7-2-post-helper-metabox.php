@@ -349,6 +349,20 @@ function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
   //do something.
 }" href="javascript:void(0);">Action</a> after <em>submitted</em> form is saved to post.
       </li>
+      <li>
+        <a class="helper" data-cf72post="add_filter('cf72post_default_post_title', 'set_default_title',10,3);
+        /**
+        * Filter to set the default title for a mapped post.  Use this filter if you are mapping a form to an existing post and are only saving meta-fields.
+        * @param  string  $post_title  default title to set.
+        * @param  string  $post_type  the post type being mapped to.
+        * @param  string  $cf7_key  the unique key to indetify the form.
+        * @return string the default title.
+        */
+function set_default_title($post_title, $post_type, $cf7_key){
+  //set the default title for the post to which the form sibmission is saved to.
+return $post_title;
+}" href="javascript:void(0);">Default title Filter</a> the default title of the submitted post.
+      </li>
     </ol>
   </div>
 </div>

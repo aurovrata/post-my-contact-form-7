@@ -33,9 +33,10 @@
         //$select.val($status.val());
 
         $select.change(function(){
+          var $this = $(this);
           $('.cf7-2-post-delete-warning', $edit_row).hide();
-          if('delete' == $(this).val()){
-            $(this).after($warn);
+          if('delete' == $this.val()){
+            $this.after($warn);
           }
         });
       }else{

@@ -1192,17 +1192,31 @@ class Cf7_2_Post_Factory {
       */
       $post_status = apply_filters('cf7_2_post_status_'.$this->post_properties['type'], $post_status, $this->cf7_key, $cf7_form_data);
     }
+    /**
+    * Filter to set the default title for a mapped post.
+    * @param  string  $post_title  default title to set.
+    * @param  string  $post_type  the post type being mapped to.
+    * @param  string  $cf7_key  the unique key to indetify the form.
+    * @since 3.6.0
+    */
+    $post_type = $this->post_properties['type'];
+    $post_title = 'CF7 2 Post';
+    $post_title = apply_filters('cf72post_default_post_title', $post_title,  $post_type, $this->cf7_key);
 
-    $post = array('post_type'  =>$this->post_properties['type'],
+    $post = array('post_type'  =>$post_type,
                   'post_author'=>$author,
                   'post_status'=> $post_status,
-                  'post_title'  => 'CF7 2 Post'
+                  'post_title'  => $post_title
                 );
     $post_id = '';
+    $is_update = false;
     if(isset($cf7_form_data['_map_post_id']) && !empty($cf7_form_data['_map_post_id'])){
       $post_id = $cf7_form_data['_map_post_id']; //this is an existing post being updated
       $wp_post = get_post($post_id);
       $post['post_status'] = $wp_post->post_status;
+      $post['post_author'] = $wp_post->post_author;
+      $post['post_title'] = $wp_post->post_title;
+      $is_update = true;
     }else{
       //this is a new mapping.
       $post['post_author'] = apply_filters('cf7_2_post_author_'.$this->post_properties['type'], $author, $this->cf7_post_ID, $cf7_form_data, $this->cf7_key );
@@ -1298,16 +1312,16 @@ class Cf7_2_Post_Factory {
     }
     //update the post
     if( empty($post['post_name']) ){
+      $post['post_name'] = 'cf7_'.$this->cf7_post_ID.'_to_post_'.$post_id;
       if( isset($post['post_title']) ){
         //sanitize_title( $title, $fallback_title, $context )
         $post['post_name'] = sanitize_title( $post['post_title'] );
-      }else{
-        $post['post_name'] = 'cf7_'.$this->cf7_post_ID.'_to_post_'.$post_id;
       }
     }
-    //debug_msg($post, 'updating post... ');
-
-    $post_id = wp_insert_post ( $post );
+    /*if the post key is empty it means no fields are mapped to post field, only meta fields.*/
+    if(!empty($post_key)){
+      $post_id = wp_insert_post ( $post );
+    }
     //
     //-------------- meta fields
     //
