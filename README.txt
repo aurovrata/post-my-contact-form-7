@@ -283,6 +283,8 @@ Use the filer provided in the filter & actions helper metabox of the mapping pag
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
+= 3.7.0 =
+* trigger change event on fields that are preloaded.
 = 3.6.0 =
 * added 'cf72post_default_post_title' filter.
 * fixed bug on mapping forms to existing post to update only meta-fields.

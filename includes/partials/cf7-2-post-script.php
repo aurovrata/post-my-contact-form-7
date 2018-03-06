@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
      $( document).ready(function() {
        var fname;
        var cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
+       var $input;
        if(cf7Form.is('div.cf7-smart-grid form.wpcf7-form')){
          //if the smart grid is enabled, execute the loading once the grid is ready
          cf7Form.on('cf7SmartGridReady', function(){
@@ -81,16 +82,16 @@ if ( ! defined( 'ABSPATH' ) ) {
           case 'email':
           case 'time':
           case 'hidden':
-            $format .= 'cf7Form.find("input[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            $format .= 'cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'select':
-            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'dynamic_select':
-            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'textarea':
-            $format .= 'cf7Form.find("textarea[name=%1$s]").val(data.%2$s);'.PHP_EOL;
+            $format .= 'cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'radio':
           case 'checkbox':
@@ -100,7 +101,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
             $format .= '$.each(arr , function(index, value){'.PHP_EOL;
             //$format .= '  var search = +value;'.PHP_EOL;
-            $format .= "  cf7Form.find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true);".PHP_EOL;
+            $format .= "  cf7Form.find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
             $format .= '});';
             break;
           default:
