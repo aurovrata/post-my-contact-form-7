@@ -98,6 +98,7 @@ function filter_posts($displayed_posts, $form_id){
     </ol>
   </div>
 </div>
+
 <div id="loading-hooks" class="postbox closed">
   <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text">Toggle panel: Loading Hooks</span><span class="toggle-indicator" aria-hidden="true"></span></button>
     <h3 class="hndle">Form loading hooks</h3>

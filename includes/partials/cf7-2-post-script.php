@@ -127,7 +127,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     //load the taxonomy required
     //legacy
 
-    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $factory->cf7_post_ID, $form_field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $factory->cf7_post_ID, $form_field);
+    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $factory->cf7_post_ID, $form_field, $factory->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $factory->cf7_post_ID, $form_field, $factory->cf7_key);
 
     if($load_chosen){
       $load_chosen_script = true;

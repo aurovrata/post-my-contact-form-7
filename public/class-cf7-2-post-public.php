@@ -63,7 +63,6 @@ class Cf7_2_Post_Public {
     $plugin_dir = plugin_dir_url( __FILE__ );
     wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
 		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
-
 	}
   /**
   * Saves a cf7 form submission to its mapped post
@@ -142,6 +141,13 @@ class Cf7_2_Post_Public {
       wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
       $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $factory->cf7_key, $form_values);
       $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$inline_script.PHP_EOL.$scripts.'</div>';
+      /**
+      * Action for enqueueing other scripts.
+      * @since 3.8.0.
+      * @param string $cf7_key unique key of form being printed.
+      * @param int $cf7_2_post_id post ID of form being printed.
+      */
+      do_action('cf72post_form_printed_to_screen', $factory->cf7_key, $cf7_2_post_id);
     }
     return $output;
   }

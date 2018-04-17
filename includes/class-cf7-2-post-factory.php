@@ -1585,7 +1585,7 @@ class Cf7_2_Post_Factory {
         $field_type = $this->cf7_form_fields[$form_field];
         $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type);
         //for legacy purpose
-        $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $form_field);
+        $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $this->cf7_post_ID, $form_field, $this->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $this->cf7_post_ID, $form_field, $this->cf7_key);
         if( $apply_jquery_select ){
           wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
           wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
@@ -1643,9 +1643,10 @@ class Cf7_2_Post_Factory {
   * @param   Array  $post_terms an array of terms which a post has been tagged with
   * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   String $field_type the type of field in which the tersm are going to be listed
+  * @param   int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
   * @return  String a jquery code to be executed once the page is loaded.
   */
-   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type){
+   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0){
     $args = array(
       'parent' => $parent,
       'hide_empty' => 0,
@@ -1687,7 +1688,41 @@ class Cf7_2_Post_Factory {
     foreach($terms as $term){
       $term_id = $term->term_id;
       $is_optgroup=false;
+      $custom_classes = array();
+      $custom_attributes = array();
+      $custom_class = $term_class;
+      /**
+      * filter classes for terms to allow addition of custom classes.
+      * @param Array $custom_classes an array of strings.
+      * @param WP_Term $term current term object being setup.
+      * @param int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being.
+      * @param $field string form field being mapped.
+      * @param $formKey string unique key of form being mapped.
+      * @return Array an array of strings.
+      * @since 3.8.0
+      */
+      $custom_classes = apply_filters('cf72post_filter_taxonomy_term_class', $custom_classes, $term, $level, $field, $this->cf7_key);
 
+      if($custom_classes && is_array($custom_classes)){
+        $custom_class .= ' '.implode(' ', $custom_classes);
+      }
+      /**
+      * filter attributes for terms <input/> or <option> elemets to allow addition of custom attributes.
+      * @param Array $custom_attributes an array of $attribute=>$value pairs.
+      * @param WP_Term $term current term object being setup.
+      * @param int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being.
+      * @param $field string form field being mapped.
+      * @param $formKey string unique key of form being mapped.
+      * @return Array an array of $attribute=>$value pairs.
+      * @since 3.8.0
+      */
+      $custom_attributes = apply_filters('cf72post_filter_taxonomy_term_attributes',$custom_attributes, $term, $level, $field, $this->cf7_key);
+      $attributes = '';
+      if($custom_attributes && is_array($custom_attributes)){
+        foreach($custom_attributes as $attr=>$value){
+          $attributes .= ' '.$attr.'="'.(string)$value.'"';
+        }
+      }
       switch($field_type){
         case 'select':
           //debug_msg("Checking option: ".$this->cf7_post_ID." field(".$field."), term ".$term->name);
@@ -1698,7 +1733,7 @@ class Cf7_2_Post_Factory {
             $children = get_term_children($term_id, $taxonomy);
             if($children) $groupOptions = true;
             //let's filter this choice
-            $groupOptions = apply_filters('cf7_2_post_filter_cf7_taxonomy_select_optgroup',$groupOptions, $this->cf7_post_ID, $field, $term);
+            $groupOptions = apply_filters('cf7_2_post_filter_cf7_taxonomy_select_optgroup',$groupOptions, $this->cf7_post_ID, $field, $term, $this->cf7_key);
 
              if($groupOptions){
               $script .='<optgroup label="'.$term->name.'">';
@@ -1707,9 +1742,9 @@ class Cf7_2_Post_Factory {
           }
           if(!$is_optgroup){
             if( in_array($term_id, $post_terms) ){
-              $script .='<option value="'.$term_id.'" selected="selected">'.$term->name.'</option>';
+              $script .='<option'.$attributes.' class="'.$custom_class.'" value="'.$term_id.'" selected="selected">'.$term->name.'</option>';
             }else{
-              $script .='<option value="'.$term_id.'" >'.$term->name.'</option>';
+              $script .='<option'.$attributes.' class="'.$custom_class.'" value="'.$term_id.'" >'.$term->name.'</option>';
             }
           }
           break;
@@ -1718,7 +1753,7 @@ class Cf7_2_Post_Factory {
           if( in_array($term_id, $post_terms) ){
             $check = 'checked';
           }
-          $script .='<div id="'.$term->slug.'" class="radio-term"><input type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<div id="'.$term->slug.'" class="radio-term"><input'.$attributes.' type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
           $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         case 'checkbox':
@@ -1730,7 +1765,7 @@ class Cf7_2_Post_Factory {
           if( !$this->field_has_option($field, 'exclusive') ){
             $field_name = $field.'[]';
           }
-          $script .='<div id="'.$term->slug.'" class="checkbox-term"><input type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$term_class.'" '.$check.'/>';
+          $script .='<div id="'.$term->slug.'" class="checkbox-term"><input'.$attributes.' type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
           $script .='<label>'.$term->name.'</label></div>'.$nl;
           break;
         default:
@@ -1738,7 +1773,8 @@ class Cf7_2_Post_Factory {
           break;
       }
       //get children
-      $script .= $this->get_taxonomy_terms($taxonomy, $term_id, $post_terms, $field, $field_type);
+      $parent_level = $level;
+      $script .= $this->get_taxonomy_terms($taxonomy, $term_id, $post_terms, $field, $field_type, $level+1);
       if($is_optgroup) $script .='</optgroup>';
     }
     if('select' != $field_type) $script .='</fieldset>';

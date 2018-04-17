@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 4.9.4
+Tested up to: 4.9.5
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -271,6 +271,58 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 = 21. How can I filter the terms of a mapped taxonomy field ? =
 Use the filer provided in the filter & actions helper metabox of the mapping page in the dashboard (see [screenshot 8](https://ps.w.org/post-my-contact-form-7/assets/screenshot-8.png)). Use the *filter terms list* (#4 in the section Form Loading Hooks),
 
+= 22. Can I map deeper levels of my hierarchical taxonomy to a select2 field? =
+As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a javascript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attribtues to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
+
+`
+/add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup', 'turn_off_grouping', 10, 5);
+function turn_off_grouping($isGrouped, $cf7_post_id, $field, $term, $cf7_key){
+  if('my-contact-from' == $cf7_key && 'your-country' == $field){
+    $isGrouped = false;
+  }
+  return $isGrouped;
+}
+//switch off select2 that is loaded & initialised by this plugin.
+add_filter('cf7_2_post_filter_cf7_taxonomy_select2', 'turn_off_select2', 10, 4);
+function turn_off_select2($useSelect2, $cf7_post_id, $field, $cf7_key){
+  if('my-contact-from' == $cf7_key && 'your-country' == $field){
+    $useSelect2 = false;
+  }
+  return $useSelect2;
+}
+//enqueue your own select2/select2-to-tree libraries.
+add_action('cf72post_form_printed_to_screen', 'enqueue_libraries');
+function enqueue_libraries($cf7_key){
+  //wp_enqueue_script(...);
+}
+//add extra classes.
+add_filter('cf72post_filter_taxonomy_term_class', 'add_custom_classes_to_options', 10, 5);
+function add_custom_classes_to_options($classes, $term, $level, $field, $cf7_key){
+  if('my-contact-from' == $cf7_key && 'your-country' == $field){
+    $classes[] = 'l'.(level+1);
+  }
+  return $classes;
+}
+//add extra attributes.
+add_filter('cf72post_filter_taxonomy_term_attributes', 'add_custom_attributes_to_options', 10, 5);
+function add_custom_attributes_to_options($attributes, $term, $level, $field, $cf7_key){
+  if('my-contact-from' == $cf7_key && 'your-country' == $field){
+    if($level>0){
+      $attributes['data-pup'] = $term->parent;
+    }
+  }
+  return $attributes;
+}
+`
+You will also need to [initialise](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml) your select2 field,
+`
+var $mappedForm = $('div.cf7_2_post form.wpcf7-form');
+var eventID = $mappedForm.closest('div.cf7_2_post').attr('id');
+//initialise once the form has been loaded by the plugin.
+$mappedForm.on(eventID, function(){
+  $('.your-country select').select2ToTree();
+});
+`
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -283,6 +335,10 @@ Use the filer provided in the filter & actions helper metabox of the mapping pag
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
+= 3.8.0 =
+* FAQ #22 as an example to override de default select2 taxonomy field.
+* added filter 'cf72post_filter_taxonomy_term_class'
+* added filter 'cf72post_filter_taxonomy_term_attributes'.
 = 3.7.0 =
 * trigger change event on fields that are preloaded.
 = 3.6.0 =
