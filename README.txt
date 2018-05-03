@@ -323,6 +323,21 @@ $mappedForm.on(eventID, function(){
   $('.your-country select').select2ToTree();
 });
 `
+= 23.Can a previously submitted post be reloaded into a form?  =
+yes, this is possible. You have to know a few things first,
+
+* A mapped post that has been saved as a draft is reloaded automatically for the same author/logged in user.
+* A submitted post, as opposed to a saved/draft one, has a its meta-field _cf7_2_post_form_submitted set to ‘yes’, and this controls whether or not an author's post is to be reloaded when the form is being displayed for the current user.
+
+However, you can override all this by actually hooking into the post loading process prior to displaying the form. The process used [get_posts](https://codex.wordpress.org/Template_Tags/get_posts) to retrieve a post, and takes the first post it finds.
+
+`add_filter('cf7_2_post_filter_user_draft_form_query', 'custom_post_query',10,3);
+function custom_post_query($query_args, $post_type, $cf7key){
+  if('my-form' === $cf7key){ //check for your mapped form unique key.
+    //set up your custom $query_args
+  }
+  return $query_args;
+}`
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -335,6 +350,8 @@ $mappedForm.on(eventID, function(){
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 
 == Changelog ==
+= 3.8.1 =
+* added unique form key parameter to the `cf7_2_post_filter_user_draft_form_query` filter.
 = 3.8.0 =
 * FAQ #22 as an example to override de default select2 taxonomy field.
 * added filter 'cf72post_filter_taxonomy_term_class'

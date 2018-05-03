@@ -1475,8 +1475,8 @@ class Cf7_2_Post_Factory {
     		));
       }
 
-
-      $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type']);
+      
+      $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type'], $this->cf7_key);
       $posts_array = get_posts( $args );
       //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
       if(!empty($posts_array)){
