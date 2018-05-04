@@ -97,6 +97,13 @@ class Cf7_2_Post_Factory {
    * @var array $mapped_post_types an array of key value pairs.
    */
    protected static $mapped_post_types;
+   /**
+   * boolean flag to flush rewrite rules when custom posts are created/updated.
+   * @since 3.8.2
+   * @access protected
+   * @var boolean $flush_permalink_rules a boolean flag.
+   */
+   protected $flush_permalink_rules = false;
   /**
    * Default Construct a Cf7_2_Post_Factory object.
    *
@@ -386,7 +393,11 @@ class Cf7_2_Post_Factory {
     }
     //save the taxonomy mapping
     $this->save_taxonomies($data, $is_factory_map, $old_cf7_post_metas);
-
+    //set flush rules flag. @since 3.8.2.
+    if($this->post_properties['public'] || $this->post_properties['publicly_queryable']){
+      $this->flush_permalink_rules = true;
+    }
+    update_post_meta($this->cf7_post_ID,'_cf7_2_post_flush_rewrite_rules', $this->flush_permalink_rules);
     return true;
   }
   /**
@@ -562,6 +573,9 @@ class Cf7_2_Post_Factory {
     foreach ( $fields as $key=>$value ) {
       //debug_msg($key.'=>'.$value[0]);
       switch (true){
+        case '_cf7_2_post_flush_rewrite_rules' == $key:
+         $this->flush_permalink_rules = $value[0];
+         break;
         case '_cf7_2_post-taxonomy' == $key;
         case '_cf7_2_post-supports' == $key:
         case '_cf7_2_post-capabilities' == $key: //use array value.
@@ -1111,6 +1125,15 @@ class Cf7_2_Post_Factory {
       switch($type[$post_type]){
         case 'factory':
           $cf7_2_post_map->create_cf7_post_type();
+          /**
+          * Flush the permalink rules to ensure the public posts are visible on the front-end.
+          * @since 3.8.2.
+          */
+          if($cf7_2_post_map->flush_permalink_rules){
+            flush_rewrite_rules();
+            update_post_meta($post_id,'_cf7_2_post_flush_rewrite_rules', false);
+            $cf7_2_post_map->flush_permalink_rules = false;
+          }
           $system = false;
           break;
         case 'system': /** @since 3.3.1 link system taxonomy*/
@@ -1475,7 +1498,7 @@ class Cf7_2_Post_Factory {
     		));
       }
 
-      
+
       $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $this->post_properties['type'], $this->cf7_key);
       $posts_array = get_posts( $args );
       //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
