@@ -1,13 +1,13 @@
 
 - factory class, update function has a TODO on line 402
-- hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
-  + add mapped post id the cf7 post meta fields
-- skip mail setting in post creation page
-- store all mapping post type settings directly into the cf7 post
 - set menu_icon in post mapping page (http://codex.wordpress.org/Function_Reference/register_post_type)
-- map to an existing post type. Need to by pass post factory and check that the post exists, then map all the properties and taxonomies
-- when posty_type is changed on form, if system post, re-load form, else we need to keep track of all the filters in use on the select and modify their values.
-- meta fields created need to have spaces replaced with underscore + msg flashed
 DONE
 - add filter for meta capabilities in factory class (http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types)
 - check that cf7 is installed, bail out otherwise
+- meta fields created need to have spaces replaced with underscore + msg flashed
+- when post_type is changed on form, if system post, re-load form, else we need to keep track of all the filters in use on the select and modify their values.
+- map to an existing post type. Need to by pass post factory and check that the post exists, then map all the properties and taxonomies
+- store all mapping post type settings directly into the cf7 post
+- skip mail setting in post creation page
+- hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
+  + add mapped post id the cf7 post meta fields

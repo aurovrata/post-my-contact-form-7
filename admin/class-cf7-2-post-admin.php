@@ -685,14 +685,17 @@ class Cf7_2_Post_Admin {
   public function display_cf72post_metabox($post){
     $submitted = get_post_meta($post->ID,'_cf7_2_post_form_submitted', true);
     $checked = ' disabled';
+    $hidden = ' disabled';
     if('yes'===$submitted ){
       $checked = ' checked';
+      $hidden = '';
     }
     ?>
     <span>Form:&nbsp;</span>
     <input id="cf72post_submitted" type="checkbox" <?= $checked?>/>
     <label for="cf7_2_post_submitted">submitted.</label>
-    <input type="hidden" id="cf72post_submitted_hidden" name="cf7_2_post_submitted" value="<?= $submitted?>" />
+    <p><em>Uncheck to flag this submission as un-submitted.</em> This will reload this post into the form when the its author logs in again.</p>
+    <input type="hidden" id="cf72post_submitted_hidden" name="cf7_2_post_submitted" value="<?= $submitted?>" <?= $hidden?>/>
     <script type="text/javascript">
     (function( $ ) {
       $(document).ready(function(){

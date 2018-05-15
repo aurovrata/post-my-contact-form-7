@@ -1,0 +1,169 @@
+== Change Log ==
+= 3.8.3 =
+* fix submit checkbox in post metabox.
+* added changelog.txt file. 
+= 3.8.2 =
+* flush permalink rules when new custom post is registered.
+= 3.8.1 =
+* added unique form key parameter to the `cf7_2_post_filter_user_draft_form_query` filter.
+= 3.8.0 =
+* FAQ #22 as an example to override de default select2 taxonomy field.
+* added filter 'cf72post_filter_taxonomy_term_class'
+* added filter 'cf72post_filter_taxonomy_term_attributes'.
+= 3.7.0 =
+* trigger change event on fields that are preloaded.
+= 3.6.0 =
+* added 'cf72post_default_post_title' filter.
+* fixed bug on mapping forms to existing post to update only meta-fields.
+* optimised jquery object loading.
+= 3.5.0 =
+* additional faq #21
+* improved filter 'cf7_2_post_filter_taxonomy_query' and added to helper.
+= 3.4.7 =
+* helper metabox cleanup.
+* additional of helper screenshot 8 to assets.
+= 3.4.6 =
+* bug fix on checkbox/radio mapping.
+= 3.4.5 =
+* bug fix on taxonomy mapping fields.
+= 3.4.4 =
+* bug fix on taxonomy mapping drop-down select2.
+= 3.4.3 =
+* screen object bug fix.
+= 3.4.2 =
+* hide the mapping page sub-menu.
+= 3.4.1 =
+* factory bug fix.
+= 3.4.0 =
+* metabox of form fields in custom posts.
+* jquery select2 dropdowns in mapping pages.
+= 3.3.3 =
+* bug fix on mapping admin page for different locales.
+= 3.3.2 =
+* bug fix on post status helper code.
+= 3.3.1 =
+* bug fix which prevented filtering taxonomy mappings.
+* register_taxonomy_for_object_type for system taxonomies.
+= 3.3.0 =
+* added new action 'cf7_2_post_form_submitted_to_{$post_type}'.
+* fixed some typos in helper metabox.
+* styling improvements in mapping admin page.
+* code clean up in post factory.
+* added submitted status metabox in mapped post admin page.
+= 3.2.1 =
+* fix WP_GURUS_DEBUG constant warning.
+= 3.2.0 =
+* added click-to-copy css to helper links.
+* added form terms to filter cf7_2_post_filter_cf7_field_value for cf7-smart-grid plugin.
+= 3.1.0 =
+* added filter 'cf7_2_post_saving_tag_{$tag_type}' for plugin developers.
+* added transient post ID on submission for ease of redirection.
+* bug fix loading empty forms.
+= 3.0.0 =
+* multiple changes for plugin developers to build on top of this plugin.
+* use WP core admin page construct for mapping page, allowing other plugins to build on top.
+* clean up of mapping page, with improved look & feel.
+* introduce helper mtabox for quick reference to available hooks.
+* changed front-end saved form loading mechanism to overcome  page-caching issues.
+* fix bug for empty file upload fields.
+* fix meta_field file bug which stored paths to uploaded file, now stores url.
+* introduce front-end no-cache meta tags in head to disable page caching on mapped forms.
+* added filter `cf7_2_post_print_page_nocache_metas`
+= 2.4.1 =
+* default helper bug fix
+= 2.4.0 =
+* introduction of inline helper
+* css error fix
+* improved in-page filter helper.
+= 2.3.0 =
+* bug fix which prevent radio/checkbox being saved
+* bug fix for system post meta-fields selection.
+* bug fix on taxonomy field select
+* improved styling of post mapping page
+* save draft prevents form fields from clearing
+= 2.2.2 =
+* fixed current logged in user author bug.
+= 2.2.1 =
+* cf7-form shortcode bug fix
+= 2.2.0 =
+* fixed some bugs that prevented draft submissions to system post from saving properly
+* fixed bug that prevented system taxonomy from being saved in submitted forms
+* improved system post mapping to allow custom meta-field addition.
+
+= 2.1.0 =
+* introduce menu-position field in custom mapping
+* bug fix in some post registration attributes
+= 2.0.4 =
+* added action 'cf72post_register_mapped_post'
+= 2.0.3 =
+* bug fix wp_reset_postdata called regardless of query success.
+= 2.0.2 =
+* introduced post status filter
+= 2.0.1 =
+* bug fix when saving system post mapping without fields as reported by @michent1
+
+= 2.0.0 =
+* enabled UI for system posts mapping
+* enabled reset mapping for created mappings
+* introduced filters to skips mail & validation when saving draft forms
+* added actions for plugin dev: cf7_2_post_form_posted
+* added system post meta fields filter: cf7_2_post_skip_system_metakey
+* added filter to display system post types: cf7_2_post_display_system_posts
+= 1.5.0 =
+* bug fix which prevented multiple taxonomies from being saved
+* added autofill functionality on meta-field button creation.
+
+= 1.4.0 =
+* introduce cf7_2_post_id attribute in the cf7 shortcode to enable multiple forms in single page
+= 1.3.2 =
+* introduced extra filter for mapping taxonomies in system posts
+* added filter 'cf7_2_post_map_extra_taxonomy' to add non-mapped taxonomy
+* added filter 'cf7_2_post_pre_load-'{$post_type} to make use of post factory object
+
+= 1.3.1 =
+* small bug fix
+
+= 1.3.0 =
+* enable mapping to existing post types using hooks
+* added filter 'cf7_2_post_form_values' to filter values loaded in form
+* swapped jquery select2 for of chosen plugin
+* added filter 'cf7_2_post_form_append_output' to allow custom scripts to be appended to forms
+* added functionality to map taxonomies belonging to other existing posts
+* introduced a save button in the cf7 elements to build draft submission forms
+* fixed some minor bugs resulting from cf7 plugin update
+* improved loading of mapped forms
+* make use of 'do_shortcode_tag' filter introduced in WP4.7
+* introduced a custom js event 'cf7Mapped' on the form to ensure custom scripts don't fire too early.
+
+= 1.2.6 =
+* bug fix which prevented files being uploaded properly
+
+= 1.2.5 =
+* bug fix which prevented files from being saved as custom meta fields in post
+
+= 1.2.4 =
+* added filter 'cf7_2_post_register_post_{post_type}' to allow tweaking of custom post registration
+
+= 1.2.3 =
+* changed hooking position of cf7 submission process to save forms to posts before mails are sent
+
+= 1.2.2 =
+* fixed a bug which prevented cf7 emails from being filled with field values
+
+= 1.2.1 =
+* small bug fix stopping cpt properties from being changed once created
+* added filter
+
+= 1.2.0 =
+
+* ability to map custom taxonomies to fields
+* new filter for the author field
+* ability for logged in users to save a draft form and edit it later.
+* fixed some bugs
+* added some more hooks
+
+= 1.1.0 =
+* Auto deactivation of extension if CF7 plugin is deactivated
+
+= 1.0 =
+* Allows for mapping of any CF7 form to a custom post
