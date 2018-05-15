@@ -538,3 +538,16 @@ function custom_mapped_post($post_type){
 `
 == Upgrade Notice ==
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
+
+== Change Log ==
+= 3.8.3 =
+* fix submit checkbox in post metabox.
+* added changelog.txt file.
+= 3.8.2 =
+* flush permalink rules when new custom post is registered.
+= 3.8.1 =
+* added unique form key parameter to the `cf7_2_post_filter_user_draft_form_query` filter.
+= 3.8.0 =
+* FAQ #22 as an example to override de default select2 taxonomy field.
+* added filter 'cf72post_filter_taxonomy_term_class'
+* added filter 'cf72post_filter_taxonomy_term_attributes'.
