@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 4.9.5
+Tested up to: 4.9.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -87,6 +87,16 @@ The plugin has been coded with additional actions and filters to allow you to ho
 
 *[Smart Grid Layout Design for CF7](https://wordpress.org/plugins/cf7-grid-layout/) - allows responsive grid layout Conctact Form 7 form designs, enabling modular designs of complex forms, and rich inter-linking of your CMS data with taxonomy/posts populated dynamic dropdown fields.
 
+= Privacy Notices =
+
+This plugin, in itself, does not:
+
+* track users by stealth;
+* write any user personal data to the database;
+* send any data to external servers;
+* use cookies.
+
+However, be aware that this plugin allows you to map your forms so as to save the data of any submissions made through these forms to the WordPress database. Should any of these mapped forms collect data considered to be private to the user, it will be saved to the database so you should take due diligence to inform your form user and comply with Privacy Data laws.
 
 == Installation ==
 
@@ -540,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 3.8.4 =
+* bug fix for optinoal thumbnail upload in factory class.
 = 3.8.3 =
 * fix submit checkbox in post metabox.
 * added changelog.txt file.

@@ -1,7 +1,10 @@
 == Change Log ==
+= 3.8.4 =
+* bug fix for optinoal thumbnail upload in factory class.
+
 = 3.8.3 =
 * fix submit checkbox in post metabox.
-* added changelog.txt file. 
+* added changelog.txt file.
 = 3.8.2 =
 * flush permalink rules when new custom post is registered.
 = 3.8.1 =
