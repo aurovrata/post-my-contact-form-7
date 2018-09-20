@@ -275,7 +275,6 @@ if(!class_exists('Cf7_WP_Post_Table')){
       }
       $newcolumns['shortcode'] = 'Shortcode<br /><span class="cf7-help-tip"><a href="javascript:void();">What\'s this?</a><span class="cf7-short-info">Use this shortcode the same way you would use the contact-form-7 shortcode. (See the plugin page for more information )</span></span>';
       $newcolumns['cf7_key'] = __('Form key', 'contact-form-7');
-      debug_msg($newcolumns);
       return $newcolumns;
     }
     /**
