@@ -550,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 3.8.5 =
+* bug fix for title edit link.
 = 3.8.4 =
 * bug fix for optinoal thumbnail upload in factory class.
 = 3.8.3 =
