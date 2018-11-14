@@ -1190,10 +1190,12 @@ class Cf7_2_Post_Factory {
     //create a new post
     //get the form email recipient
     $author = 1;
+
     //$msg = (is_user_logged_in())?'yes':'no';
     if(isset($cf7_form_data['_map_author']) && is_numeric($cf7_form_data['_map_author'])){
       $author = intval($cf7_form_data['_map_author']);
     }else{
+      //try to get a usesr form the form mail recipient if no one logged in.
       //get_post_meta ( int $post_id, string $key = '', bool $single = false )
       $mail = get_post_meta ($this->cf7_post_ID,'_mail',true);
       if( !empty($mail) &&  isset($mail['recipient']) ){

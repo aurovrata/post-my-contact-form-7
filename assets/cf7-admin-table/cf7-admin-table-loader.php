@@ -24,4 +24,5 @@ if(!$cf7_admin->hooks()){
   //add_action( 'quick_edit_custom_box',   array( $cf7_admin, 'quick_edit_box'), 100, 2 );
   //cf7-form shortcode
   add_shortcode( 'cf7-form', array( $cf7_admin, 'shortcode') );
+  add_shortcode( 'cf7form', array( $cf7_admin, 'shortcode') );
 }

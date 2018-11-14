@@ -296,7 +296,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
           $form = get_post($post_id);
     			$output = "\n" . '<span class="shortcode cf7-2-post-shortcode"><input type="text"'
     				. ' onfocus="this.select();" readonly="readonly"'
-    				. ' value="' . esc_attr( '[cf7-form cf7key="'.$form->post_name.'"]' ) . '"'
+    				. ' value="' . esc_attr( '[cf7form cf7key="'.$form->post_name.'"]' ) . '"'
     				. ' class="large-text code" /></span>';
 
       		echo trim( $output );

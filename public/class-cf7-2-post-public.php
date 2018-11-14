@@ -326,4 +326,20 @@ class Cf7_2_Post_Public {
     }
     return $results;
   }
+  /**
+  * Map author to hidden field on form load.
+  *
+  *@since 3.9.0
+  *@param array $param array of hidden fields
+  *@return array array of hidden fields
+  */
+  public function add_hidden_fields($param){
+    $author = 1;//default to admin.
+    if(current_user_can('edit_posts')){
+      $user = wp_get_current_user();
+      $author = $user->ID;
+    }
+    $hidden['_map_author'] = $author;
+    return $hidden;
+  }
 }

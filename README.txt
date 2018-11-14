@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 4.9.8
+Tested up to: 5.0.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,10 +12,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
+**NOTE WordPress 5.0 & Gutenberg editor udpate** - this plugin is now compatible with WP 5.0, however, the Gutenberg editor does not recognise shortcodes with hyphons (dash) characters, so a new shortcode is introduced from v3.9.0, `[cf7form ...]`. Your form table will now display this new shortcode.  Creating new pages/posts with Gutenberg from now on will require you use this new shortcode.  The old remains active for existing content.
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
-
-**WARNING**: If you are using the REST API on your website, then upgrading to Contact Form 7 v4.8 may break this plugin ([read more](https://wordpress.org/support/topic/contact-form-7-v4-8-upgrade-issue/))!  I have been testing with CF7 v4.9 and so far it is stable for websites which do not use the REST API. If you are not sure about what the REST API, check your main Theme documentation, it would mention it very prominently, however only very few themes make use of this api, so this may very well not apply to your site.
 
 You can submit and map to a post all of the following fields,
 
@@ -550,6 +549,9 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 3.9.0 =
+* introduce cf7form shortcode to enable Gutenberg use.
+* fix author post to logged-in user.
 = 3.8.5 =
 * bug fix for title edit link.
 = 3.8.4 =
