@@ -16,10 +16,16 @@ form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-fi
     min-width: 200px;
 }
 form#cf7-post-mapping-form .select2{
-  min-width: 200px;
+  min-width: 120px;
+}
+.misc-pub-section {
+    padding: 6px 0px 8px;
 }
 .select2.select2-container--disabled:hover {
     width: auto !important;
+}
+li.select2-results__option .system-taxonomy {
+    color: #0015ff;
 }
 .default-post-fields{
     padding: 0 12px 12px 12px;
@@ -94,9 +100,14 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels.hide{
 }
 #save-draft-actions {
     display: inline-block;
+    float: right;
+    margin-bottom: 5px;
 }
 #save-draft-action .spinner{
   margin: 4px 5px;
+}
+#post-creation-actions .spinner{
+  float: left;
 }
 label[for="post_type"] {
     min-width: 90px;
@@ -219,7 +230,7 @@ orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
 #post-type-select input[type="text"],
 select#post_type_source,
 select#system-post-type {
-    width: 130px;
+    width: calc(50% - 5px);
 }
 #system-poststuff span.code {
     background-color: #eaeaea;
@@ -229,6 +240,7 @@ select#system-post-type {
 .post_type_labels {
     min-width: 90px;
     display: inline-block;
+    width: calc(50% - 5px);
 }
 #post_type_is_menu_position{
   display: none;
@@ -294,9 +306,6 @@ button.button-link.close-details {
 }
 .error-msg{
   color:red;
-}
-option.system-taxonomy {
-    color: blue;
 }
 .popup {
     display: none;

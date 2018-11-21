@@ -18,19 +18,19 @@
 
 <div class="control-box cf7_2_post-save">
   <fieldset>
-    <legend>Save button for Post My CF7 Form extension</legend>
+    <legend><?=__('Save button for Post My CF7 Form extension', 'post-my-contact-form-7')?></legend>
     <table id="cf7_2_post-tag-generator" class="form-table">
       <tbody>
     	<tr>
-      	<th scope="row"><label for="tag-generator-panel-submit-values">Label</label></th>
+      	<th scope="row"><label for="tag-generator-panel-submit-values"><?=__('Label', 'post-my-contact-form-7')?></label></th>
       	<td><input name="values" class="oneline" id="tag-generator-panel-save-values" type="text"></td>
     	</tr>
     	<tr>
-      	<th scope="row"><label for="tag-generator-panel-submit-id">Id attribute</label></th>
+      	<th scope="row"><label for="tag-generator-panel-submit-id"><?=__('Id attribute', 'post-my-contact-form-7')?></label></th>
       	<td><input name="id" class="idvalue oneline option" id="tag-generator-panel-save-id" type="text"></td>
     	</tr>
     	<tr>
-      	<th scope="row"><label for="tag-generator-panel-submit-class">Class attribute</label></th>
+      	<th scope="row"><label for="tag-generator-panel-submit-class"><?=__('Class attribute', 'post-my-contact-form-7')?></label></th>
       	<td><input name="class" class="classvalue oneline option" id="tag-generator-panel-save-class" type="text"></td>
     	</tr>
       </tbody>

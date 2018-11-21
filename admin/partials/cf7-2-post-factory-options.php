@@ -1,27 +1,27 @@
-<label class="post_type_labels" for="post_type">Post Type:</label>
+<label class="post_type_labels" for="post_type"><?=__('Post Type:','post-my-contact-form-7')?></label>
 <span id="post-type-display">
   <select name="mapped_post_type_source" id="post_type_source" class="nice-select" <?php $factory_mapping->is_published();?>>
-    <option value="factory" <?php echo ('factory'==$source) ? ' selected="true"' : ''; ?>>New Post</option>
-    <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>>Existing Post</option>
+    <option value="factory" <?= ('factory'==$source) ? ' selected="true"' : ''; ?>><?= __('New Post','post-my-contact-form-7')?></option>
+    <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>><?=__('Existing Post','post-my-contact-form-7')?></option>
   </select>
 </span>
-<div id="post-type-exists"<?php echo ('system'==$source)? '':' class="display-none"';?>>
-  <label class="post_type_labels" for="system_post_type">Select a Post</label>
+<div id="post-type-exists"<?= ('system'==$source)? '':' class="display-none"';?>>
+  <label class="post_type_labels" for="system_post_type"><?=__('Select a Post','post-my-contact-form-7')?></label>
   <select id="system-post-type" class="nice-select right" name="system_post_type" <?php $factory_mapping->is_published();?>>
-    <option value="">Select a Post</option>
+    <option value=""><?=__('Select a Post','post-my-contact-form-7')?></option>
     <?php echo $factory_mapping->get_system_posts_options();?>
   </select>
 </div>
 <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
-  <label for="custom_post_type" class="post_type_labels">Post type</label>
+  <label for="custom_post_type" class="post_type_labels"><?=__('Post type', 'post-my-contact-form-7')?></label>
   <input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
 
-  <label for="mapped_post_singular_name" class="post_type_labels">Singular name</label>
+  <label for="mapped_post_singular_name" class="post_type_labels"><?=__('Singular name', 'post-my-contact-form-7');?></label>
   <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
-  <label for="mapped_post_plural_name" class="post_type_labels">Plural name</label>
+  <label for="mapped_post_plural_name" class="post_type_labels"><?=__('Plural name','post-my-contact-form-7')?></label>
   <input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text">
   <p class="post-type-display">
-    Attributes
+    <?=__('Attributes','post-my-contact-form-7')?>
   </p>
   <input type="checkbox" <?php $factory_mapping->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>
   <label class="post_type_cb_labels">hierarchical</label><br />

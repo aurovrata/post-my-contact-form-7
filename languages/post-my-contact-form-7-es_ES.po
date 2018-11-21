@@ -1,0 +1,500 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2018-11-21 14:51+0530\n"
+"PO-Revision-Date: 2018-11-21 18:34+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin/class-cf7-2-post-admin.php:254
+msgid "Save form to post"
+msgstr "Guardar formulario  en  un Entrada"
+
+#: admin/class-cf7-2-post-admin.php:262
+msgid "Actions &amp; Filters"
+msgstr "Actiones &amp; Filtros"
+
+#: admin/class-cf7-2-post-admin.php:270
+msgid "Custom Meta Fields"
+msgstr "Campos personalizado"
+
+#: admin/class-cf7-2-post-admin.php:278
+msgid "Taxonomies"
+msgstr "Taxonomia"
+
+#: admin/class-cf7-2-post-admin.php:327
+msgid "Submitted"
+msgstr "Enviado"
+
+#: admin/class-cf7-2-post-admin.php:342
+msgid "Form to post"
+msgstr "Formulario al Entrada"
+
+#: admin/class-cf7-2-post-admin.php:628
+msgid "save"
+msgstr "engressar"
+
+#: admin/class-cf7-2-post-admin.php:674
+msgid "Submitted form"
+msgstr "Formulario enviado"
+
+#: admin/class-cf7-2-post-admin.php:737
+msgid "Contact Form 7 fields"
+msgstr "Campos de formulario cf7"
+
+#: admin/class-cf7-2-post-admin.php:775
+msgid "Draft form was saved successfully"
+msgstr "Borrador de formulario guardado"
+
+#: admin/class-cf7-2-post-admin.php:777
+msgid ""
+"A draft of this form has been saved, you may complete and submit the form at "
+"a later time."
+msgstr ""
+"Se guardo un borrador, puedes completar y enviar el formulario a otro "
+"momento."
+
+#: admin/partials/cf7-2-custom-post-quick-edit.php:3
+msgid "CF7 >> Post"
+msgstr "CF7>>Entrada"
+
+#: admin/partials/cf7-2-custom-post-quick-edit.php:3
+msgid "Form Submitted"
+msgstr "Formulario enviado"
+
+#: admin/partials/cf7-2-post-factory-options.php:1
+#: admin/partials/cf7-2-post-system-options.php:6
+msgid "Post Type:"
+msgstr "Entrada:"
+
+#: admin/partials/cf7-2-post-factory-options.php:4
+msgid "New Post"
+msgstr "Nueva Entrada"
+
+#: admin/partials/cf7-2-post-factory-options.php:5
+#: admin/partials/cf7-2-post-system-options.php:8
+msgid "Existing Post"
+msgstr "Entrada Existente"
+
+#: admin/partials/cf7-2-post-factory-options.php:9
+#: admin/partials/cf7-2-post-factory-options.php:11
+msgid "Select a Post"
+msgstr "Seleccionar una Entrada"
+
+#: admin/partials/cf7-2-post-factory-options.php:16
+msgid "Post type"
+msgstr "Tipo de Entrada"
+
+#: admin/partials/cf7-2-post-factory-options.php:19
+msgid "Singular name"
+msgstr "Nombre singular"
+
+#: admin/partials/cf7-2-post-factory-options.php:21
+msgid "Plural name"
+msgstr "Nombre plural"
+
+#: admin/partials/cf7-2-post-factory-options.php:24
+msgid "Attributes"
+msgstr "Atributos"
+
+#: admin/partials/cf7-2-post-field-metabox.php:26
+msgid "Custom meta fields key (no spaces allowed)"
+msgstr "Campos personalizado (claves, sin espacios)"
+
+#: admin/partials/cf7-2-post-field-metabox.php:39
+#: admin/partials/cf7-2-post-field-metabox.php:65
+msgid "Select a field"
+msgstr "Seleccionar un campo"
+
+#: admin/partials/cf7-2-post-field-metabox.php:41
+#: admin/partials/cf7-2-post-field-metabox.php:67
+msgid "Custom field"
+msgstr "Campo personalizado"
+
+#: admin/partials/cf7-2-post-field-metabox.php:82
+msgid ""
+"Custom fields can be used to add extra metadata to a post that you can <a "
+"href=\"https://codex.wordpress.org/Using_Custom_Fields\">use in your theme</"
+"a>"
+msgstr ""
+"Campos personalizados puede ser utilizado para añadir meta-datos  <a href="
+"\"https://codex.wordpress.org/es:Using_Custom_Fields\">en su tema</a>"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:4
+msgid ""
+"Click on a link to copy the helper snippet code and paste it in your "
+"<em>functions.php</em> file."
+msgstr ""
+"Pulse un enlace para copiar el código de ayuda y pagarlo en sur fichero "
+"<em>functions.php</em>."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:6
+msgid "Toggle panel: Helper"
+msgstr "Alternar el panel: Ayuda"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:7
+msgid "Admin hooks"
+msgstr "Ganchos de admin"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:11
+msgid ""
+"these are triggered when your form is being mapped to a post, and can be "
+"used to customise the mapping process."
+msgstr ""
+"ganchos activado cuando un formulario esta asignado a un tipo de entrada, y "
+"pueden ser utilizado para personalizar el proceso de asignación."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:25
+msgid "Post Supports Filter"
+msgstr "Filtrar los 'supports' del tipo de entrada"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:25
+msgid ""
+"custom post <code>supports</code> attributes (<a href=\"https://codex."
+"wordpress.org/Function_Reference/register_post_type#supports"
+"\">documentation</a>)."
+msgstr ""
+"ver el <a href=\"https://codex.wordpress.org/Function_Reference/"
+"register_post_type#supports\">manual</a>) del atributo <code>supports</code> "
+"de tipo de entrada."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:47
+msgid "Post Access Filter"
+msgstr "Filtrar acceso al tipo de entrada"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:47
+msgid ""
+"custom post access <code>capabilities</code> (<a href=\"http://wordpress."
+"stackexchange.com/questions/108338/capabilities-and-custom-post-types"
+"\">documentation</a>)."
+msgstr ""
+"ver el  (<a href=\"http://wordpress.stackexchange.com/questions/108338/"
+"capabilities-and-custom-post-types\">manual</a>) del atributo "
+"<code>capabilities</code> de tipo de entrada."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:61
+msgid "Taxonomy Registration Filter"
+msgstr "Filtrar el registro de taxonomía"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:61
+msgid ""
+"to change custom taxonomy like tags (<a href=\"https://codex.wordpress.org/"
+"Function_Reference/register_taxonomy#Arguments\">documentation</a>)."
+msgstr ""
+"ver el (<a href=\"https://codex.wordpress.org/Function_Reference/"
+"register_taxonomy#Arguments\">manual</a>)  para cambiar los atributos de "
+"registro de nueva taxonomía."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:80
+msgid "Internal Meta Filter"
+msgstr "Filtrar campos internos"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:80
+msgid "to show system post internal meta-fields."
+msgstr ""
+"para poder asignar campos del formulario a campos internos.  Muchos plugins "
+"usan campos internos con claves que empiezan con '_' (subrayado)."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:96
+msgid "System Post Filter"
+msgstr "Filtrar tipo de entrada existente"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:96
+msgid "to show hidden system post for mapping."
+msgstr "para ver tipo de entradas ocultados."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:103
+msgid "Toggle panel: Loading Hooks"
+msgstr "Alternar el panel: Ganchos de carga"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:104
+msgid "Form loading hooks"
+msgstr "Ganchas de carga de formulario"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:108
+msgid ""
+"these are triggered when your form is being loaded on the front-end and are "
+"useful to customise the form."
+msgstr "esos son activados cuando el formulario esta cargando en la pagina."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:146
+msgid "Custom javascript"
+msgstr "Código de Javascript personalizado"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:146
+msgid "appended at the end of your form."
+msgstr "añadido después el formulario."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:175
+msgid "Default Values Filter"
+msgstr "Filtrar valores predeterminados"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:175
+msgid "default field value when form is displayed."
+msgstr "cuando el formulario esta desplegado."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:197
+msgid "Default Term Values Filter"
+msgstr "Filtrar términos predeterminados"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:197
+msgid "taxonomy terms in dropdown/radio/checkbox."
+msgstr "en un campo de lista de taxonomía."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:233
+msgid "Filter term list"
+msgstr "Filtrar lista de términos"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:233
+msgid "in mapped taxonomy field."
+msgstr "en campo de taxonomía asignada."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:249
+msgid "Page Cache Filter"
+msgstr "Filtrar cache de pagina"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:249
+msgid "to remove nocache meta tags in &lt;head&gt;."
+msgstr ""
+"y eliminar la meta-etiqueta <code>nocache</code> de la cabecera de pagina."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:255
+msgid "Toggle panel: Submitted hooks"
+msgstr "Alternar el panel: Ganchos de sumisión"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:256
+msgid "Form submitted hooks"
+msgstr "Ganchos de sumisión del formulario"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:259
+msgid ""
+"these are triggered when a user has submitted/saved your form and can be "
+"used to manipulate the submitted data and take further action."
+msgstr ""
+"están activado cuando el formulario esta sometido y guardado en entrada."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:277
+msgid "Author Filter"
+msgstr "Filtrar el autor"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:277
+msgid "the author of the submitted post ."
+msgstr "del entrada guardado."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:291
+msgid "Post Status Filter"
+msgstr "Filtrar el estatus de entrada"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:291
+msgid ""
+"to automatically publish submitted post (<a href=\"https://codex.wordpress."
+"org/Function_Reference/get_post_status#Return_Values\">documentation</a>)."
+msgstr ""
+"para publicar la entrada automáticamente, ver el (<a href=\"https://codex."
+"wordpress.org/Function_Reference/get_post_status#Return_Values\">manual</a>)."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:307
+msgid "Draft Validation Filter"
+msgstr "Filtrar validación de borrador"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:307
+msgid "to enable field validation on draft form saved."
+msgstr "de formulario cuando un borrador esta guardado."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:323
+msgid "Cache Time Filter"
+msgstr "Filtrar el tiempo de caché"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:323
+msgid "period to track anonymous submissions."
+msgstr "durante qual se rastro sumisión anónimas."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:339
+msgid "Draft Mail Filter"
+msgstr "Filtrar correo de borrador"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:339
+msgid "to send cf7 mail for draft form saved."
+msgstr ""
+"enviado con el correo del plugin cf7 cuando un borrador de formulario esta "
+"guardado."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:351
+msgid "Action"
+msgstr "Acción guardar entrada"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:351
+msgid "after <em>submitted</em> form is saved to post."
+msgstr "activado al final del proceso de guardar sumisión en nueva entrada."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:365
+msgid "Default title Filter"
+msgstr "Filtrar titulo"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:365
+msgid "the default title of the submitted post."
+msgstr "de nueva entrada."
+
+#: admin/partials/cf7-2-post-mapping-content.php:10
+msgid "Default post fields"
+msgstr "Campos de Entrada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:14
+msgid "Post title"
+msgstr "Titulo Entrada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:16
+msgid "Post slug"
+msgstr "Slug Entrada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:18
+msgid "Post author"
+msgstr "Autor Entrada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:21
+msgid "Featured image"
+msgstr "Imagen destacada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:24
+msgid "Post Content"
+msgstr "Contenido Entrada"
+
+#: admin/partials/cf7-2-post-mapping-content.php:27
+msgid "Post Excerpt"
+msgstr "Extracto Entrada"
+
+#: admin/partials/cf7-2-post-quick-edit.php:4
+msgid "Form 2 post"
+msgstr "Formulario al Entrada"
+
+#: admin/partials/cf7-2-post-quick-edit.php:6
+msgid "Delete"
+msgstr "Eliminar"
+
+#: admin/partials/cf7-2-post-quick-edit.php:7
+msgid "Draft"
+msgstr "Borrador"
+
+#: admin/partials/cf7-2-post-quick-edit.php:8
+msgid "Publish"
+msgstr "Publicar"
+
+#: admin/partials/cf7-2-post-system-options.php:9
+msgid "Post:"
+msgstr "Entrada:"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:25
+msgid "Custom Taxonomy  (no spaces allowed)"
+msgstr "Taxonomía personalizada (sin espacios)"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:39
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:84
+msgid "Edit"
+msgstr "Editar"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:53
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:95
+msgid "Choose a taxonomy, in blue are existing public taxonomies"
+msgstr "Seleccione taxonomía,  en azul son taxonomías existente"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:57
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:99
+msgid "Plural Name"
+msgstr "Nombre plural"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:62
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:103
+msgid "Singular Name"
+msgstr "Nombre singular"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:66
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:105
+msgid "Slug"
+msgstr "Slug"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:71
+msgid "Toggle panel: Taxonomy details"
+msgstr "Alternar el panel: Detalles de taxonomía"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:72
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:108
+#: public/class-cf7-2-post-public.php:271
+msgid "Save"
+msgstr "Guardar"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:84
+msgid "Categories"
+msgstr "Categorías"
+
+#: admin/partials/cf7-tag-display.php:21
+msgid "Save button for Post My CF7 Form extension"
+msgstr "Botón de guardar para el plugin <em>Post My CF7 Form</em>"
+
+#: admin/partials/cf7-tag-display.php:25
+msgid "Label"
+msgstr "Etiqueta"
+
+#: admin/partials/cf7-tag-display.php:29
+msgid "Id attribute"
+msgstr "Atributo id"
+
+#: admin/partials/cf7-tag-display.php:33
+msgid "Class attribute"
+msgstr "Atributo class"
+
+#: admin/partials/cf7-tag-display.php:45
+msgid "Insert Tag"
+msgstr "Añadir etiqueta"
+
+#: includes/class-cf7-2-post-factory.php:216
+msgid "Choose a Taxonomy"
+msgstr "Elegir Taxonomía"
+
+#: includes/class-cf7-2-post-factory.php:219
+msgid "New Category"
+msgstr "Nueva Categoría"
+
+#: includes/class-cf7-2-post-factory.php:219
+msgid "New Categories"
+msgstr "Nuevas Categorías"
+
+#: includes/class-cf7-2-post-factory.php:230
+msgid "Post Tag"
+msgstr "Etiqueta Entrada"
+
+#: includes/class-cf7-2-post-factory.php:230
+msgid "Post Tags"
+msgstr "Etiquetas Entrada"
+
+#: includes/class-cf7-2-post-factory.php:231
+msgid "Post Category"
+msgstr "Categoría Entrada"
+
+#: includes/class-cf7-2-post-factory.php:231
+msgid "Post Categories"
+msgstr "Categorías Entrada"
+
+#: includes/class-cf7-2-post-factory.php:657
+msgid "No CF7 Form Class found"
+msgstr "Ninguna clase php de CF7 encontrado"
+
+#: includes/class-cf7-2-post-factory.php:683
+msgid "Select a form field to map"
+msgstr "Campo de formulario a asignar"
+
+#: includes/class-cf7-2-post-factory.php:703
+#: includes/class-cf7-2-post-factory.php:705
+#: includes/class-cf7-2-post-factory.php:707
+msgid "Hook with a filter"
+msgstr "Gancho con filtro"
+
+#: public/class-cf7-2-post-public.php:256
+msgid "save is disabled, form is not mapped."
+msgstr "guardar desactivado, formulario no esta asignada."

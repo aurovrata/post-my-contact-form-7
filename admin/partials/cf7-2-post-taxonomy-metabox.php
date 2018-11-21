@@ -22,7 +22,7 @@ switch($factory_mapping->get('map')){
 $published_class = '';
 if(!$is_new_mapping) $published_class = ' class="mapping-published"';
  ?>
- <h2>Custom Taxonomy  (no spaces allowed)</h2>
+ <h2><?=__('Custom Taxonomy  (no spaces allowed)', 'post-my-contact-form-7')?></h2>
  <div id="post_taxonomy_map"<?=$published_class?>>
    <?php
      $mapped_taxonomy = $factory_mapping->get_mapped_taxonomy();
@@ -36,7 +36,7 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
      <label class="taxonomy-label-field cf7-2-post-map-labels">
        <span class="taxonomy-name">
          <strong><?= $taxonomy['name']; ?></strong>
-       </span>&nbsp;(<span class="enabled link-button">Edit</span>)
+       </span>&nbsp;(<span class="enabled link-button"><?=__('Edit', 'post-my-contact-form-7')?></span>)
      </label>
        <select <?php $factory_mapping->is_published('select');?> class="nice-select field-options" name="cf7_2_post_map_taxonomy_value-<?= $post_taxonomy;?>">
        <?= $factory_mapping->get_taxonomy_select_options($post_taxonomy);?>
@@ -50,26 +50,26 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
  <?php if( !$factory_mapping->is_published('boolean',false) ): ?>
    <div class="custom-taxonomy-input-fields hide-if-js">
      <h4>
-       Choose a taxonomy, in blue are existing public taxonomies
+       <?=__('Choose a taxonomy, in blue are existing public taxonomies', 'post-my-contact-form-7')?>
      </h4>
      <?= $factory_mapping->get_taxonomy_listing($post_taxonomy)?>
      <label for="cf7_2_post_map_taxonomy_names-<?= $post_taxonomy;?>">
-       <strong>Plural Name</strong>
+       <strong><?=__('Plural Name', 'post-my-contact-form-7')?></strong>
      </label>
 
      <input class="cf7-2-post-map-labels plural-name" type="text" <?php $factory_mapping->is_published();?> <?= ('system'==$taxonomy['source']) ? 'readonly="true"' : ''; ?>" name="cf7_2_post_map_taxonomy_names-<?= $post_taxonomy;?>" value="<?= $taxonomy['name'];?>">
      <label for="cf7_2_post_map_taxonomy_name-<?= $post_taxonomy;?>">
-       <strong>Singular Name</strong>
+       <strong><?=__('Singular Name', 'post-my-contact-form-7' )?></strong>
      </label>
      <input class="cf7-2-post-map-labels singular-name" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_name-<?= $post_taxonomy;?>" <?= ('system'==$taxonomy['source']) ? 'readonly="true"' : ''; ?> value="<?= $taxonomy['singular_name'];?>">
      <label for="cf7_2_post_map_taxonomy_slug-<?= $post_taxonomy;?>">
-       <strong>Slug</strong>
+       <strong><?=__('Slug', 'post-my-contact-form-7' )?></strong>
      </label>
      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" <?php $factory_mapping->is_published();?> name="cf7_2_post_map_taxonomy_slug-<?= $post_taxonomy;?>" <?= ('system'==$taxonomy['source']) ? 'readonly="true"' : ''; ?> value="<?= $post_taxonomy;?>" />
      <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?= $post_taxonomy;?>" <?php $factory_mapping->is_published();?> value="<?= $taxonomy['source'];?>"/>
-     <button type="button" class="button-link close-details" aria-expanded="true">
-       <span class="screen-reader-text">Toggle panel: Taxonomy details</span>
-       <span class="wp-core-ui button" aria-hidden="true">Save</span>
+     <button type="wp-core-ui" class="button-link close-details" aria-expanded="true">
+       <span class="screen-reader-text"><?=__('Toggle panel: Taxonomy details', 'post-my-contact-form-7' )?></span>
+       <span class="button button-primary focus" aria-hidden="true"><?=__('Save', 'post-my-contact-form-7' )?></span>
      </button>
    </div>
 <?php endif;
@@ -81,7 +81,7 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
    ?>
    <div class="custom-taxonomy-field cf7-2-post-field">
      <label class="taxonomy-label-field cf7-2-post-map-labels">
-       <span class="taxonomy-name"><strong>Categories</strong></span>&nbsp;(<span class="disabled link-button">Edit</span>)
+       <span class="taxonomy-name"><strong><?=__('Categories', 'post-my-contact-form-7' )?></strong></span>&nbsp;(<span class="disabled link-button"><?=__('Edit', 'post-my-contact-form-7' )?></span>)
      </label>
      <select disabled="disabled" name="cf7_2_post_map_taxonomy_value-<?= $taxonomy_slug;?>" class="field-options nice-select">
          <?= $factory_mapping->get_taxonomy_select_options();?>
@@ -92,20 +92,20 @@ if(!$is_new_mapping) $published_class = ' class="mapping-published"';
    <div class="clear"></div>
    <div class="custom-taxonomy-input-fields hide-if-js">
      <h3>
-       Choose a taxonomy, in blue are existing public taxonomies
+       <?=__('Choose a taxonomy, in blue are existing public taxonomies', 'post-my-contact-form-7' )?>
      </h3>
      <?= $factory_mapping->get_taxonomy_listing()?>
      <label for="cf7_2_post_map_taxonomy_names-<?= $taxonomy_slug;?>">
-       <strong>Plural Name</strong>
+       <strong><?=__('Plural Name', 'post-my-contact-form-7' )?></strong>
      </label>
      <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?= $taxonomy_slug;?>" disabled="disabled" value="factory"/>
      <input disabled="disabled" class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?= $taxonomy_slug;?>" value="New Categories">
-     <label for="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>"><strong>Singular Name</strong></label>
+     <label for="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>"><strong><?=__('Singular Name', 'post-my-contact-form-7' )?></strong></label>
      <input disabled="disabled" class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>" value="New Category">
-     <label for="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>"><strong>Slug</strong></label>
+     <label for="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>"><strong><?=__('Slug', 'post-my-contact-form-7' )?></strong></label>
      <input disabled="disabled" class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>" value="<?= $taxonomy_slug;?>" />
-     <button type="button" class="button-link close-details" aria-expanded="true">
-       <span class="wp-core-ui button" aria-hidden="true">Save</span>
+     <button type="wp-core-ui button" class="button-link close-details" aria-expanded="true">
+       <span class="button-primary focus button" aria-hidden="true"><?=__('Save', 'post-my-contact-form-7' )?></span>
      </button>
    </div>
  <?php endif;?>

@@ -253,7 +253,7 @@ class Cf7_2_Post_Public {
       'cf72post_save',
       array(
         'disabled'=>$disabled,
-        'error' => __('save is disabled, form is not mapped.','cf7-2-post')
+        'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' )
       )
     );
     $tag = new WPCF7_FormTag( $tag );
@@ -341,5 +341,22 @@ class Cf7_2_Post_Public {
     }
     $hidden['_map_author'] = $author;
     return $hidden;
+  }
+  /**
+  * Filter message for draft forms.
+  * hooked to
+  *@since 4.0.0
+  *@param string $param text_description
+  *@return string text_description
+  */
+  public function draft_message($message, $status){
+    if('mail_sent_ok'==$status && isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
+      $form = wpcf7_get_current_contact_form();
+      if(!empty($form)){
+        $messages=$form->prop('messages');
+        $message = isset( $messages['draft_saved'] ) ? $messages['draft_saved'] : $message;
+      }
+    }
+    return $message;
   }
 }

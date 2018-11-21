@@ -16,12 +16,12 @@
  * Plugin Name:       Post My CF7 Form
  * Plugin URI:        http://wordpress.syllogic.in
  * Description:       This plugin enables the mapping of your CF7 forms to custom posts.
- * Version:           3.9.0
+ * Version:           4.0.0
  * Author:            Aurovrata V.
  * Author URI:        http://syllogic.in
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       cf7-2-post
+ * Text Domain:       post-my-contact-form-7
  * Domain Path:       /languages
  */
 
@@ -29,7 +29,7 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-define( 'CF7_2_POST_VERSION', '3.9.0' );
+define( 'CF7_2_POST_VERSION', '4.0.0' );
 
 /**
  * The code that runs during plugin activation.

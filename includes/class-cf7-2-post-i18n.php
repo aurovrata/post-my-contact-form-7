@@ -26,7 +26,6 @@
  */
 class Cf7_2_Post_i18n {
 
-
 	/**
 	 * Load the plugin text domain for translation.
 	 *
@@ -34,7 +33,7 @@ class Cf7_2_Post_i18n {
 	 */
 	public function load_plugin_textdomain() {
 		load_plugin_textdomain(
-			'cf7-2-post',
+			'post-my-contact-form-7',
 			false,
 			plugin_basename( dirname(__DIR__) )  . '/languages/'
 		);

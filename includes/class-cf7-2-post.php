@@ -188,6 +188,8 @@ class Cf7_2_Post {
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //add the 'save' button tag
     $this->loader->add_action( 'wpcf7_admin_init', $plugin_admin, 'cf7_shortcode_tags' );
+    /** @since 4.0.0  add save-darft message*/
+    $this->loader->add_action( 'wpcf7_messages', $plugin_admin, 'draft_message' );
 
     /**
     * hook to modify custom post in dashboard
@@ -238,6 +240,8 @@ class Cf7_2_Post {
     $this->loader->add_filter( 'wpcf7_validate', $plugin_public, 'save_skips_wpcf7_validate', 100, 2 );
     //add the author map for logged in user @since 3.9.0.
     $this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_public, 'add_hidden_fields', 100, 2 );
+		//filter message for draft saved forms.
+		$this->loader->add_filter('wpcf7_display_message', $plugin_public, 'draft_message', 100, 2 );
 	}
 
 	/**

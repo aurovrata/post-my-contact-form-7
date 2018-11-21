@@ -1,0 +1,509 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Post My CF7 Form\n"
+"POT-Creation-Date: 2018-11-21 14:50+0530\n"
+"PO-Revision-Date: 2018-11-21 14:50+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-KeywordsList: _e;__;html_esc_e;html_esc__\n"
+"X-Poedit-SearchPath-0: includes\n"
+"X-Poedit-SearchPath-1: admin\n"
+"X-Poedit-SearchPath-2: public\n"
+"X-Poedit-SearchPathExcluded-0: assets\n"
+"X-Poedit-SearchPathExcluded-1: languages\n"
+
+#: admin/class-cf7-2-post-admin.php:254
+msgid "Save form to post"
+msgstr "Sauvegarder le formulaire dans un Article"
+
+#: admin/class-cf7-2-post-admin.php:262
+msgid "Actions &amp; Filters"
+msgstr "Actions et Filtres"
+
+#: admin/class-cf7-2-post-admin.php:270
+msgid "Custom Meta Fields"
+msgstr "Champs personnalisés"
+
+#: admin/class-cf7-2-post-admin.php:278
+msgid "Taxonomies"
+msgstr "Taxonomies"
+
+#: admin/class-cf7-2-post-admin.php:327
+msgid "Submitted"
+msgstr "Soumis"
+
+#: admin/class-cf7-2-post-admin.php:342
+msgid "Form to post"
+msgstr "Sauvegarder le formulaire dans un type de contenu"
+
+#: admin/class-cf7-2-post-admin.php:628
+msgid "save"
+msgstr "sauvegarder"
+
+#: admin/class-cf7-2-post-admin.php:674
+msgid "Submitted form"
+msgstr "Formulaire soumis"
+
+#: admin/class-cf7-2-post-admin.php:737
+msgid "Contact Form 7 fields"
+msgstr "Champs du formulaire"
+
+#: admin/class-cf7-2-post-admin.php:775
+msgid "Draft form was saved successfully"
+msgstr "Succès de la sauvegarde partiel du formulaire"
+
+#: admin/class-cf7-2-post-admin.php:777
+msgid ""
+"A draft of this form has been saved, you may complete and submit the form at "
+"a later time."
+msgstr ""
+"La sauvegarde partiel de ce formulaire a été faite, vous pourrez compléter "
+"et soumettre le formulaire à une date ultérieure."
+
+#: admin/partials/cf7-2-custom-post-quick-edit.php:3
+msgid "CF7 >> Post"
+msgstr "CF7>>Type de Contenu"
+
+#: admin/partials/cf7-2-custom-post-quick-edit.php:3
+msgid "Form Submitted"
+msgstr "Formulaire soumis"
+
+#: admin/partials/cf7-2-post-factory-options.php:1
+#: admin/partials/cf7-2-post-system-options.php:6
+msgid "Post Type:"
+msgstr "Type de Contenu:"
+
+#: admin/partials/cf7-2-post-factory-options.php:4
+msgid "New Post"
+msgstr "Nouveau type de contenu"
+
+#: admin/partials/cf7-2-post-factory-options.php:5
+#: admin/partials/cf7-2-post-system-options.php:8
+msgid "Existing Post"
+msgstr "Type de contenu existant"
+
+#: admin/partials/cf7-2-post-factory-options.php:9
+#: admin/partials/cf7-2-post-factory-options.php:11
+msgid "Select a Post"
+msgstr "Choisir un type de contenu"
+
+#: admin/partials/cf7-2-post-factory-options.php:16
+msgid "Post type"
+msgstr "Type de contenu"
+
+#: admin/partials/cf7-2-post-factory-options.php:19
+msgid "Singular name"
+msgstr "Non singulier"
+
+#: admin/partials/cf7-2-post-factory-options.php:21
+msgid "Plural name"
+msgstr "Nom au pluriel"
+
+#: admin/partials/cf7-2-post-factory-options.php:24
+msgid "Attributes"
+msgstr "Les attributs"
+
+#: admin/partials/cf7-2-post-field-metabox.php:26
+msgid "Custom meta fields key (no spaces allowed)"
+msgstr "Nom de champ personnalisé (sans espaces)"
+
+#: admin/partials/cf7-2-post-field-metabox.php:39
+#: admin/partials/cf7-2-post-field-metabox.php:65
+msgid "Select a field"
+msgstr "Choisir un champ"
+
+#: admin/partials/cf7-2-post-field-metabox.php:41
+#: admin/partials/cf7-2-post-field-metabox.php:67
+msgid "Custom field"
+msgstr "Champ personnalisé"
+
+#: admin/partials/cf7-2-post-field-metabox.php:82
+msgid ""
+"Custom fields can be used to add extra metadata to a post that you can <a "
+"href=\"https://codex.wordpress.org/Using_Custom_Fields\">use in your theme</"
+"a>"
+msgstr ""
+"Les champs personnalisés peuvent être utilisés  pour ajouter des méta-"
+"données <a href=\"https://codex.wordpress.org/fr:"
+"Utiliser_les_champs_personnalis%C3%A9s\">a votre thème.</a>"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:4
+msgid ""
+"Click on a link to copy the helper snippet code and paste it in your "
+"<em>functions.php</em> file."
+msgstr ""
+"Cliquez sur un lien pour copier l'extrait de code d'assistance et le collez-"
+"le dans votre fichier <em>functions.php</em>."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:6
+msgid "Toggle panel: Helper"
+msgstr "Basculer le panneau d'assistance"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:7
+msgid "Admin hooks"
+msgstr "Les crochets d'administrations"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:11
+msgid ""
+"these are triggered when your form is being mapped to a post, and can be "
+"used to customise the mapping process."
+msgstr ""
+"ces crochets sont activés  pendant la procédure de sauvegarde de votre "
+"formulaire dans un contenu, et vous permets de personnalisé la procédure de "
+"sauvegarde."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:25
+msgid "Post Supports Filter"
+msgstr "Filtrer les 'supports' du type de contenu"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:25
+msgid ""
+"custom post <code>supports</code> attributes (<a href=\"https://codex."
+"wordpress.org/Function_Reference/register_post_type#supports"
+"\">documentation</a>)."
+msgstr ""
+"voir le <a href=\"https://codex.wordpress.org/Function_Reference/"
+"register_post_type#supports\">manuel</a> des attributs de <code>supports</"
+"code> de type de contenu."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:47
+msgid "Post Access Filter"
+msgstr "Filtrer les droits d'accès du contenu"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:47
+msgid ""
+"custom post access <code>capabilities</code> (<a href=\"http://wordpress."
+"stackexchange.com/questions/108338/capabilities-and-custom-post-types"
+"\">documentation</a>)."
+msgstr ""
+"voir le <a href=\"http://wordpress.stackexchange.com/questions/108338/"
+"capabilities-and-custom-post-types\">manuel</a> des <code>capabilities</"
+"code> d'un type de contenu."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:61
+msgid "Taxonomy Registration Filter"
+msgstr "Filtrer l'enregistrement de taxonomies"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:61
+msgid ""
+"to change custom taxonomy like tags (<a href=\"https://codex.wordpress.org/"
+"Function_Reference/register_taxonomy#Arguments\">documentation</a>)."
+msgstr ""
+"voir le <a href=\"https://codex.wordpress.org/Function_Reference/"
+"register_taxonomy#Arguments\">manuel</a> des paramètres d'enregistrement "
+"d'une taxonomie."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:80
+msgid "Internal Meta Filter"
+msgstr "Filtrer les champs personnalisés internes"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:80
+msgid "to show system post internal meta-fields."
+msgstr "accéder les champs internes de contenus existants."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:96
+msgid "System Post Filter"
+msgstr "Filtrer les type de contenus existants"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:96
+msgid "to show hidden system post for mapping."
+msgstr "accéder aux type de contenu cachés ."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:103
+msgid "Toggle panel: Loading Hooks"
+msgstr "Basculer le panneau des crochets de chargement d'un formulaire"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:104
+msgid "Form loading hooks"
+msgstr "Crochets de chargement d'un formulaire"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:108
+msgid ""
+"these are triggered when your form is being loaded on the front-end and are "
+"useful to customise the form."
+msgstr ""
+"ces crochets sont activés pendant le changement d'un formulaire, permettant "
+"la personnalisation du chargement du formulaire sur la page."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:146
+msgid "Custom javascript"
+msgstr "Code Javascript personnalisé"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:146
+msgid "appended at the end of your form."
+msgstr "ajouté à la fin du formulaire."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:175
+msgid "Default Values Filter"
+msgstr "Valeurs par défaut"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:175
+msgid "default field value when form is displayed."
+msgstr "des champs du formulaire au chargement initial."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:197
+msgid "Default Term Values Filter"
+msgstr "Termes sélectionnés par défaut"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:197
+msgid "taxonomy terms in dropdown/radio/checkbox."
+msgstr "dans une liste de terme de taxonomie."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:233
+msgid "Filter term list"
+msgstr "Filtrer les termes"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:233
+msgid "in mapped taxonomy field."
+msgstr "dans une liste de champ de taxonomie."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:249
+msgid "Page Cache Filter"
+msgstr "Filtrer le cache de page"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:249
+msgid "to remove nocache meta tags in &lt;head&gt;."
+msgstr "et enlever la balise méta <code>nocache</code> dans l'en-tête de page."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:255
+msgid "Toggle panel: Submitted hooks"
+msgstr "Basculer le panneau des crochets de soumission d'un formulaire"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:256
+msgid "Form submitted hooks"
+msgstr "Crochets de soumissions de formulaire"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:259
+msgid ""
+"these are triggered when a user has submitted/saved your form and can be "
+"used to manipulate the submitted data and take further action."
+msgstr ""
+"ces crochets sont activés lorsque un formulaire est soumis et permet le "
+"formatage des données soumises ainsi que d'autre actions personnalisés."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:277
+msgid "Author Filter"
+msgstr "Filtrer l'auteur"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:277
+msgid "the author of the submitted post ."
+msgstr "de l'Article/contenu."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:291
+msgid "Post Status Filter"
+msgstr "Filtrer le statut"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:291
+msgid ""
+"to automatically publish submitted post (<a href=\"https://codex.wordpress."
+"org/Function_Reference/get_post_status#Return_Values\">documentation</a>)."
+msgstr ""
+"afin de publier automatiquement l'article/contenu (voir le <a href=\"https://"
+"codex.wordpress.org/Function_Reference/get_post_status#Return_Values"
+"\">manuel</a> en Anglais)."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:307
+msgid "Draft Validation Filter"
+msgstr "Filtrer la validation"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:307
+msgid "to enable field validation on draft form saved."
+msgstr "des champs du formulaire lors de la sauvegarde partiel."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:323
+msgid "Cache Time Filter"
+msgstr "Filtrer le temps"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:323
+msgid "period to track anonymous submissions."
+msgstr "cache d'une soumission anonymes d'un formulaire."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:339
+msgid "Draft Mail Filter"
+msgstr "Filtrer l'envois"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:339
+msgid "to send cf7 mail for draft form saved."
+msgstr "d'un courriel lors d'une soumission/sauvegarde partiel."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:351
+msgid "Action"
+msgstr "Action"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:351
+msgid "after <em>submitted</em> form is saved to post."
+msgstr ""
+"activée après la sauvegarde dans un article d'une soumissions  de formulaire."
+
+#: admin/partials/cf7-2-post-helper-metabox.php:365
+msgid "Default title Filter"
+msgstr "Filtrer le titre"
+
+#: admin/partials/cf7-2-post-helper-metabox.php:365
+msgid "the default title of the submitted post."
+msgstr "de l'Article dans lequel le formulaire est sauvegardé ."
+
+#: admin/partials/cf7-2-post-mapping-content.php:10
+msgid "Default post fields"
+msgstr "Champs Article"
+
+#: admin/partials/cf7-2-post-mapping-content.php:14
+msgid "Post title"
+msgstr "Titre Article"
+
+#: admin/partials/cf7-2-post-mapping-content.php:16
+msgid "Post slug"
+msgstr "Permalien Article"
+
+#: admin/partials/cf7-2-post-mapping-content.php:18
+msgid "Post author"
+msgstr "Auteur Article"
+
+#: admin/partials/cf7-2-post-mapping-content.php:21
+msgid "Featured image"
+msgstr "Image à la une"
+
+#: admin/partials/cf7-2-post-mapping-content.php:24
+msgid "Post Content"
+msgstr "Contenu Article"
+
+#: admin/partials/cf7-2-post-mapping-content.php:27
+msgid "Post Excerpt"
+msgstr "Extrait Article"
+
+#: admin/partials/cf7-2-post-quick-edit.php:4
+msgid "Form 2 post"
+msgstr "Sauvegarder le formulaire dans un Article"
+
+#: admin/partials/cf7-2-post-quick-edit.php:6
+msgid "Delete"
+msgstr "Supprimer"
+
+#: admin/partials/cf7-2-post-quick-edit.php:7
+msgid "Draft"
+msgstr "Brouillon"
+
+#: admin/partials/cf7-2-post-quick-edit.php:8
+msgid "Publish"
+msgstr "Publier"
+
+#: admin/partials/cf7-2-post-system-options.php:9
+msgid "Post:"
+msgstr "Article:"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:25
+msgid "Custom Taxonomy  (no spaces allowed)"
+msgstr "Taxonomie personnalisée (sans espace)"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:39
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:84
+msgid "Edit"
+msgstr "Éditer"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:53
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:95
+msgid "Choose a taxonomy, in blue are existing public taxonomies"
+msgstr "Choisir une taxonomie, en bleues les taxonomies publiques existantes"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:57
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:99
+msgid "Plural Name"
+msgstr "Nom pluriel"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:62
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:103
+msgid "Singular Name"
+msgstr "Non singulier"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:66
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:105
+msgid "Slug"
+msgstr "Permalien"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:71
+msgid "Toggle panel: Taxonomy details"
+msgstr "Basculer le panneau: Sauvegarde de taxonomies"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:72
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:108
+#: public/class-cf7-2-post-public.php:271
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: admin/partials/cf7-2-post-taxonomy-metabox.php:84
+msgid "Categories"
+msgstr "Catégories"
+
+#: admin/partials/cf7-tag-display.php:21
+msgid "Save button for Post My CF7 Form extension"
+msgstr "Bouton de sauvegarde pour l'extension <em>Post My CF7 Form</em>"
+
+#: admin/partials/cf7-tag-display.php:25
+msgid "Label"
+msgstr "Label"
+
+#: admin/partials/cf7-tag-display.php:29
+msgid "Id attribute"
+msgstr "Attribut 'id'"
+
+#: admin/partials/cf7-tag-display.php:33
+msgid "Class attribute"
+msgstr "Attribut 'class'"
+
+#: admin/partials/cf7-tag-display.php:45
+msgid "Insert Tag"
+msgstr "Insérer marqueur"
+
+#: includes/class-cf7-2-post-factory.php:216
+msgid "Choose a Taxonomy"
+msgstr "Saisir une Taxonomie"
+
+#: includes/class-cf7-2-post-factory.php:219
+msgid "New Category"
+msgstr "Nouvelle categorie"
+
+#: includes/class-cf7-2-post-factory.php:219
+msgid "New Categories"
+msgstr "Nouvelles categories"
+
+#: includes/class-cf7-2-post-factory.php:230
+msgid "Post Tag"
+msgstr "Étiquette d'Article"
+
+#: includes/class-cf7-2-post-factory.php:230
+msgid "Post Tags"
+msgstr "Étiquettes Article"
+
+#: includes/class-cf7-2-post-factory.php:231
+msgid "Post Category"
+msgstr "Catégorie d'Article"
+
+#: includes/class-cf7-2-post-factory.php:231
+msgid "Post Categories"
+msgstr "Catégories Article"
+
+#: includes/class-cf7-2-post-factory.php:657
+msgid "No CF7 Form Class found"
+msgstr "Aucune Class php de Formulaire CF7 trouvée"
+
+#: includes/class-cf7-2-post-factory.php:683
+msgid "Select a form field to map"
+msgstr "Choisir un champ du formulaire"
+
+#: includes/class-cf7-2-post-factory.php:703
+#: includes/class-cf7-2-post-factory.php:705
+#: includes/class-cf7-2-post-factory.php:707
+msgid "Hook with a filter"
+msgstr "Personnaliser avec l'aide d'un crochet filtre"
+
+#: public/class-cf7-2-post-public.php:256
+msgid "save is disabled, form is not mapped."
+msgstr ""
+"sauvegarde désactivé, le formulaire n'est pas attribué a un type de contenu."

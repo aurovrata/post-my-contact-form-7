@@ -5,13 +5,18 @@
   var errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>';
   var selectedOptions = new Array();
   var selectedCount = 0;
-
+  function formatOptions(state){
+    if (!state.id) {
+      return state.text;
+    }
+    return $('<span class="' + state.element.className + '">' + state.text + '</span>');
+  }
   /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
     //since 3.0.0
     var $mapForm = $('#cf7-post-mapping-form');
     $('.nice-select', $mapForm).each(function(){
-      $(this).select2();
+      $(this).select2({templateSelection: formatOptions, templateResult:formatOptions});
     });
     var parent,keyName, newField,idx;
     var newField = $('#custom-meta-fields div.custom-meta-field').last().clone();
@@ -76,10 +81,10 @@
       cloneField.find('.select2').remove();
       cloneDetails.find('.select2').remove();
       $('select', cloneField).each(function(){
-        $(this).select2();
+        $(this).select2({templateSelection: formatOptions, templateResult:formatOptions});
       });
       $('select', cloneDetails).each(function(){
-        $(this).select2();
+        $(this).select2({templateSelection: formatOptions, templateResult:formatOptions});
       });
       //}
       $(this).css('display','none'); //hide the add button
@@ -124,7 +129,7 @@
       //add new field
       parent.parent().append(cloneField).append(errorBox);
       cloneField.find('select').each(function(){
-        $(this).select2();
+        $(this).select2({templateSelection: formatOptions, templateResult:formatOptions});
       });
       //bind event handlers
       cloneField.find('.add-more-field').on('click',createNewField);
@@ -522,7 +527,7 @@
             $('.spinner' , $this).hide().after($label);
             $label.siblings('.cf7-2-post-map-labels').removeClass('autofill-field-name').prop('disabled', true);
 						$label.after('<input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>');
-            $label.select2();
+            $label.select2({templateSelection: formatOptions, templateResult:formatOptions});
             if($this.is('.custom-meta-field:last')){
               $newSystemField = $this.clone();//reset for field cloning
             }

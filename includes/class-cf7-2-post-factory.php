@@ -213,10 +213,10 @@ class Cf7_2_Post_Factory {
         $result .= '<select class="taxonomy-list nice-select">';
     }
     if('' === $taxonomy_slug){
-      $result .= '<option value="" data-name="" >Choose a Taxonomy</option>';
+      $result .= '<option value="" data-name="" >'.__('Choose a Taxonomy', 'post-my-contact-form-7' ). '</option>';
     }
     $default_slug = sanitize_title( $this->get('singular_name') ).'_categories';
-    $result .= '<option class="factory-taxonomy" value="'.$default_slug.'" data-name="New Category" class="factory-taxonomy">New Categories</option>';
+    $result .= '<option class="factory-taxonomy" value="'.$default_slug.'" data-name="'.__('New Category', 'post-my-contact-form-7' ). '" class="factory-taxonomy">'.__('New Categories', 'post-my-contact-form-7' ). '</option>';
     if(!empty($taxonomy_slug) &&
     isset($this->taxonomy_properties[$taxonomy_slug])){
       $taxonomy = $this->taxonomy_properties[$taxonomy_slug];
@@ -227,8 +227,8 @@ class Cf7_2_Post_Factory {
 
     $system_taxonomies = get_taxonomies( array('public'=>true, '_builtin' => false), 'objects' );
     //inset the default post tags and category
-    $result .= '<option value="post_tag" data-name="Post Tag" class="system-taxonomy">Post Tags</option>';
-    $result .= '<option value="category" data-name="Post Category" class="system-taxonomy">Post Categories</option>';
+    $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';
+    $result .= '<option value="category" data-name="'.__('Post Category', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Categories', 'post-my-contact-form-7' ). '</option>';
     foreach($system_taxonomies as $taxonomy){
       if( !empty($taxonomy_slug) && $taxonomy_slug==$taxonomy->name ) continue;
       $result .= '<option value="'.$taxonomy->name.'" data-name="'.$taxonomy->labels->singular_name.'" class="system-taxonomy">';
@@ -654,7 +654,7 @@ class Cf7_2_Post_Factory {
    */
   protected function _select_options( $field_to_map=null, $data_type){
     if( !class_exists('WPCF7_ContactForm') ){
-      return '<option>No CF7 Form Class found</option>';
+      return '<option>'.__('No CF7 Form Class found','post-my-contact-form-7' ).'</option>';
     }
     //load teh form fields from the cf7 post
     $this->load_form_fields();
@@ -680,7 +680,7 @@ class Cf7_2_Post_Factory {
       $cf7_maped_field_name = get_post_meta($this->cf7_post_ID, $prefix.$field_to_map,true);
       //debug_msg("found meta, ".$prefix.$field_to_map."=".$cf7_maped_field_name,"loading... ");
     }
-    $options = '  <option value="">Select a form field to map</option>';
+    $options = '  <option value="">'. __('Select a form field to map', 'post-my-contact-form-7' ). '</option>';
     foreach ($this->cf7_form_fields as $field => $type) {
       //skip submit buttons
       if( 'submit' == $type) continue;
@@ -700,11 +700,11 @@ class Cf7_2_Post_Factory {
     //filter option
     //debug_msg($field_to_map."=>".$cf7_maped_field_name.", ".(strpos($cf7_maped_field_name,'cf7_2_post_filter-')) );
     if( !empty($cf7_maped_field_name) && 0 === strpos($cf7_maped_field_name,'cf7_2_post_filter-') ){
-      $options .= '  <option class="filter-option" selected="selected" value="'.$cf7_maped_field_name.'">Hook with a filter</option>';
+      $options .= '  <option class="filter-option" selected="selected" value="'.$cf7_maped_field_name.'">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
     }else if(!empty($field_to_map)){
-      $options .= '  <option class="filter-option" value="cf7_2_post_filter-'.$this->post_properties['type'].'-'.$field_to_map.'">Hook with a filter</option>';
+      $options .= '  <option class="filter-option" value="cf7_2_post_filter-'.$this->post_properties['type'].'-'.$field_to_map.'">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
     }else{
-      $options .= '  <option class="filter-option" value="cf7_2_post_filter">Hook with a filter</option>';
+      $options .= '  <option class="filter-option" value="cf7_2_post_filter">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
     }
 
     return $options;

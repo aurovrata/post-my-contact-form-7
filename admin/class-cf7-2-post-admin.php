@@ -251,7 +251,7 @@ class Cf7_2_Post_Admin {
     //submit
     add_meta_box(
         'submit', //Meta box ID
-        __('Save form to post','cf7-2-post'), //Meta box Title
+        __('Save form to post','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_submit_metabox'), //Callback defining the plugin's innards
         self::$map_screen_id, // Screen to which to add the meta box
         'side' // Context
@@ -259,7 +259,7 @@ class Cf7_2_Post_Admin {
     //helper
     add_meta_box(
         'helper', //Meta box ID
-        __('Actions &amp; Filers','cf7-2-post'), //Meta box Title
+        __('Actions &amp; Filters','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_helper_metabox'), //Callback defining the plugin's innards
         self::$map_screen_id, // Screen to which to add the meta box
         'side' // Context
@@ -267,7 +267,7 @@ class Cf7_2_Post_Admin {
     //field
     add_meta_box(
         'field', //Meta box ID
-        __('Custom Meta Fields','cf7-2-post'), //Meta box Title
+        __('Custom Meta Fields','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_field_metabox'), //Callback defining the plugin's innards
         self::$map_screen_id, // Screen to which to add the meta box
         'normal' // Context
@@ -275,7 +275,7 @@ class Cf7_2_Post_Admin {
     //taxonomy
     add_meta_box(
         'taxonomy', //Meta box ID
-        __('Taxonomies','cf7-2-post'), //Meta box Title
+        __('Taxonomies','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_taxonomy_metabox'), //Callback defining the plugin's innards
         self::$map_screen_id, // Screen to which to add the meta box
         'normal' // Context
@@ -323,8 +323,8 @@ class Cf7_2_Post_Admin {
   public function modify_cf72post_columns($columns){
     $capability = apply_filters('cf7_2_post_view_submit_capability', 'manage_options');
     if(current_user_can($capability)){
-      //$columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
-      $columns['cf7_2_post']= __( 'Submitted', 'cf7-2-post');
+      //$columns['mapped_post']= __( 'Post Type', 'post-my-contact-form-7' );
+      $columns['cf7_2_post']= __( 'Submitted', 'post-my-contact-form-7' );
     }
     return $columns;
   }
@@ -338,8 +338,8 @@ class Cf7_2_Post_Admin {
   public function modify_cf7_list_columns($columns){
     $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
     if(current_user_can($capability)){
-      //$columns['mapped_post']= __( 'Post Type', 'cf7-2-post');
-      $columns['map_cf7_2_post']= __( 'Form to post', 'cf7-2-post');
+      //$columns['mapped_post']= __( 'Post Type', 'post-my-contact-form-7' );
+      $columns['map_cf7_2_post']= __( 'Form to post', 'post-my-contact-form-7' );
     }
     return $columns;
   }
@@ -671,7 +671,7 @@ class Cf7_2_Post_Admin {
   public function add_cf72post_metabox($post){
     add_meta_box(
         'cf72post_submitted', //Meta box ID
-        __('Submitted form','cf7-2-post'), //Meta box Title
+        __('Submitted form','post-my-contact-form-7' ), //Meta box Title
         array($this,'display_cf72post_metabox'), //Callback defining the plugin's innards
         $post->post_type, //Screen to which to add the meta box
         'side' // Context
@@ -734,7 +734,7 @@ class Cf7_2_Post_Admin {
     //meta-fields
     add_meta_box(
         'cf72post', //Meta box ID
-        __('Contact Form 7 fields','cf7-2-post'), //Meta box Title
+        __('Contact Form 7 fields','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_custom_post_metabox'), //Callback defining the plugin's innards
         $post->post_type, // Screen to which to add the meta box
         'normal' // Context
@@ -761,5 +761,21 @@ class Cf7_2_Post_Admin {
     }else{
       include( plugin_dir_path( __FILE__ ) . '/partials/cf7-2-custom-post-metabox.php');
     }
+  }
+  /**
+  * Add save draft message to cf7 messages.
+  * Hooked to 'wpcf7_messages', see file contact-form-7/includes/contact-form-template.php fn messages().
+  *@since 2.6.0
+  *@param array $messages array of messages to filter.
+  *@return array array of cf7 messages.
+  */
+  public function draft_message($messages){
+    $messages['draft_saved'] = array(
+			'description'
+				=> __( "Draft form was saved successfully", 'post-my-contact-form-7' ),
+			'default'
+				=> __( "A draft of this form has been saved, you may complete and submit the form at a later time.", 'post-my-contact-form-7' ),
+		);
+    return $messages;
   }
 }
