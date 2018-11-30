@@ -549,6 +549,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.0.1 =
+* fix cf7 hidden field bug.
 = 4.0.0 =
 * spanish translation.
 * french translation.

@@ -333,7 +333,7 @@ class Cf7_2_Post_Public {
   *@param array $param array of hidden fields
   *@return array array of hidden fields
   */
-  public function add_hidden_fields($param){
+  public function add_hidden_fields($hidden){
     $author = 1;//default to admin.
     if(current_user_can('edit_posts')){
       $user = wp_get_current_user();
