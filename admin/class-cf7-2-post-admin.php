@@ -169,7 +169,7 @@ class Cf7_2_Post_Admin {
           }
           break;
         default:
-          if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type, 'factory')){
+          if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type)){
             switch($screen->base){
               case 'edit':
                 wp_enqueue_script( 'cf72custompost-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-custom-post-quick-edit.js', array( 'jquery' ), $this->version, true );
@@ -625,7 +625,7 @@ class Cf7_2_Post_Admin {
       $tag_generator = WPCF7_TagGenerator::get_instance();
       $tag_generator->add(
         'save', //tag id
-        __( 'save', 'cf7_2_post' ), //tag button label
+        __( 'save', 'post-my-contact-form-7' ), //tag button label
         array($this,'save_tag_generator'), //callback
         array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
       );

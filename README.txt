@@ -152,7 +152,7 @@ You can quick-edit a form in the Contact Form table and delete the mapping.
 
 = 5. How do I map a field to a taxonomy ? =
 
-You create a new taxonomy and map your field to it.  Note however that only select/checkbox/radio type of fields can be mapped to taxonomies.  Once mapped and published you will see your taxonomy appear in your custom post menu.  You can add terms to your taxonomy and these will be made pre-filled into your mapped field.  Users can select a term and when the form is submitted, the post will be created with those terms assigned to it.
+You create a new taxonomy and map your field to it.  Note however that only select/checkbox/radio type of fields can be mapped to taxonomies.  Once mapped and published you will see your taxonomy appear in your custom post menu.  You can add terms to your taxonomy and these will be made pre-filled into your mapped field.  Users can select a term and when the form is submitted, the post will be created with those terms assigned to it.  (see screenshot 9 for more details.)
 
 = 6. How do I create non-hierarchical taxonomies ? =
 
@@ -332,7 +332,7 @@ $mappedForm.on(eventID, function(){
   $('.your-country select').select2ToTree();
 });
 `
-= 23.Can a previously submitted post be reloaded into a form?  =
+= 23.Can a previously submitted post be reloaded into a form programmatically?  =
 yes, this is possible. You have to know a few things first,
 
 * A mapped post that has been saved as a draft is reloaded automatically for the same author/logged in user.
@@ -357,6 +357,7 @@ function custom_post_query($query_args, $post_type, $cf7key){
 6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
 7. making custom posts publicly queryable.
 8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
+9. Follow the screenshot instructions to map a field to a taxonomy.
 
 == Filters & Actions for Developers ==
 The following are hooks preimarly aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
@@ -549,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.0.2 =
+* fix ability to un-submit system posts in quick-edit.
 = 4.0.1 =
 * fix cf7 hidden field bug.
 = 4.0.0 =

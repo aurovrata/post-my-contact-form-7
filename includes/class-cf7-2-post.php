@@ -198,12 +198,12 @@ class Cf7_2_Post {
     $cf7_post_ids = Cf7_2_Post_Factory::get_mapped_post_types();
     foreach($cf7_post_ids as $post_id=>$type){
       $post_type = key($type);
+			$this->loader->add_filter('manage_' . $post_type . '_posts_columns', $plugin_admin, 'modify_cf72post_columns', 999,1);
+			$this->loader->add_action('manage_' . $post_type . '_posts_custom_column', $plugin_admin, 'populate_custom_column', 999,2);
+			//on save cf7 post type
+			$this->loader->add_action( 'save_post_'. $post_type, $plugin_admin,'save_quick_custompost', 10, 2 );
       switch($type[$post_type]){
-        case 'factory':
-          $this->loader->add_filter('manage_' . $post_type . '_posts_columns', $plugin_admin, 'modify_cf72post_columns',5,1);
-					$this->loader->add_action('manage_' . $post_type . '_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
-          //on save cf7 post type
-          $this->loader->add_action( 'save_post_'. $post_type, $plugin_admin,'save_quick_custompost', 10, 2 );
+        case 'factory': /*add a metabox to the post edit page*/
           $this->loader->add_action( 'add_meta_boxes_'. $post_type, $plugin_admin,'custom_post_metabox' );
           break;
         default:
