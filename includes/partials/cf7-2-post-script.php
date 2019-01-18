@@ -23,7 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
        }
        // function to load all the data into the form
        function preloadForm(cf7Form){
-         var data = cf7Form.post2CF7FormData('<?=$nonce?>');
+         var data = '';
+         if('function' == typeof $.fn.post2CF7FormData) data = cf7Form.post2CF7FormData('<?=$nonce?>');
+         else if( 'undefined' != typeof window['<?=$nonce?>'] ) data = window['<?=$nonce?>'];
          <?php /*@since 3.1.0 store form nonce for transient storage of post ID*/?>
          fname = '<input type="hidden" name="_cf72post_nonce" value="<?= $nonce ?>" />';
          cf7Form.find('input[name=_wpcf7]').parent().append(fname);

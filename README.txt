@@ -550,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.0.3 =
+* load form data directly in inline script if post2CF7FormData fn not loaded.
 = 4.0.2 =
 * fix ability to un-submit system posts in quick-edit.
 = 4.0.1 =
