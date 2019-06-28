@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.0.0
+Tested up to: 5.2.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -550,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.0.4 =
+* fix a bug which prevents mapped titles from being saevd when files are also mapped.
 = 4.0.3 =
 * load form data directly in inline script if post2CF7FormData fn not loaded.
 = 4.0.2 =

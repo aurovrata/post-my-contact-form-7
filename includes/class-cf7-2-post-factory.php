@@ -1180,10 +1180,24 @@ class Cf7_2_Post_Factory {
     //debug_msg($cf7_form_data);
     //check if this is a system post which are mapped using an action.
     if( has_action('cf7_2_post_save-'.$this->get('type')) ){
+      /**
+      * Action to by-pass the form submission process altogether.
+      * @since v1.3.0
+      * @param string $key unique form key.
+      * @param array $data array of submitted key=>value pairs.
+      * @param array $file array of submitted files if any.
+      */
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }
     if( 'filter' == $this->get('type_source')){
+      /**
+      * Action to by-pass the form submission process altogether.
+      * @since v1.3.0
+      * @param string $key unique form key.
+      * @param array $data array of submitted key=>value pairs.
+      * @param array $file array of submitted files if any.
+      */
       do_action( 'cf7_2_post_save_submission', $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }
@@ -1249,7 +1263,7 @@ class Cf7_2_Post_Factory {
       $post_id = wp_insert_post ( $post );
     }
     $post['ID'] = $post_id;
-    //debug_msg($post,"Creating a new post (".$this->post_properties['type'].")... ".$post_id);
+    $hasPostFields=false;
     foreach($this->post_map_fields as $form_field => $post_field){
       $post_key ='';
       $skip_loop = false;
@@ -1266,7 +1280,6 @@ class Cf7_2_Post_Factory {
           $post_key ='post_name';
           break;
         case 'thumbnail':
-          //
           //debug_msg($form_field, 'uploaded file...');
           $cf7_files = $submission->uploaded_files();
           if(isset($cf7_files[$form_field])){ //if set handle upload.
@@ -1318,6 +1331,7 @@ class Cf7_2_Post_Factory {
 
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $post[$post_key] = apply_filters($form_field,'', $post_id, $cf7_form_data);
+        $hasPostFields = true;
       }else{
         if( isset($cf7_form_data[$form_field]) ){
           $submitted = $cf7_form_data[$form_field];
@@ -1334,6 +1348,7 @@ class Cf7_2_Post_Factory {
           }else{
             $post[$post_key] = $submitted;
           }
+          $hasPostFields = true;
         }
       }
     }
@@ -1345,8 +1360,8 @@ class Cf7_2_Post_Factory {
         $post['post_name'] = sanitize_title( $post['post_title'] );
       }
     }
-    /*if the post key is empty it means no fields are mapped to post field, only meta fields.*/
-    if(!empty($post_key)){
+    /*If $hasPostFields is false we have no post fields to update.*/
+    if($hasPostFields){
       $post_id = wp_insert_post ( $post );
     }
     //
