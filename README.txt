@@ -553,7 +553,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 = 4.0.5 =
 * added helper for admin hook 'cf7_2_post_register_post_{$post_type}'
 = 4.0.4 =
-* fix a bug which prevents mapped titles from being saevd when files are also mapped.
+* fix a bug which prevents mapped titles from being saved when files are also mapped.
 = 4.0.3 =
 * load form data directly in inline script if post2CF7FormData fn not loaded.
 = 4.0.2 =
