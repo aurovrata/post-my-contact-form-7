@@ -550,6 +550,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.0.5 =
+* added helper for admin hook 'cf7_2_post_register_post_{$post_type}'
 = 4.0.4 =
 * fix a bug which prevents mapped titles from being saevd when files are also mapped.
 = 4.0.3 =

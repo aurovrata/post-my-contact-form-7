@@ -24,6 +24,20 @@ function set_supports($supports){
   return $default_supports;
 }" href="javascript:void(0);"><?=__('Post Supports Filter','post-my-contact-form-7')?></a> <?=__('custom post <code>supports</code> attributes (<a href="https://codex.wordpress.org/Function_Reference/register_post_type#supports">documentation</a>).','post-my-contact-form-7')?>
       </li>
+      <li class="factory-hook">1b.
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_register_post_{$post_type}', 'cf7_2_modified_custom_post_type');
+/**
+* Function to modify the registration of the custom post type '{$post_type}' created by the Post My CF7 Form plugin.
+* Hooked on 'cf7_2_post_register_post_{$post_type}'
+* @param array $post_args an array containing arguments used to register the custom post type.
+* @return array  an array of arguments.
+*/
+
+function cf7_2_modified_custom_post_type($post_args){
+  $post_args['rewrite']['slug'] = 'my-custom-slug'; //post slug for url front access
+  return $post_args;
+}" href="javascript:void(0);"><?=__('Custom Post Registration Filter','post-my-contact-form-7')?></a> <?=__('to further customise custom post registration arguments(<a href="https://codex.wordpress.org/Function_Reference/register_post_type#Arguments">documentation</a>).', 'post-my-contact-form-7')?>
+      </li>
       <li class="factory-hook">2.
         <a class="helper" data-cf72post="add_filter('cf7_2_post_capabilities_{$post_type}', 'set_capabilities');
 /**
