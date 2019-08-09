@@ -84,7 +84,22 @@ class Cf7_2_Post_Public {
       //the curent submission object from cf7 plugin
       $submission = WPCF7_Submission::get_instance();
       //debug_msg($submission, "saving form data ");
-      $factory->save_form_2_post($submission);
+      $post_id = $factory->save_form_2_post($submission);
+      /** @since 4.1.0 handle post link mail tag.
+      * NOTE: the post_Id could be either a submitted form or a draft save.
+      * either way, the mail tag filter will only fire for submitted forms.
+      */
+      add_filter('wpcf7_special_mail_tags', function($value, $tag, $html) use ($post_id){
+        switch($tag){
+          case 'cf7_2_post-edit':
+            $value = admin_url('post.php?post='.$post_id.'&action=edit');
+            break;
+          case 'cf7_2_post-permalink':
+            $value = get_permalink($post_id);
+            break;
+        }
+        return $value;
+      },10,3);
     }
 
     return $cf7_form;

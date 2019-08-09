@@ -1477,6 +1477,8 @@ class Cf7_2_Post_Factory {
       */
       do_action('cf7_2_post_form_submitted_to_'.$this->post_properties['type'],$post_id, $cf7_form_data, $this->cf7_key);
     }
+    /** @since 4.1.0 reutnr post id to handle post link mail tags in public class */
+    return $post_id;
   }
   /**
   * Builds a set of field=>value pairs to pre-populate a mapped form

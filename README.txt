@@ -26,8 +26,9 @@ You can submit and map to a post all of the following fields,
 * addition of form key to identify cf7 forms instead of the form id to make development more portable
 * this plugin allows your users to manage multiple draft submissions from a single page.
 * for large forms with multiple fields, an auto-create functionality has been added for meta-field mapping.  See the installation instruction for details.
+* add links to newly saved posts into your confirmation mail.
 
-v3.0 of this plugin introduces many changes to enable other plugin developers to leverage the functionality available in this plugin.  If you a developer, please look at the code where ample comments are provided.
+v3.0 of this plugin introduces many changes to enable other plugin developers to leverage the functionality available in this plugin.  If you are a developer, please look at the code where ample comments are provided.
 
 = Make your CF7 Form more portable =
 
@@ -347,6 +348,9 @@ function custom_post_query($query_args, $post_type, $cf7key){
   }
   return $query_args;
 }`
+= 24. How do I add a link to newly saved post in the confirmation mail? =
+Use the mail tag `[cf7_2_post-edit]` and `[cf7_2_post-permalink]` to add a link to the editable post in the admin dashboard and the post permalink in the front-end respectively.
+
 == Screenshots ==
 
 1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -550,6 +554,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.0 =
+* added mail tags for post links.
 = 4.0.5 =
 * added helper for admin hook 'cf7_2_post_register_post_{$post_type}'
 = 4.0.4 =

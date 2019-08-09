@@ -778,4 +778,21 @@ class Cf7_2_Post_Admin {
 		);
     return $messages;
   }
+  /**
+   * Set up email tags
+   * hooked on cf7 filter 'wpcf7_collect_mail_tags'
+   * @since 4.1.0
+   * @param      Array    $mailtags     tag-name.
+   * @return     string    $p2     .
+  **/
+  public function email_tags( $mailtags = array() ) {
+    $cf7_form = WPCF7_ContactForm::get_current();
+    $cf7_post_id = $cf7_form->id();
+    //is this form mapped yet?
+    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+      $mailtags[] = 'cf7_2_post-edit';
+      $mailtags[] = 'cf7_2_post-permalink';
+    }
+    return $mailtags;
+  }
 }

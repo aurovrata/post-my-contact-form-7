@@ -210,6 +210,9 @@ class Cf7_2_Post {
           break;
       }
     }
+    /** @since 4.1.0 mail tag for post links */
+    $this->loader->add_filter( 'wpcf7_collect_mail_tags', $plugin_admin, 'email_tags' );
+
 	}
 
 	/**
