@@ -411,7 +411,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
           'cf7key' => '',
       ), $atts );
       if(empty($a['cf7key'])){
-        return '<em>' . _('cf7-form shortcode missing key','cf7-admin-table') . '</em>';
+        return '<em>' . __('cf7-form shortcode missing key','cf7-admin-table') . '</em>';
       }
       //else get the post ID
       $form = get_posts(array(
@@ -428,7 +428,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
         }
         return do_shortcode('[contact-form-7 id="'.$id.'"'.$attributes.']');
       }else{
-        return '<em>' . _('cf7-form shortcode key error, unable to find form','cf7-admin-table') . '</em>';
+        return '<em>' . __('cf7-form shortcode key error, unable to find form','cf7-admin-table') . '</em>';
       }
     }
   } //end class

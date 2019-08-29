@@ -1,6 +1,6 @@
 === Post My CF7 Form ===
 Contributors: aurovrata
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DVAJJLS8548QY
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TYFB6PQQB3HJC
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
@@ -353,15 +353,15 @@ Use the mail tag `[cf7_2_post-edit]` and `[cf7_2_post-permalink]` to add a link 
 
 == Screenshots ==
 
-1. You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
-2. Once created, you have can only view the mapping.  All the fields are disabled to maintain post integrity. You can however add new meta-fields.  You will also see your new custom post in your dashboard menu is you have enabled post attributes `show_ui` & `show_in_menu`.
-3. The CF7 table list shows an extra column with the status of the form mapping.
-4. You can now map forms fields to custom taxonomies
-5. You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
-6. If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
-7. making custom posts publicly queryable.
-8. Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
-9. Follow the screenshot instructions to map a field to a taxonomy.
+1. 1.You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
+2. 2.Once created, you have can only view the mapping.  All the fields are disabled to maintain post integrity. You can however add new meta-fields.  You will also see your new custom post in your dashboard menu is you have enabled post attributes `show_ui` & `show_in_menu`.
+3. 3.The CF7 table list shows an extra column with the status of the form mapping.
+4. 4.You can now map forms fields to custom taxonomies
+5. 5.You can edit your custom taxonomy nomenclature and slug, do this before mapping it.
+6. 6.If your form contains a file upload field, the featured-image option will appear on the mapping screen.  Select your file field to map the uploaded image to the post thumbnail.
+7. 7.making custom posts publicly queryable.
+8. 8.Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
+9. 9.Follow the screenshot instructions to map a field to a taxonomy.
 
 == Filters & Actions for Developers ==
 The following are hooks preimarly aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
@@ -554,6 +554,9 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+
+= 4.1.1 =
+* bug fix for empty table form.
 = 4.1.0 =
 * added mail tags for post links.
 = 4.0.5 =
