@@ -274,7 +274,7 @@ function disable_page_cache_metas($print_on_page){
       </p>
       <ul class="helper-list">
         <li>11.
-          <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type}_author',10,4);
+          <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type_f}_author',10,4);
 /**
 * Function to change the author of saved/submitted posts.
 * Note: For logged in users submitting a draft form, the post is saved with the user as author.  Therefore changing this will result in the user not being able to reload their draft form.
@@ -285,13 +285,13 @@ function disable_page_cache_metas($print_on_page){
 * @return string a valid user id.
 */
 
-function set_{$post_type}_author($author_id, $cf7_id, $submitted_data, $cf7_key){
+function set_{$post_type_f}_author($author_id, $cf7_id, $submitted_data, $cf7_key){
   //... do something here and set a new author ID with a valid user id which exists in the user table.
   return $author_id;
 }" href="javascript:void(0);"><?=__('Author Filter','post-my-contact-form-7')?></a> <?=__('the author of the submitted post .','post-my-contact-form-7')?>
         </li>
         <li>12.
-          <a class="helper" data-cf72post="add_action( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type}',10,3);
+          <a class="helper" data-cf72post="add_action( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type_f}',10,3);
 /**
 * Function to change the post status of saved/submitted posts.
 * @param string $status the post status, default is 'draft'.
@@ -299,7 +299,7 @@ function set_{$post_type}_author($author_id, $cf7_id, $submitted_data, $cf7_key)
 * @param array $submitted_data complete set of data submitted in the form as an array of field-name=>value pairs.
 * @return string a valid post status ('publish'|'draft'|'pending'|'trash')
 */
-function publish_new_{$post_type}($status, $ckf7_key, $submitted_data){
+function publish_new_{$post_type_f}($status, $ckf7_key, $submitted_data){
   /*The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return a valid post status: 'publish'|'draft'|'pending'|'trash'*/
   return 'publish';
 }" href="javascript:void(0);"><?=__('Post Status Filter','post-my-contact-form-7')?></a> <?=__('to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).','post-my-contact-form-7')?>
@@ -353,14 +353,15 @@ function force_notification($skip_mail, $cf7_key){
 }" href="javascript:void(0);"><?=__('Draft Mail Filter','post-my-contact-form-7')?></a> <?=__('to send cf7 mail for draft form saved.','post-my-contact-form-7')?>
       </li>
       <li>16.
-        <a class="helper" data-cf72post="add_action('cf7_2_post_form_submitted_to_{$post_type}', 'new_{$post_type}_mapped',10,3);
+        <a class="helper" data-cf72post="add_action('cf7_2_post_form_submitted_to_{$post_type}', 'new_{$post_type_f}_mapped',10,4);
 /**
 * Function to take further action once form has been submitted and saved as a post.  Note this action is only fired for submission which has been submitted as opposed to saved as drafts.
 * @param string $post_id new post ID to which submission was saved.
 * @param array $cf7_form_data complete set of data submitted in the form as an array of field-name=>value pairs.
 * @param string $cf7form_key unique key to identify your form.
+* @param array $submitted_files array of files submitted in the form, if any file fields are present.
 */
-function new_{$post_type}_mapped($post_id, $cf7_form_data, $cf7form_key){
+function new_{$post_type_f}_mapped($post_id, $cf7_form_data, $cf7form_key, $submitted_files){
   //do something.
 }" href="javascript:void(0);"><?=__('Action','post-my-contact-form-7')?></a> <?=__('after <em>submitted</em> form is saved to post.','post-my-contact-form-7')?>
       </li>
@@ -404,7 +405,10 @@ return $post_title;
             var text = $target.data('cf72post');
             //get postType
             var postType = $('#mapped_post_type').val();
-            return text.replace(/\{\$post_type\}/gi, postType);
+            /** @since 4.1.2 fix post types in function names. */
+            text = text.replace(/\{\$post_type\}/gi, postType);
+            postType = postType.replace(/-/g,'_');
+            return text.replace(/\{\$post_type_f\}/gi, postType);
           }
         });
       });
