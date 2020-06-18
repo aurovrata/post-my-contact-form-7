@@ -291,7 +291,7 @@ function set_{$post_type_f}_author($author_id, $cf7_id, $submitted_data, $cf7_ke
 }" href="javascript:void(0);"><?=__('Author Filter','post-my-contact-form-7')?></a> <?=__('the author of the submitted post .','post-my-contact-form-7')?>
         </li>
         <li>12.
-          <a class="helper" data-cf72post="add_action( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type_f}',10,3);
+          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type_f}',10,3);
 /**
 * Function to change the post status of saved/submitted posts.
 * @param string $status the post status, default is 'draft'.

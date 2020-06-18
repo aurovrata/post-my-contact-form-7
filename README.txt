@@ -554,6 +554,8 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.3 =
+* fix add_filter helper code.
 = 4.1.2 =
 * added submitted files to cf7_2_post_form_submitted_to_$post_type hook.
 * fixed helper functions.
