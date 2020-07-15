@@ -1397,10 +1397,13 @@ class Cf7_2_Post_Factory {
           $cf7_files = $submission->uploaded_files();
           $file_url = '';
           if(isset($cf7_files[$form_field]) && !empty($cf7_files[$form_field])){
-            $file = $cf7_files[$form_field];
-            $filename = $cf7_form_data[$form_field]; //path
-            //wp_upload_bits( $name, $deprecated, $bits, $time )
-            //debug_msg(, "uploading file to meta field... ");
+            $file = $cf7_files[$form_field]; //file path.
+            /** @since 4.1.4 fix file upload bug introduced in CF7 v5.2 */
+            if(!file_exists($file)){
+              $file = $_FILES[$form_field]['tmp_name'];
+            }
+            $filename = $_FILES[$form_field]['name']; //file name
+
             $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
             if (!$upload_file['error']) {
               $file_url = $upload_file['url'];
