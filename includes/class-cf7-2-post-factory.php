@@ -660,7 +660,11 @@ class Cf7_2_Post_Factory {
     $this->load_form_fields();
     //find the corresponding mapped field, stored in the cf7 post
     $cf7_maped_field_name = null;
+    /** @since 4.2.0 allow additional field types to be mapped to taxonomy */
     $taxonomy_types = array('select','checkbox','radio');
+    $additional_types = apply_filters('cf7_2_post_taxonomy_map_field_types', array());
+    if(!is_array($additional_types)) $additional_types = array($additional_types);
+    $taxonomy_types = array_merge($taxonomy_types, $additional_types);
 
     if(!empty($field_to_map)){
       //get_post_meta ( int $post_id, string $key = '', bool $single = false )
@@ -1283,9 +1287,12 @@ class Cf7_2_Post_Factory {
           //debug_msg($form_field, 'uploaded file...');
           $cf7_files = $submission->uploaded_files();
           if(isset($cf7_files[$form_field])){ //if set handle upload.
-            $file = $cf7_files[$form_field];
-            $filename = $cf7_form_data[$form_field]; //path
-
+            $file = $cf7_files[$form_field]; //file path.
+            /** @since 4.1.4 fix file upload bug introduced in CF7 v5.2 */
+            if(!file_exists($file)){
+              $file = $_FILES[$form_field]['tmp_name'];
+            }
+            $filename = $_FILES[$form_field]['name']; //file name
             //wp_upload_bits( $name, $deprecated, $bits, $time )
             $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
             if (!$upload_file['error']) {
@@ -1305,8 +1312,6 @@ class Cf7_2_Post_Factory {
             		$attachment_data = wp_generate_attachment_metadata( $attachment_id, $upload_file['file'] );
             		wp_update_attachment_metadata( $attachment_id,  $attachment_data );
                 set_post_thumbnail( $post_id, $attachment_id );
-                //debug_msg($attachment,'attached file '.$attachment_id);
-                //debug_msg($attachment_data,'attached file data '.$attachment_id);
             	}else{
                 debug_msg($attachment_id, 'error while attaching to post '.$post_id.'... ');
               }

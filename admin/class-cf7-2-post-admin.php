@@ -523,7 +523,8 @@ class Cf7_2_Post_Admin {
         wp_die();
       }
       $create_or_update = false;
-      $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');;
+      $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');
+      $result = false;
       switch(true){
         case isset($_POST['save_draft']):
           $create_or_update = false;
@@ -539,6 +540,9 @@ class Cf7_2_Post_Admin {
           $create_or_update = true;
           $result = $this->post_mapping_factory->save($_POST, $create_or_update);
           $json_data = array('msg'=>'Created post', 'post'=>'created');
+          break;
+        default:
+          debug_msg($_POST, 'unknown saving ');
           break;
       }
 
