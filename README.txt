@@ -554,8 +554,10 @@ function custom_mapped_post($post_type){
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.5 =
+* fix hidden field bugs introduced by CF7 v5.2.
 = 4.1.4 =
-* fix file upload bug, use $_FILES instead of CF7 submission. 
+* fix file upload bug, use $_FILES instead of CF7 submission.
 = 4.1.3 =
 * fix add_filter helper code.
 = 4.1.2 =

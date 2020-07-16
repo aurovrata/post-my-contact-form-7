@@ -1175,7 +1175,9 @@ class Cf7_2_Post_Factory {
   *@param WPCF7_Submission $submission cf7 submission object.
   */
   public function save_form_2_post($submission){
+    debug_msg($_POST);
     $cf7_form_data = $submission->get_posted_data();
+    debug_msg($cf7_form_data);
     $is_submitted = true;
     if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
       $is_submitted = false;
@@ -1210,8 +1212,8 @@ class Cf7_2_Post_Factory {
     $author = 1;
 
     //$msg = (is_user_logged_in())?'yes':'no';
-    if(isset($cf7_form_data['_map_author']) && is_numeric($cf7_form_data['_map_author'])){
-      $author = intval($cf7_form_data['_map_author']);
+    if(isset($_POST['_map_author']) && is_numeric($_POST['_map_author'])){
+      $author = intval($_POST['_map_author']);
     }else{
       //try to get a usesr form the form mail recipient if no one logged in.
       //get_post_meta ( int $post_id, string $key = '', bool $single = false )
@@ -1253,8 +1255,8 @@ class Cf7_2_Post_Factory {
                 );
     $post_id = '';
     $is_update = false;
-    if(isset($cf7_form_data['_map_post_id']) && !empty($cf7_form_data['_map_post_id'])){
-      $post_id = $cf7_form_data['_map_post_id']; //this is an existing post being updated
+    if(isset($_POST['_map_post_id']) && !empty($_POST['_map_post_id'])){
+      $post_id = $_POST['_map_post_id']; //this is an existing post being updated
       $wp_post = get_post($post_id);
       $post['post_status'] = $wp_post->post_status;
       $post['post_author'] = $wp_post->post_author;
@@ -1474,10 +1476,10 @@ class Cf7_2_Post_Factory {
     /**
     *@since 3.1.0 - store the post_id in a transietn field for page redirect.
     */
-    if( isset($cf7_form_data['_cf72post_nonce']) && !empty($cf7_form_data['_cf72post_nonce'])){
+    if( isset($_POST['_cf72post_nonce']) && !empty($_POST['_cf72post_nonce'])){
       $time = apply_filters('cf7_2_post_transient_submission_expiration', 300, $this->cf7_key);
       if(!is_numeric($time)) $time = 300;
-      set_transient( $cf7_form_data['_cf72post_nonce'], $post_id, $time );
+      set_transient( $_POST['_cf72post_nonce'], $post_id, $time );
     }
     if($is_submitted){
       /**
