@@ -374,4 +374,18 @@ class Cf7_2_Post_Public {
     }
     return $message;
   }
+  /**
+  *  Funciton to un-array single select values
+  * Hooked to 'cf7_2_post_saving_tag_{$tag_type}'
+  *@since 4.1.8
+  *@param string $value cf7 plugin submitted value
+  *@param string $field field name
+  *@return string single value if original was single.
+  */
+  public function array_to_single($value, $field){
+    if(is_array($value) && !is_array($_POST[$field])){
+      $value = $_POST[$field];
+    }
+    return $value;
+  }
 }

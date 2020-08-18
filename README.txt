@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 5.5
-Stable tag: 4.1.7
+Stable tag: 4.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -578,6 +578,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.8 =
+* fix single select values.
 = 4.1.7 =
 * fix cfadmin table class clash with Smart-grid.
 = 4.1.6 =

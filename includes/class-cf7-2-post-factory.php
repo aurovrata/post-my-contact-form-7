@@ -1171,6 +1171,7 @@ class Cf7_2_Post_Factory {
   /**
   * Save the submitted form data to a new/existing post
   * calling this function assumes the mapped post_type exists and is published
+  * hooked to 'wpcf7_before_send_mail' which calls $public->save_cf7_2_post() and in turn calls this.
   *@since 1.0.0
   *@param WPCF7_Submission $submission cf7 submission object.
   */
@@ -1340,6 +1341,7 @@ class Cf7_2_Post_Factory {
       }else{
         if( isset($cf7_form_data[$form_field]) ){
           $submitted = $cf7_form_data[$form_field];
+
           /**
           * Filter introduced for plugin developers to map custom plugin tag fields, allows for submitted values to be filtered before being stored.
           * @since 3.1.0
