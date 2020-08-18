@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.2.0
+Tested up to: 5.4.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,15 @@ v3.0 of this plugin introduces many changes to enable other plugin developers to
 This plugin is now fully compatible with [Smart Grid-Layout Designs for Contact Form 7](https://wordpress.org/plugins/cf7-grid-layout/).  The Smart Grid for CF7 allows responsive grid-layout designed forms, as well as powerful features such as repetitive field inputs (using table structures with multiple row inputs), repetitive form sections using multiple tabbed inputs, as well as optional input sections using toggled collapsible sections.  Furthermore the plugin offers a modular approach to form design, where existing forms can be inserted as sub-sections.
 
 Post my CF7 Form now saves these complex forms designs seamlessly into your dashboard posts.
+= Other compatible plugins =
+
+- Contact Form 7 Conditional Fields By Jules Colle.
+- Contact Form 7 Multi-Step Addon By ThemeREX.
+- Contact Form Submissions by Jason Green.
+- Live Preview for Contact Form 7 by Addons for Contact Form 7.
+- Void Contact Form 7 widget for elementor page builder by voidCoders.
+- Country & Phone Field Contact Form 7 by Narinder Singh Bisht.
+- Date Time Picker Field by Carlos Moreira.
 
 = Filters for fields =
 
@@ -139,7 +148,16 @@ if(isset($_GET['cf72post'])){
   $post_id = get_transient($_GET['cf72post']);
   echo 'form submission saved to post:'.$post_id;
 }`
-
+If you wish to redirect to the newly saved post (assuming it is published, see FAQ #16),
+`if(isset($_GET['cf72post'])){
+  $post_id = get_transient($_GET['cf72post']);
+  //get the link to the new post,
+  $url = get_permalink($post_id);
+  if ( wp_redirect( $url, 200 ) ) {
+    exit;
+  }
+  echo 'unable to redirect, maybe the post wasn't published';
+}`
 = 2. map a form to a post? =
 
 In the Contact Form 7 table list you will notice a new column has been added which allows you to create a new custom post mapping.  This will take you to a new screen where you will see your existing fields listed in select dropdowns.  Map your form fields to either a default field (eg title, content, excerpt, or author), or create a custom (meta) field, or even create a new taxonomy for your post.  Once you have mapped your form you can save it as a draft or publish it.  Once published you cannot edit the mapping anymore, so be warned.  As of version 1.2.0 you will have to delete the whole form and start again to remap it.  Subsequent versions may introduce a 'delete' button.
@@ -550,10 +568,20 @@ function custom_mapped_post($post_type){
   //$post_type the post type being registered in the backend.
 }
 `
+
+= Contributions =
+The following have contributed to bug fixes, documentation, and/or translations for this plugin,
+
+[@allenchiirogakutetsu](https://wordpress.org/support/users/allenchiirogakutetsu/)
+
 == Upgrade Notice ==
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.7 =
+* fix cfadmin table class clash with Smart-grid.
+= 4.1.6 =
+* fix cf7 table clash with cf7sg.
 = 4.1.5 =
 * fix hidden field bugs introduced by CF7 v5.2.
 = 4.1.4 =

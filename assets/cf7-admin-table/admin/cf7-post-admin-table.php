@@ -319,42 +319,42 @@ if(!class_exists('Cf7_WP_Post_Table')){
      * @param WP_Post $post the current row's post object
      */
     public function modify_cf7_list_row_actions($actions, $post){
-        //check for your post type
-        if('trash'==$post->post_status) return array();
+      //check for your post type
+      if('trash'==$post->post_status) return array();
 
-        if ($post->post_type =="wpcf7_contact_form"){
-          $form = WPCF7_ContactForm::get_instance($post->ID);
-          $url = admin_url( 'admin.php?page=wpcf7&post=' . absint( $form->id() ) );
-          $edit_link = add_query_arg( array( 'action' => 'edit' ), $url );
-          $idx = strpos($actions['trash'],'_wpnonce=') + 9;
-          $nonce = substr($actions['trash'], $idx, strpos($actions['trash'],'"', $idx) - $idx);
+      if ($post->post_type =="wpcf7_contact_form"){
+        $form = WPCF7_ContactForm::get_instance($post->ID);
+        $url = admin_url( 'admin.php?page=wpcf7&post=' . absint( $form->id() ) );
+        $edit_link = add_query_arg( array( 'action' => 'edit' ), $url );
+        $idx = strpos($actions['trash'],'_wpnonce=') + 9;
+        $nonce = substr($actions['trash'], $idx, strpos($actions['trash'],'"', $idx) - $idx);
 
-          if ( current_user_can( 'wpcf7_edit_contact_form', $form->id() ) ) {
-            $actions['edit'] = sprintf(
-              '<a href="%1$s">%2$s</a>',
-              esc_url( $edit_link ),
-              esc_html( __( 'Edit', 'contact-form-7' ) )
-            );
+        if ( current_user_can( 'wpcf7_edit_contact_form', $form->id() ) ) {
+          $actions['edit'] = sprintf(
+            '<a href="%1$s">%2$s</a>',
+            esc_url( $edit_link ),
+            esc_html( __( 'Edit', 'contact-form-7' ) )
+          );
 
-            $actions['trash'] = sprintf(
-              '<a href="%1$s">%2$s</a>',
-              admin_url( 'post.php?post=' . $post->ID . '&action=trash&_wpnonce=' . $nonce ),
-              esc_html( __( 'Trash', 'contact-form-7' ) )
-            );
+          $actions['trash'] = sprintf(
+            '<a href="%1$s">%2$s</a>',
+            admin_url( 'post.php?post=' . $post->ID . '&action=trash&_wpnonce=' . $nonce ),
+            esc_html( __( 'Trash', 'contact-form-7' ) )
+          );
 
-            $copy_link = wp_nonce_url(
-              add_query_arg( array( 'action' => 'copy' ), $url ),
-              'wpcf7-copy-contact-form_' . absint( $form->id() )
-            );
+          $copy_link = wp_nonce_url(
+            add_query_arg( array( 'action' => 'copy' ), $url ),
+            'wpcf7-copy-contact-form_' . absint( $form->id() )
+          );
 
-            $actions['copy'] = sprintf(
-              '<a href="%1$s">%2$s</a>',
-              esc_url( $copy_link ),
-              esc_html( __( 'Duplicate', 'contact-form-7' ) )
-            );
-          }
+          $actions['copy'] = sprintf(
+            '<a href="%1$s">%2$s</a>',
+            esc_url( $copy_link ),
+            esc_html( __( 'Duplicate', 'contact-form-7' ) )
+          );
         }
-        return $actions;
+      }
+      return $actions;
     }
     /**
      * Redirect to new table list on form delete
@@ -375,30 +375,6 @@ if(!class_exists('Cf7_WP_Post_Table')){
        return $location;
      }
 
-    /**
-     * Function to populate the quick edit form
-     * Hooked on 'quick_edit_custom_box' action
-     *
-     * @since 1.0.0
-     * @param      string    $column_name     column name to add edit field.
-     * @param      string    $post_type     post type being displayed.
-     * @return     string    echos the html fields.
-    **/
-    /*public function quick_edit_box( $column_name, $post_type ) {
-      if("wpcf7_contact_form" != $post_type){
-        return;
-      }
-      static $printNonce = TRUE;
-      if ( $printNonce ) {
-          $printNonce = FALSE;
-          wp_nonce_field( plugin_basename( __DIR__ ), 'cf7_key_nonce' );
-      }
-      switch ( $column_name ) {
-        default:
-          //echo '';
-          break;
-      }
-    }*/
     /**
      *cf7-form Shortcode handler
      *
@@ -432,7 +408,9 @@ if(!class_exists('Cf7_WP_Post_Table')){
       }
     }
   } //end class
-  function get_cf7form_id($cf7_key){
-  	return Cf7_WP_Post_Table::form_id($cf7_key);
+  if(!function_exists('get_cf7form_id')){
+    function get_cf7form_id($cf7_key){
+    	return Cf7_WP_Post_Table::form_id($cf7_key);
+    }
   }
 }

@@ -54,7 +54,7 @@ class Cf7_2_Post_Admin {
 	 * @access   private
 	 * @var      Cf7_WP_Post_Table    $cf7_list_table   cf7 admin list table object.
 	 */
-	private $cf7_list_table;
+	// private $cf7_list_table;
   /**
   * The screen ID of our custom admin page.
   * @since 3.0.0
@@ -73,7 +73,7 @@ class Cf7_2_Post_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-    $this->cf7_list_table = Cf7_WP_Post_Table::set_table();
+    // $this->cf7_list_table = Cf7_WP_Post_Table::set_table();
     $this->load_dependencies();
 	}
 

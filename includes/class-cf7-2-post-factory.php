@@ -1175,9 +1175,7 @@ class Cf7_2_Post_Factory {
   *@param WPCF7_Submission $submission cf7 submission object.
   */
   public function save_form_2_post($submission){
-    debug_msg($_POST);
     $cf7_form_data = $submission->get_posted_data();
-    debug_msg($cf7_form_data);
     $is_submitted = true;
     if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
       $is_submitted = false;
