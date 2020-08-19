@@ -376,7 +376,7 @@ class Cf7_2_Post_Public {
   }
   /**
   *  Funciton to un-array single select values
-  * Hooked to 'cf7_2_post_saving_tag_{$tag_type}'
+  * Hooked to 'wpcf7_posted_data_{$tag_type}'
   *@since 4.1.8
   *@param string $value cf7 plugin submitted value
   *@param string $field field name
