@@ -1,4 +1,4 @@
-<fieldset class="inline-edit-col-left">
+<fieldset class="inline-edit-col-right">
   <div class="inline-edit-col">
   	<label class="alignleft">
   		<span class="title"><?=__('Form 2 post', 'post-my-contact-form-7')?></span>

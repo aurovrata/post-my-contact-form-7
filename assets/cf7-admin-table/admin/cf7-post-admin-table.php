@@ -93,20 +93,20 @@ if(!class_exists('Cf7_WP_Post_Table')){
           break;
         case 'edit':
           //get all cf7 forms
-          $cf7_posts = get_posts(array(
-            'post_type'=>'wpcf7_contact_form',
-            'posts_per_page' => -1,
-          ));
-          $keys=array();
-          if(!empty($cf7_posts)){
-            foreach($cf7_posts as $cf7){
-              $keys[]=$cf7->post_name;
-            }
-            wp_reset_postdata();
-          }
-          wp_enqueue_script('jquery-effects-core');
+          // $cf7_posts = get_posts(array(
+          //   'post_type'=>'wpcf7_contact_form',
+          //   'posts_per_page' => -1,
+          // ));
+          // $keys=array();
+          // if(!empty($cf7_posts)){
+          //   foreach($cf7_posts as $cf7){
+          //     $keys[]=$cf7->post_name;
+          //   }
+          //   wp_reset_postdata();
+          // }
+          // wp_enqueue_script('jquery-effects-core');
           wp_enqueue_script( 'cf7-post-table-js', plugin_dir_url( __FILE__ ) . 'js/cf7-post-table.js', false, $this->version, true );
-          wp_localize_script('cf7-post-table-js','cf7_2_post_admin', array('keys'=>$keys));
+          // wp_localize_script('cf7-post-table-js','cf7_2_post_admin', array('keys'=>$keys));
           break;
       }
   	}
@@ -259,23 +259,12 @@ if(!class_exists('Cf7_WP_Post_Table')){
     * @return     Array    array of columns to display.
     */
     public function modify_cf7_list_columns($columns){
-      /** Fix title edit.
-      * @since 3.8.5
-      */
-      $newcolumns = array();
-      foreach($columns as $key=>$value){
-        switch($key){
-          case 'title':
-            $newcolumns['cf7_title'] = $columns[$key];
-            break;
-          default:
-            $newcolumns[$key] = $columns[$key];
-            break;
-        }
-      }
-      $newcolumns['shortcode'] = 'Shortcode<br /><span class="cf7-help-tip"><a href="javascript:void();">What\'s this?</a><span class="cf7-short-info">Use this shortcode the same way you would use the contact-form-7 shortcode. (See the plugin page for more information )</span></span>';
-      $newcolumns['cf7_key'] = __('Form key', 'contact-form-7');
-      return $newcolumns;
+
+      if(isset($columns['title'])) $columns['title'] = __('Form','contact-form-7');
+      if(isset($columns['date'])) unset($columns['date']);
+      $columns['shortcode'] = 'Shortcode<br /><span class="cf7-help-tip"><a href="javascript:void();">What\'s this?</a><span class="cf7-short-info">Use this shortcode the same way you would use the contact-form-7 shortcode. (See the plugin page for more information )</span></span>';
+      $columns['cf7_key'] = __('Form key', 'post-my-contact-form-7');
+      return $columns;
     }
     /**
     * Populate custom columns in cf7 list table
@@ -286,14 +275,18 @@ if(!class_exists('Cf7_WP_Post_Table')){
     * @return     String    value to display.
     */
     public function populate_custom_column( $column, $post_id ) {
+      $form = get_post($post_id);
       switch ( $column ) {
+        case 'title':
+        debug_msg($column);
+        break;
         case 'cf7_title':
           $title = get_the_title($post_id);
           echo '<strong><a class="row-title" href="'. admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $post_id ) .'" aria-label="“'. $title .'” (Edit)">'. $title .'</a></strong>';
+          echo '<div class="cf7_post_'.$post_id.'" style="display:none"><span class="post_title">'.$title.'</span><span class="post_name">'.$form->post_name.'</span></div>';
           break;
         case 'shortcode' :
 
-          $form = get_post($post_id);
     			$output = "\n" . '<span class="shortcode cf7-2-post-shortcode"><input type="text"'
     				. ' onfocus="this.select();" readonly="readonly"'
     				. ' value="' . esc_attr( '[cf7form cf7key="'.$form->post_name.'"]' ) . '"'
@@ -303,12 +296,27 @@ if(!class_exists('Cf7_WP_Post_Table')){
 
           break;
         case 'cf7_key':
-          $form = get_post($post_id);
           echo '<span class="cf7-form-key">'.$form->post_name.'</span>';
           break;
       }
     }
+    /**
+    * Change form edit links
+    *
+    *@since 1.4
+    *@param string $param text_description
+    *@return string text_description
+    */
+    public function edit_form_link($link, $post_id){
+      if(!is_admin()) return $link;
+      $post = get_post( $post_id );
+      // debug_msg($link, 'link ');
 
+      if('wpcf7_contact_form' == $post->post_type){
+        $link = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $post_id );
+      }
+      return $link;
+    }
     /**
   	 * Modify the quick action links in the contact table.
   	 * Since this plugin replaces the default contact form list table

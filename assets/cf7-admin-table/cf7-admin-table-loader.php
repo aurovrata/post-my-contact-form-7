@@ -21,6 +21,8 @@ if(!$cf7_admin->hooks()){
   add_action('admin_print_footer_scripts', array( $cf7_admin, 'change_add_new_button' ),1);
   //catch cf7 delete redirection
   add_filter('wp_redirect', array( $cf7_admin, 'filter_cf7_redirect'),1,2 );
+  /** @since 4.1.8 edit edit link for form posts. */
+  add_filter('get_edit_post_link', array($cf7_admin, 'edit_form_link'),10,2 );
   //add quick edit
   //add_action( 'quick_edit_custom_box',   array( $cf7_admin, 'quick_edit_box'), 100, 2 );
   //cf7-form shortcode

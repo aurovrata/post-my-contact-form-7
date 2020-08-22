@@ -166,8 +166,11 @@
           });
           $tax.nextAll('div.custom-taxonomy-input-fields').eq(0).each(function(){
             var $this = $(this);
+            $this.find('button.close-details').off('click', closeDetails);
             $this.find('button.close-details').on('click', closeDetails);
+            $this.find('input.taxonomy-slug').off('change', taxonomySlug);
             $this.find('input.taxonomy-slug').on('change', taxonomySlug);
+            $this.find('input.plural-name').off('change', pluralName);
             $this.find('input.plural-name').on('change', pluralName);
           });
         });
@@ -422,9 +425,11 @@
     //AJAX Submission
     //submit button
 
-    $('form#cf7-post-mapping-form').submit(function(event){
-      event.preventDefault();
-      var buttonID = $(this).prop('submited');
+    $('form#cf7-post-mapping-form').submit('input[type="submit"]',function(e){
+      e.preventDefault();
+      const $button = $(e.originalEvent.submitter);
+      if($button.is('button')) return false;
+      let buttonID = $button.attr('id');
       var source = $('#post_type_source').val();
       $('.spinner.'+buttonID).css('visibility','visible');
       switch(buttonID){
@@ -432,7 +437,7 @@
           $('div#ajax-response').text('Saving...');
           break;
         case 'save_post':
-          var msg = $('input#'+buttonID).val().slice(0,-1) + 'ing...';
+          var msg = $button.val().slice(0,-1) + 'ing...';
           $('div#ajax-response').text(msg);
           break;
       }

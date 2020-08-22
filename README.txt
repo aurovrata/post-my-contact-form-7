@@ -580,6 +580,8 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 == Change Log ==
 = 4.1.8 =
 * fix single select values.
+* improved form admin tables.
+* fixed js issue in admin mapping page.
 = 4.1.7 =
 * fix cfadmin table class clash with Smart-grid.
 = 4.1.6 =

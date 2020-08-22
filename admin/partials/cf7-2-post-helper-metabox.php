@@ -3,16 +3,19 @@
 ?>
 <p><?=__('Click on a link to copy the helper snippet code and paste it in your <em>functions.php</em> file.','post-my-contact-form-7')?></p>
 <div id="admin-hooks" class="postbox closed">
-  <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Helper','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
-    <h3 class="hndle"><?=__('Admin hooks', 'post-my-contact-form-7')?></h3>
-
-    <div class="inside">
-      <p>
-        <?=__('these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.','post-my-contact-form-7')?>
-      </p>
-      <ul class="helper-list">
-        <li class="factory-hook">1.
-          <a class="helper" data-cf72post="add_filter('cf7_2_post_supports_{$post_type}','set_supports');
+  <div class="postbox-header">
+    <h4><?=__('Admin hooks', 'post-my-contact-form-7')?></h4>
+    <div class="handle-actions hide-if-no-js">
+      <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Helper','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+    </div>
+  </div>
+  <div class="inside">
+    <p>
+      <?=__('these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.','post-my-contact-form-7')?>
+    </p>
+    <ul class="helper-list">
+      <li class="factory-hook">1.
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_supports_{$post_type}','set_supports');
 /**
 * Function to set supports attributes for custom posts '{$post_type}' created by the Post My CF7 Form plugin.
 * Hooked on 'cf7_2_post_supports_{$custom_post_type}'
@@ -114,16 +117,17 @@ function filter_posts($displayed_posts, $form_id){
 </div>
 
 <div id="loading-hooks" class="postbox closed">
-  <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Loading Hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
-    <h3 class="hndle"><?=__('Form loading hooks', 'post-my-contact-form-7')?></h3>
-
-    <div class="inside">
-      <p>
-        <?=__('these are triggered when your form is being loaded on the front-end and are useful to customise the form.', 'post-my-contact-form-7')?>
-      </p>
-      <ul class="helper-list">
-        <li>6.
-          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_form_append_output', 'custom_cf7_script',10,5);
+  <div class="postbox-header">
+    <h4><?=__('Form loading hooks', 'post-my-contact-form-7')?></h4>
+    <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Loading Hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+  </div>
+  <div class="inside">
+    <p>
+      <?=__('these are triggered when your form is being loaded on the front-end and are useful to customise the form.', 'post-my-contact-form-7')?>
+    </p>
+    <ul class="helper-list">
+      <li>6.
+        <a class="helper" data-cf72post="add_filter( 'cf7_2_post_form_append_output', 'custom_cf7_script',10,5);
 /**
 * Function to append an inline script at the end of the cf7 form.
 * Note: you can also add a script inside your theme js/ folder in a file with the name of your form unique key <unique-key>.js which will be automatically loaded.
@@ -266,15 +270,17 @@ function disable_page_cache_metas($print_on_page){
   </div>
 </div>
 <div id="submit-hooks" class="postbox closed">
-  <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Submitted hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
-    <h3 class="hndle ui-sortable-handle"><?=__('Form submitted hooks','post-my-contact-form-7')?></h3>
-    <div class="inside">
-      <p>
-        <?=__('these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.','post-my-contact-form-7')?>
-      </p>
-      <ul class="helper-list">
-        <li>11.
-          <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type_f}_author',10,4);
+  <div class="postbox-header">
+    <h4><?=__('Form submitted hooks','post-my-contact-form-7')?></h4>
+    <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Submitted hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+  </div>
+  <div class="inside">
+    <p>
+      <?=__('these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.','post-my-contact-form-7')?>
+    </p>
+    <ul class="helper-list">
+      <li>11.
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type_f}_author',10,4);
 /**
 * Function to change the author of saved/submitted posts.
 * Note: For logged in users submitting a draft form, the post is saved with the user as author.  Therefore changing this will result in the user not being able to reload their draft form.

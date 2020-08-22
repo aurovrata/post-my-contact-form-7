@@ -247,10 +247,10 @@ class Cf7_2_Post {
 		//filter message for draft saved forms.
 		$this->loader->add_filter('wpcf7_display_message', $plugin_public, 'draft_message', 100, 2 );
     /** @since 4.1.8 filter selectable field types, fix for CF7 v5.2.1 changes. */
-    $this->loader->add_filter('wpcf7_posted_data_select', $plugin_public, 'array_to_single', 1, 2 );
-    $this->loader->add_filter('wpcf7_posted_data_select*', $plugin_public, 'array_to_single', 1, 2 );
-    $this->loader->add_filter('wpcf7_posted_data_dynamic-select', $plugin_public, 'array_to_single', 1, 2 );
-    $this->loader->add_filter('wpcf7_posted_data_dynamic-select*', $plugin_public, 'array_to_single', 1, 2 );
+    $this->loader->add_filter('wpcf7_posted_data_select', $plugin_public, 'array_to_single', 1, 3 );
+    $this->loader->add_filter('wpcf7_posted_data_select*', $plugin_public, 'array_to_single', 1, 3 );
+    $this->loader->add_filter('wpcf7_posted_data_dynamic-select', $plugin_public, 'array_to_single', 1, 3 );
+    $this->loader->add_filter('wpcf7_posted_data_dynamic-select*', $plugin_public, 'array_to_single', 1, 3 );
 	}
 
 	/**
