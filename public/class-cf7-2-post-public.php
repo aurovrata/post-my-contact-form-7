@@ -383,7 +383,6 @@ class Cf7_2_Post_Public {
   *@return string single value if original was single.
   */
   public function array_to_single($value, $org, $tag){
-    debug_msg($value, "{$tag->name} value ");
     if(is_array($value) && !is_array($_POST[$tag->name])){
       $value = $_POST[$tag->name];
     }

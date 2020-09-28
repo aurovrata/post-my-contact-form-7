@@ -2,7 +2,7 @@
 //helper snippets
 ?>
 <p><?=__('Click on a link to copy the helper snippet code and paste it in your <em>functions.php</em> file.','post-my-contact-form-7')?></p>
-<div id="admin-hooks" class="postbox closed">
+<div id="admin-hooks" class="postbox">
   <div class="postbox-header">
     <h4><?=__('Admin hooks', 'post-my-contact-form-7')?></h4>
     <div class="handle-actions hide-if-no-js">

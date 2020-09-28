@@ -1161,8 +1161,8 @@ class Cf7_2_Post_Factory {
       add_action('save_post_'.$post_type, function($post_id, $post, $update){
         if($update) return $post_id;
         $cf7_flag = get_post_meta($post_id, '_cf7_2_post_form_submitted', true);
-        if(empty($cf7_flag)){
-          update_post_meta($post_id, '_cf7_2_post_form_submitted', 'no');
+        if(empty($cf7_flag)){ /** @since 4.1.9 default to yes */
+          update_post_meta($post_id, '_cf7_2_post_form_submitted', 'yes');
         }
         return $post_id;
       }, 10,3);

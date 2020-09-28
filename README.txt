@@ -4,8 +4,8 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.5
-Stable tag: 4.1.8
+Tested up to: 5.5.1
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -183,9 +183,22 @@ You may have noticed that in addition to mapping a post field or taxonomy to one
 = 8. How do I allow my form users to create a new term for a taxonomy? =
 This is a little more complex.  You will need to create an input field in your form in which users can submit a new term.  You will then need to hook the action `cf7_2_post_form_mapped_to_{$post_type}` which is fired right at the end of the saving process.  The hook parses the newly created `$post_ID` as well as the submitted `$cf7_form_data` form data array.  You can then check if your user has submitted a new value and [include it in taxonomy](https://codex.wordpress.org/Function_Reference/wp_insert_term) and [assign the new term to the post](https://codex.wordpress.org/Function_Reference/wp_set_object_terms).
 
-= 9. How can I pre-fill a form from a WordPress page template that contains a CF7 form ? =
+= 9. How can I pre-fill a form's field values ? =
 
-This can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in,
+There are are 2 filters provided to achieve this.  In both cases, these filters are fired if the form is mapped to a post type only.  The default behaviour is for the plugin to seek any draft saved form values for teh current user.  A form is saved (draft) if the `save` button tag is used which allows a user to save a partially filled form and to submit it at a later stage.  If a draft form is found for the current user, then the first filter will not be fired,
+
+1. the `cf7_2_post_filter_cf7_field_value` is fired for each field, and a herlper code is availabe in the mapping edit admin page (see the [Screenshot](https://wordpress.org/plugins/post-my-contact-form-7/#screenshots) #8), filter #7.
+
+2. `cf7_2_post_form_values` is fired at the end of values pre-fill process, and allows all the values to be filtered, including those that may have been loaded if the current user as a draft form saved.
+`
+add_filter('cf7_2_post_form_values', 'simple_cf7_form_values' ,10,4);
+function simple_cf7_form_values($field_values, $cf7_id, $post_type, $ck7_key){
+  if( 'my-form'!=$ck7_key ) return $field_values; //check this is the correct form.
+   $field_values['your-name'] = 'prefilled name';
+   return $field_values;
+}
+`
+If you have a WordPress page template that contains a CF7 form and want to change the field values from one page request to another, this can be done using the `cf7_2_post_form_values` filter (see [Filter & Actions](https://wordpress.org/plugins/post-my-contact-form-7/other_notes/) for more details).  You will need to create an [anonymous function](http://php.net/manual/en/functions.anonymous.php) on this filter and pass the CF7 id form your shortcode which you can automatically scan for form your page content.  In the example below I assume that the page contains the default 'Contact Me' CF7 form which I want to pre-fill if a user is logged in,
 
 `
 $content = get_the_content();
@@ -578,6 +591,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.9 =
+* make mapped post types default to _cf7_2_post_form_submitted = yes for posts created in the dashboard.
 = 4.1.8 =
 * fix single select values.
 * improved form admin tables.

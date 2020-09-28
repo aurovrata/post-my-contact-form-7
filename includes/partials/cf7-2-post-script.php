@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
        var fname;
        var cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
        var $input;
-       if(cf7Form.is('div.cf7-smart-grid form.wpcf7-form')){
+       if(cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
          //if the smart grid is enabled, execute the loading once the grid is ready
          cf7Form.on('cf7SmartGridReady', function(){
            preloadForm($(this));
