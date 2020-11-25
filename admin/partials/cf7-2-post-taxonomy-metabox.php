@@ -1,9 +1,8 @@
 <?php
-  // cleand up and formatting 2020-11-24
   /**
    * Get taxonomy data
    */
-  require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-cf7-2-post-factory.php';
+  require_once plugin_dir_path(dirname(dirname( __FILE__ ))) . 'includes/class-cf7-2-post-factory.php';
 
   /**
    * Get post data
@@ -11,9 +10,9 @@
   if ( isset($_GET['id']) ) {
     $cf7_post_id = $_GET['id']; // should validate to integer?
     
-    if ( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
+    if ( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ) {
       $factory_mapping = $this->post_mapping_factory;
-    }else{
+    } else {
       $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
       $this->post_mapping_factory = $factory_mapping;
     }
