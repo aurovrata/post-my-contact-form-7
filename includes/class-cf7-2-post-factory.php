@@ -1439,6 +1439,11 @@ class Cf7_2_Post_Factory {
     foreach ( $this->post_map_taxonomy as $form_field => $taxonomy ) {
       
       $value = isset($cf7_form_data[$form_field]) ? $cf7_form_data[$form_field] : '';
+      $filter_name = $form_field;
+      
+      if ( strpos($form_field, 'cf7_2_post_filter-') === false ) {
+        $filter_name = 'cf7_2_post_filter-' + $form_field;
+      }
       
       /**
        * Filter introduced for plugin developers to map custom plugin tag fields, allows for submitted values to be filtered before being stored.
@@ -1449,13 +1454,13 @@ class Cf7_2_Post_Factory {
        * 
        * @return mixed  $value  string|int|array $terms
        */
-      $value = apply_filters($form_field, $value, $post_id, $cf7_form_data);
-      
+      $value = apply_filters($filter_name, $value, $post_id, $cf7_form_data);
+
       if ( !empty($value) ) {
         $term_taxonomy_ids = wp_set_object_terms($post_id, $value, $taxonomy);
         if ( is_wp_error($term_taxonomy_ids) ) {
-          debug_msg($term_taxonomy_ids, " Unable to set taxonomy (".$taxonomy.") terms");
-          debug_msg($value, "Attempted to set these term values ");
+          debug_msg($term_taxonomy_ids, 'Unable to set taxonomy "' . $taxonomy . '" terms');
+          debug_msg($value, 'Attempted to set these term values');
         }
       }
     }
