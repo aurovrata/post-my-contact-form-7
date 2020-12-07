@@ -1436,23 +1436,30 @@ class Cf7_2_Post_Factory {
     //
     //--------------- taxonomies
     //
-    foreach($this->post_map_taxonomy as $form_field => $taxonomy){
+    foreach ( $this->post_map_taxonomy as $form_field => $taxonomy ) {      
       $value = '';
-      if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
-        $value = apply_filters($form_field, array(), $post_id, $cf7_form_data);
-      }else if(isset( $cf7_form_data[$form_field] )){
-        if( is_array( $cf7_form_data[$form_field] ) ){
-          $value = array_map( 'intval', $cf7_form_data[$form_field] );
-        }else{
-          //debug_msg($cf7_form_data[$form_field], $taxonomy." values ");
-          $value = array_map( 'intval',  array( $cf7_form_data[$form_field] ) );
-        }
+      
+      if ( isset($cf7_form_data[$form_field]) ) {
+        // string|int|array $terms
+        $value = $cf7_form_data[$form_field];
       }
-      if( !empty($value) ){
-        $term_taxonomy_ids = wp_set_object_terms( $post_id , $value, $taxonomy );
-        if ( is_wp_error( $term_taxonomy_ids ) ) {
-        	debug_msg($term_taxonomy_ids, " Unable to set taxonomy (".$taxonomy.") terms");
-          debug_msg($value, "Attempted to set these term values ");
+      
+      /**
+       * Filter introduced for plugin developers to map custom plugin tag fields, allows for submitted values to be filtered before being stored.
+       * @since 
+       * @param mixed  $value          string|int|array $terms  post field value to return, by default it is empty. If you are filtering a taxonomy you can return either slug/id/array.  in case of ids make sure to cast them integers.(see https://codex.wordpress.org/Function_Reference/wp_set_object_terms for more information.)
+       * @param int    $post_id        ID of the post to which the form values are being mapped to
+       * @param array  $cf7_form_data  Submitted form data as an array of field-name=>value pairs Access current field with $cf7_form_data[$form_field]
+       * 
+       * @return mixed  $value  string|int|array $terms
+       */
+      $value = apply_filters($form_field, $value, $post_id, $cf7_form_data);
+      
+      if( !empty($value) ) {
+        $term_taxonomy_ids = wp_set_object_terms($post_id, $value, $taxonomy);
+        if ( is_wp_error($term_taxonomy_ids) ) {
+          debug_msg($term_taxonomy_ids, ' Unable to set taxonomy "' . $taxonomy . '" terms');
+          debug_msg($value, 'Attempted to set these term values');
         }
       }
     }
