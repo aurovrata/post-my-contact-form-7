@@ -1443,7 +1443,7 @@ class Cf7_2_Post_Factory {
       
       // more specific filter names for menu fields
       if ( strpos($filter_name, 'cf7_2_post_filter-') === false ) {
-        $filter_name = 'cf7_2_post_filter-' + $filter_name;
+        $filter_name = 'cf7_2_post_filter-' . $filter_name;
       }
       
       /**
