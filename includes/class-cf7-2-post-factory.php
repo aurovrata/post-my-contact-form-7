@@ -1441,8 +1441,9 @@ class Cf7_2_Post_Factory {
       $value = isset($cf7_form_data[$form_field]) ? $cf7_form_data[$form_field] : '';
       $filter_name = $form_field;
       
-      if ( strpos($form_field, 'cf7_2_post_filter-') === false ) {
-        $filter_name = 'cf7_2_post_filter-' + $form_field;
+      // more specific filter names for menu fields
+      if ( strpos($filter_name, 'cf7_2_post_filter-') === false ) {
+        $filter_name = 'cf7_2_post_filter-' + $filter_name;
       }
       
       /**
@@ -1456,8 +1457,23 @@ class Cf7_2_Post_Factory {
        */
       $value = apply_filters($filter_name, $value, $post_id, $cf7_form_data);
 
+      // cleanup to array
+      if ( !is_array($value) ) {
+        $value = array($value);
+      }
+      $value = array_filter($value);
+      
       if ( !empty($value) ) {
+      
+        // Check for IDs in strings
+        array_walk($value, function(&$value_item){
+          if ( ctype_digit($value_item) ) {
+            $value_item = intval($value_item);
+          }
+        });
+        
         $term_taxonomy_ids = wp_set_object_terms($post_id, $value, $taxonomy);
+        
         if ( is_wp_error($term_taxonomy_ids) ) {
           debug_msg($term_taxonomy_ids, 'Unable to set taxonomy "' . $taxonomy . '" terms');
           debug_msg($value, 'Attempted to set these term values');
