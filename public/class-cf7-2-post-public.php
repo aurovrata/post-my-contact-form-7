@@ -71,7 +71,6 @@ class Cf7_2_Post_Public {
   * @param  WPCF7_Contact_Form $cf7_form  cf7 form object
   */
   public function save_cf7_2_post($cf7_form){
-
     //load the form factory
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
@@ -358,13 +357,14 @@ class Cf7_2_Post_Public {
     return $hidden;
   }
   /**
-  * Filter message for draft forms.
-  * hooked to
+  * Filter messages for draft forms and replace mail_sent_ok message for draft message.
+  * hooked to 'wpcf7_display_message'
   *@since 4.0.0
-  *@param string $param text_description
-  *@return string text_description
+  *@param Array $message message
+  *@param String $status status
+  *@return String message
   */
-  public function draft_message($message, $status){
+  public function display_draft_message($message, $status){
     if('mail_sent_ok'==$status && isset($_POST['save_cf7_2_post']) && 'true'==$_POST['save_cf7_2_post']){
       $form = wpcf7_get_current_contact_form();
       if(!empty($form)){
