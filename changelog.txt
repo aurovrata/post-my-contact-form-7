@@ -1,4 +1,41 @@
 == Change Log ==
+= 4.1.9 =
+* make mapped post types default to _cf7_2_post_form_submitted = yes for posts created in the dashboard.
+= 4.1.8 =
+* fix single select values.
+* improved form admin tables.
+* fixed js issue in admin mapping page.
+= 4.1.7 =
+* fix cfadmin table class clash with Smart-grid.
+= 4.1.6 =
+* fix cf7 table clash with cf7sg.
+= 4.1.5 =
+* fix hidden field bugs introduced by CF7 v5.2.
+= 4.1.4 =
+* fix file upload bug, use $_FILES instead of CF7 submission.
+= 4.1.3 =
+* fix add_filter helper code.
+= 4.1.2 =
+* added submitted files to cf7_2_post_form_submitted_to_$post_type hook.
+* fixed helper functions.
+= 4.1.1 =
+* bug fix for empty table form.
+= 4.1.0 =
+* added mail tags for post links.
+= 4.0.5 =
+* added helper for admin hook 'cf7_2_post_register_post_{$post_type}'
+= 4.0.4 =
+* fix a bug which prevents mapped titles from being saved when files are also mapped.
+= 4.0.3 =
+* load form data directly in inline script if post2CF7FormData fn not loaded.
+= 4.0.2 =
+* fix ability to un-submit system posts in quick-edit.
+= 4.0.1 =
+* fix cf7 hidden field bug.
+= 4.0.0 =
+* spanish translation.
+* french translation.
+* custom message for draft form saving.
 = 3.9.0 =
 * introduce cf7form shortcode to enable Gutenberg use.
 * fix author post to logged-in user.
