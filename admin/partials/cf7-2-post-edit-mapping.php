@@ -3,7 +3,7 @@
 * Redesigned mapping page to align with WordPress UI std.
 *@since 2.5.0
 */
-require_once plugin_dir_path( dirname( dirname( __FILE__ ) ) ) . 'includes/class-cf7-2-post-factory.php' ;
+require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-cf7-2-post-factory.php' ;
 //require_once plugin_dir_path (dirname(__FILE__)) . 'class-cf7-2-post-admin.php';
 //action
 $is_new_mapping = true;
@@ -30,7 +30,7 @@ switch($source){
 
 ?>
 <div class="wrap">
-    <h2><?php esc_html_e('Save Submissions as ','post-my-contact-form-7' ); ?>&quot;<span id="custom-post-title"><?= $post_name ;?>&nbsp;(<?= $post_type?>)</span>&quot;</h2>
+    <h2><?php esc_html_e('Save submissions as ','post-my-contact-form-7' ); ?>&quot;<span id="custom-post-title"><?= $post_name ;?>&nbsp;(<?= $post_type?>)</span>&quot;</h2>
     <form id="cf7-post-mapping-form" name="map_cf7_2_post" method="post">
         <input type="hidden" name="action" value="save_post_mapping"/>
         <?php

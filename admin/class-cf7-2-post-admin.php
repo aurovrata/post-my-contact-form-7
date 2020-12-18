@@ -115,31 +115,22 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
-    if(self::$map_screen_id == $hook){
-      wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
-      wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
-      wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
-    }else{
-      $screen = get_current_screen();
-      switch( $screen->post_type){
-        case WPCF7_ContactForm::post_type:
-          switch($screen->base){
-            case 'edit':
-              wp_enqueue_style( 'cf7-2-post-quick-edit-css', plugin_dir_url( __FILE__ ) . 'css/cf7-table.css', array(), $this->version, 'all' );
-              break;
-          }//
-          break;
-        default:
-          if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type, 'factory')){
-            switch($screen->base){
-              case 'post':
-                wp_enqueue_style( 'cf72-custompost-css', plugin_dir_url( __FILE__ ) . 'css/cf72-custompost.css', array(), $this->version, 'all' );
-                break;
-            }
-          }
+    $screen = get_current_screen();
+    if( 'toplevel_page_wpcf7'==$hook or
+    ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
+
+        wp_enqueue_style( 'cf7-2-post-panel-css', plugin_dir_url( __FILE__ ) . 'css/mapping-panel.css');
+        wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
+        wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
+        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
+    }//
+
+    if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type, 'factory')){
+      switch($screen->base){
+        case 'post':
+          wp_enqueue_style( 'cf72-custompost-css', plugin_dir_url( __FILE__ ) . 'css/cf72-custompost.css', array(), $this->version, 'all' );
           break;
       }
-
     }
 	}
 
@@ -150,32 +141,21 @@ class Cf7_2_Post_Admin {
 	 */
 	public function enqueue_scripts($hook) {
     //default for all admin screens to hide submenu.
-    wp_enqueue_script( 'hide-mapping-menu', plugin_dir_url( __FILE__ ) . 'js/cf72post-hide-menu.js', array( 'jquery'), $this->version, true );
+    // wp_enqueue_script( 'hide-mapping-menu', plugin_dir_url( __FILE__ ) . 'js/cf72post-hide-menu.js', array( 'jquery'), $this->version, true );
 
-    if(self::$map_screen_id == $hook){
+    $screen = get_current_screen();
+    if( 'toplevel_page_wpcf7'==$hook or
+    ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-admin.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
       wp_enqueue_script('jquery-nice-select', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/js/jquery.nice-select.min.js', array( 'jquery' ), $this->version, true );
       wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
-    }else{
-      $screen = get_current_screen();
-      switch($screen->post_type){
-        case WPCF7_ContactForm::post_type:
-          switch($screen->base){
-            case 'edit':
-              wp_enqueue_script( 'cf72post-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-post-quick-edit.js', array( 'jquery' ), $this->version, true );
-              break;
-          }
-          break;
-        default:
-          if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type)){
-            switch($screen->base){
-              case 'edit':
-                wp_enqueue_script( 'cf72custompost-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-custom-post-quick-edit.js', array( 'jquery' ), $this->version, true );
-                break;
-            }
-          }
+    }
+    if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type)){
+      switch($screen->base){
+        case 'edit':
+          wp_enqueue_script( 'cf72custompost-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-custom-post-quick-edit.js', array( 'jquery' ), $this->version, true );
           break;
       }
     }
@@ -799,4 +779,36 @@ class Cf7_2_Post_Admin {
     }
     return $mailtags;
   }
+  /**
+  * Add mapping panel to the cf7 post editor to redirect to pages.
+  * hooked to 'wpcf7_editor_panels'
+  *
+  *@since 5.0.0
+  * @param Array $panel array of panels presented as tabs in the editor, $id => array( 'title' => $panel_title, 'callback' => $callback_function).  The $callback_function must be a valid function to echo the panel html script.
+  */
+  public function add_mapping_panel($panels){
+		$contact_form = WPCF7_ContactForm::get_current();
+
+    $panels['cf7-2-post']=array(
+      'title'=>__('Form to post', 'post-my-contact-form-7'),
+      'callback'=>array($this, 'display_amdin_panel')
+    );
+    return $panels;
+  }
+  /**
+	* Callback fn to display mapping tab in cf7 editor page.
+	*
+	*@since 5.0.0
+	*/
+	public function display_amdin_panel(){
+		// $contact_form = WPCF7_ContactForm::get_current();
+    $cf7_post_id = $_GET['post'];
+    if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
+      $factory_mapping = $this->post_mapping_factory;
+    }else{
+      $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
+      $this->post_mapping_factory = $factory_mapping;
+    }
+		include_once 'partials/cf7-2-post-admin-panel-display.php';
+	}
 }

@@ -621,99 +621,54 @@ class Cf7_2_Post_Factory {
       $this->post_properties['version'] = '1.2.0';
     }
   }
+
   /**
-	 * Return htlm <option></option> for field mapping .
+	 * Return form field mapped..
 	 *
-	 * @since    1.0.0
-   * @param   String   $field_to_map   optional post meta field if already mapped.
+	 * @since    5.0.0
+   * @param   String   $post_field   optional post meta field if already mapped.
    * @param   boolean   $is_meta whether is custom meta field, default is false
-   * @return   String htlm <option></option> for field mapping
+   * @return   String form field this taxonomy is mapped to.
    */
-  public function get_select_options( $field_to_map=null, $is_meta = false){
-    return $this->_select_options( $field_to_map, ($is_meta ? 'meta-field' : 'field') );
+  public function get_mapped_form_field( $post_field, $is_meta = false){
+    return $this->_form_field( $post_field, ($is_meta ? 'meta-field' : 'field') );
   }
 
 
   /**
-	 * Return htlm <option></option> for taxonomy mapping .
+	 * Return form field mapped.
 	 *
-	 * @since    2.0.0
-   * @param String  $field_to_map optional post meta field if already mapped.
-   * @return String htlm <option></option> for field mapping
+	 * @since    5.0.0
+   * @param String  $taxonomy taxonomy id..
+   * @return String form field this taxonomy is mapped to.
    */
-  public function get_taxonomy_select_options( $field_to_map=null){
-    return $this->_select_options( $field_to_map, 'taxonomy' );
+  public function get_taxonomy_mapped_form_field( $taxonomy=null){
+    return $this->_form_field( $taxonomy, 'taxonomy' );
   }
   /**
-	 * Return htlm <option></option> for field mapping .
-	 *
-	 * @since    2.0.0
-   * @param String $post_map_field optional post meta field if already mapped.
-   * @param String  $type   the type of mapping, 'field' | 'meta-field' | 'taxonomy'
-   * @return String htlm <option></option> for field mapping
-   */
-  protected function _select_options( $field_to_map=null, $data_type){
-    if( !class_exists('WPCF7_ContactForm') ){
-      return '<option>'.__('No CF7 Form Class found','post-my-contact-form-7' ).'</option>';
+  * get form field mapped to post field
+  *
+  * @since 5.0.0
+  * @param String $post_field optional post meta field if already mapped.
+  * @param String  $data_type   the type of mapping, 'field' | 'meta-field' | 'taxonomy'
+  * @return String form field this taxonomy is mapped to.
+  */
+  private function _form_field($post_field, $data_type){
+    switch($data_type){
+      case 'meta-field':
+        $prefix = 'cf7_2_post_map_meta-' ;
+        break;
+      case 'taxonomy':
+        $prefix =  'cf7_2_post_map_taxonomy-';
+        break;
+      case 'field':
+      default:
+        $prefix =  'cf7_2_post_map-';
+        break;
     }
-    //load teh form fields from the cf7 post
-    $this->load_form_fields();
-    //find the corresponding mapped field, stored in the cf7 post
-    $cf7_maped_field_name = null;
-    /** @since 4.2.0 allow additional field types to be mapped to taxonomy */
-    $taxonomy_types = array('select','checkbox','radio');
-    $additional_types = apply_filters('cf7_2_post_taxonomy_map_field_types', array());
-    if(!is_array($additional_types)) $additional_types = array($additional_types);
-    $taxonomy_types = array_merge($taxonomy_types, $additional_types);
-
-    if(!empty($field_to_map)){
-      //get_post_meta ( int $post_id, string $key = '', bool $single = false )
-      switch($data_type){
-        case 'meta-field':
-          $prefix = 'cf7_2_post_map_meta-' ;
-          break;
-        case 'taxonomy':
-          $prefix =  'cf7_2_post_map_taxonomy-';
-          break;
-        case 'field':
-        default:
-          $prefix =  'cf7_2_post_map-';
-          break;
-      }
-
-      $cf7_maped_field_name = get_post_meta($this->cf7_post_ID, $prefix.$field_to_map,true);
-      //debug_msg("found meta, ".$prefix.$field_to_map."=".$cf7_maped_field_name,"loading... ");
-    }
-    $options = '  <option value="">'. __('Select a form field to map', 'post-my-contact-form-7' ). '</option>';
-    foreach ($this->cf7_form_fields as $field => $type) {
-      //skip submit buttons
-      if( 'submit' == $type) continue;
-      //if the field to map is the thumbnail, use file type as options
-      if( 'thumbnail' == $field_to_map && 'file' != $type ) continue;
-
-      if( 'taxonomy' == $data_type && !in_array( $type, $taxonomy_types) )  continue;
-        //debug_msg("Found field =".$field.', type='.$type);
-
-
-      if(!empty($cf7_maped_field_name) && $field==$cf7_maped_field_name){
-        $options .= '  <option selected="selected" value="'.$field.'">'.$field.'  ['.$type.']</option>';
-      }else{
-          $options .= '  <option value="'.$field.'">'.$field.'  ['.$type.']</option>';
-      }
-    }
-    //filter option
-    //debug_msg($field_to_map."=>".$cf7_maped_field_name.", ".(strpos($cf7_maped_field_name,'cf7_2_post_filter-')) );
-    if( !empty($cf7_maped_field_name) && 0 === strpos($cf7_maped_field_name,'cf7_2_post_filter-') ){
-      $options .= '  <option class="filter-option" selected="selected" value="'.$cf7_maped_field_name.'">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
-    }else if(!empty($field_to_map)){
-      $options .= '  <option class="filter-option" value="cf7_2_post_filter-'.$this->post_properties['type'].'-'.$field_to_map.'">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
-    }else{
-      $options .= '  <option class="filter-option" value="cf7_2_post_filter">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>';
-    }
-
-    return $options;
+    // debug_msg($prefix.$post_field,$this->cf7_post_ID);
+    return get_post_meta($this->cf7_post_ID, $prefix.$post_field,true);
   }
-
   /**
   * Get the mapping of cf7 form field to taxonomy
   * @since 2.0.0

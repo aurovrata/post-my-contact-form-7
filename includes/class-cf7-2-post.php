@@ -214,6 +214,10 @@ class Cf7_2_Post {
     /** @since 4.1.0 mail tag for post links */
     $this->loader->add_filter( 'wpcf7_collect_mail_tags', $plugin_admin, 'email_tags' );
 
+    /** @since 5.0 */
+    $this->loader->add_filter( 'wpcf7_editor_panels', $plugin_admin, 'add_mapping_panel');
+
+
 	}
 
 	/**

@@ -13,6 +13,11 @@
   }
   /**TODO implement simpler form, with no name attributes on input fields, and instead build ajax data to be sent back to server depending on inputs*/
   $(document).ready(function() {
+    $('.default-post-fields select.nice-select').change(function(){
+      let $this = $(this);
+      if($this.val().length>0) $this.addClass('cf7-post-mapped');
+      else $this.removeClass('cf7-post-mapped');
+    }).niceSelect();
     //since 3.0.0
     var $mapForm = $('#cf7-post-mapping-form');
     $('.nice-select', $mapForm).each(function(){
