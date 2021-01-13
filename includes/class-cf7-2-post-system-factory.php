@@ -104,56 +104,7 @@ class Cf7_2_Post_System extends Cf7_2_Post_Factory {
     }
     return $html;
   }
-  /**
-   * Get a list of meta fields for the requested post_type
-   *
-   * @since 2.0.0
-   * @param      String    $post_type     post_type for which meta fields are requested.
-   * @return     String    a list of option elements for each existing meta field in the DB.
-  **/
-  public static function get_system_post_metas($post_type, $selected=''){
-    global $wpdb;
-    $metas = $wpdb->get_results($wpdb->prepare(
-      "SELECT DISTINCT meta_key
-      FROM {$wpdb->postmeta} as wpm, {$wpdb->posts} as wp
-      WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
-      $post_type
-    ));
-    $html = '';
-    $foundField=false;
-
-    if(false !== $metas){
-      foreach($metas as $row){
-        if( 0=== strpos( $row->meta_key, '_') &&
-        /**
-        * filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
-        * @since 2.0.0
-        * @param boolean $skip true by default
-        * @param string $post_type post type under consideration
-        * @param string $meta_key meta field name
-        */
-        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){
-          //skip _meta_keys, assuming system fields.
-          continue;
-        }//end if
-        $selected_option = '';
-        if($selected==$row->meta_key){
-          $selected_option = ' selected="true"';
-          $foundField= true;
-        }
-
-        $html.='<option value="' . $row->meta_key . '"' . $selected_option . '>' . $row->meta_key . '</option>' . PHP_EOL;
-      }
-    }
-    /**
-    *allows for custom fields to be created and added.
-    *@since 2.2.0
-    */
-    if(!$foundField && !empty($selected)){
-      $html.='<option value="' . $selected . '" selected="true">' . $selected. '</option>' . PHP_EOL;
-    }
-    return $html;
-  }
+  
   /**
 	 * Store the mapping in the CF7 post & create the custom post mapping.
 	 * This is called by the plugin admin class function ajax_save_post_mapping whih is hooked to the ajax form call

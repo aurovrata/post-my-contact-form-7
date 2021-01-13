@@ -731,6 +731,46 @@ class Cf7_2_Post_Factory {
     }
   }
   /**
+   * Get a list of meta fields for the requested post_type
+   * @since 5.0.0
+   * @param      String    $post_type     post_type for which meta fields are requested.
+   * @return     String    a list of option elements for each existing meta field in the DB.
+  **/
+  public function get_system_post_metas(){
+    global $wpdb;
+
+    $post_type= $this->get('type');
+
+    $metas = $wpdb->get_results($wpdb->prepare(
+      "SELECT DISTINCT meta_key
+      FROM {$wpdb->postmeta} as wpm, {$wpdb->posts} as wp
+      WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
+      $post_type
+    ));
+    $html = '';
+    $foundField=false;
+    $post_meta_fields = array();
+
+    if(false !== $metas){
+      foreach($metas as $row){
+        if( 0=== strpos( $row->meta_key, '_') &&
+        /**
+        * filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
+        * @since 2.0.0
+        * @param boolean $skip true by default
+        * @param string $post_type post type under consideration
+        * @param string $meta_key meta field name
+        */
+        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){
+          //skip _meta_keys, assuming system fields.
+          continue;
+        }//end if
+        $post_meta_fields[] = $row->meta_key;
+      }
+    }
+    return $post_meta_fields;
+  }
+  /**
   * Load the cf7 forms fields
   * fields are loaded in the internal array.
   * @since 1.0.0

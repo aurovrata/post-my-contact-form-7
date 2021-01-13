@@ -230,7 +230,7 @@ orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
 #post-type-select input[type="text"],
 select#post_type_source,
 select#system-post-type {
-    width: calc(50% - 5px);
+    /* width: calc(50% - 5px); */
 }
 #system-poststuff span.code {
     background-color: #eaeaea;
@@ -240,7 +240,12 @@ select#system-post-type {
 .post_type_labels {
     min-width: 90px;
     display: inline-block;
-    width: calc(50% - 5px);
+    /* width: calc(50% - 5px); */
+}
+.factory-post {
+	background: white;
+	padding: 5px 10px;
+	border: solid 1px #d2d2d2;
 }
 #post_type_is_menu_position{
   display: none;

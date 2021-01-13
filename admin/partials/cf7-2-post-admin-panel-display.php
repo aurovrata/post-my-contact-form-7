@@ -40,7 +40,7 @@
  }
  $post_fields = '
    <li>
-     <div class="post-meta-field cf7-2-post-field">
+     <div class="cf7-2-post-field">
        <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
        <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options nice-select">
          <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
@@ -48,45 +48,33 @@
        </select>
      </div><span class="cf7-post-msg"></span>
    </li>';
-   $meta_fields = '
-     <li>
-       <div class="post-meta-field cf7-2-post-field">
-         <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
-         <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options nice-select">
-           <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
-           <option class="filter-option" value="cf7_2_post_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
-         </select>
-       </div><span class="cf7-post-msg"></span>
-     </li>';
-
  ?>
 <h3><?php esc_html_e('Save submissions as ','post-my-contact-form-7' ); ?>&quot;<span id="custom-post-title"><?= $post_name ;?>&nbsp;(<?= $post_type?>)</span>&quot;</h3>
-
+<?php if(!is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')):
+   $form = get_post($cf7_post_id);
+?>
+   <input type="hidden" id="post_name" value="<?=$form->post_name?>"/>
+<?php endif;?>
 
 <input type="hidden" name="action" value="save_post_mapping"/>
  <?php wp_nonce_field('cf7_2_post_mapping', 'cf7_2_post_nonce', false, true);?>
 
 <h2><?=__('Save form to post','post-my-contact-form-7' )?></h2>
 <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped-post-type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
-<div class="system-post<?=$class_system?>">
-   <label class="post_type_labels" for="post_type"><?=__('Post Type:', 'post-my-contact-form-7')?></label>
-   <input type="hidden" name="mapped_post_type_source" id="post_type_source" value="system"/>
-   <span id="post-type-display"><?=__('Existing Post', 'post-my-contact-form-7')?></span>
-   <label class="post_type_labels"><?=__('Post:', 'post-my-contact-form-7')?></label>
-   <input type="hidden" id="system-post-type" name="system_post_type" value="<?= $factory_mapping->get('type') ?>"/>
-   <span><?= $post_type ?></span>
-</div>
-<div class="factory-post<?=$class_factory?>">
-   <label class="post_type_labels" for="post_type"><?=__('Post Type:','post-my-contact-form-7')?></label>
-   <span id="post-type-display">
-     <select name="mapped_post_type_source" id="post_type_source" class="nice-select" <?php $factory_mapping->is_published();?>>
-       <option value="factory" <?= ('factory'==$source) ? ' selected="true"' : ''; ?>><?= __('New Post','post-my-contact-form-7')?></option>
-       <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>><?=__('Existing Post','post-my-contact-form-7')?></option>
-     </select>
-   </span>
+
+<div class="factory-post">
+   <div>
+      <label class="post_type_labels" for="post_type"><?=__('Post Type:','post-my-contact-form-7')?></label>
+      <span id="post-type-display">
+        <select name="mapped_post_type_source" id="post_type_source" class="nice--select" <?php $factory_mapping->is_published();?>>
+          <option value="factory" <?= ('factory'==$source) ? ' selected="true"' : ''; ?>><?= __('New Post','post-my-contact-form-7')?></option>
+          <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>><?=__('Existing Post','post-my-contact-form-7')?></option>
+        </select>
+      </span>
+   </div>
    <div id="post-type-exists"<?= ('system'==$source)? '':' class="display-none"';?>>
      <label class="post_type_labels" for="system_post_type"><?=__('Select a Post','post-my-contact-form-7')?></label>
-     <select id="system-post-type" class="nice-select right" name="system_post_type" <?php $factory_mapping->is_published();?>>
+     <select id="system-post-type" class="nice--select right" name="system_post_type" <?php $factory_mapping->is_published();?>>
        <option value=""><?=__('Select a Post','post-my-contact-form-7')?></option>
        <?php echo $factory_mapping->get_system_posts_options();?>
      </select>
@@ -141,5 +129,6 @@
 </ul>
 <h2><?=__('Custom Meta Fields','post-my-contact-form-7' )?></h2>
 <ul class="default-post-meta-fields">
-
+<?php include_once 'cf7-2-post-field-metabox.php'; ?>
 </ul>
+<p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>

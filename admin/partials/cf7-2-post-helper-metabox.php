@@ -14,7 +14,7 @@
       <?=__('these are triggered when your form is being mapped to a post, and can be used to customise the mapping process.','post-my-contact-form-7')?>
     </p>
     <ul class="helper-list">
-      <li class="factory-hook">1.
+      <li class="factory-hook">1.1)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_supports_{$post_type}','set_supports');
 /**
 * Function to set supports attributes for custom posts '{$post_type}' created by the Post My CF7 Form plugin.
@@ -27,7 +27,7 @@ function set_supports($supports){
   return $default_supports;
 }" href="javascript:void(0);"><?=__('Post Supports Filter','post-my-contact-form-7')?></a> <?=__('custom post <code>supports</code> attributes (<a href="https://codex.wordpress.org/Function_Reference/register_post_type#supports">documentation</a>).','post-my-contact-form-7')?>
       </li>
-      <li class="factory-hook">1b.
+      <li class="factory-hook">1.2)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_register_post_{$post_type}', 'cf7_2_modified_custom_post_type');
 /**
 * Function to modify the registration of the custom post type '{$post_type}' created by the Post My CF7 Form plugin.
@@ -41,7 +41,7 @@ function cf7_2_modified_custom_post_type($post_args){
   return $post_args;
 }" href="javascript:void(0);"><?=__('Custom Post Registration Filter','post-my-contact-form-7')?></a> <?=__('to further customise custom post registration arguments(<a href="https://codex.wordpress.org/Function_Reference/register_post_type#Arguments">documentation</a>).', 'post-my-contact-form-7')?>
       </li>
-      <li class="factory-hook">2.
+      <li class="factory-hook">1.3)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_capabilities_{$post_type}', 'set_capabilities');
 /**
 * Function to set access  capabilities for custom posts '{$post_type}' created by the Post My CF7 Form plugin.
@@ -63,7 +63,7 @@ $capabilities = array(
   return $capabilities;
 }" href="javascript:void(0);"><?=__('Post Access Filter','post-my-contact-form-7')?></a> <?=__('custom post access <code>capabilities</code> (<a href="http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types">documentation</a>).','post-my-contact-form-7')?>
       </li>
-      <li class="taxonomy-hook">3.
+      <li class="taxonomy-hook">1.4)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_filter_taxonomy_registration-{$taxonomy_slug}', 'register_custom_tags');
 /**
 * Function to modify the registration of the custom taxonomy '{$taxonomy_slug}' created by the Post My CF7 Form plugin.
@@ -77,7 +77,7 @@ function register_custom_tags($taxonomy_arg){
   return $taxonomy_arg;
 }" href="javascript:void(0);"><?=__('Taxonomy Registration Filter','post-my-contact-form-7')?></a> <?=__('to change custom taxonomy like tags (<a href="https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments">documentation</a>).', 'post-my-contact-form-7')?>
       </li>
-      <li class="system-hook">4.
+      <li class="system-hook">1.5)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_skip_system_metakey', 'filter_post_metas', 10, 3);
 /**
 * Function enable mapping for form fields to internal meta-field (starting with '_').
@@ -96,7 +96,7 @@ function filter_post_metas($skip, $post_type, $meta_field_name){
   return $skip;
 }" href="javascript:void(0);"><?=__('Internal Meta Filter','post-my-contact-form-7')?></a> <?=__('to show system post internal meta-fields.', 'post-my-contact-form-7')?>
       </li>
-      <li class="system-hook">5.
+      <li class="system-hook">1.6
         <a class="helper" data-cf72post="add_filter('cf7_2_post_display_system_posts', 'filter_posts', 10, 2);
 /**
 * Function enable mapping for form fields to internal meta-field (starting with '_').
@@ -126,7 +126,7 @@ function filter_posts($displayed_posts, $form_id){
       <?=__('these are triggered when your form is being loaded on the front-end and are useful to customise the form.', 'post-my-contact-form-7')?>
     </p>
     <ul class="helper-list">
-      <li>6.
+      <li>2.1)
         <a class="helper" data-cf72post="add_filter( 'cf7_2_post_form_append_output', 'custom_cf7_script',10,5);
 /**
 * Function to append an inline script at the end of the cf7 form.
@@ -163,7 +163,7 @@ function custom_cf7_script($script, $shortcode_attrs, $nonce, $cf7form_key, $for
   return $script;
 }" href="javascript:void(0);"><?=__('Custom javascript', 'post-my-contact-form-7')?></a> <?=__('appended at the end of your form.','post-my-contact-form-7')?>
         </li>
-        <li>7.
+        <li>2.2)
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value', 'field_default_value',10,5);
 /**
 * Function to pre-fill form fields when form is loading.
@@ -177,9 +177,8 @@ function custom_cf7_script($script, $shortcode_attrs, $nonce, $cf7form_key, $for
 * @return mixed value of field.  For fields than can accept array values, an array can be returned.
 */
 function field_default_value($value, $cf7_id, $field, $cf7form_key, $form_terms){
-  if('contact-us'!==$cf7form_key ){
-    return $value;
-  }
+  if('{$form_key}'!=$cf7_key) return $value;
+  
   //assuming my target visitors are from Chennai, India, I could pre-fill the fields your-location and your-country as,
   switch($field){
     case 'your-location':
@@ -192,7 +191,7 @@ function field_default_value($value, $cf7_id, $field, $cf7form_key, $form_terms)
   return $value;
 }" href="javascript:void(0);"><?=__('Default Values Filter','post-my-contact-form-7')?></a> <?=__('default field value when form is displayed.','post-my-contact-form-7')?>
         </li>
-        <li>8.
+        <li>2.3)
           <a class="helper" data-cf72post="add_filter('cf7_2_post_filter_cf7_taxonomy_terms', 'modify_my_terms',10,4);
 /**
 * Function to pre-fill form dropdown/radio/checkbox fields mapped to a taxonomy.
@@ -214,7 +213,7 @@ function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
   return $terms_id;
 }" href="javascript:void(0);"><?=__('Default Term Values Filter','post-my-contact-form-7')?></a> <?=__('taxonomy terms in dropdown/radio/checkbox.','post-my-contact-form-7')?>
         </li>
-        <li>9.
+        <li>2.4)
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_taxonomy_query', 'filter_taxonomy_terms',10, 5);
   /**
   * Function to filter the list of terms shown in a mapped taxonomy field.  For example if you have a select field you can restrict the options listed to a select set of terms.
@@ -250,7 +249,7 @@ function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
   return $query;
 }" href="javascript:void(0);"><?=__('Filter term list','post-my-contact-form-7')?></a> <?=__('in mapped taxonomy field.','post-my-contact-form-7')?>
       </li>
-        <li>10.
+        <li>2.5)
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_print_page_nocache_metas','disable_page_cache_metas',10);
 /**
 *Function to disable the no-cache meta tags in the form page head section.
@@ -266,6 +265,22 @@ function disable_page_cache_metas($print_on_page){
   return $print_on_page;
 }" href="javascript:void(0);"><?=__('Page Cache Filter','post-my-contact-form-7')?></a> <?=__('to remove nocache meta tags in &lt;head&gt;.','post-my-contact-form-7')?>
       </li>
+      <li>2.6)
+        <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_user_draft_form_query','filter_posts_query_prefill_{$form_key_f}',10,3);
+/**
+* Function filter the query args to find a post which values are used to
+* prefill the form for the currently logged in user.
+* @param Array $args array of query attributes for get_posts().
+* @param String $post_type post type form is mapped to.
+* @param string $cf7_key unique key identifying your form.
+* @return boolean false to disable meta tags.
+*/
+function filter_posts_query_prefill_{$form_key_f}($args, $post_type, $cf7_key){
+  if('{$form_key}'!=$cf7_key) return $args;
+  //modify the $args to target the post to prefill the form for this user.
+  rturn $args
+}" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('prfill post query.','post-my-contact-form-7')?>
+    </li>
     </ul>
   </div>
 </div>
@@ -279,7 +294,7 @@ function disable_page_cache_metas($print_on_page){
       <?=__('these are triggered when a user has submitted/saved your form and can be used to manipulate the submitted data and take further action.','post-my-contact-form-7')?>
     </p>
     <ul class="helper-list">
-      <li>11.
+      <li>3.1)
         <a class="helper" data-cf72post="add_filter('cf7_2_post_author_{$post_type}', 'set_{$post_type_f}_author',10,4);
 /**
 * Function to change the author of saved/submitted posts.
@@ -296,7 +311,7 @@ function set_{$post_type_f}_author($author_id, $cf7_id, $submitted_data, $cf7_ke
   return $author_id;
 }" href="javascript:void(0);"><?=__('Author Filter','post-my-contact-form-7')?></a> <?=__('the author of the submitted post .','post-my-contact-form-7')?>
         </li>
-        <li>12.
+        <li>3.2)
           <a class="helper" data-cf72post="add_filter( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type_f}',10,3);
 /**
 * Function to change the post status of saved/submitted posts.
@@ -310,7 +325,7 @@ function publish_new_{$post_type_f}($status, $ckf7_key, $submitted_data){
   return 'publish';
 }" href="javascript:void(0);"><?=__('Post Status Filter','post-my-contact-form-7')?></a> <?=__('to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).','post-my-contact-form-7')?>
         </li>
-        <li>13.
+        <li>3.3)
           <a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_validation', 'force_validation', 10, 2);
 /**
 * Function to force field validation when draft form is saved.
@@ -326,7 +341,7 @@ function force_validation($skip_validation, $cf7_key){
   return skip_validation;
 }" href="javascript:void(0);"><?=__('Draft Validation Filter','post-my-contact-form-7')?></a> <?=__('to enable field validation on draft form saved.','post-my-contact-form-7')?>
         </li>
-        <li>14.
+        <li>3.4)
           <a class="helper" data-cf72post="add_fitler('cf7_2_post_transient_submission_expiration', 'keep_transient',10,2);
 /**
 * Function change the expiration of transient saved post ID after a submission.
@@ -342,7 +357,7 @@ function force_notification($time, $cf7_key){
   return $time;
 }" href="javascript:void(0);"><?=__('Cache Time Filter','post-my-contact-form-7')?></a> <?=__('period to track anonymous submissions.','post-my-contact-form-7')?>
       </li>
-        <li>15.
+        <li>3.5)
           <a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_mail', 'force_notification');
 /**
 * Function to force mail sending for draft form saving.
@@ -358,7 +373,7 @@ function force_notification($skip_mail, $cf7_key){
   return skip_mail;
 }" href="javascript:void(0);"><?=__('Draft Mail Filter','post-my-contact-form-7')?></a> <?=__('to send cf7 mail for draft form saved.','post-my-contact-form-7')?>
       </li>
-      <li>16.
+      <li>3.6)
         <a class="helper" data-cf72post="add_action('cf7_2_post_form_submitted_to_{$post_type}', 'new_{$post_type_f}_mapped',10,4);
 /**
 * Function to take further action once form has been submitted and saved as a post.  Note this action is only fired for submission which has been submitted as opposed to saved as drafts.
@@ -371,7 +386,7 @@ function new_{$post_type_f}_mapped($post_id, $cf7_form_data, $cf7form_key, $subm
   //do something.
 }" href="javascript:void(0);"><?=__('Action','post-my-contact-form-7')?></a> <?=__('after <em>submitted</em> form is saved to post.','post-my-contact-form-7')?>
       </li>
-      <li> 17.
+      <li>3.7)
         <a class="helper" data-cf72post="add_filter('cf72post_default_post_title', 'set_default_title',10,3);
         /**
         * Filter to set the default title for a mapped post.  Use this filter if you are mapping a form to an existing post and are only saving meta-fields.
@@ -411,10 +426,15 @@ return $post_title;
             var text = $target.data('cf72post');
             //get postType
             var postType = $('#mapped_post_type').val();
+            var formKey = $('#post_name').val();
             /** @since 4.1.2 fix post types in function names. */
             text = text.replace(/\{\$post_type\}/gi, postType);
             postType = postType.replace(/-/g,'_');
-            return text.replace(/\{\$post_type_f\}/gi, postType);
+            text = text.replace(/\{\$post_type_f\}/gi, postType);
+            text = text.replace(/\{\$form_key\}/gi, formKey);
+            formKey = formKey.replace(/-/g,'_');
+            text = text.replace(/\{\$form_key_f\}/gi, formKey);
+
           }
         });
       });
