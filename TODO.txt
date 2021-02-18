@@ -12,4 +12,6 @@ DONE
 - hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
   + add mapped post id the cf7 post meta fields
 - post editor / user profile editor on front-end.  Not just edit drafts. see this question )
-- add edit button for saved mappings in map edit page  
+- add edit button for saved mappings in map edit page
+
+- check compatibility with googlemap plugin v1.8

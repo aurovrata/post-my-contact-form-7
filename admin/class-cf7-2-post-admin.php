@@ -120,7 +120,7 @@ class Cf7_2_Post_Admin {
     ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
 
         wp_enqueue_style( 'cf7-2-post-panel-css', plugin_dir_url( __FILE__ ) . 'css/mapping-panel.css');
-        wp_enqueue_style('jquery-nice-select-css', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/css/nice-select.css', array(), $this->version, 'all' );
+        wp_enqueue_style('hybrid-select-css', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.css', array(), $this->version, 'all' );
         wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }//
@@ -149,7 +149,7 @@ class Cf7_2_Post_Admin {
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
-      wp_enqueue_script('jquery-nice-select', plugin_dir_url( __DIR__ ) . 'assets/jquery-nice-select/js/jquery.nice-select.min.js', array( 'jquery' ), $this->version, true );
+      wp_enqueue_script('hybrid-select', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
     }
     if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type)){

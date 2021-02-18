@@ -108,9 +108,28 @@ function filter_post_metas($skip, $post_type, $meta_field_name){
 function filter_posts($displayed_posts, $form_id){
   /*In v2.0 the plugin allows users to map their forms to existing system posts.  By default, only system posts which are visible in the dashboard are listed.  This list can be modified by this filter,*/
   //add an existing post type and label,
-  displayed_posts['some_post'] = 'Some Post';
-  return displayed_posts;
+  $displayed_posts['some_post'] = 'Some Post';
+  return $displayed_posts;
 }" href="javascript:void(0);"><?=__('System Post Filter','post-my-contact-form-7')?></a> <?=__('to show hidden system post for mapping.','post-my-contact-form-7')?>
+      </li>
+      <li class="system-hook">1.7
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_filter_user_draft_form_query', 'filter_user_post_for_prefill', 10, 3);
+/**
+* Function to filter the post query for current user in order to prefill form.
+* For draft forms (using the save button), this query is configured to load the latest draft submission.
+* However, this filter can be used to modify the query for  submitted form that need editing.
+* @param Array $query_args array query args for function get_posts().
+* @param String $post_type post type being mapped to.
+* @param String $form_key unique key identifying the current form.
+* @return Array array of query parameters (for more info see the WordPress codex page on get_posts).
+*/
+function filter_user_post_for_prefill($query_args, $post_type, $form_key){
+  //modifying the query to retrieve the last submitted post for the current user.
+  //the plugin stores a flag '_cf7_2_post_form_submitted' as a meta field to identiy
+  //if a form is submitted or saved as a draft. No for drafts, Yes for submitted.
+  $query_args['meta_query']['value']='yes';
+  return $query_args;
+}" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('user post query for form prefill.','post-my-contact-form-7')?>
       </li>
     </ul>
   </div>
@@ -178,7 +197,7 @@ function custom_cf7_script($script, $shortcode_attrs, $nonce, $cf7form_key, $for
 */
 function field_default_value($value, $cf7_id, $field, $cf7form_key, $form_terms){
   if('{$form_key}'!=$cf7_key) return $value;
-  
+
   //assuming my target visitors are from Chennai, India, I could pre-fill the fields your-location and your-country as,
   switch($field){
     case 'your-location':

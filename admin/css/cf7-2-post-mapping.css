@@ -8,14 +8,14 @@
 ol.helper-list {
     padding-left: 13px;
 }
-form#cf7-post-mapping-form .cf7-2-post-map-labels:hover {
+#cf7-2-post .cf7-2-post-map-labels:hover {
     width: auto;
 }
-form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field:hover .cf7-2-post-map-labels {
+#cf7-2-post #custom-meta-fields.mapping-published .post-meta-field:hover .cf7-2-post-map-labels {
     width: auto;
     min-width: 200px;
 }
-form#cf7-post-mapping-form .select2{
+#cf7-2-post .select2{
   min-width: 120px;
 }
 .misc-pub-section {
@@ -30,7 +30,7 @@ li.select2-results__option .system-taxonomy {
 .default-post-fields{
     padding: 0 12px 12px 12px;
 }
-form#cf7-post-mapping-form .default-post-fields .cf7-2-post-map-labels {
+#cf7-2-post .default-post-fields .cf7-2-post-map-labels {
     display: inline-block;
     font-size: 1.1em;
     width: 100px;
@@ -79,7 +79,7 @@ label{
     font-size: 1.1em;
 }
 .display-none,
-form#cf7-post-mapping-form .cf7-2-post-map-labels.hide{
+#cf7-2-post .cf7-2-post-map-labels.hide{
   display:none;
 }
 #adminmenu ul.wp-submenu li a[href="admin.php?page=map_cf7_2_post"] {
@@ -113,12 +113,12 @@ label[for="post_type"] {
     min-width: 90px;
     display: inline-block;
 }
-form#cf7-post-mapping-form .cf7-2-post-map-labels{
+#cf7-2-post .cf7-2-post-map-labels{
   display:inline-block;
   min-width: 200px;
   vertical-align: middle;
 }
-form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
+#cf7-2-post .cf7-2-post-map-labels.display-none {
     display: none;
 }
 .add-more-field {
@@ -143,7 +143,7 @@ form#cf7-post-mapping-form .cf7-2-post-map-labels.display-none {
   margin-bottom: 3px;
 }
 .remove-field:hover,.add-more-field:hover { cursor: pointer; }
-form#cf7-post-mapping-form .cf7-post-error-msg{
+#cf7-2-post .cf7-post-error-msg{
   display: inline-block;
   margin: 0 5px;
   width: calc(100% - 435px);
@@ -151,15 +151,15 @@ form#cf7-post-mapping-form .cf7-post-error-msg{
   vertical-align: middle;
   position: relative;
 }
-form#cf7-post-mapping-form #custom-meta-fields .cf7-post-error-msg,
-form#cf7-post-mapping-form #post_taxonomy_map .cf7-post-error-msg{
+#cf7-2-post .post-meta-fields .cf7-post-error-msg,
+#cf7-2-post .taxonomy-fields .cf7-post-error-msg{
   width: calc(100% - 480px);
   min-width: 200px;
   margin-left: 2px;
   vertical-align: middle;
   line-height: 15px;
 }
-form#cf7-post-mapping-form .cf7-post-error-msg a {
+#cf7-2-post .cf7-post-error-msg a {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -168,7 +168,7 @@ form#cf7-post-mapping-form .cf7-post-error-msg a {
     margin-left: 0;
     padding-right: 0;
 }
-form#cf7-post-mapping-form .cf7-post-error-msg a.code:hover {
+#cf7-2-post .cf7-post-error-msg a.code:hover {
     position: absolute;
     width: auto;
     top: -5px;
@@ -176,7 +176,7 @@ form#cf7-post-mapping-form .cf7-post-error-msg a.code:hover {
 .field-options.post-options{
   width: 200px;
 }
-.custom-meta-field, .post-meta-field, .custom-taxonomy-field{
+.post-meta-field, .custom-taxonomy-field{
   display: inline-block;
   box-sizing: border-box;
 }
@@ -184,35 +184,35 @@ form#cf7-post-mapping-form .cf7-post-error-msg a.code:hover {
     width: 200px;
     padding: 3px 0;
 }
-form#cf7-post-mapping-form #custom-meta-fields .custom-meta-field,
-form#cf7-post-mapping-form #post_taxonomy_map .custom-taxonomy-field{
+#cf7-2-post .post-meta-field,
+#cf7-2-post .custom-taxonomy-field{
   min-width: 460px;
 }
 
-form#cf7-post-mapping-form #custom-meta-fields.mapping-published .custom-meta-field,
-form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .custom-taxonomy-field {
+#cf7-2-post #custom-meta-fields.mapping-published .custom-meta-field,
+#cf7-2-post #post_taxonomy_map.mapping-published .custom-taxonomy-field {
   max-width: 80%;
   width: auto;
 }
-form#cf7-post-mapping-form  #custom-meta-fields.mapping-published .cf7-post-error-msg,
-form#cf7-post-mapping-form #post_taxonomy_map.mapping-published .cf7-post-error-msg{
+#cf7-2-post  #custom-meta-fields.mapping-published .cf7-post-error-msg,
+#cf7-2-post #post_taxonomy_map.mapping-published .cf7-post-error-msg{
   width: auto;
   min-width: 0;
   max-width: calc(100% - 475px);
   margin-right: 0;
 }
-form#cf7-post-mapping-form #custom-meta-fields.mapping-published .cf7-post-error-msg .cf7-2-post-map-labels {
+#cf7-2-post #custom-meta-fields.mapping-published .cf7-post-error-msg .cf7-2-post-map-labels {
     min-width: 0;
     width: auto;
 }
-form#cf7-post-mapping-form .mapping-published .cf7-2-post-map-labels:disabled {
+#cf7-2-post .mapping-published .cf7-2-post-map-labels:disabled {
     max-width: 260px;
     width: auto;
 }
-form#cf7-post-mapping-form .custom-taxonomy-input-fields input {
+#cf7-2-post .custom-taxonomy-input-fields input {
   width: 100px;
 }
-orm#cf7-post-mapping-form .cf7-2-post-map-labels.taxonomy-slug {
+#cf7-2-post .cf7-2-post-map-labels.taxonomy-slug {
     width: 170px;
 }
 .custom-taxonomy-input-fields label {
@@ -270,7 +270,15 @@ p.cf7-post-error-msg span.code{
     -ms-animation: color-change 1s 3;
     animation: color-change 1s 3;
 }
-
+#menu-position {
+	display: inline-block;
+}
+label.post_type_cb_labels {
+	border-bottom: blue 1px dotted;
+	padding-bottom: 2px;
+	margin-right: 8px;
+  display: inline-block;
+}
 @-webkit-keyframes color-change {
     0% { background-color: red; }
     50% { background-color: inherit; }

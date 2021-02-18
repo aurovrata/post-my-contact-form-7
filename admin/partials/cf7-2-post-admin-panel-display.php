@@ -42,7 +42,7 @@
    <li>
      <div class="cf7-2-post-field">
        <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
-       <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options nice-select">
+       <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options hybrid-select">
          <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
          <option class="filter-option" value="cf7_2_post_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
        </select>
@@ -80,39 +80,32 @@
      </select>
    </div>
    <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
-     <label for="custom_post_type" class="post_type_labels"><?=__('Post type', 'post-my-contact-form-7')?></label>
-     <input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text">
+     <label for="custom_post_type" class="post_type_labels"><?=__('Post type', 'post-my-contact-form-7')?><input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text"/></label>
 
-     <label for="mapped_post_singular_name" class="post_type_labels"><?=__('Singular name', 'post-my-contact-form-7');?></label>
-     <input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text">
-     <label for="mapped_post_plural_name" class="post_type_labels"><?=__('Plural name','post-my-contact-form-7')?></label>
-     <input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text">
+     <label for="mapped_post_singular_name" class="post_type_labels"><?=__('Singular name', 'post-my-contact-form-7');?><input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text"/></label>
+
+     <label for="mapped_post_plural_name" class="post_type_labels"><?=__('Plural name','post-my-contact-form-7')?><input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text"/></label>
+
      <p class="post-type-display">
        <?=__('Attributes','post-my-contact-form-7')?>
      </p>
-     <input type="checkbox" <?php $factory_mapping->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>
-     <label class="post_type_cb_labels">hierarchical</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('public','checked="checked"');?> name="mapped_post_public"/>
-     <label class="post_type_cb_labels">public</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>
-     <label class="post_type_cb_labels">show_ui</label><br />
-     <input id="menu-position-checkbox" type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>
-     <label class="post_type_cb_labels">show_in_menu</label><br />
-     <div id="menu-position"><label>menu_position</label>
-       <input style="width:45px;" type="number" value="<?= $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/>
+     <label class="post_type_cb_labels">
+        <input type="checkbox" <?php $factory_mapping->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>hierarchical</label>
+     <label class="post_type_cb_labels">
+        <input type="checkbox" <?php $factory_mapping->is('public','checked="checked"');?> name="mapped_post_public"/>public</label>
+     <label class="post_type_cb_labels">
+        <input type="checkbox" <?php $factory_mapping->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>show_ui</label>
+     <label class="post_type_cb_labels">
+        <input id="menu-position-checkbox" type="checkbox" <?php $factory_mapping->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>show_in_menu</label>
+     <div id="menu-position">
+        <label class="post_type_cb_labels">menu_position<input style="width:45px;" type="number" value="<?= $factory_mapping->get('menu_position');?>" size="3" name="mapped_post_menu_position"/></label>
      </div>
-     <input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="mapped_post_show_in_admin_bar"/>
-     <label class="post_type_cb_labels">show_in_admin_bar</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="mapped_post_show_in_nav_menus"/>
-     <label class="post_type_cb_labels">show_in_nav_menus</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>
-     <label class="post_type_cb_labels">can_export</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>
-     <label class="post_type_cb_labels">has_archive</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>
-     <label class="post_type_cb_labels">exclude_from_search</label><br />
-     <input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>
-     <label class="post_type_cb_labels">publicly_queryable</label><br />
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('show_in_admin_bar','checked="checked"');?> name="mapped_post_show_in_admin_bar"/>show_in_admin_bar</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('show_in_nav_menus','checked="checked"');?> name="mapped_post_show_in_nav_menus"/>show_in_nav_menus</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>can_export</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>has_archive</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>exclude_from_search</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?php $factory_mapping->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>publicly_queryable</label>
      <div class="clear"></div>
    </div><!-- end post-type-select -->
 </div>

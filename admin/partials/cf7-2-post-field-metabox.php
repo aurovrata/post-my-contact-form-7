@@ -1,11 +1,5 @@
 <?php
 // require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-cf7-2-post-factory.php' ;
-
-$meta_fields = '
-       <select value="%2$s" name="cf7_2_post_map_meta_value-%1$s" class="field-options post-options nice-select">
-         <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
-         <option class="filter-option" value="cf7_2_post_filter-'.$factory_mapping->get('type').'-%1$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
-       </select>';
 $is_new_mapping = true;
 switch($factory_mapping->get('map')){
   case 'draft':
@@ -33,6 +27,7 @@ if(!empty($mapped_fields)):
       <select <?php $factory_mapping->is_published('select');?> class="nice-select cf7-2-post-map-labels options-<?= $factory_mapping->get('type')?>" value="<?=$post_field?>">
         <option value=""><?=__('Select a field','post-my-contact-form-7')?></option>
     <?php
+      $found_field = false;
       foreach($post_metas as $pm):
         $selected='';
         if($pm==$post_field){
@@ -40,7 +35,7 @@ if(!empty($mapped_fields)):
           $found_field = true;
         }
       ?>
-        <option value="<?=$post_metas?>" <?=$selected?>><?=$post_metas?></option>
+        <option value="<?=$pm?>" <?=$selected?>><?=$pm?></option>
     <?php
       endforeach;
       if(!$found_field):
@@ -58,7 +53,11 @@ if(!empty($mapped_fields)):
   <?php
     endif;
     //display the meta-field's form field dropdown.
-    echo sprintf( $meta_fields, $post_field, $factory_mapping->get_mapped_form_field($post_field, true));
+    echo sprintf( '
+           <select value="%2$s" name="cf7_2_post_map_meta_value-%1$s" class="field-options post-options hybrid-select">
+             <option class="default-option" selected="true" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
+             <option class="filter-option" value="cf7_2_post_filter-'.$factory_mapping->get('type').'-%1$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
+           </select>', $post_field, $factory_mapping->get_mapped_form_field($post_field, true));
     if($is_new_mapping):?>
       <span class="dashicons dashicons-minus remove-field"></span>
   <?php
@@ -73,32 +72,25 @@ endif;
     <div class="post-meta-field cf7-2-post-field">
       <span class="spinner meta-label"></span>
     <?php if('system' == $source): //post meta field names are saved in the form field option select name?>
-      <select disabled="disabled" class="nice-select cf7-2-post-map-labels options-<?= $factory_mapping->get('type')?>">
+      <select disabled="disabled" class="hybrid-select cf7-2-post-map-labels options-<?= $factory_mapping->get('type')?>">
         <option value=""><?=__('Select a field', 'post-my-contact-form-7')?></option>
     <?php
       foreach($post_metas as $pm):
-        $selected='';
-        if($pm==$post_field){
-          $selected = ' selected="true"';
-          $found_field = true;
-        }
       ?>
-        <option value="<?=$post_metas?>" <?=$selected?>><?=$post_metas?></option>
+        <option value="<?=$pm?>"><?=$pm?></option>
     <?php
       endforeach;
-      if(!$found_field):
-        ?>
-        <option value="<?=$post_field?>" selected="true"><?=$post_field?></option>
-    <?php
-      endif;
       ?>
-        <option value="cf72post-custom-meta-field"><?=__('Custom field','post-my-contact-form-7')?></option>
+        <option value="cf72post-custom-meta-field" selected="true"><?=__('Custom field','post-my-contact-form-7')?></option>
       </select>
       <input class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled>
     <?php else:?>
       <input disabled="disabled" class="cf7-2-post-map-labels " type="text" name="cf7_2_post_map_meta-meta_key_1" value="meta_key_1">
-    <?php endif;?>
-      <select disabled="disabled" name="cf7_2_post_map_meta_value-meta_key_1" class="nice-select field-options">
+    <?php endif;
+    //display default meta-field select.
+    ?>
+
+      <select disabled="disabled" value="" name="cf7_2_post_map_meta_value-meta_key_1" class="hybrid-select field-options">
         <option class="default-option" value=""><?=__('Select a form field', 'post-my-contact-form-7' )?></option>
         <option class="filter-option" value="cf7_2_post_filter"><?=__('Hook with a filter', 'post-my-contact-form-7' )?></option>
       </select>
