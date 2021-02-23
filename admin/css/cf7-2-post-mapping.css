@@ -27,35 +27,30 @@ ol.helper-list {
 li.select2-results__option .system-taxonomy {
     color: #0015ff;
 }
-.default-post-fields{
+#c2p-default-post-fields{
     padding: 0 12px 12px 12px;
 }
-#cf7-2-post .default-post-fields .cf7-2-post-map-labels {
+#c2p-default-post-fields .cf7-2-post-map-labels {
     display: inline-block;
     font-size: 1.1em;
-    width: 100px;
+    min-width: 200px;
+    text-align: right;
+    margin-right: 5px;
 }
-.default-post-fields .post-meta-field{
-    display: inline-block;
-}
-.default-post-fields .nice-select.field-options.post-options {
+#c2p-default-post-fields .nice-select.field-options.post-options {
     display: inline-block;
     float: none;
     margin-left: 5px;
     vertical-align: middle;
 }
-.default-post-fields .cf7-post-error-msg {
+#c2p-mapped-fields .cf7-post-msg {
     display: inline-block;
     margin: 0 5px;
-    width: calc(100% - 325px);
+    /* width: calc(100% - 325px); */
     line-height: 15px;
     vertical-align: middle;
     position: relative;
 }
-.default-post-fields .field-options.post-options{
-  width: 220px;
-}
-
 label{
   cursor: default;
 }
@@ -113,14 +108,6 @@ label[for="post_type"] {
     min-width: 90px;
     display: inline-block;
 }
-#cf7-2-post .cf7-2-post-map-labels{
-  display:inline-block;
-  min-width: 200px;
-  vertical-align: middle;
-}
-#cf7-2-post .cf7-2-post-map-labels.display-none {
-    display: none;
-}
 .add-more-field {
   color: blue;
   border: 2.5px solid blue;
@@ -151,13 +138,17 @@ label[for="post_type"] {
   vertical-align: middle;
   position: relative;
 }
-#cf7-2-post .post-meta-fields .cf7-post-error-msg,
+#cf7-2-post #c2p-post-meta-fields .cf7-post-error-msg,
 #cf7-2-post .taxonomy-fields .cf7-post-error-msg{
   width: calc(100% - 480px);
   min-width: 200px;
   margin-left: 2px;
   vertical-align: middle;
   line-height: 15px;
+}
+#c2p-mapped-fields li > div {
+	display: inline-block;
+	margin-right: 10px;
 }
 #cf7-2-post .cf7-post-error-msg a {
     overflow: hidden;
@@ -239,7 +230,7 @@ select#system-post-type {
     display: inline-block;
     /* width: calc(50% - 5px); */
 }
-.factory-post {
+#c2p-factory-post {
 	background: white;
 	padding: 5px 10px;
 	border: solid 1px #d2d2d2;
@@ -259,8 +250,8 @@ select.field-options option.filter-option{
 p.cf7-post-error-msg span.code{
   font-size: 1.1em;
 }
-#postcustomstuff p.animate-color,
-#postbox-container-2  span.animate-change{
+#c2p-mapped-fields span.animate-color,
+#c2p-mapped-fields span.animate-change{
     -webkit-animation: color-change 1s 3;
     -moz-animation: color-change 1s 3;
     -o-animation: color-change 1s 3;
@@ -271,7 +262,7 @@ p.cf7-post-error-msg span.code{
 	display: inline-block;
 }
 .post-field-name {display: inline-block;}
-#post-meta-fields > li {margin: 0;}
+#c2p-post-meta-fields > li {margin: 0;}
 label.post_type_cb_labels {
 	border-bottom: blue 1px dotted;
 	padding-bottom: 2px;
@@ -322,15 +313,21 @@ button.button-link.close-details {
 .popup {
     display: none;
     position: absolute;
-    top: -28px;
-    margin-left: 120px;
+    top: -38px;
+    left: 38px;
     background: #515151;
     color: white;
     padding: 5px;
+    font-weight: bold;
+    border-radius: 3px;
 }
-.cf7-post-error-msg a.code:hover + span.popup{
+.cf7-post-msg a.code:hover + span.popup{
   display:block;
-  width: 79px;
+  width: max-content;
+}
+.popup span {
+	display: block;
+	font-weight: normal;
 }
 .spinner.meta-label {
     float: none;

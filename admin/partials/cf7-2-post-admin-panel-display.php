@@ -44,12 +44,12 @@
        <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
        <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options select-hybrid">
          <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
-         <option class="filter-option" value="cf7_2_post_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
+         <option class="filter-option" value="c2p_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
        </select>
      </div><span class="cf7-post-msg"></span>
    </li>';
  ?>
-<h3><?php esc_html_e('Save submissions as ','post-my-contact-form-7' ); ?>&quot;<span id="custom-post-title"><?= $post_name ;?>&nbsp;(<?= $post_type?>)</span>&quot;</h3>
+<h3><?php esc_html_e('Save submissions as ','post-my-contact-form-7' ); ?><span id="custom-post-title"><?= $post_name ;?>&nbsp;(<code><?= $post_type?></code>)</span></h3>
 <?php if(!is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')):
    $form = get_post($cf7_post_id);
 ?>
@@ -62,28 +62,28 @@
 <h2><?=__('Save form to post','post-my-contact-form-7' )?></h2>
 <input name="mapped_post_type" <?php $factory_mapping->is_published();?> id="mapped-post-type" value="<?php echo $factory_mapping->get('type');?>" type="hidden">
 
-<div class="factory-post">
+<div id="c2p-factory-post">
    <div>
-      <label class="post_type_labels" for="post_type"><?=__('Post Type:','post-my-contact-form-7')?></label>
+      <label class="post_type_labels" for="post-type-source"><?=__('Post Type:','post-my-contact-form-7')?></label>
       <span id="post-type-display">
-        <select name="mapped_post_type_source" id="post_type_source" class="select-hybrid" <?php $factory_mapping->is_published();?>>
+        <select name="mapped_post_type_source" id="post-type-source" class="select-hybrid" <?php $factory_mapping->is_published();?>>
           <option value="factory" <?= ('factory'==$source) ? ' selected="true"' : ''; ?>><?= __('New Post','post-my-contact-form-7')?></option>
           <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>><?=__('Existing Post','post-my-contact-form-7')?></option>
         </select>
       </span>
    </div>
    <div id="post-type-exists"<?= ('system'==$source)? '':' class="display-none"';?>>
-     <label class="post_type_labels" for="system_post_type"><?=__('Select a Post','post-my-contact-form-7')?></label>
+     <label class="post_type_labels" for="system-post-type"><?=__('Select a Post','post-my-contact-form-7')?></label>
      <select id="system-post-type" class="select-hybrid" name="system_post_type" <?php $factory_mapping->is_published();?>>
        <?php echo $factory_mapping->get_system_posts_options();?>
      </select>
    </div>
    <div id="post-type-select" <?php echo ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
-     <label for="custom_post_type" class="post_type_labels"><?=__('Post type', 'post-my-contact-form-7')?><input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom_post_type" value="<?php echo $factory_mapping->get('type');?>" type="text"/></label>
+     <label for="custom-post-type" class="post-type-labels"><?=__('Post type', 'post-my-contact-form-7')?><input name="custom_post_type" <?php $factory_mapping->is_published();?> id="custom-post-type" value="<?php echo $factory_mapping->get('type');?>" type="text"/></label>
 
      <label for="mapped_post_singular_name" class="post_type_labels"><?=__('Singular name', 'post-my-contact-form-7');?><input name="mapped_post_singular_name"  <?php $factory_mapping->is_published();?> id="post_singular_name" value="<?php echo $factory_mapping->get('singular_name');?>" type="text"/></label>
 
-     <label for="mapped_post_plural_name" class="post_type_labels"><?=__('Plural name','post-my-contact-form-7')?><input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post_plural_name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text"/></label>
+     <label for="post-plural-name" class="post_type_labels"><?=__('Plural name','post-my-contact-form-7')?><input name="mapped_post_plural_name" <?php $factory_mapping->is_published();?>  id="post-plural-name" value="<?php echo $factory_mapping->get('plural_name');?>" type="text"/></label>
 
      <p class="post-type-display">
        <?=__('Attributes','post-my-contact-form-7')?>
@@ -109,19 +109,21 @@
    </div><!-- end post-type-select -->
 </div>
 <h2><?=__('Default post fields', 'post-my-contact-form-7')?></h2>
-<ul class="default-post-fields">
-   <?php
-   echo sprintf( $post_fields, __('Post title', 'post-my-contact-form-7' ),'title',$factory_mapping->get_mapped_form_field('title'));
-   echo sprintf($post_fields, __('Post Content', 'post-my-contact-form-7' ),'editor',$factory_mapping->get_mapped_form_field('editor'));
-   echo sprintf($post_fields, __('Post Excerpt', 'post-my-contact-form-7' ),'excerpt',$factory_mapping->get_mapped_form_field('excerpt'));
-   echo sprintf($post_fields, __('Featured image', 'post-my-contact-form-7' ),'thumbnail',$factory_mapping->get_mapped_form_field('thumbnail'));
-   echo sprintf($post_fields, __('Post slug', 'post-my-contact-form-7' ),'slug',$factory_mapping->get_mapped_form_field('slug'));
-   echo sprintf($post_fields, __('Post author', 'post-my-contact-form-7' ),'author',$factory_mapping->get_mapped_form_field('author'));
-   ?>
-</ul>
-<h2><?=__('Custom Meta Fields','post-my-contact-form-7' )?></h2>
-<ul id="post-meta-fields">
-<?php include_once 'cf7-2-post-field-metabox.php'; ?>
-</ul>
+<div id="c2p-mapped-fields">
+   <ul id="c2p-default-post-fields">
+      <?php
+      echo sprintf( $post_fields, __('Post title', 'post-my-contact-form-7' ),'title',$factory_mapping->get_mapped_form_field('title'));
+      echo sprintf($post_fields, __('Post Content', 'post-my-contact-form-7' ),'editor',$factory_mapping->get_mapped_form_field('editor'));
+      echo sprintf($post_fields, __('Post Excerpt', 'post-my-contact-form-7' ),'excerpt',$factory_mapping->get_mapped_form_field('excerpt'));
+      echo sprintf($post_fields, __('Featured image', 'post-my-contact-form-7' ),'thumbnail',$factory_mapping->get_mapped_form_field('thumbnail'));
+      echo sprintf($post_fields, __('Post slug', 'post-my-contact-form-7' ),'slug',$factory_mapping->get_mapped_form_field('slug'));
+      echo sprintf($post_fields, __('Post author', 'post-my-contact-form-7' ),'author',$factory_mapping->get_mapped_form_field('author'));
+      ?>
+   </ul>
+   <h2><?=__('Custom Meta Fields','post-my-contact-form-7' )?></h2>
+   <ul id="c2p-post-meta-fields">
+   <?php include_once 'cf7-2-post-field-metabox.php'; ?>
+   </ul>
 <?= $factory_mapping->get_all_metafield_menus(); /** @since 5.0.0 */?>
+</div>
 <p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>

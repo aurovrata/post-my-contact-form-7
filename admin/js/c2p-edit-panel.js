@@ -8,6 +8,8 @@
     $tab = $('#cf7-2-post-tab');
   $(document).ready(function(){
     let init=true;
+    //switch posts if need be.
+    switchPostSource();
     //initialise the select fields adn populate them.
     $tab.on('keypress click', function(){
       formFields={};
@@ -68,31 +70,47 @@
     }
     return $menu;
   }
-
-  /*
-   *setup some events.
-   */
-  //existing post selection
-  $('#post_type_source').on('change', function(){
-    let $source = $(this).find('option:selected'),//factory/system source.
+  function switchPostSource(e){
+    let $source = $('#post-type-source'),//factory/system source.
       $post = $('#system-post-type option:selected'),
-      $mapped_type = $('input#mapped_post_type'),
+      $mapped_type = $('input#mapped-post-type'),
       type='';
     switch($source.val()){
       case 'factory':
         $('#post-type-exists').hide(); //system posts.
         $('#post-type-select').show(); //factory post options.
-        $mapped_type.val($('input#custom_post_type').val());
+        type = $('input#custom-post-type').val();
+        $('#custom-post-title').html($('#post-plural-name').val()+' (<code>'+type+'</code>)')
         break;
       case 'system':
-        $mapped_type.val($post.val());
+        type = $post.val();
+        $('#custom-post-title').html($post.html().replace(type, '<code>'+type+'</code>'));
         $('#post-type-select').hide(); //factory post options.
         $('#post-type-exists').show();//system posts.
         break;
     }
-  });
+    $mapped_type.val(type);
+    if(e){
+      //clear any existing custom meta fields.
+      $('#c2p-post-meta-fields li:not(.default-meta-field)').remove();
+      //update default post field hooks.
+      [].forEach.call(document.querySelector('#c2p-default-post-fields').children, (l,i)=>{
+        let f = l.querySelector('.field-options'),
+          pf = f.getAttribute('name').replace('cf7_2_post_map-',''),
+          fo = f.querySelector('.filter-option');
+        fo.value = 'c2p_filter-'+type+'-'+pf;
+        if(fo.selected) c2pFilterHelperCode.call(l,fo.value);
+      });
+    }
+
+  }
+  /*
+   *setup some events.
+   */
+  //existing post selection
+  $('#c2p-factory-post').on('change', '#post-type-source, #system-post-type, #custom-post-source, #post-plural-name', switchPostSource);
   //auto-fill the meta-field name and clone meta-field.
-  $('#post-meta-fields').on('click', '.add-more-field, .remove-field', function(e){
+  $('#c2p-post-meta-fields').on('click', '.add-more-field, .remove-field', function(e){
     switch(true){
       case e.target.classList.contains('add-more-field'):
         break;
@@ -112,8 +130,7 @@
     //remove the add button on the cloned field.
     $cloneField.find('span.add-more-field').remove();
     //setup the clone field.
-    if($('#post-type-exists').is(':visible')){ //system post.
-      postType = $('#system-post-type option:selected').val();
+    if($('#post-type-exists').is(':visible') && $('#c2p-'+postType).length>0){ //system post.
       $cloneField.find('.post-field-name').html($('#c2p-'+postType).html());
     }else{
       let label = field.querySelector('.cf7-2-post-map-labels');
@@ -127,7 +144,7 @@
     //enable the new field
     let $ffMenu = $cloneField.find('select.field-options');
     //setup the filter.
-    $ffMenu.find('option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
+    $ffMenu.find('option.filter-option').val('c2p_filter-'+postType+'-'+keyName);
     //populate with latest form fields.
     $ffMenu.fillCF7fields();
     //add cloned field to DOM list of fields.
@@ -167,14 +184,68 @@
     }
   });
   //bind and delegate event change for meta field selection
-  $('#post-meta-fields').on('change', ':input', function(e){
-    if(e.target.type != 'select' && e.target.type != 'input') return false;
-    let field = e.target;
-    //when selecting custom field in existing post meta-fields, change to input field.
-    //when selecting a post-field, update the name form field select name + the hook filter value, need to refresh the hybrid-select.
-    //when inut custom field, update the name form field select name + the hook filter value, need to refresh the hybrid-select.
-    //when a form field is selected, check if it has been selected for another field, display warning.
-    //when a hook if selected, display hook anchor link.
+  $('#c2p-mapped-fields').on('change', ':input', function(e){
+    if(e.target.nodeName != 'SELECT' && e.target.nodeName != 'INPUT') return false;
+    let field = e.target, //field.
+      fv = field.value, //selected value.
+      postType = document.querySelector('#mapped-post-type').value, //mapped psot type.
+      fc = field.closest('li'), //field container.
+      msgBox = fc.querySelector('.cf7-post-msg'),
+      ffMenu = fc.querySelector('select.field-options'); //form field menu.
+    switch(true){
+      case field.classList.contains('existing-fields'): //post mf dropdpown.
+        if( fv == 'cf72post-custom-meta-field'){ //switch to input text field.
+          field.classList.add('display-none'); //hide post field dropdown.
+          fc.querySelector('.cf7-2-post-map-label-custom').classList.remove('display-none'); //show text input.
+          fv = e.target.parentNode.nextElementSibling.value;
+        }
+        //setup the form field menu values.
+        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
+        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+fv;
+        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        break;
+      case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
+        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+e.target.value);
+        break;
+      case field.classList.contains('field-options'): //check if field already used.
+        msgBox.innerHTML ='';
+        if(isEmpty(fv)) break;
+        if(fv.indexOf('c2p_filter-') < 0){
+          let all = [...document.querySelector('#c2p-default-post-fields').children].concat( [...document.querySelector('#c2p-post-meta-fields').children] );
+          [].forEach.call(all, (l,i)=>{
+            if(l==fc || l.classList.contains('default-meta-field')) return true;
+            if(l.querySelector('.field-options').value === fv){ //field already mapped.
+              msgBox.innerHTML = c2pLocal.warning;
+              return false;
+            }
+          });
+        }else{ //filter option selelected, display helper code.
+           c2pFilterHelperCode.call(fc,fv);
+        }
+        break;
+      // case e.target.classList.contains():
+      //   break;
+    }
   });
+  function c2pFilterHelperCode(filter){
+    if(this) this.querySelector('.cf7-post-msg').remove();
+    let field ='';
+    if(filter.indexOf('cf7_2_post_filter-')<0){ //c2p_filter-
+      field = filter.replace('c2p_filter-','');
+    }else{
+      field = filter.replace('cf7_2_post_filter-','');
+    }
+    field = field.replace(/-/g,'_');
+    let helper = "add_filter('"+filter+"','filter_"+field+"',10,3);\n";
+    helper +="function filter_"+field+"($value, $post_id, $form_data){\n  //$value is the post field value to return, by default it is empty. If you are filtering a taxonomy you can return either slug/id/array.  in case of ids make sure to cast them as integers.(see https://codex.wordpress.org/Function_Reference/wp_set_object_terms for more information.)\n  //$post_id is the ID of the post to which the form values are being mapped to\n  // $form_data is the submitted form data as an array of field-name=>value pairs\n";
+    helper +="  return $value;\n}";
+    helper = 'filter:<a class="code" data-clipboard-text="'+helper+'" href="javascript:void(0);">'+filter+'</a><span class="popup">'+c2pLocal.copy+'<span>'+c2pLocal.paste+'</span></span>';
 
+    if(this){
+      $(this).append('<span class="cf7-post-msg animate-color">'+helper+'</span>');
+      new Clipboard(this.querySelector('.cf7-post-msg a.code'));
+    }else{
+      return helper;
+    }
+  }
 })( jQuery )

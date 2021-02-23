@@ -106,7 +106,9 @@ input mechanism can hover over elements. (e.g. computers with a mouse) */
 .hybrid-select-js.active .hybrid-options {
   display: block;
 }
-
+.hybrid-select:not(:visible)+.hybrid-select-js{
+  display: none;
+}
 .hybrid-select-js .hybrid-option {
   position: relative;
   padding: 0.5em;

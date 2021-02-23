@@ -635,8 +635,13 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
         $prefix =  'cf7_2_post_map-';
         break;
     }
-    // debug_msg($prefix.$post_field,$this->cf7_post_ID);
-    return get_post_meta($this->cf7_post_ID, $prefix.$post_field,true);
+    $form_field = false;
+    if( empty($this->post_map_meta_fields)){
+      $form_field = get_post_meta($this->cf7_post_ID, $prefix.$post_field,true);
+    }else{
+      $form_field = array_search($post_field, $this->post_map_meta_fields);
+    }
+    return $form_field;
   }
   /**
   * Get the mapping of cf7 form field to taxonomy
@@ -1259,8 +1264,8 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
         debug_msg("Unable to map form field=".$form_field." to post field= ".$post_field);
         continue;
        }
-
-      if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+       /** @since 5.0.0 new filter prefix c2p_filter- */
+      if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $post[$post_key] = apply_filters($form_field,'', $post_id, $cf7_form_data);
         $hasPostFields = true;
       }else{
@@ -1308,7 +1313,8 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
     //debug_msg($cf7_form_data, "submitted data ");
 
     foreach($this->post_map_meta_fields as $form_field => $post_field){
-      if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+      /** @since 5.0.0 new filter prefix c2p_filter- */
+      if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $value = apply_filters($form_field,'', $post_id, $cf7_form_data);
         //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
         update_post_meta($post_id, $post_field, $value);
@@ -1363,7 +1369,7 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
     //
     foreach($this->post_map_taxonomy as $form_field => $taxonomy){
       $value = '';
-      if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
+      if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ) {
         $value = apply_filters($form_field, array(), $post_id, $cf7_form_data);
       }else if(isset( $cf7_form_data[$form_field] )){
         if( is_array( $cf7_form_data[$form_field] ) ){
@@ -1467,14 +1473,12 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
 
     }
       //we now need to load the save meta field values
-
-
       foreach($this->post_map_fields as $form_field => $post_field){
         $post_key ='';
         $post_value = '';
         $skip_loop = false;
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
           continue;
         }
 
@@ -1510,7 +1514,7 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
       foreach($this->post_map_meta_fields as $form_field => $post_field){
         $post_value='';
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
+        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ) {
           continue;
         }
         //get the meta value
@@ -1545,7 +1549,9 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
       $load_chosen_script=false;
       foreach($this->post_map_taxonomy as $form_field => $taxonomy){
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ) continue;
+        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
+          continue;
+        }
         $terms_id = array();
         if( $load_saved_values ) {
           $terms = get_the_terms($post, $taxonomy);

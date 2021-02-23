@@ -201,12 +201,12 @@ class Cf7_2_System_Post {
       $post_type
     ));
     $has_fields = false;
-    $html = '<div id="c2p-'.$post_type.'" class="system-post-metafield">'.PHP_EOL;
-    $disabled='';
+    $disabled=$html='';
     if(empty($selected_field)){
       $disabled=' disabled="true"';
     }
     if(false !== $metas){
+      $html = '<div id="c2p-'.$post_type.'" class="system-post-metafield">'.PHP_EOL;
       $select = '<select'.$disabled.' class="existing-fields">'.PHP_EOL;
       $select .= '<option value="">'.__('Select a field','post-my-contact-form-7').'</option>'.PHP_EOL;
       foreach($metas as $row){
@@ -226,13 +226,14 @@ class Cf7_2_System_Post {
         $select .= '<option value="'.$row->meta_key.'"'.$selected.'>'.$row->meta_key.'</option>'.PHP_EOL;
         $has_fields = true;
       }
-      if($has_fields) $select .= '<option value="cf72post-custom-meta-field">'.__('Custom field','post-my-contact-form-7').'</option>'.PHP_EOL;
-      $select .='</select>'.PHP_EOL;
+      if($has_fields){
+        $select .= '<option value="cf72post-custom-meta-field">'.__('Custom field','post-my-contact-form-7').'</option>'.PHP_EOL;
+        $select .='</select>'.PHP_EOL;
+        $html .= $select;
+        $html .= '<input'.$disabled.' class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled />'.PHP_EOL;
+        $html .= '</div>';
+      }else $html='';
     }
-    if(!$has_fields) $select = '';
-    $html .= $select;
-    $html .= '<input'.$disabled.' class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled />'.PHP_EOL;
-    $html .= '</div>';
     return $html;
   }
 

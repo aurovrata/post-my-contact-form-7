@@ -148,7 +148,11 @@ class Cf7_2_Post_Admin {
     ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
-      wp_localize_script( $this->plugin_name, 'cf7_2_post_ajaxData', array('url' => admin_url( 'admin-ajax.php' )));
+      wp_localize_script( $this->plugin_name, 'c2pLocal', array(
+        'warning' => __('Warning: Field already selected!', 'post-my-contact-form-7'),
+        'copy'=> __('Click to copy!', 'post-my-contact-form-7'),
+        'paste'=> __('Paste helper code into your theme functions.php file.', 'post-my-contact-form-7')
+      ));
       wp_enqueue_script('hybrid-select', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
     }
