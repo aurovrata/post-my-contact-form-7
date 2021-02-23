@@ -44,7 +44,7 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      Cf7_2_Post_system    $post_mapping_factory   mapping factory object.
+	 * @var      Cf7_2_Post_Factory    $post_mapping_factory   mapping factory object.
 	 */
 	private $post_mapping_factory;
   /**
@@ -103,8 +103,8 @@ class Cf7_2_Post_Admin {
 	 */
 	private function load_dependencies() {
     // for the Cf7_2_Post_Factory class
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-system-post.php';
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-system-factory.php';
     //contact post table list
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/cf7-post-admin-table.php';
   }
@@ -472,7 +472,7 @@ class Cf7_2_Post_Admin {
       if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
         $factory_mapping = $this->post_mapping_factory;
       }else{
-        $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
+        $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
         $this->post_mapping_factory = $factory_mapping;
       }
       include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-edit-mapping.php');
@@ -496,7 +496,7 @@ class Cf7_2_Post_Admin {
     if( isset( $_POST['cf7_post_id'] ) ){
 
       $cf7_post_id = $_POST['cf7_post_id'];
-      $this->post_mapping_factory = Cf7_2_Post_System::get_factory($cf7_post_id);
+      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
       if($this->post_mapping_factory->is_system_published()){
         $json_data = array('msg'=>'Nothing to update');
         wp_send_json_error($json_data);
@@ -555,25 +555,6 @@ class Cf7_2_Post_Admin {
     <meta http-equiv="pragma" content="no-cache" />
       <?php
   }
-  /**
-   * Ajax Load system post options
-   * Hooked on 'wp_ajax'
-   * @since 2.0.0
-  **/
-  public function ajax_get_meta_options(){
-    if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
-      wp_send_json_error("Security failed, try to reload the page");
-    }
-    if( isset($_POST['post_type'])){
-      $json_data = array(
-        'options' => Cf7_2_Post_System::get_system_post_metas($_POST['post_type'])
-      );
-      wp_send_json_success( $json_data );
-    }else{
-      wp_send_json_error(array('msg'=>'no post_type defined'));
-    }
-    die();
-  }
 
   /**
   * Loads the custom posts created into the dashboard.
@@ -594,7 +575,7 @@ class Cf7_2_Post_Admin {
     if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
       $delete_all_posts = false;
       //TODO load settings to allow users to delete all submitted form post data when deleting a mapping
-      $factory = Cf7_2_Post_System::get_factory($cf7_post_id);
+      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
       $factory->delete_mapping($delete_all_posts);
 
     }
@@ -738,7 +719,7 @@ class Cf7_2_Post_Admin {
       echo '<em>This post is not mapped to a cf7 form</em>';
       return;
     }
-    $factory = Cf7_2_Post_System::get_factory($cf7_post_id);
+    $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
     $mapped_fields = $factory->get_mapped_meta_fields();
     if(!empty($path) && file_exists($path)){
       include( $path);
@@ -806,7 +787,7 @@ class Cf7_2_Post_Admin {
     if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
       $factory_mapping = $this->post_mapping_factory;
     }else{
-      $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
+      $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
       $this->post_mapping_factory = $factory_mapping;
     }
 		include_once 'partials/cf7-2-post-admin-panel-display.php';

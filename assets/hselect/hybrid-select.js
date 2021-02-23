@@ -171,6 +171,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
   //focus hybrid select when the original select is tabbed into.
   hsProtype.focus = function(){
     let _ = this;
+    if(_.el.disabled) return;
     _.el.blur();
     _.hselect.focus({preventScroll:true});
     _.hselect.classList.add('focus');
@@ -289,6 +290,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
   //open hybrid dropdown.
   hsProtype.openSelect = function(){
     let _= this, e = arguments[0];
+    if(_.el.disabled) return;
     if(e && e.target){ //triggered by event?
       if(e.target.classList.contains('hybrid-selected')==false && e.target.closest('.hybrid-selected') === null){
         return;  // bubbling selection

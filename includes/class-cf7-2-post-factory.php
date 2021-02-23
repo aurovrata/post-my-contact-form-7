@@ -1,109 +1,6 @@
 <?php
-class Cf7_2_Post_Factory {
-  /**
-	 * The properties of the mapped custom post type.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_properties    an array of properties.
-	 */
-  protected $post_properties;
-  /**
-	 * The properties of the mapped custom taxonomy.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $taxonomy_properties    an array of properties with   $taxonomy_slug=>array('source'=>$taxonomy_source, 'singular_name'=>$value, 'name'=>$plural_name)
-	 */
-  protected $taxonomy_properties;
-  /**
-	 * The the CF7 post ID.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      int    $cf7_post_ID    the CF7 post ID.
-	 */
-  public $cf7_post_ID;
-  /**
-   * The the CF7 post unique key.
-   *
-   * @since    1.2.7
-   * @access    protected
-   * @var      string    $cf7_key    the unique key which can be used to identfy this form.
-   */
-  public $cf7_key;
-  /**
-	 * The CF7 form fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
-	 */
-  protected $cf7_form_fields;
-  /**
-	 * The CF7 form fields options.
-	 *
-	 * @since    2.0.0
-	 * @access    protected
-	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
-	 */
-  protected $cf7_form_fields_options;
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_fields    an array mapped CF7 fields, to default
-   * post fields {'form field name'=>'post field'}.
-	 */
-  protected $post_map_fields;
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_meta_fields    an array mapped CF7 fields, to post
-   * custom meta fields  {'form field name'=>'post field'}.
-	 */
-  protected $post_map_meta_fields;
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_taxonomy    an array mapped CF7 fields, to post
-   * custom taxonomy  {'form field name'=>'taxonomy slug'}.
-	 */
-   protected $post_map_taxonomy;
-  /**
-	 * The CF7 form fields values to set as localize_script.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $localise_values    an array CF7 fields=>values.
-	 */
-  protected $localise_values;
-  /**
-   * An array of wpcf7_type taxonomy terms this form belongs to.
-   * @since 3.2.0
-   * @access protected
-   * @var array $form_terms an array of terms.
-   **/
-   protected $form_terms;
-   /**
-   * an array of post_id=>array($post_type =>[factory|system])); key value pairs.
-   * @since 3.4.0
-   * @access protected
-   * @var array $mapped_post_types an array of key value pairs.
-   */
-   protected static $mapped_post_types;
-   /**
-   * boolean flag to flush rewrite rules when custom posts are created/updated.
-   * @since 3.8.2
-   * @access protected
-   * @var boolean $flush_permalink_rules a boolean flag.
-   */
-   protected $flush_permalink_rules = false;
+class Cf7_2_Post_Factory extends Cf7_2_System_Post {
+
   /**
    * Default Construct a Cf7_2_Post_Factory object.
    *
@@ -111,23 +8,50 @@ class Cf7_2_Post_Factory {
    * @param    int    $cf7_post_id the ID of the CF7 form.
    */
   protected function __construct($cf7_post_id){
-    $this->cf7_form_fields = array();
-    $this->post_map_fields = array();
-    $this->post_map_taxonomy = array();
-    $this->post_properties = array();
-    $this->taxonomy_properties = array();
-    $this->localise_values=array();
-    $this->cf7_post_ID = $cf7_post_id;
-    $post = get_post($cf7_post_id);
-    $this->cf7_key = $post->post_name;
-    /** @since 3.2.0 get the form terms if any */
-    $this->form_terms = array();
-    $terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array('fields'=>'id=>slug') );
-    if(!is_wp_error( $terms )){
-      //debug_msg($terms, $cf7_post_id);
-      $this->form_terms = $terms;
-    }
+    parent::__construct($cf7_post_id);
   }
+  /**
+	 * Get a factory object for a CF7 form.
+	 *
+	 * @since    1.0.0
+   * @param  int  $cf7_post_id  cf7 post id
+   * @return Cf7_2_Post_Factory  a factory oject
+   */
+  public static function get_factory( $cf7_post_id ){
+    //check if the cf7 form already has a mapping
+    $post_type = get_post_meta($cf7_post_id,'_cf7_2_post-type',true);
+    $post_type_source = 'factory';
+    $factory = null;
+    //debug_msg('type='.$post_type);
+    if(empty($post_type)){ //let's create a new one
+      $factory = new self($cf7_post_id);
+      $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+      $post_type = $factory->cf7_key;
+      $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+      $plural_name = $singular_name;
+      if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
+      $factory->init_new_factory($post_type,$singular_name,$plural_name);
+    }else{
+
+      $factory = new self($cf7_post_id);
+      $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
+      $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
+
+      if('system' == $post_type_source){
+        if( 'draft' == $map){
+          $form = WPCF7_ContactForm::get_instance($cf7_post_id);
+          $singular_name = ucfirst( preg_replace('/[-_]+/',' ',$form->name()) );
+          $plural_name = $singular_name;
+          $factory->init_new_factory($post_type, $singular_name, $plural_name);
+        }
+        $factory->load_system_post_properties($post_type); //load DB values
+      }
+      //frist load any saved properties,
+      $factory->load_post_mapping($factory->post_properties);
+      $factory->post_properties['type_source'] = $post_type_source;
+     }
+     return $factory;
+   }
   /**
    *Enqueue the localised script
    *This function is called by the hook in the
@@ -199,6 +123,51 @@ class Cf7_2_Post_Factory {
     }
   }
   /**
+	 * Store the mapping in the CF7 post & create the custom post mapping.
+	 * This is called by the plugin admin class function ajax_save_post_mapping whih is hooked to the ajax form call
+	 * @since    1.0.0
+   * @param   array   $data   an array containing the admin form data, $_POST
+   * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
+   * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
+   * @return  boolean   true if successful
+   */
+  public function save($data, $create_post_mapping){
+    //let's  update the properties
+    //is this a factory post or a system post?
+    //debug_msg($data);
+    if( isset($data['mapped_post_type_source']) && isset($data['mapped_post_type']) ) {
+      $this->post_properties['type_source'] = $data['mapped_post_type_source'];
+      $this->post_properties['type'] = $data['mapped_post_type'];
+      $this->post_properties['version'] = CF7_2_POST_VERSION;
+
+      switch($this->post_properties['type_source']){
+        case 'system':
+          return $this->set_system_mapping($data, $create_post_mapping);
+          break;
+        case 'factory':
+          return $this->set_custom_mapping($data, $create_post_mapping);
+          break;
+      }
+    }else{
+      return false;
+    }
+  }
+  /**
+  *
+  *
+  *@since 5.0.0
+  *@param string $param text_description
+  *@return string text_description
+  */
+  public function get_metafield_input($post_field){
+    $disabled='';
+    if(empty($post_field)){
+      $disabled=' disabled="true"';
+      $post_field = 'meta_key_1';
+    }
+    return '<input'.$disabled.' name="cf7_2_post_map_meta-'.$post_field.'" class="cf7-2-post-map-labels" type="text" value="'.$post_field.'"/>';
+  }
+  /**
    * Function to display a dropdown list of taxonomies
    * Called by the dashbaord page.
    * @since 1.1.0
@@ -258,7 +227,7 @@ class Cf7_2_Post_Factory {
   * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
   * @return  boolean   true if successful
   */
-  protected function set_factory_mapping($data, $create_post_mapping){
+  protected function set_custom_mapping($data, $create_post_mapping){
     $is_factory_map = true;
     //check if we need to create a post
     $create_post = false;
@@ -730,46 +699,7 @@ class Cf7_2_Post_Factory {
       return array();
     }
   }
-  /**
-   * Get a list of meta fields for the requested post_type
-   * @since 5.0.0
-   * @param      String    $post_type     post_type for which meta fields are requested.
-   * @return     String    a list of option elements for each existing meta field in the DB.
-  **/
-  public function get_system_post_metas(){
-    global $wpdb;
 
-    $post_type= $this->get('type');
-
-    $metas = $wpdb->get_results($wpdb->prepare(
-      "SELECT DISTINCT meta_key
-      FROM {$wpdb->postmeta} as wpm, {$wpdb->posts} as wp
-      WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
-      $post_type
-    ));
-    $html = '';
-    $foundField=false;
-    $post_meta_fields = array();
-
-    if(false !== $metas){
-      foreach($metas as $row){
-        if( 0=== strpos( $row->meta_key, '_') &&
-        /**
-        * filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
-        * @since 2.0.0
-        * @param boolean $skip true by default
-        * @param string $post_type post type under consideration
-        * @param string $meta_key meta field name
-        */
-        apply_filters('cf7_2_post_skip_system_metakey',true, $post_type, $row->meta_key) ){
-          //skip _meta_keys, assuming system fields.
-          continue;
-        }//end if
-        $post_meta_fields[] = $row->meta_key;
-      }
-    }
-    return $post_meta_fields;
-  }
   /**
   * Load the cf7 forms fields
   * fields are loaded in the internal array.
@@ -1120,7 +1050,7 @@ class Cf7_2_Post_Factory {
     foreach($cf7_post_ids as $post_id=>$type){
       $system = true;
       $post_type = key($type);
-      $cf7_2_post_map = Cf7_2_Post_System::get_factory($post_id);
+      $cf7_2_post_map = self::get_factory($post_id);
       switch($type[$post_type]){
         case 'factory':
           $cf7_2_post_map->create_cf7_post_type();

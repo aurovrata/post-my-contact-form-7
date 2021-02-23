@@ -3,8 +3,14 @@
 .hybrid-select,
 .hybrid-select-js {
   position: relative;
-  width: 13.75em;
+  width: max-content;
   height: 2.5em;
+  min-width: 100%;
+}
+select:disabled + .hybrid-select-js > .hybrid-selected {
+	color: #939191;
+	border-color: #c6c6c6;
+	cursor: default;
 }
 /* Make sure the custom select does not mess with the layout*/
 .hybrid-select-js {
@@ -62,11 +68,12 @@ input mechanism can hover over elements. (e.g. computers with a mouse) */
 }
 .hybrid-selected {
   position: relative;
-  width: 100%;
+  width: max-content;
   height: 100%;
   background-color: #fff;
   padding: 0.5em 0.5em;
   cursor: pointer;
+  min-width: 100%;
 }
 .hybrid-selected::after {
   content: "▾";
@@ -93,6 +100,7 @@ input mechanism can hover over elements. (e.g. computers with a mouse) */
   padding: 0.5em 0;
   display: none;
   background:#e3e3e3;
+  min-width: 100%;
 }
 
 .hybrid-select-js.active .hybrid-options {

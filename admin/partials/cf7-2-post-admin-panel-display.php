@@ -42,7 +42,7 @@
    <li>
      <div class="cf7-2-post-field">
        <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
-       <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options hybrid-select">
+       <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options select-hybrid">
          <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
          <option class="filter-option" value="cf7_2_post_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
        </select>
@@ -66,7 +66,7 @@
    <div>
       <label class="post_type_labels" for="post_type"><?=__('Post Type:','post-my-contact-form-7')?></label>
       <span id="post-type-display">
-        <select name="mapped_post_type_source" id="post_type_source" class="nice--select" <?php $factory_mapping->is_published();?>>
+        <select name="mapped_post_type_source" id="post_type_source" class="select-hybrid" <?php $factory_mapping->is_published();?>>
           <option value="factory" <?= ('factory'==$source) ? ' selected="true"' : ''; ?>><?= __('New Post','post-my-contact-form-7')?></option>
           <option value="system"<?php echo ('system'==$source) ? ' selected="true"' : ''; ?>><?=__('Existing Post','post-my-contact-form-7')?></option>
         </select>
@@ -74,8 +74,7 @@
    </div>
    <div id="post-type-exists"<?= ('system'==$source)? '':' class="display-none"';?>>
      <label class="post_type_labels" for="system_post_type"><?=__('Select a Post','post-my-contact-form-7')?></label>
-     <select id="system-post-type" class="nice--select right" name="system_post_type" <?php $factory_mapping->is_published();?>>
-       <option value=""><?=__('Select a Post','post-my-contact-form-7')?></option>
+     <select id="system-post-type" class="select-hybrid" name="system_post_type" <?php $factory_mapping->is_published();?>>
        <?php echo $factory_mapping->get_system_posts_options();?>
      </select>
    </div>
@@ -121,7 +120,8 @@
    ?>
 </ul>
 <h2><?=__('Custom Meta Fields','post-my-contact-form-7' )?></h2>
-<ul class="default-post-meta-fields">
+<ul id="post-meta-fields">
 <?php include_once 'cf7-2-post-field-metabox.php'; ?>
 </ul>
+<?= $factory_mapping->get_all_metafield_menus(); /** @since 5.0.0 */?>
 <p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>
