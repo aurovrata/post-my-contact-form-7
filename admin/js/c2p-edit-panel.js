@@ -64,6 +64,8 @@
       $m.children().remove(':not(.filter-option):not(.default-option)');
       $option = $m.find('option.filter-option');
       Object.keys(formFields).forEach(function(f){
+        //for taxnomies, skip fields which are not checkbox|radio|select.
+        if($m.is('.taxonomy-options') && ['checkbox','radio','select'].indexOf(f.replace('*',''))<0) return true;
         $option.before('<option value="'+f+'">'+f+' ['+formFields[f]+']'+'</option>');
       })
       $m.val(v);//.change();
@@ -91,8 +93,9 @@
     }
     $mapped_type.val(type);
     if(e){
-      //clear any existing custom meta fields.
+      //clear any existing custom meta/taxonomy fields.
       $('#c2p-post-meta-fields li:not(.default-meta-field)').remove();
+      $('#c2p-taxonomy-fields li:not(:last-child)').remove();
       //update default post field hooks.
       [].forEach.call(document.querySelector('#c2p-default-post-fields').children, (l,i)=>{
         let f = l.querySelector('.field-options'),
@@ -116,6 +119,7 @@
         break;
       case e.target.classList.contains('remove-field'):
         e.target.closest('li').remove();
+        return false;
       default:
         return false;
     }
@@ -183,6 +187,54 @@
       $cloneField.find('select.field-options').addClass('autofill-field-name');
     }
   });
+  //bind and delegate add-more/remove taxonomy fields.
+  $('#c2p-taxonomy-fields').on('click', '.add-more-field, .remove-field, .edit-taxonomy.enabled, .button.save-taxonomy', function(e){
+    switch(true){
+      case e.target.classList.contains('add-more-field'):
+        break;
+      case e.target.classList.contains('edit-taxonomy'):
+        c2pEditTaxonomy.call(e.target, true);
+        return false;
+      case e.target.classList.contains('save-taxonomy'):
+        c2pEditTaxonomy.call(e.target, false);
+        return false;
+      case e.target.classList.contains('remove-field'):
+        e.target.closest('li').remove();
+        return false;
+      default:
+        return false;
+    }
+    //let duplicate the field.
+    let fieldList = e.delegateTarget,
+      scroll = e.target.getBoundingClientRect(), //position of add button.
+      field = e.target.closest('li'), //the field being cloned.
+      keyName = '', //name of meta-field.
+      idx=0, //index.
+      $cloneField = $(field).clone(), //clone.
+      postType=$('input#mapped-post-type').val(); //post type mapped to.
+    //remove the add button on the cloned field.
+    $cloneField.find('span.add-more-field').remove();
+    let label = field.querySelector('.taxonomy-slug');
+    keyName = label.value; //name of meta-field.
+    let $ffMenu = $cloneField.find('select.field-options');
+    $ffMenu.attr('name','cf7_2_post_map_taxonomy_value-'+keyName);
+    //setup the filter.
+    $ffMenu.find('option.filter-option').val('c2p_filter-'+postType+'-'+keyName);
+    //populate with latest form fields.
+    $ffMenu.fillCF7fields();
+    //add cloned field to DOM list of fields.
+    $(fieldList).children('li:last').before($cloneField);
+    $ffMenu.after('&nbsp;<span class="dashicons dashicons-minus remove-field"></span>');
+    //enable the new field.
+    $cloneField.find('span.link-button').removeClass('disabled').addClass('enabled');
+    $cloneField.find(':input').each(function(){
+      this.disabled=false;
+      if(this.nodeName==='SELECT') new HybridSelect(this); //nice select.
+    });
+    //add remove button and error msg.
+    let down = e.target.getBoundingClientRect();
+    window.scrollBy(0, down.top - scroll.top);
+  });
   //bind and delegate event change for meta field selection
   $('#c2p-mapped-fields').on('change', ':input', function(e){
     if(e.target.nodeName != 'SELECT' && e.target.nodeName != 'INPUT') return false;
@@ -223,10 +275,43 @@
            c2pFilterHelperCode.call(fc,fv);
         }
         break;
-      // case e.target.classList.contains():
-      //   break;
+      case field.classList.contains('taxonomy-list'): //taxonomy selected.
+        let tax = field.querySelector('option:checked'),
+          isSystem = tax.classList.contains('system-taxonomy'),
+          input = fc.querySelector('input.singular-name');
+        input.value = tax.dataset.name;
+        input.disabled = isSystem; //no need to be submitted
+        input = fc.querySelector('input.plural-name');
+        input.value = tax.innerText;
+        input.disabled = isSystem; //no need to be submitted
+        input = fc.querySelector('input.taxonomy-slug');
+        input.value = tax.value;
+        input.disabled = isSystem;//no need to be submitted
+        fc.querySelector('input.taxonomy-source').value = isSystem ? 'system':'factory';
+        //update the form-field select name and filter.
+        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value);
+        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+tax.value;
+        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        break;
+      case field.classList.contains('taxonomy-slug'): //update in factory custom taxonomy slug.
+        //update the form-field select name and filter.
+        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
+        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+field.value;
+        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        break;
     }
   });
+  function c2pEditTaxonomy(show){
+    let fc = this.closest('li');
+    if(show){
+      fc.querySelector('.custom-taxonomy-input-fields').classList.remove('display-none');
+      fc.querySelector('.custom-taxonomy-field').classList.add('display-none');
+    }else{
+      fc.querySelector('.custom-taxonomy-input-fields').classList.add('display-none');
+      fc.querySelector('.custom-taxonomy-field').classList.remove('display-none');
+    }
+    // details.find('select.taxonomy-list').on('change',taxonomySelected);
+  }
   function c2pFilterHelperCode(filter){
     if(this) this.querySelector('.cf7-post-msg').remove();
     let field ='';

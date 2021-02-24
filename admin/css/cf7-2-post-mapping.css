@@ -24,7 +24,7 @@ ol.helper-list {
 .select2-container:not(.select2-container--disabled):hover {
     width: auto !important;
 }
-li.select2-results__option .system-taxonomy {
+.hybrid-option.system-taxonomy {
     color: #0015ff;
 }
 #c2p-default-post-fields{
@@ -146,9 +146,10 @@ label[for="post_type"] {
   vertical-align: middle;
   line-height: 15px;
 }
-#c2p-mapped-fields li > div {
+#c2p-mapped-fields li > div:not(.display-none) {
 	display: inline-block;
 	margin-right: 10px;
+  box-sizing: border-box;
 }
 #cf7-2-post .cf7-post-error-msg a {
     overflow: hidden;
@@ -164,9 +165,12 @@ label[for="post_type"] {
     width: auto;
     top: -5px;
 }
-.post-meta-field, .custom-taxonomy-field{
-  display: inline-block;
-  box-sizing: border-box;
+.custom-taxonomy-input-fields p {
+	margin-top: 0;
+}
+.custom-taxonomy-input-fields > p > em {
+	color: blue;
+	font-weight: bold;
 }
 .custom-meta-field select.field-options {
     width: 200px;

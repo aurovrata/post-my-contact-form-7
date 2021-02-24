@@ -8,7 +8,7 @@ class Cf7_2_System_Post {
 	 * @access    protected
 	 * @var      array    $post_properties    an array of properties.
 	 */
-  protected $post_properties;
+  protected $post_properties =array();
   /**
 	 * The properties of the mapped custom taxonomy.
 	 *
@@ -16,7 +16,7 @@ class Cf7_2_System_Post {
 	 * @access    protected
 	 * @var      array    $taxonomy_properties    an array of properties with   $taxonomy_slug=>array('source'=>$taxonomy_source, 'singular_name'=>$value, 'name'=>$plural_name)
 	 */
-  protected $taxonomy_properties;
+  protected $taxonomy_properties=array();
   /**
 	 * The the CF7 post ID.
 	 *
@@ -24,7 +24,7 @@ class Cf7_2_System_Post {
 	 * @access    protected
 	 * @var      int    $cf7_post_ID    the CF7 post ID.
 	 */
-  public $cf7_post_ID;
+  public $cf7_post_ID=0;
   /**
    * The the CF7 post unique key.
    *
@@ -40,7 +40,7 @@ class Cf7_2_System_Post {
 	 * @access    protected
 	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
 	 */
-  protected $cf7_form_fields;
+  protected $cf7_form_fields = array();
   /**
 	 * The CF7 form fields options.
 	 *
@@ -48,7 +48,7 @@ class Cf7_2_System_Post {
 	 * @access    protected
 	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
 	 */
-  protected $cf7_form_fields_options;
+  protected $cf7_form_fields_options =array();
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -57,7 +57,7 @@ class Cf7_2_System_Post {
 	 * @var      array    $post_map_fields    an array mapped CF7 fields, to default
    * post fields {'form field name'=>'post field'}.
 	 */
-  protected $post_map_fields;
+  protected $post_map_fields = array();
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -66,7 +66,7 @@ class Cf7_2_System_Post {
 	 * @var      array    $post_map_meta_fields    an array mapped CF7 fields, to post
    * custom meta fields  {'form field name'=>'post field'}.
 	 */
-  protected $post_map_meta_fields;
+  protected $post_map_meta_fields=array();
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -75,7 +75,7 @@ class Cf7_2_System_Post {
 	 * @var      array    $post_map_taxonomy    an array mapped CF7 fields, to post
    * custom taxonomy  {'form field name'=>'taxonomy slug'}.
 	 */
-   protected $post_map_taxonomy;
+   protected $post_map_taxonomy=array();
   /**
 	 * The CF7 form fields values to set as localize_script.
 	 *
@@ -90,14 +90,14 @@ class Cf7_2_System_Post {
    * @access protected
    * @var array $form_terms an array of terms.
    **/
-   protected $form_terms;
+   protected $form_terms=array();
    /**
    * an array of post_id=>array($post_type =>[factory|system])); key value pairs.
    * @since 3.4.0
    * @access protected
    * @var array $mapped_post_types an array of key value pairs.
    */
-   protected static $mapped_post_types;
+   protected static $mapped_post_types=array();
    /**
    * boolean flag to flush rewrite rules when custom posts are created/updated.
    * @since 3.8.2
@@ -111,7 +111,7 @@ class Cf7_2_System_Post {
    * @access protected
    * @var array $mapped_post_types an array of key value pairs.
    */
-   protected static $system_post_types;
+   protected static $system_post_types=array();
   /**
    * Default Construct
    *
@@ -119,17 +119,10 @@ class Cf7_2_System_Post {
    * @param    int    $cf7_post_id the ID of the CF7 form.
    */
   protected function __construct($cf7_post_id){
-    $this->cf7_form_fields = array();
-    $this->post_map_fields = array();
-    $this->post_map_taxonomy = array();
-    $this->post_properties = array();
-    $this->taxonomy_properties = array();
-    $this->localise_values=array();
     $this->cf7_post_ID = $cf7_post_id;
     $post = get_post($cf7_post_id);
     $this->cf7_key = $post->post_name;
     /** @since 3.2.0 get the form terms if any */
-    $this->form_terms = array();
     $terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array('fields'=>'id=>slug') );
     if(!is_wp_error( $terms )){
       //debug_msg($terms, $cf7_post_id);

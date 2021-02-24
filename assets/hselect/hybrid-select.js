@@ -27,6 +27,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     let _ = this;
     //if already instanciated, return existing object.
     if(element._hselect) return element._hselect;
+
     element._hselect = _; //expose object in its original DOM element.
 
     _.el = element; //keep original element reference.
@@ -49,6 +50,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     );
     //initialise the hybrid-select.
     _.init(true);
+    return _;
 	});
   /* Prototyping some methods for HybridSelect object */
   let hsProtype = HybridSelect.prototype;
@@ -82,8 +84,11 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     [].forEach.call(_.el.children,(o,i) => {
       //TODO: check if o is optgrp, and loop over.
       let hso = document.createElement('div');
-      hso.setAttribute('data-value',o.value);
+      //preserve select options attributes.
+      // for(let k in o.dataset) hso.dataset[k]=o.dataset[k];
+      hso.dataset.hsoValue=o.value;
       hso.innerHTML =_.opt.optionLabel(o.textContent);
+      hso.classList = o.classList;
       hso.classList.add('hybrid-option');
       if(o.selected===true || i==0){
         if(i>0) opts[0].classList.remove('active');
@@ -145,7 +150,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     _.sindex = idx;
     _.hselect.options.children[idx].classList.add('active');
     //update values.
-    _.el.value = _.value = _.hselect.options.children[idx].getAttribute('data-value');
+    _.el.value = _.value = _.hselect.options.children[idx].dataset.hsoValue;
 
     //update the selected label.
     _.hselect.selected.innerHTML = _.hselect.options.children[idx].innerHTML;
@@ -155,7 +160,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
   hsProtype.updateFromOriginal = function(){
     let _ = this;
     if(_.el.value === _.value) return; //not need to update.
-    let sel = _.hselect.options.querySelector(`.hybrid-option[data-value="${_.el.value}"`);
+    let sel = _.hselect.options.querySelector(`.hybrid-option[data-hso-value="${_.el.value}"`);
     sel = [..._.hselect.options.children].indexOf(o); //index in hybrid.
     _.updateSelection(sel, false);
   }

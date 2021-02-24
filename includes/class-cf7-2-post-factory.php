@@ -176,11 +176,11 @@ class Cf7_2_Post_Factory extends Cf7_2_System_Post {
   **/
   public function get_taxonomy_listing($taxonomy_slug=null){
     $result = '';
-    if('publish' == $this->post_properties['map']){
-      $result .= '<select disabled>';
-    }else{
-        $result .= '<select class="taxonomy-list nice-select">';
-    }
+    // if('publish' == $this->post_properties['map']){
+    //   $result .= '<select disabled>';
+    // }else{
+    $result .= '<select class="taxonomy-list'.(empty($taxonomy_slug)?'':' select-hybrid').'">';
+    // }
     if('' === $taxonomy_slug){
       $result .= '<option value="" data-name="" >'.__('Choose a Taxonomy', 'post-my-contact-form-7' ). '</option>';
     }

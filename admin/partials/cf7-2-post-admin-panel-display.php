@@ -108,7 +108,7 @@
      <div class="clear"></div>
    </div><!-- end post-type-select -->
 </div>
-<h2><?=__('Default post fields', 'post-my-contact-form-7')?></h2>
+<h2><?=__('Default Post Fields', 'post-my-contact-form-7')?></h2>
 <div id="c2p-mapped-fields">
    <ul id="c2p-default-post-fields">
       <?php
@@ -120,10 +120,18 @@
       echo sprintf($post_fields, __('Post author', 'post-my-contact-form-7' ),'author',$factory_mapping->get_mapped_form_field('author'));
       ?>
    </ul>
-   <h2><?=__('Custom Meta Fields','post-my-contact-form-7' )?></h2>
+   <h2><?=__('Post Meta Fields','post-my-contact-form-7' )?></h2>
    <ul id="c2p-post-meta-fields">
-   <?php include_once 'cf7-2-post-field-metabox.php'; ?>
+      <?php include_once 'cf7-2-post-field-metabox.php'; ?>
    </ul>
-<?= $factory_mapping->get_all_metafield_menus(); /** @since 5.0.0 */?>
+   <?= $factory_mapping->get_all_metafield_menus(); /** @since 5.0.0 */?>
+   <p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>
+   <h2><?=__('Post Taxonomy','post-my-contact-form-7' )?></h2>
+   <p>
+      <?= sprintf(
+         __('Only %1$s form fields can be mapped to a taxonomy, create the field with empty options and the plugin will populate the field with the taxonomy terms it is mapped to.','post-my-contact-form-7' ),'<strong>checkbox | radio| select</strong>')?>
+   </p>
+   <ul id="c2p-taxonomy-fields">
+      <?php include_once 'cf7-2-post-taxonomy-metabox.php'; ?>
+   </ul>
 </div>
-<p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>
