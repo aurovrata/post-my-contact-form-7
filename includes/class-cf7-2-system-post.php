@@ -1,123 +1,11 @@
 <?php
+/**
+* Abstract factory class that handles mapping to existing system posts. 
+* @since 5.0
+*/
 
-class Cf7_2_System_Post {
-  /**
-	 * The properties of the mapped custom post type.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_properties    an array of properties.
-	 */
-  protected $post_properties =array();
-  /**
-	 * The properties of the mapped custom taxonomy.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $taxonomy_properties    an array of properties with   $taxonomy_slug=>array('source'=>$taxonomy_source, 'singular_name'=>$value, 'name'=>$plural_name)
-	 */
-  protected $taxonomy_properties=array();
-  /**
-	 * The the CF7 post ID.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      int    $cf7_post_ID    the CF7 post ID.
-	 */
-  public $cf7_post_ID=0;
-  /**
-   * The the CF7 post unique key.
-   *
-   * @since    1.2.7
-   * @access    protected
-   * @var      string    $cf7_key    the unique key which can be used to identfy this form.
-   */
-  public $cf7_key;
-  /**
-	 * The CF7 form fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
-	 */
-  protected $cf7_form_fields = array();
-  /**
-	 * The CF7 form fields options.
-	 *
-	 * @since    2.0.0
-	 * @access    protected
-	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
-	 */
-  protected $cf7_form_fields_options =array();
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_fields    an array mapped CF7 fields, to default
-   * post fields {'form field name'=>'post field'}.
-	 */
-  protected $post_map_fields = array();
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_meta_fields    an array mapped CF7 fields, to post
-   * custom meta fields  {'form field name'=>'post field'}.
-	 */
-  protected $post_map_meta_fields=array();
-  /**
-	 * The CF7 form fields mapped to post fields.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $post_map_taxonomy    an array mapped CF7 fields, to post
-   * custom taxonomy  {'form field name'=>'taxonomy slug'}.
-	 */
-   protected $post_map_taxonomy=array();
-  /**
-	 * The CF7 form fields values to set as localize_script.
-	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      array    $localise_values    an array CF7 fields=>values.
-	 */
-  protected $localise_values;
-  /**
-   * An array of wpcf7_type taxonomy terms this form belongs to.
-   * @since 3.2.0
-   * @access protected
-   * @var array $form_terms an array of terms.
-   **/
-   protected $form_terms=array();
-   /**
-   * an array of post_id=>array($post_type =>[factory|system])); key value pairs.
-   * @since 3.4.0
-   * @access protected
-   * @var array $mapped_post_types an array of key value pairs.
-   */
-   protected static $mapped_post_types=array();
-   /**
-   * boolean flag to flush rewrite rules when custom posts are created/updated.
-   * @since 3.8.2
-   * @access protected
-   * @var boolean $flush_permalink_rules a boolean flag.
-   */
-   protected $flush_permalink_rules = false;
-   /**
-   * an array of existing system post types to which a form can be mapped.
-   * @since 5.0.0
-   * @access protected
-   * @var array $mapped_post_types an array of key value pairs.
-   */
-   protected static $system_post_types=array();
-  /**
-   * Default Construct
-   *
-   * @since    1.0.0
-   * @param    int    $cf7_post_id the ID of the CF7 form.
-   */
+abstract class Cf72System_Mapping_Factory {
+
   protected function __construct($cf7_post_id){
     $this->cf7_post_ID = $cf7_post_id;
     $post = get_post($cf7_post_id);
@@ -234,7 +122,7 @@ class Cf7_2_System_Post {
   * set system posts
   *
   *@since 5.0.0
-  *@return Array assocaitive array of system post types=>post label.
+  *@return Array associative array of system post_types=>post label.
   */
   protected function set_system_posts(){
     if(!empty(self::$system_post_types)) return ;
@@ -265,78 +153,4 @@ class Cf7_2_System_Post {
     self::$system_post_types = apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
   }
 
-  /**
-  * Setups the form to existing post mapping
-  * @since 1.2.7
-  * @param   array   $data   an array containing the admin form data, $_POST
-  * @param   boolean   $create_post_mapping  if false it will only save the mapping but not
-  * create the custom post for saving user form inputs.  If it is a system post, this flag is ignored.
-  * @return  boolean   true if successful
-  */
-  protected function set_system_mapping($data, $create_post_mapping){
-    $this->post_properties = array(); //reset.
-    $this->post_properties['type_source'] = $data['mapped_post_type_source'];
-    $this->post_properties['type'] = $data['mapped_post_type'];
-    $this->post_properties['version'] = CF7_2_POST_VERSION;
-    //reset the properties, this is now being published
-    $this->post_properties['taxonomy'] = array();
-    //keep track of old mappings.
-    $old_cf7_post_metas = get_post_meta($this->cf7_post_ID);
-
-    if($create_post_mapping){
-      $this->post_properties['map']='publish';
-    }else{
-      $this->post_properties['map']='draft';
-    }
-    //debug_msg($this->post_properties, 'saving system post ');
-    //debug_msg($this->post_properties, 'saving properties ');
-    foreach($this->post_properties as $key=>$value){
-      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key,$value);
-      //clear previous values.
-      if(isset($old_cf7_post_metas['_cf7_2_post-'.$key]) ){
-        unset($old_cf7_post_metas['_cf7_2_post-'.$key]);
-      }
-    }
-    $is_action = ('filter' == $data['mapped_post_type_source'] || has_action('cf7_2_post_save-'.$this->post_properties['type']));
-    if(!$is_action){
-      //save post fields
-      $this->post_map_fields = $this->get_mapped_fields('cf7_2_post_map-', $data);
-      //debug_msg($this->post_map_fields, 'saving post fields');
-      foreach($this->post_map_fields as $cf7_field=>$post_field){
-        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field,$cf7_field);
-        if(isset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]) ){
-          unset($old_cf7_post_metas['cf7_2_post_map-'.$post_field]);
-        }
-      }
-
-      //save meta fields
-      $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-', $data);
-      //debug_msg($this->post_map_meta_fields, 'saving meta fields');
-      foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
-        //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field,$cf7_field);
-        if(isset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]) ){
-          unset($old_cf7_post_metas['cf7_2_post_map_meta-'.$post_field]);
-        }
-      }
-
-      //save the taxonomy mapping
-      $this->save_taxonomies($data, false, $old_cf7_post_metas);
-    }
-    //clear any old values left.
-    //debug_msg($old_cf7_post_metas , 'deleting');
-    foreach($old_cf7_post_metas as $key=>$value){
-      switch(true){
-        case (0 === strpos($key,'_cf7_2_post-')):
-        case (0 === strpos($key,'cf7_2_post_map-')):
-        case (0 === strpos($key,'cf7_2_post_map_meta-')):
-          delete_post_meta($this->cf7_post_ID, $key);
-          //debug_msg('deleting: '.$key);
-          break;
-      }
-    }
-    return true;
-  }
 }

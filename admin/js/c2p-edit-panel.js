@@ -2,7 +2,7 @@
 	'use strict';
   const removeButton = '<span class="dashicons dashicons-minus remove-field"></span>',
     errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>',
-    selectedOptions = new Array(), selectedCount = 0;
+    selectedOptions = new Array(), selectedCount = 0, c2pChanged=false;
 
   let formFields, $form = $('textarea#wpcf7-form'),
     $tab = $('#cf7-2-post-tab');
@@ -92,6 +92,7 @@
         break;
     }
     $mapped_type.val(type);
+    if(!c2pChanged) c2pUpdateMapping();
     if(e){
       //clear any existing custom meta/taxonomy fields.
       $('#c2p-post-meta-fields li:not(.default-meta-field)').remove();
@@ -106,6 +107,10 @@
       });
     }
 
+  }
+  function c2pUpdateMapping(){
+    $('#c2p-mapping-changed').val(1);
+    c2pChanged = true;
   }
   /*
    *setup some events.
@@ -243,7 +248,9 @@
       postType = document.querySelector('#mapped-post-type').value, //mapped psot type.
       fc = field.closest('li'), //field container.
       msgBox = fc.querySelector('.cf7-post-msg'),
-      ffMenu = fc.querySelector('select.field-options'); //form field menu.
+      ffMenu = fc.querySelector('select.field-options'), //form field menu.
+      update = true;
+
     switch(true){
       case field.classList.contains('existing-fields'): //post mf dropdpown.
         if( fv == 'cf72post-custom-meta-field'){ //switch to input text field.
@@ -299,7 +306,11 @@
         ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+field.value;
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
+      default:
+        update = false;
+        break;
     }
+    if(update && !c2pChanged) c2pUpdateMapping();
   });
   function c2pEditTaxonomy(show){
     let fc = this.closest('li');

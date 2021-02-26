@@ -53,7 +53,9 @@
 <?php if(!is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')):
    $form = get_post($cf7_post_id);
 ?>
-   <input type="hidden" id="post_name" value="<?=$form->post_name?>"/>
+   <input type="hidden" id="c2p-cf7-key" value="<?=$form->post_name?>"/>
+   <input type="hidden" id="c2p-mapping-changed" name="c2p_mapping_changes" value="0"/>
+
 <?php endif;?>
 
 <input type="hidden" name="action" value="save_post_mapping"/>

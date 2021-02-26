@@ -488,60 +488,19 @@ class Cf7_2_Post_Admin {
     }
   }
   /**
-  *Save draft with Ajax data submission from admin form.
-  * @since 1.0.0
+  *Save draft with data submission from admin form.
+  *Hooked on save_post_wpcf7_contact_form
+  * @since 5.0.0
   */
-  public function ajax_save_post_mapping(){
+  public function save_post_mapping($post_id){
     //debug_msg($_POST, "save post ");
-    if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ){
-      wp_send_json_error("Security failed, try to reload the page");
-      die();
-    }
-    if( isset( $_POST['cf7_post_id'] ) ){
+    if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
+    //check if any changes on the form.
+    if(isset($_POST['c2p_mapping_changes']) && 0 == $_POST['c2p_mapping_changes']) return;
 
-      $cf7_post_id = $_POST['cf7_post_id'];
-      $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-      if($this->post_mapping_factory->is_system_published()){
-        $json_data = array('msg'=>'Nothing to update');
-        wp_send_json_error($json_data);
-        wp_die();
-      }
-      $create_or_update = false;
-      $json_data=array('msg'=>'Unknown action', 'post'=>'unknown');
-      $result = false;
-      switch(true){
-        case isset($_POST['save_draft']):
-          $create_or_update = false;
-          $result = $this->post_mapping_factory->save($_POST, $create_or_update);
-          $json_data = array('msg'=>'Saved draft', 'post'=>'saved');
-          break;
-        case isset($_POST['update_post']):
-          $create_or_update = true;
-          $result = $this->post_mapping_factory->update($_POST);
-          $json_data = array('msg'=>'Updated post', 'post'=>'created');
-          break;
-        case isset($_POST['save_post']):
-          $create_or_update = true;
-          $result = $this->post_mapping_factory->save($_POST, $create_or_update);
-          $json_data = array('msg'=>'Created post', 'post'=>'created');
-          break;
-        default:
-          debug_msg($_POST, 'unknown saving ');
-          break;
-      }
+    $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($post_id);
 
-      if($result){
-        //wp_send_json_success( $data );
-        wp_send_json_success( $json_data );
-      }else{
-        $json_data = array('msg'=>'Something is wrong, try to reload the page');
-        wp_send_json_error($json_data);
-      }
-    }else{
-      $json_data = array('msg'=>'No CF7 post ID, try to reload the page');
-      wp_send_json_error($json_data);
-    }
-    wp_die();
+    $result = $this->post_mapping_factory->save($post_id);
   }
   /**
   *Disables browser page caching for forms which are mapped to a post.
