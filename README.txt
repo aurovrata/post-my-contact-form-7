@@ -591,6 +591,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.10 =
+* fix for yet another change in CF7 data schema (CF7 v5.4)!
 = 4.1.9 =
 * make mapped post types default to _cf7_2_post_form_submitted = yes for posts created in the dashboard.
 = 4.1.8 =
