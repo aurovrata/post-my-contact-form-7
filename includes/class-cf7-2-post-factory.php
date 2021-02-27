@@ -1288,7 +1288,7 @@ class Cf7_2_Post_Factory {
           //debug_msg($form_field, 'uploaded file...');
           $cf7_files = $submission->uploaded_files();
           if(isset($cf7_files[$form_field])){ //if set handle upload.
-            $file = $cf7_files[$form_field]; //file path.
+            $file = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
             /** @since 4.1.4 fix file upload bug introduced in CF7 v5.2 */
             if(!file_exists($file)){
               $file = $_FILES[$form_field]['tmp_name'];
