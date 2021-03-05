@@ -591,6 +591,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 4.1.11 =
+* fix repetitive file fields storage for Smart Grid plugin.
 = 4.1.10 =
 * fix for yet another change in CF7 data schema (CF7 v5.4)!
 = 4.1.9 =
