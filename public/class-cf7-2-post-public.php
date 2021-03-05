@@ -75,8 +75,8 @@ class Cf7_2_Post_Public {
     //load the form factory
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
-    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
-      $factory = Cf7_2_Post_System::get_factory($cf7_post_id);
+    if(CF72Post_Mapping_Factory::is_mapped($cf7_post_id)){
+      $mapper = CF72Post_Mapping_Factory::get_post_mapper($cf7_post_id);
 
       //load all the submittec values
       //$cf7_form_data = array();
@@ -84,7 +84,7 @@ class Cf7_2_Post_Public {
       //the curent submission object from cf7 plugin
       $submission = WPCF7_Submission::get_instance();
       //debug_msg($submission, "saving form data ");
-      $post_id = $factory->save_form_2_post($submission);
+      $post_id = $mapper->save_form_2_post($submission);
       /** @since 4.1.0 handle post link mail tag.
       * NOTE: the post_Id could be either a submitted form or a draft save.
       * either way, the mail tag filter will only fire for submitted forms.
@@ -136,7 +136,7 @@ class Cf7_2_Post_Public {
     }
     $cf7_id = $attr['id'];
     //let get the corresponding factory object,
-    if(Cf7_2_Post_Factory::is_mapped($cf7_id)){
+    if(CF72Post_Mapping_Factory::is_mapped($cf7_id)){
       //let's ensure the page does not cache our values.
       $this->not_form_page = false;
 
@@ -224,7 +224,7 @@ class Cf7_2_Post_Public {
         }
       }
       foreach($cf7_forms as $form_id){
-        $has_mapped_form = Cf7_2_Post_Factory::is_mapped($form_id);
+        $has_mapped_form = CF72Post_Mapping_Factory::is_mapped($form_id);
         if($has_mapped_form) break;
       }
     }
@@ -259,7 +259,7 @@ class Cf7_2_Post_Public {
     $atts = array();
     $disabled = false;
     $cf7_form = wpcf7_get_current_contact_form();
-    if(!Cf7_2_Post_Factory::is_mapped($cf7_form->id())){
+    if(!CF72Post_Mapping_Factory::is_mapped($cf7_form->id())){
       $disabled = true;
     }
     //enqueue required scripts and styles

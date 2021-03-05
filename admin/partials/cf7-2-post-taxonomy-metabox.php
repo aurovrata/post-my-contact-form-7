@@ -11,10 +11,10 @@
   //   $cf7_post_id = $_GET['id']; // should validate to integer?
   //
   //   if ( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ) {
-  //     $factory_mapping = $this->post_mapping_factory;
+  //     $post_mapper = $this->post_mapping_factory;
   //   } else {
-  //     $factory_mapping = Cf7_2_Post_System::get_factory($cf7_post_id);
-  //     $this->post_mapping_factory = $factory_mapping;
+  //     $post_mapper = Cf7_2_Post_System::get_factory($cf7_post_id);
+  //     $this->post_mapping_factory = $post_mapper;
   //   }
   // }
 
@@ -23,7 +23,7 @@
    */
   // $is_new_mapping = true;
   //
-  // switch ( $factory_mapping->get('map') ) {
+  // switch ( $post_mapper->get('map') ) {
   //   case 'draft':
   //     $is_new_mapping = true;
   //     break;
@@ -44,9 +44,9 @@
    /**
     * Loop taxonomies
     */
-$mapped_taxonomy = $factory_mapping->get_mapped_taxonomy();
+$mapped_taxonomy = $post_mapper->get_mapped_taxonomy();
 foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
-  $taxonomy = $factory_mapping->get_taxonomy($post_taxonomy);
+  $taxonomy =  $post_mapper->get_taxonomy($post_taxonomy);
   ?>
   <li>
     <div class="custom-taxonomy-field cf7-2-post-field">
@@ -60,7 +60,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         <option class="default-option" selected="true" value="">
           <?= __('Select a form field', 'post-my-contact-form-7' )?>
         </option>
-        <option class="filter-option" value="c2p_filter-<?=$factory_mapping->get('type')?>-<?=$post_taxonomy?>">
+        <option class="filter-option" value="c2p_filter-<?=$post_mapper->get('type')?>-<?=$post_taxonomy?>">
           <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
         </option>
       </select>
@@ -71,7 +71,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       <p>
         <?= __('Choose a taxonomy, in blue are existing public taxonomies', 'post-my-contact-form-7'); ?>
       </p>
-      <?= $factory_mapping->get_taxonomy_listing($post_taxonomy); ?>
+      <?= $post_mapper->get_taxonomy_listing($post_taxonomy); ?>
       <label for="cf7_2_post_map_taxonomy_names-<?=$post_taxonomy; ?>">
         <strong><?= __('Plural Name', 'post-my-contact-form-7')?></strong>
       </label>
@@ -102,7 +102,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
     /**
      * Default new taxonomy slug
      */
-    $taxonomy_slug = sanitize_title($factory_mapping->get('singular_name')) . '_categories';
+    $taxonomy_slug = sanitize_title($post_mapper->get('singular_name')) . '_categories';
   ?>
 <li>
   <div class="custom-taxonomy-field cf7-2-post-field">
@@ -115,7 +115,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       <option class="default-option" selected="true" value="">
         <?= __('Select a form field', 'post-my-contact-form-7' )?>
       </option>
-      <option class="filter-option" value="c2p_filter-<?=$factory_mapping->get('type')?>-<?=$taxonomy_slug?>">
+      <option class="filter-option" value="c2p_filter-<?=$post_mapper->get('type')?>-<?=$taxonomy_slug?>">
         <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
       </option>
     </select>
@@ -126,7 +126,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
     <p>
       <?= __('Choose a taxonomy, in <em>blue</em> are existing public taxonomies', 'post-my-contact-form-7'); ?>
     </p>
-    <?= $factory_mapping->get_taxonomy_listing(); ?>
+    <?=  $post_mapper->get_taxonomy_listing(); ?>
     <label for="cf7_2_post_map_taxonomy_names-<?=$taxonomy_slug; ?>">
       <strong><?= __('Plural Name', 'post-my-contact-form-7')?></strong>
     </label>

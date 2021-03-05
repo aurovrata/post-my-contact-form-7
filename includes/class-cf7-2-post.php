@@ -196,8 +196,8 @@ class Cf7_2_Post {
     * hook to modify custom post in dashboard
     * @since 3.4.0
     */
-    $cf7_post_ids = Cf7_2_Post_Factory::get_mapped_post_types();
-    foreach($cf7_post_ids as $post_id=>$type){
+    $cf7_2_post_type = CF72Post_Mapping_Factory::get_mapped_post_types();
+    foreach($cf7_2_post_type as $post_id=>$type){
       $post_type = key($type);
 			$this->loader->add_filter('manage_' . $post_type . '_posts_columns', $plugin_admin, 'modify_cf72post_columns', 999,1);
 			$this->loader->add_action('manage_' . $post_type . '_posts_custom_column', $plugin_admin, 'populate_custom_column', 999,2);

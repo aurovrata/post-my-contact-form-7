@@ -44,7 +44,7 @@ class Cf7_2_Post_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      Cf7_2_Post_Factory    $post_mapping_factory   mapping factory object.
+	 * @var      CF72Post_Mapping_Factory    $post_mapping_factory   mapping factory object.
 	 */
 	private $post_mapping_factory;
   /**
@@ -97,12 +97,12 @@ class Cf7_2_Post_Admin {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Cf7_2_Post_Factory. manages the cf7 mapping to custom post.
+	 * - CF72Post_Mapping_Factory. manages the cf7 mapping to custom post.
 	 * @since    1.0.0
 	 * @access   private
 	 */
 	private function load_dependencies() {
-    // for the Cf7_2_Post_Factory class
+    // for the CF72Post_Mapping_Factory class
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-system-post.php';
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
     //contact post table list
@@ -125,7 +125,7 @@ class Cf7_2_Post_Admin {
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }//
 
-    if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type, 'factory')){
+    if(false != CF72Post_Mapping_Factory::is_mapped_post_types($screen->post_type, 'factory')){
       switch($screen->base){
         case 'post':
           wp_enqueue_style( 'cf72-custompost-css', plugin_dir_url( __FILE__ ) . 'css/cf72-custompost.css', array(), $this->version, 'all' );
@@ -156,7 +156,7 @@ class Cf7_2_Post_Admin {
       wp_enqueue_script('hybrid-select', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
     }
-    if(false != Cf7_2_Post_Factory::is_mapped_post_types($screen->post_type)){
+    if(false != CF72Post_Mapping_Factory::is_mapped_post_types($screen->post_type)){
       switch($screen->base){
         case 'edit':
           wp_enqueue_script( 'cf72custompost-quick-edit-js', plugin_dir_url( __FILE__ ) . 'js/cf7-2-custom-post-quick-edit.js', array( 'jquery' ), $this->version, true );
@@ -408,43 +408,7 @@ class Cf7_2_Post_Admin {
         break;
     }
   }
-  /**
-   * Saves Quick-edits changes
-   * Hooked to save_post_wpcf7_contact_form
-   * @since 2.0.0
-   * @param      string    $post_id     post ID.
-  **/
-  public function save_quick_edit($post_id){
-    //debug_msg($_POST);
-    if(!isset($_POST['cf7_2_post_quick_edit'])){
-      return;
-    }
-    if(!wp_verify_nonce($_POST['cf7_2_post_quick_edit'],'cf7_2_post_quick_edit')){
-      return;
-    }
-    if(isset($_POST['cf7_2_post_status'])){
-      switch($_POST['cf7_2_post_status']){
-        case 'draft':
-        case 'publish':
-          break;
-        case 'delete':
-          //reset mapping
-          $mappings = get_post_meta($post_id);
-          foreach($mappings as $key=>$value){
-            switch(true){
-              case (0 === strpos($key,'_cf7_2_post-')):
-              case (0 === strpos($key,'cf7_2_post_map-')):
-              case (0 === strpos($key,'cf7_2_post_map_meta-')):
-                delete_post_meta($post_id, $key);
-                //debug_msg('deleting: '.$key);
-                break;
-            }
-          }
-          break;
-      }
-      Cf7_2_Post_Factory::update_mapped_post_types( $post_id, $_POST['cf7_2_post_status']);
-    }
-  }
+  
   /**
    * Saves Quick-edits changes
    * Hooked to save_post_{$post_type}
@@ -465,28 +429,7 @@ class Cf7_2_Post_Admin {
       update_post_meta($post_id, '_cf7_2_post_form_submitted' ,'no');
     }
   }
-  /**
-  * Display the custom admin page for creating post
-  * This is a call back function based on the admin menu hook
-  * @since 3.0.0
-  */
-  public function display_mapping_page(){
-    if( isset($_GET['id']) ){
-      $cf7_post_id = $_GET['id'];
-      if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
-        $factory_mapping = $this->post_mapping_factory;
-      }else{
-        $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-        $this->post_mapping_factory = $factory_mapping;
-      }
-      include( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-edit-mapping.php');
-    }else{
-      $adminUrl = admin_url('edit.php?post_type=wpcf7_contact_form');
-      echo '<div><h2>Ooops! Have you taken a wrong turn?</h2>';
-      echo '<p>This page is for mapping a CF7 form to a custom post,';
-      echo ' please access it from the from <a href="'.$adminUrl.'">table list page</a>.</p></div>';
-    }
-  }
+
   /**
   *Save draft with data submission from admin form.
   *Hooked on save_post_wpcf7_contact_form
@@ -498,9 +441,9 @@ class Cf7_2_Post_Admin {
     //check if any changes on the form.
     if(isset($_POST['c2p_mapping_changes']) && 0 == $_POST['c2p_mapping_changes']) return;
 
-    $this->post_mapping_factory = Cf7_2_Post_Factory::get_factory($post_id);
+    $mapper = CF72Post_Mapping_Factory::get_post_mapper($post_id);
 
-    $result = $this->post_mapping_factory->save($post_id);
+    $mapper->save($post_id);
   }
   /**
   *Disables browser page caching for forms which are mapped to a post.
@@ -524,7 +467,7 @@ class Cf7_2_Post_Admin {
   * @since 1.0.0
   */
   public function register_dynamic_posts(){
-    Cf7_2_Post_Factory::register_cf7_post_maps();
+    CF72Post_Mapping_Factory::register_cf7_post_maps();
   }
 
 
@@ -535,10 +478,10 @@ class Cf7_2_Post_Admin {
    * @param      int    $cf7_post_id    The ID of the cf7 form to be deleted .
   **/
   public function delete_cf7_post($cf7_post_id){
-    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+    if(CF72Post_Mapping_Factory::is_mapped($cf7_post_id)){
       $delete_all_posts = false;
       //TODO load settings to allow users to delete all submitted form post data when deleting a mapping
-      $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+      $factory = CF72Post_Mapping_Factory::get_factory($cf7_post_id);
       $factory->delete_mapping($delete_all_posts);
 
     }
@@ -677,12 +620,12 @@ class Cf7_2_Post_Admin {
   */
   public function show_custom_post_metabox($post){
     $path = apply_filters('cf7_2_post_mapped_post_metabox', '', $post->post_type);
-    $cf7_post_id = Cf7_2_Post_Factory::is_mapped_post_types($post->post_type, 'factory');
+    $cf7_post_id = CF72Post_Mapping_Factory::is_mapped_post_types($post->post_type, 'factory');
     if(false == $cf7_post_id){
       echo '<em>This post is not mapped to a cf7 form</em>';
       return;
     }
-    $factory = Cf7_2_Post_Factory::get_factory($cf7_post_id);
+    $factory = CF72Post_Mapping_Factory::get_factory($cf7_post_id);
     $mapped_fields = $factory->get_mapped_meta_fields();
     if(!empty($path) && file_exists($path)){
       include( $path);
@@ -717,7 +660,7 @@ class Cf7_2_Post_Admin {
     $cf7_form = WPCF7_ContactForm::get_current();
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
-    if(Cf7_2_Post_Factory::is_mapped($cf7_post_id)){
+    if(CF72Post_Mapping_Factory::is_mapped($cf7_post_id)){
       $mailtags[] = 'cf7_2_post-edit';
       $mailtags[] = 'cf7_2_post-permalink';
     }
@@ -745,14 +688,11 @@ class Cf7_2_Post_Admin {
 	*@since 5.0.0
 	*/
 	public function display_amdin_panel(){
-		// $contact_form = WPCF7_ContactForm::get_current();
-    $cf7_post_id = $_GET['post'];
-    if( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ){
-      $factory_mapping = $this->post_mapping_factory;
-    }else{
-      $factory_mapping = Cf7_2_Post_Factory::get_factory($cf7_post_id);
-      $this->post_mapping_factory = $factory_mapping;
+    if(isset($_GET['post'])){
+      $cf7_post_id = $_GET['post'];
+      $post_mapper = CF72Post_Mapping_Factory::get_post_mapper($cf7_post_id);
+  		include_once 'partials/cf7-2-post-admin-panel-display.php';
     }
-		include_once 'partials/cf7-2-post-admin-panel-display.php';
 	}
+
 }
