@@ -698,7 +698,7 @@ class Cf7_2_Post_Factory {
       if(!empty($cf7_maped_field_name) && $field==$cf7_maped_field_name){
         $options .= '  <option selected="selected" value="'.$field.'">'.$field.'  ['.$type.']</option>';
       }else{
-          $options .= '  <option value="'.$field.'">'.$field.'  ['.$type.']</option>';
+        $options .= '  <option value="'.$field.'">'.$field.'  ['.$type.']</option>';
       }
     }
     //filter option
@@ -1286,16 +1286,24 @@ class Cf7_2_Post_Factory {
           break;
         case 'thumbnail':
           //debug_msg($form_field, 'uploaded file...');
+          $file=$filename='';
           $cf7_files = $submission->uploaded_files();
-          if(isset($cf7_files[$form_field])){ //if set handle upload.
-            $file = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
-            /** @since 4.1.4 fix file upload bug introduced in CF7 v5.2 */
-            if(!file_exists($file)){
-              $file = $_FILES[$form_field]['tmp_name'];
+          if(defined('CF7_GRID_VERSION') && version_compare(CF7_GRID_VERSION, '4.9.0','>=')){
+            $cf7_files = $cf7_form_data[$form_field]; //file path stored in posted data as of v4.9.
+            if(!empty($cf7_files)){
+              $file = cf7sg_extract_submitted_files($cf7_files);
             }
-            $filename = $_FILES[$form_field]['name']; //file name
+          }else{
+            if(isset($cf7_files[$form_field])){ //if set handle upload.
+              $file = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
+
+              $file = array($_FILES[$form_field]['name']=>$file); //file name
+            }
+          }
+          foreach($file as $filename=>$path){
+            if(!file_exists($path)) continue;
             //wp_upload_bits( $name, $deprecated, $bits, $time )
-            $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
+            $upload_file = wp_upload_bits($filename, null, @file_get_contents($path));
             if (!$upload_file['error']) {
             	$wp_filetype = wp_check_filetype($filename, null );
             	$attachment = array(
@@ -1397,23 +1405,35 @@ class Cf7_2_Post_Factory {
         }
         if( 'file' == $this->cf7_form_fields[$form_field] ){
           $cf7_files = $submission->uploaded_files();
-          $file_url = '';
-          if(isset($cf7_files[$form_field]) && !empty($cf7_files[$form_field])){
-            $file = $cf7_files[$form_field]; //file path.
-            /** @since 4.1.4 fix file upload bug introduced in CF7 v5.2 */
-            if(!file_exists($file)){
-              $file = $_FILES[$form_field]['tmp_name'];
-            }
-            $filename = $_FILES[$form_field]['name']; //file name
+          $file_url = $files = '';
 
-            $upload_file = wp_upload_bits($filename, null, @file_get_contents($file));
+          if(defined('CF7_GRID_VERSION') && version_compare(CF7_GRID_VERSION, '4.9.0','>=')){
+            $cf7_files = $cf7_form_data[$form_field]; //file path stored in posted data as of v4.9.
+            if(!empty($cf7_files)){
+              $files = cf7sg_extract_submitted_files($cf7_files);
+            }
+          }else{
+            if(isset($cf7_files[$form_field])){ //if set handle upload.
+              $files = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
+
+              $files = array($_FILES[$form_field]['name']=>$files); //file name
+            }
+          }
+          $file_url = array();
+          foreach($files as $filename=>$path){
+            if(!file_exists($path)) continue;
+            //wp_upload_bits( $name, $deprecated, $bits, $time )
+            $upload_file = wp_upload_bits($filename, null, @file_get_contents($path));
+
             if (!$upload_file['error']) {
-              $file_url = $upload_file['url'];
+              $file_url[] = $upload_file['url'];
             }else{
               debug_msg($file, "Unable to upload file ".$filename);
             }
           }
           //if(isset($cf7_form_data[$form_field])){ //if not submitted=disabled.
+          if(empty($file_url)) $file_url = '';
+          if(count($file_url)==1) $file_url = $file_url[0];
           update_post_meta($post_id, $post_field, $file_url);
           //}
         }else{
@@ -1490,6 +1510,7 @@ class Cf7_2_Post_Factory {
     /** @since 4.1.0 reutnr post id to handle post link mail tags in public class */
     return $post_id;
   }
+
   /**
   * Builds a set of field=>value pairs to pre-populate a mapped form
   * Called by Cf7_2_Post_Public::load_cf7_script()
