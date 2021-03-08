@@ -1,11 +1,11 @@
 <?php
-require_once plugin_dir_path( dirname( __FILE__ ) ) . 'class-cf7-2-post-mapper.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-cf7-2-post-mapper.php';
 
 class Form_2_Custom_Post extends Form_2_Post_Mapper{
 
-  protected function __construct($cf7_id, $factory){
+  public function __construct($cf7_id, $factory){
     $this->cf7_post_ID = $cf7_id;
-    $this->factory = $factory;
+    self::$factory = $factory;
     $this->post_properties['type_source'] = 'factory';
   }
   /**
@@ -17,7 +17,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
   *@param String $plural_name post plural name.
   *@return string text_description
   */
-  public function init_default($post_type, $singular_name, $plural_name){
+  public function init_default($cf7_key, $singular_name, $plural_name){
     //set some default values
     $this->post_properties=array(
       'hierarchical'          => false, //like post.
@@ -32,8 +32,9 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       'exclude_from_search'   => true, //cannot be searched from front-end.
       'publicly_queryable'    => false //can be queried from front-end.
     );
+    $this->cf7_key = $cf7_key;
     $this->post_properties['map']='draft';
-    $this->post_properties['type']=$post_type;
+    $this->post_properties['type']=$cf7_key;
     $this->post_properties['version'] = CF7_2_POST_VERSION;
     $this->post_properties['singular_name']=$singular_name;
     $this->post_properties['plural_name']=$plural_name;

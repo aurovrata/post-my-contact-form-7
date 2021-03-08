@@ -99,6 +99,7 @@ class Cf7_2_Post {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
+		 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-factory.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-loader.php';
     require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/wordpress-gurus-debug-api.php';
 		/**
@@ -196,7 +197,8 @@ class Cf7_2_Post {
     * hook to modify custom post in dashboard
     * @since 3.4.0
     */
-    $cf7_2_post_type = CF72Post_Mapping_Factory::get_mapped_post_types();
+
+    $cf7_2_post_type = c2p_mapped_post_types();
     foreach($cf7_2_post_type as $post_id=>$type){
       $post_type = key($type);
 			$this->loader->add_filter('manage_' . $post_type . '_posts_columns', $plugin_admin, 'modify_cf72post_columns', 999,1);

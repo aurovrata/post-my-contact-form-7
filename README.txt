@@ -382,6 +382,17 @@ function custom_post_query($query_args, $post_type, $cf7key){
 = 24. How do I add a link to newly saved post in the confirmation mail? =
 Use the mail tag `[cf7_2_post-edit]` and `[cf7_2_post-permalink]` to add a link to the editable post in the admin dashboard and the post permalink in the front-end respectively.
 
+
+= 25. When deleting a mapping, how do I delete all submitted posts data ? =
+Hook the following filter in your functions.php file prior to deleting the mapping for that post_type.
+`
+add-filter('cf7_2_post_delete_submitted_posts', 'delete_posted_data',10,3);
+function delete_posted_data($delete_data, $post_type,$form_key){
+  //you may filter by form_key and/or post_type....
+  $delete_data = true;
+  return $delete_data;
+}
+`
 == Screenshots ==
 
 1. 1.You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -593,3 +604,4 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 == Change Log ==
 = 5.0.0 =
 * rewrite of admin-handling code.
+* added 'cf7_2_post_delete_submitted_posts' filter.

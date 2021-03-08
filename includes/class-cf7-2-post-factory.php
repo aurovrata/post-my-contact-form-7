@@ -1,4 +1,7 @@
 <?php
+require_once plugin_dir_path( __FILE__ ) . 'mapper/class-cf7-2-custom-post-mapper.php';
+require_once plugin_dir_path( __FILE__ ) . 'mapper/class-cf7-2-system-post-mapper.php';
+
 class CF72Post_Mapping_Factory {
   /**
 	 * cache of Form_2_Post_Mapper objects for loaded forms.
@@ -36,7 +39,7 @@ class CF72Post_Mapping_Factory {
     if(is_admin()) $this->get_system_posts(); //only used in dashboard.
 
   }
-  protected static function get_factory(){
+  public static function get_factory(){
     if(!isset(self::$factory)) self::$factory = new self();
     return self::$factory;
   }
@@ -69,10 +72,9 @@ class CF72Post_Mapping_Factory {
     * add/remove system posts to which to map forms to. By defualt the plugin only lists system posts which are visible in the dashboard
     * @since 2.0.0
     * @param array $display  list of system post picked up by the plugin to display
-    * @param string $form_id  the post id of the cf7 form currently being mapped
     * @return array an array of post-types=>post-label key value pairs to display
     */
-    return apply_filters('cf7_2_post_display_system_posts', $display, $this->cf7_post_ID);
+    return apply_filters('cf7_2_post_display_system_posts', $display);
   }
   /**
    *Get a list of available system post_types as <option> elements
@@ -80,9 +82,8 @@ class CF72Post_Mapping_Factory {
    * @since 1.3.0
    * @return     String    html list of <option> elements with existing post_types in the DB
   **/
-  public static function get_system_posts_options($selected){
-    $factory = get_factory();
-    $system_pt = $factory->get_system_posts();
+  public function get_system_posts_options($selected){
+    $system_pt = $this->get_system_posts();
     if(!isset($system_pt[$selected])) $selected = 'post';
 
     $html='';
@@ -102,11 +103,11 @@ class CF72Post_Mapping_Factory {
    * @param  int  $cf7_post_id  cf7 post id
    * @return Form_2_Post_Mapper  a factory oject
    */
-  public static function get_post_mapper( $cf7_post_id ){
-    $factory = self::get_factory();
+  public function get_post_mapper( $cf7_post_id ){
+    // $this = self::get_factory();
     //if mapper exists, return it.
-    if(isset($factory->post_mappers[$cf7_post_id])){
-      return $factory->post_mappers[$cf7_post_id];
+    if(isset($this->post_mappers[$cf7_post_id])){
+      return $this->post_mappers[$cf7_post_id];
     }
     //check if the cf7 form already has a mapping
     $post_type = get_post_meta($cf7_post_id,'_cf7_2_post-type',true);
@@ -115,26 +116,26 @@ class CF72Post_Mapping_Factory {
     $form = get_post($cf7_post_id);
     //debug_msg('type='.$post_type);
     if(empty($post_type)){ //let's create a new one
-      $post_type = $form->post_name;
       $plural_name = $singular_name = $form->post_title;
-      $mapper = new Form_2_Custom_Post($cf7_post_id, $factory);
+      $mapper = new Form_2_Custom_Post($cf7_post_id, $this);
+      $mapper->cf7_key = $post_type;
       if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
-      $mapper->init_default($post_type,$singular_name,$plural_name);
+      $mapper->init_default($form->post_name,$singular_name,$plural_name);
     }else{
 
       $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
       $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
-      if( isset($factory->post_mappers[$cf7_post_id]) ){
-        $mapper = $factory->post_mappers[$cf7_post_id];
+      if( isset($this->post_mappers[$cf7_post_id]) ){
+        $mapper = $this->post_mappers[$cf7_post_id];
       }else{
         switch($post_type_source){
           case 'system':
-            $mapper = new Form_2_System_Post($cf7_post_id, $factory);
+            $mapper = new Form_2_System_Post($cf7_post_id, $this);
             break;
           case 'factory':
-            $mapper = new Form_2_Custom_Post($cf7_post_id, $factory);
+            $mapper = new Form_2_Custom_Post($cf7_post_id, $this);
         }
-        $mapper->load_post_mapping(); //load DB values
+        $mapper->load_post_mapping($form->post_name); //load DB values
       }
      }
      return $mapper;
@@ -205,12 +206,13 @@ class CF72Post_Mapping_Factory {
   * Register Custom Post Type based on CF7 mapped properties
   *
   * @since 1.0.0
+  * @param Form_2_Post_Mapper $mapper mapper object.
   */
-  protected function create_cf7_post_type() {
+  protected function create_cf7_post_type(Form_2_Post_Mapper $mapper) {
     //register any custom taxonomy
-    if( !empty($this->post_properties['taxonomy']) ){
-      foreach($this->post_properties['taxonomy'] as $taxonomy_slug){
-        if('system' == $this->taxonomy_properties[$taxonomy_slug]['source']){
+    if( !empty($mapper->post_properties['taxonomy']) ){
+      foreach($mapper->post_properties['taxonomy'] as $taxonomy_slug){
+        if('system' == $mapper->taxonomy_properties[$taxonomy_slug]['source']){
           continue;
         }
         $taxonomy = array(
@@ -221,64 +223,64 @@ class CF72Post_Mapping_Factory {
       		'show_in_nav_menus'          => true,
       		'show_tagcloud'              => true,
           'show_in_quick_edit'         => true,
-          'menu_name'                  => $this->taxonomy_properties[$taxonomy_slug]['name'],
+          'menu_name'                  => $mapper->taxonomy_properties[$taxonomy_slug]['name'],
           'description'                =>'',
       	);
-        //debug_msg($this->taxonomy_properties[$taxonomy_slug]," taxonomy properties: ".$taxonomy_slug);
-        $taxonomy =  array_merge( $this->taxonomy_properties[$taxonomy_slug], $taxonomy );
+        //debug_msg($mapper->taxonomy_properties[$taxonomy_slug]," taxonomy properties: ".$taxonomy_slug);
+        $taxonomy =  array_merge( $mapper->taxonomy_properties[$taxonomy_slug], $taxonomy );
         $taxonomy_filtered = apply_filters('cf7_2_post_filter_taxonomy_registration-'.$taxonomy_slug, $taxonomy);
         //ensure we have all the key defined.
         $taxonomy =  $taxonomy_filtered + $taxonomy; //this will give precedence to filtered keys, but ensure we have all required keys.
-        $this->register_custom_taxonomy($taxonomy);
+        $this->register_custom_taxonomy($taxonomy, $mapper);
       }
     }
   	$labels = array(
-  		'name'                  => $this->post_properties['plural_name'],
-  		'singular_name'         => $this->post_properties['singular_name'],
-  		'menu_name'             => $this->post_properties['plural_name'],
-  		'name_admin_bar'        => $this->post_properties['singular_name'],
-  		'archives'              => $this->post_properties['singular_name'].' Archives',
-  		'parent_item_colon'     => 'Parent '.$this->post_properties['singular_name'].':',
-  		'all_items'             => 'All '.$this->post_properties['plural_name'],
-  		'add_new_item'          => 'Add New '.$this->post_properties['singular_name'],
+  		'name'                  => $mapper->post_properties['plural_name'],
+  		'singular_name'         => $mapper->post_properties['singular_name'],
+  		'menu_name'             => $mapper->post_properties['plural_name'],
+  		'name_admin_bar'        => $mapper->post_properties['singular_name'],
+  		'archives'              => $mapper->post_properties['singular_name'].' Archives',
+  		'parent_item_colon'     => 'Parent '.$mapper->post_properties['singular_name'].':',
+  		'all_items'             => 'All '.$mapper->post_properties['plural_name'],
+  		'add_new_item'          => 'Add New '.$mapper->post_properties['singular_name'],
   		'add_new'               => 'Add New',
-  		'new_item'              => 'New '.$this->post_properties['singular_name'],
-  		'edit_item'             => 'Edit '.$this->post_properties['singular_name'],
-  		'update_item'           => 'Update '.$this->post_properties['singular_name'],
-  		'view_item'             => 'View '.$this->post_properties['singular_name'],
-  		'search_items'          => 'Search '.$this->post_properties['singular_name'],
+  		'new_item'              => 'New '.$mapper->post_properties['singular_name'],
+  		'edit_item'             => 'Edit '.$mapper->post_properties['singular_name'],
+  		'update_item'           => 'Update '.$mapper->post_properties['singular_name'],
+  		'view_item'             => 'View '.$mapper->post_properties['singular_name'],
+  		'search_items'          => 'Search '.$mapper->post_properties['singular_name'],
   		'not_found'             => 'Not found',
   		'not_found_in_trash'    => 'Not found in Trash',
   		'featured_image'        => 'Featured Image',
   		'set_featured_image'    => 'Set featured image',
   		'remove_featured_image' => 'Remove featured image',
   		'use_featured_image'    => 'Use as featured image',
-  		'insert_into_item'      => 'Insert into '.$this->post_properties['singular_name'],
-  		'uploaded_to_this_item' => 'Uploaded to this '.$this->post_properties['singular_name'],
-  		'items_list'            => $this->post_properties['plural_name'].' list',
-  		'items_list_navigation' => $this->post_properties['plural_name'].' list navigation',
-  		'filter_items_list'     => 'Filter '.$this->post_properties['plural_name'].' list',
+  		'insert_into_item'      => 'Insert into '.$mapper->post_properties['singular_name'],
+  		'uploaded_to_this_item' => 'Uploaded to this '.$mapper->post_properties['singular_name'],
+  		'items_list'            => $mapper->post_properties['plural_name'].' list',
+  		'items_list_navigation' => $mapper->post_properties['plural_name'].' list navigation',
+  		'filter_items_list'     => 'Filter '.$mapper->post_properties['plural_name'].' list',
   	);
     //labels can be modified post taxonomy registratipn
     //ensure author is supported,
-    if(!isset($this->post_properties['supports']['author'])) $this->post_properties['supports'][]='author';
+    if(!isset($mapper->post_properties['supports']['author'])) $mapper->post_properties['supports'][]='author';
   	$args = array(
-  		'label'                 => $this->post_properties['singular_name'],
-  		'description'           => 'Post for CF7 Form'. $this->post_properties['cf7_title'],
+  		'label'                 => $mapper->post_properties['singular_name'],
+  		'description'           => 'Post for CF7 Form'. $mapper->post_properties['cf7_title'],
   		'labels'                => $labels,
-      'supports'              => apply_filters('cf7_2_post_supports_'.$this->post_properties['type'], $this->post_properties['supports']),
-  		'taxonomies'            => $this->post_properties['taxonomy'],
-  		'hierarchical'          => !empty($this->post_properties['hierarchical']),
-  		'public'                => !empty($this->post_properties['public']),
-  		'show_ui'               => !empty($this->post_properties['show_ui']),
-  		'show_in_menu'          => !empty($this->post_properties['show_in_menu']),
-  		'menu_position'         => $this->post_properties['menu_position'],
-  		'show_in_admin_bar'     => !empty($this->post_properties['show_in_admin_bar']),
-  		'show_in_nav_menus'     => !empty($this->post_properties['show_in_nav_menus']),
-  		'can_export'            => !empty($this->post_properties['can_export']),
-  		'has_archive'           => !empty($this->post_properties['has_archive']),
-  		'exclude_from_search'   => !empty($this->post_properties['exclude_from_search']),
-  		'publicly_queryable'    => !empty($this->post_properties['publicly_queryable']),
+      'supports'              => apply_filters('cf7_2_post_supports_'.$mapper->post_properties['type'], $mapper->post_properties['supports']),
+  		'taxonomies'            => $mapper->post_properties['taxonomy'],
+  		'hierarchical'          => !empty($mapper->post_properties['hierarchical']),
+  		'public'                => !empty($mapper->post_properties['public']),
+  		'show_ui'               => !empty($mapper->post_properties['show_ui']),
+  		'show_in_menu'          => !empty($mapper->post_properties['show_in_menu']),
+  		'menu_position'         => $mapper->post_properties['menu_position'],
+  		'show_in_admin_bar'     => !empty($mapper->post_properties['show_in_admin_bar']),
+  		'show_in_nav_menus'     => !empty($mapper->post_properties['show_in_nav_menus']),
+  		'can_export'            => !empty($mapper->post_properties['can_export']),
+  		'has_archive'           => !empty($mapper->post_properties['has_archive']),
+  		'exclude_from_search'   => !empty($mapper->post_properties['exclude_from_search']),
+  		'publicly_queryable'    => !empty($mapper->post_properties['publicly_queryable']),
   	);
     $reference = array(
         'edit_post' => '',
@@ -289,7 +291,7 @@ class CF72Post_Mapping_Factory {
         'read_private_posts' => '',
         'delete_post' => ''
     );
-    $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$this->post_properties['type'], $reference));
+    $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$mapper->post_properties['type'], $reference));
     $diff=array_diff_key($reference, $capabilities);
     if( empty( $diff ) ) {
       $args['capabilities'] = $capabilities;
@@ -300,12 +302,12 @@ class CF72Post_Mapping_Factory {
     }
 
     //allow additional settings
-    $args = apply_filters('cf7_2_post_register_post_'.$this->post_properties['type'], $args );
+    $args = apply_filters('cf7_2_post_register_post_'.$mapper->post_properties['type'], $args );
 
-  	register_post_type( $this->post_properties['type'], $args );
+  	register_post_type( $mapper->post_properties['type'], $args );
     //link the taxonomy and the post
-    foreach($this->post_properties['taxonomy'] as $taxonomy_slug){
-      register_taxonomy_for_object_type( $taxonomy_slug, $this->post_properties['type'] );
+    foreach($mapper->post_properties['taxonomy'] as $taxonomy_slug){
+      register_taxonomy_for_object_type( $taxonomy_slug, $mapper->post_properties['type'] );
     }
   }
   /**
@@ -319,12 +321,11 @@ class CF72Post_Mapping_Factory {
     }
     global $wpdb;
     $cf7_posts = $wpdb->get_results(
-      "SELECT posts.ID, pmap.type, psource.origin FROM $wpdb->postmeta AS meta, $wpdb->posts AS posts,
-      (SELECT post_id AS id, meta_value AS origin FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-type_source') AS psource,
-      (SELECT post_id AS id, meta_value AS type FROM $wpdb->postmeta WHERE meta_key='_cf7_2_post-type') AS pmap WHERE posts.ID=post_id
-      AND post_status LIKE 'publish'
-      AND posts.ID=psource.id
-      AND posts.ID = pmap.id"
+      "SELECT pm.post_id AS ID, pm.meta_value AS origin, pt.meta_value as type FROM $wpdb->postmeta pm
+        INNER JOIN $wpdb->postmeta pt ON pt.post_id = pm.post_id INNER JOIN $wpdb->posts p ON p.ID=pm.post_id
+        WHERE pm.meta_key='_cf7_2_post-type_source'
+        AND pt.meta_key='_cf7_2_post-type'
+        AND p.post_status like 'publish'"
     );
     self::$mapped_post_types = array();
     foreach($cf7_posts as $post){
@@ -338,9 +339,9 @@ class CF72Post_Mapping_Factory {
   *@since 3.4.0
   *@param string $post_type post type to check
   *@param string $source origin of post, default is 'factory', ie the origin is this class.
-  *@return boolean true if mapped.
+  *@return mixed form post_ID or false is not mapped.
   */
-  public static function is_mapped_post_types($post_type, $source=null){
+  public function is_mapped_post_types($post_type, $source=null){
     $is_mapped = false;
     if(isset(self::$mapped_post_types)){
       foreach(self::$mapped_post_types as $post_id=>$type){
@@ -384,23 +385,23 @@ class CF72Post_Mapping_Factory {
   * Hooks 'init' action.
   * @since 1.0.0
   */
-  public static function register_cf7_post_maps(){
+  public function register_cf7_post_maps(){
     $cf7_post_ids = self::get_mapped_post_types();
     foreach($cf7_post_ids as $post_id=>$type){
       $system = true;
       $post_type = key($type);
-      $cf7_2_post_map = self::get_factory($post_id);
+      $mapper = $this->get_post_mapper($post_id);
       switch($type[$post_type]){
         case 'factory':
-          $cf7_2_post_map->create_cf7_post_type();
+          $this->create_cf7_post_type($mapper);
           /**
           * Flush the permalink rules to ensure the public posts are visible on the front-end.
           * @since 3.8.2.
           */
-          if($cf7_2_post_map->flush_permalink_rules){
+          if($mapper->flush_permalink_rules){
             flush_rewrite_rules();
             update_post_meta($post_id,'_cf7_2_post_flush_rewrite_rules', false);
-            $cf7_2_post_map->flush_permalink_rules = false;
+            $mapper->flush_permalink_rules = false;
           }
           $system = false;
           break;
@@ -420,7 +421,7 @@ class CF72Post_Mapping_Factory {
       * @param string $cf7_key   the form key value which is being mapped to the post type
       * @param string $post_id   the form post ID value which is being mapped to the post type
       */
-      do_action('cf72post_register_mapped_post', $post_type, $system, $cf7_2_post_map->cf7_key, $post_id);
+      do_action('cf72post_register_mapped_post', $post_type, $system, $mapper->cf7_key, $post_id);
       //add a filter for newly saved posts of this type.
       add_action('save_post_'.$post_type, function($post_id, $post, $update){
         if($update) return $post_id;
@@ -437,7 +438,7 @@ class CF72Post_Mapping_Factory {
    * Checks if a form mapping is published
    * @since 2.0.0
    */
-   public static function is_mapped($cf7_post_ID){
+   public function is_mapped($cf7_post_ID){
      $map = get_post_meta($cf7_post_ID, '_cf7_2_post-map', true);
 
      if($map && 'publish'== $map){
@@ -795,8 +796,9 @@ class CF72Post_Mapping_Factory {
   * regsiter a custom taxonomy
   * @since 2.0.0
   * @param  Array  $taxonomy  a, array of taxonomy arguments
+  * @param  Form_2_Post_Mapper  $mapper mapper pbject
   */
-  protected function register_custom_taxonomy($taxonomy) {
+  protected function register_custom_taxonomy(Array $taxonomy, Form_2_Post_Mapper $mapper) {
   	$labels = array(
   		'name'                       =>  $taxonomy["name"],
   		'singular_name'              =>  $taxonomy["singular_name"],
@@ -844,7 +846,7 @@ class CF72Post_Mapping_Factory {
   	register_taxonomy( $taxonomy["slug"], $post_types, $args );
 
   }
-  
+
   /**
   *  Retrieves select dropdpwn fields populated with existing emta fields
   * for each system post visible in the form mapping admin page.
@@ -856,7 +858,7 @@ class CF72Post_Mapping_Factory {
   public static function get_all_metafield_menus(){
     $factory = self::get_factory();
     $html = '<div class="system-posts-metafields display-none">'.PHP_EOL;
-    foreach($factory->system_post_types as $post_type=>$label){
+    foreach($factory->get_system_posts() as $post_type=>$label){
       $html .= $factory->get_metafield_menu($post_type,'');
     }
     $html .= '</div>'.PHP_EOL;
@@ -869,7 +871,7 @@ class CF72Post_Mapping_Factory {
    * @param      String    $post_type     post_type for which meta fields are requested.
    * @return     String    a list of option elements for each existing meta field in the DB.
   **/
-  protected function get_metafield_menu($post_type, $selected_field){
+  public function get_metafield_menu($post_type, $selected_field){
     global $wpdb;
     $metas = $wpdb->get_results($wpdb->prepare(
       "SELECT DISTINCT meta_key
@@ -912,5 +914,15 @@ class CF72Post_Mapping_Factory {
       }else $html='';
     }
     return $html;
+  }
+}
+if(!function_exists('c2p_get_factory')){
+  function c2p_get_factory(){
+    return CF72Post_Mapping_Factory::get_factory();
+  }
+}
+if(!function_exists('c2p_mapped_post_types')){
+  function c2p_mapped_post_types(){
+    return CF72Post_Mapping_Factory::get_mapped_post_types();
   }
 }

@@ -97,15 +97,14 @@ function filter_post_metas($skip, $post_type, $meta_field_name){
 }" href="javascript:void(0);"><?=__('Internal Meta Filter','post-my-contact-form-7')?></a> <?=__('to show system post internal meta-fields.', 'post-my-contact-form-7')?>
       </li>
       <li class="system-hook">1.6
-        <a class="helper" data-cf72post="add_filter('cf7_2_post_display_system_posts', 'filter_posts', 10, 2);
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_display_system_posts', 'filter_posts');
 /**
 * Function enable mapping for form fields to internal meta-field (starting with '_').
 * Hooked on 'cf7_2_post_supports_{$custom_post_type}'
 * @param array $displayed_posts array of system $post_type => $post_label key value pairs.
-* @param string $form_id form_id is the post id of the current cf7 form being mapped.
 * @return array $displayed_posts array of system post_type to view.
 */
-function filter_posts($displayed_posts, $form_id){
+function filter_posts($displayed_posts){
   /*In v2.0 the plugin allows users to map their forms to existing system posts.  By default, only system posts which are visible in the dashboard are listed.  This list can be modified by this filter,*/
   //add an existing post type and label,
   $displayed_posts['some_post'] = 'Some Post';

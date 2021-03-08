@@ -124,7 +124,7 @@ abstract class Form_2_Post_Mapper {
    * @access protected
    * @var boolean $flush_permalink_rules a boolean flag.
    */
-   protected $flush_permalink_rules = false;
+   public $flush_permalink_rules = false;
    /**
    * an array of existing system post types to which a form can be mapped.
    * @since 5.0.0
@@ -324,12 +324,14 @@ abstract class Form_2_Post_Mapper {
   /**
   * load mapping properties from DB.
   * @since 5.0.0
+  * @param String $cf7_key form unique key.
   */
-  protected function load_post_mapping(){
+  public function load_post_mapping($cf7_key){
+    $this->cf7_key = $cf7_key;
     $this->post_map_fields = array();
     $this->post_map_meta_fields = array();
     $this->post_map_taxonomy = array();
-    $this->post_properties = $properties;
+    $this->post_properties = array();
     //get_post_meta ( int $post_id, string $key = '', bool $single = false )
     $fields = get_post_meta ($this->cf7_post_ID);
     $start = strlen('_cf7_2_post-');
@@ -991,4 +993,20 @@ abstract class Form_2_Post_Mapper {
    }
    //TODO if( true==$delete_all_posted_data ) then we should remove all posted data
  }
+ /**
+	 * Get mapped custom post property.
+	 *
+	 * @since    1.0.0
+   * @param String $property post property attribute
+   * @param String $echo_string_or_value_if_null optional string to echo is the property is set
+   * @return String if the property is set/true echo of the 2nd parameter if passed
+   * else the property value is the 2nd parameter is ommited.
+   */
+  public function is($property, $echo_string_or_value_if_null=null){
+    if( !isset($this->post_properties[$property]) ) $return = '';
+    else{
+      $return = ( $this->post_properties[$property]!= false && isset($echo_string_or_value_if_null) ) ? $echo_string_or_value_if_null: '';
+    }
+    return $return;
+  }
 }

@@ -9,7 +9,7 @@ $select_form_fields='<select %4$s name="cf7_2_post_map_meta_value%1$s" value="%2
 //%2 - form-field name.
 //%3 - post type.
 //%4 - disabled attr.
-// switch($factory_mapping->get('map')){
+// switch($post_mapper->get('map')){
 //   case 'draft':
 //     $is_new_mapping = true;
 //     break;
@@ -17,12 +17,12 @@ $select_form_fields='<select %4$s name="cf7_2_post_map_meta_value%1$s" value="%2
 //     $is_new_mapping = false;
 //     break;
 // }
-// $source = $factory_mapping->get('type_source');
+// $source = $post_mapper->get('type_source');
 
 
-$mapped_fields = $factory_mapping->get_mapped_meta_fields();
+$mapped_fields = $post_mapper->get_mapped_meta_fields();
 // debug_msg($mapped_fields, "meta fields...");
-// debug_msg($factory_mapping);
+// debug_msg($post_mapper);
 foreach( $mapped_fields as $cf7_field => $post_field ):
   ?>
   <li>
@@ -30,15 +30,15 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       <div class="post-field-name">
       <?php
       if('system' == $source){
-        echo $factory_mapping->get_metafield_menu($factory_mapping->get('type'),$post_field);
+        echo $factory->get_metafield_menu($post_mapper->get('type'),$post_field);
       }else{
-        echo $factory_mapping->get_metafield_input($post_field);
+        echo $factory->get_metafield_input($post_field);
       }
       ?>
       </div>
       <?php
       //display the meta-field's form field dropdown.
-      echo sprintf( $select_form_fields, $post_field, $cf7_field, "-{$factory_mapping->get('type')}", '');
+      echo sprintf( $select_form_fields, $post_field, $cf7_field, "-{$post_mapper->get('type')}", '');
       ?>
       <span class="dashicons dashicons-minus remove-field"></span>
     </div><span class="cf7-post-msg"></span>
@@ -50,9 +50,9 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       <div class="post-field-name">
       <?php
         if('system' == $source){
-          echo $factory_mapping->get_metafield_menu($factory_mapping->get('type'),'');
+          echo $factory->get_metafield_menu($post_mapper->get('type'),'');
         }else{
-          echo $factory_mapping->get_metafield_input('');
+          echo $factory->get_metafield_input('');
         }
       ?>
       </div>

@@ -80,7 +80,7 @@
    <div id="post-type-exists"<?= ('system'==$source)? '':' class="display-none"';?>>
      <label class="post_type_labels" for="system-post-type"><?=__('Select a Post','post-my-contact-form-7')?></label>
      <select id="system-post-type" class="select-hybrid" name="system_post_type" >
-       <?= Cf7_2_Post_Factory::get_system_posts_options($post_mapper->get('type'));?>
+       <?= $factory->get_system_posts_options($post_mapper->get('type'));?>
      </select>
    </div>
    <div id="post-type-select" <?= ('system'==$source)?' class="display-none"':'';?>> <!--class="hide-if-js"-->
@@ -129,7 +129,7 @@
    <ul id="c2p-post-meta-fields">
       <?php include_once 'cf7-2-post-field-metabox.php'; ?>
    </ul>
-   <?= Cf7_2_Post_Factory::get_all_metafield_menus(); /** @since 5.0.0 */?>
+   <?= $factory->get_all_metafield_menus();?>
    <p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>
    <h2><?=__('Post Taxonomy','post-my-contact-form-7' )?></h2>
    <p>

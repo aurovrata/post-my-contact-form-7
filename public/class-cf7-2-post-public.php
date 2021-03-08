@@ -75,8 +75,9 @@ class Cf7_2_Post_Public {
     //load the form factory
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
-    if(CF72Post_Mapping_Factory::is_mapped($cf7_post_id)){
-      $mapper = CF72Post_Mapping_Factory::get_post_mapper($cf7_post_id);
+    $factory = c2p_get_factory();
+    if($factory->is_mapped($cf7_post_id)){
+      $mapper = $factory->get_post_mapper($cf7_post_id);
 
       //load all the submittec values
       //$cf7_form_data = array();
@@ -136,7 +137,8 @@ class Cf7_2_Post_Public {
     }
     $cf7_id = $attr['id'];
     //let get the corresponding factory object,
-    if(CF72Post_Mapping_Factory::is_mapped($cf7_id)){
+    $factory = c2p_get_factory();
+    if($factory->is_mapped($cf7_id)){
       //let's ensure the page does not cache our values.
       $this->not_form_page = false;
 
@@ -223,8 +225,9 @@ class Cf7_2_Post_Public {
           }
         }
       }
+      $factory = c2p_get_factory();
       foreach($cf7_forms as $form_id){
-        $has_mapped_form = CF72Post_Mapping_Factory::is_mapped($form_id);
+        $has_mapped_form = $factory->is_mapped($form_id);
         if($has_mapped_form) break;
       }
     }
@@ -259,7 +262,8 @@ class Cf7_2_Post_Public {
     $atts = array();
     $disabled = false;
     $cf7_form = wpcf7_get_current_contact_form();
-    if(!CF72Post_Mapping_Factory::is_mapped($cf7_form->id())){
+    $factory = c2p_get_factory();
+    if(!$factory->is_mapped($cf7_form->id())){
       $disabled = true;
     }
     //enqueue required scripts and styles
