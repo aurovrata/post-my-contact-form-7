@@ -2,10 +2,10 @@
 	'use strict';
   const removeButton = '<span class="dashicons dashicons-minus remove-field"></span>',
     errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>',
-    selectedOptions = new Array(), selectedCount = 0, c2pChanged=false;
+    selectedOptions = new Array();
 
   let formFields, $form = $('textarea#wpcf7-form'),
-    $tab = $('#cf7-2-post-tab');
+    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false;;
   $(document).ready(function(){
     let init=true;
     //switch posts if need be.
@@ -102,7 +102,7 @@
         let f = l.querySelector('.field-options'),
           pf = f.getAttribute('name').replace('cf7_2_post_map-',''),
           fo = f.querySelector('.filter-option');
-        fo.value = 'c2p_filter-'+type+'-'+pf;
+        fo.value = 'cf7_2_post_filter-'+type+'-'+pf;
         if(fo.selected) c2pFilterHelperCode.call(l,fo.value);
       });
     }
@@ -153,7 +153,7 @@
     //enable the new field
     let $ffMenu = $cloneField.find('select.field-options');
     //setup the filter.
-    $ffMenu.find('option.filter-option').val('c2p_filter-'+postType+'-'+keyName);
+    $ffMenu.find('option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
     //populate with latest form fields.
     $ffMenu.fillCF7fields();
     //add cloned field to DOM list of fields.
@@ -213,18 +213,18 @@
     let fieldList = e.delegateTarget,
       scroll = e.target.getBoundingClientRect(), //position of add button.
       field = e.target.closest('li'), //the field being cloned.
-      keyName = '', //name of meta-field.
+      tSlug = '', //taxonomy slug.
       idx=0, //index.
       $cloneField = $(field).clone(), //clone.
       postType=$('input#mapped-post-type').val(); //post type mapped to.
     //remove the add button on the cloned field.
     $cloneField.find('span.add-more-field').remove();
     let label = field.querySelector('.taxonomy-slug');
-    keyName = label.value; //name of meta-field.
+    tSlug = label.value; //taxonomy slug..
     let $ffMenu = $cloneField.find('select.field-options');
-    $ffMenu.attr('name','cf7_2_post_map_taxonomy_value-'+keyName);
+    $ffMenu.attr('name','cf7_2_post_map_taxonomy_value-'+tSlug);
     //setup the filter.
-    $ffMenu.find('option.filter-option').val('c2p_filter-'+postType+'-'+keyName);
+    $ffMenu.find('option.filter-option').val('cf7_2_post_filter-'+tSlug);
     //populate with latest form fields.
     $ffMenu.fillCF7fields();
     //add cloned field to DOM list of fields.
@@ -252,7 +252,7 @@
       update = true;
 
     switch(true){
-      case field.classList.contains('existing-fields'): //post mf dropdpown.
+      case field.classList.contains('existing-fields'): //post dropdpown.
         if( fv == 'cf72post-custom-meta-field'){ //switch to input text field.
           field.classList.add('display-none'); //hide post field dropdown.
           fc.querySelector('.cf7-2-post-map-label-custom').classList.remove('display-none'); //show text input.
@@ -260,16 +260,16 @@
         }
         //setup the form field menu values.
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
-        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+fv;
+        ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
-        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+e.target.value);
+        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         break;
       case field.classList.contains('field-options'): //check if field already used.
         msgBox.innerHTML ='';
         if(isEmpty(fv)) break;
-        if(fv.indexOf('c2p_filter-') < 0){
+        if(fv.indexOf('cf7_2_post_filter-') < 0){
           let all = [...document.querySelector('#c2p-default-post-fields').children].concat( [...document.querySelector('#c2p-post-meta-fields').children] );
           [].forEach.call(all, (l,i)=>{
             if(l==fc || l.classList.contains('default-meta-field')) return true;
@@ -294,16 +294,18 @@
         input = fc.querySelector('input.taxonomy-slug');
         input.value = tax.value;
         input.disabled = isSystem;//no need to be submitted
+        input = fc.querySelector('span.taxonomy-name');
+        input.innerHTML = '<strong>'+tax.innerText+'</strong>';
         fc.querySelector('input.taxonomy-source').value = isSystem ? 'system':'factory';
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value);
-        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+tax.value;
+        ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
       case field.classList.contains('taxonomy-slug'): //update in factory custom taxonomy slug.
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
-        ffMenu.querySelector('.filter-option').value = 'c2p_filter-'+postType+'-'+field.value;
+        ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+field.value;
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
       default:
@@ -325,13 +327,7 @@
   }
   function c2pFilterHelperCode(filter){
     if(this) this.querySelector('.cf7-post-msg').remove();
-    let field ='';
-    if(filter.indexOf('cf7_2_post_filter-')<0){ //c2p_filter-
-      field = filter.replace('c2p_filter-','');
-    }else{
-      field = filter.replace('cf7_2_post_filter-','');
-    }
-    field = field.replace(/-/g,'_');
+    let field = filter.replace('cf7_2_post_filter-','').replace(/-/g,'_');
     let helper = "add_filter('"+filter+"','filter_"+field+"',10,3);\n";
     helper +="function filter_"+field+"($value, $post_id, $form_data){\n  //$value is the post field value to return, by default it is empty. If you are filtering a taxonomy you can return either slug/id/array.  in case of ids make sure to cast them as integers.(see https://codex.wordpress.org/Function_Reference/wp_set_object_terms for more information.)\n  //$post_id is the ID of the post to which the form values are being mapped to\n  // $form_data is the submitted form data as an array of field-name=>value pairs\n";
     helper +="  return $value;\n}";

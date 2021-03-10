@@ -14,7 +14,19 @@ class Form_2_System_Post extends Form_2_Post_Mapper{
     //reset the properties, this is now being published
     $this->post_properties['taxonomy'] = array();
     //keep track of old mappings.
+    $properties = $this->get_mapped_fields('mapped_post_');
 
+    //properties of factory post
+    foreach($properties as $value => $prop){
+      switch ($prop){
+        case 'type':
+        case 'map':
+          $this->post_properties[$prop]=$value;
+          break;
+        default: //properties with boolean, unchked are blank and skipped.
+          break;
+      }
+    }
 
   }
 

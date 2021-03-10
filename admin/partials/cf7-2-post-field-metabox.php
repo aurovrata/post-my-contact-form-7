@@ -9,16 +9,6 @@ $select_form_fields='<select %4$s name="cf7_2_post_map_meta_value%1$s" value="%2
 //%2 - form-field name.
 //%3 - post type.
 //%4 - disabled attr.
-// switch($post_mapper->get('map')){
-//   case 'draft':
-//     $is_new_mapping = true;
-//     break;
-//   case 'publish':
-//     $is_new_mapping = false;
-//     break;
-// }
-// $source = $post_mapper->get('type_source');
-
 
 $mapped_fields = $post_mapper->get_mapped_meta_fields();
 // debug_msg($mapped_fields, "meta fields...");
@@ -32,7 +22,7 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       if('system' == $source){
         echo $factory->get_metafield_menu($post_mapper->get('type'),$post_field);
       }else{
-        echo $factory->get_metafield_input($post_field);
+        echo $post_mapper->get_metafield_input($post_field);
       }
       ?>
       </div>
@@ -52,7 +42,7 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
         if('system' == $source){
           echo $factory->get_metafield_menu($post_mapper->get('type'),'');
         }else{
-          echo $factory->get_metafield_input('');
+          echo $post_mapper->get_metafield_input('');
         }
       ?>
       </div>

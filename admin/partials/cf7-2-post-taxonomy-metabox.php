@@ -60,7 +60,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         <option class="default-option" selected="true" value="">
           <?= __('Select a form field', 'post-my-contact-form-7' )?>
         </option>
-        <option class="filter-option" value="c2p_filter-<?=$post_mapper->get('type')?>-<?=$post_taxonomy?>">
+        <option class="filter-option" value="cf7_2_post_filter-<?=$post_taxonomy?>">
           <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
         </option>
       </select>
@@ -115,7 +115,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       <option class="default-option" selected="true" value="">
         <?= __('Select a form field', 'post-my-contact-form-7' )?>
       </option>
-      <option class="filter-option" value="c2p_filter-<?=$post_mapper->get('type')?>-<?=$taxonomy_slug?>">
+      <option class="filter-option" value="cf7_2_post_filter-<?=$taxonomy_slug?>">
         <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
       </option>
     </select>

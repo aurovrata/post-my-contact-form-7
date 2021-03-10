@@ -32,9 +32,9 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       'exclude_from_search'   => true, //cannot be searched from front-end.
       'publicly_queryable'    => false //can be queried from front-end.
     );
-    $this->cf7_key = $cf7_key;
+    $post_type = $this->cf7_key = $cf7_key;
     $this->post_properties['map']='draft';
-    $this->post_properties['type']=$cf7_key;
+    $this->post_properties['type']=$post_type;
     $this->post_properties['version'] = CF7_2_POST_VERSION;
     $this->post_properties['singular_name']=$singular_name;
     $this->post_properties['plural_name']=$plural_name;
@@ -77,23 +77,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
   * @since 5.0.0
   */
   protected function set_post_properties(){
-    //setup default custom post properties.
-  //   $this->post_properties = array_merge(
-  //     $this->post_properties,
-  //     array(
-  //       'hierarchical'          => false,
-  //       'public'                => false,
-  //       'show_ui'               => false,
-  //       'show_in_menu'          => false,
-  //       'menu_position'         => 5,
-  //       'show_in_admin_bar'     => false,
-  //       'show_in_nav_menus'     => false,
-  //       'can_export'            => false,
-  //       'has_archive'           => false,
-  //       'exclude_from_search'   => false,
-  //       'publicly_queryable'    => false
-  //     )
-  // );
+  
     //initial supports, set the rest from the admin $_POST
     $this->post_properties['supports'] = array('custom-fields' );
     //make sure the arrays are initialised
@@ -101,17 +85,17 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     $properties = $this->get_mapped_fields('mapped_post_');
 
     //properties of factory post
-    foreach($properties as $value => $field){
-      switch ($field){
+    foreach($properties as $value => $prop){
+      switch ($prop){
         case 'menu_position': //properties with values.
         case 'type':
         case 'type_source':
         case 'singular_name':
         case 'plural_name':
-          $this->post_properties[$field]=$value;
+          $this->post_properties[$prop]=$value;
           break;
         default: //properties with boolean, unchked are blank and skipped.
-          $this->post_properties[$field]=true;
+          $this->post_properties[$prop]=true;
           break;
       }
     }
@@ -138,7 +122,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     }
     //enable support for selected post fields.
     $fields = $this->get_mapped_fields('cf7_2_post_map-');
-    foreach($fields as $cf7_field=>$post_field){
+    foreach($fields as $post_field=>$cf7_field){
       //keep track of custom post type support
       switch($post_field){
         case 'title':

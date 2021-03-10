@@ -375,7 +375,7 @@ class Cf7_2_Post_Admin {
         }
         switch ( $column_name ) {
           case 'map_cf7_2_post':
-            include_once( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php' );
+            //include_once( plugin_dir_path( __FILE__ ) . 'partials/cf7-2-post-quick-edit.php' );
             break;
         }
         break;
@@ -425,14 +425,13 @@ class Cf7_2_Post_Admin {
   * @since 5.0.0
   */
   public function save_post_mapping($post_id){
-    //debug_msg($_POST, "save post ");
+    // debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
     //check if any changes on the form.
     if(isset($_POST['c2p_mapping_changes']) && 0 == $_POST['c2p_mapping_changes']) return;
 
     $factory = c2p_get_factory();
-    $mapper = $factory->get_post_mapper($post_id);
-    $mapper->save($post_id);
+    $factory->save($post_id);
   }
   /**
   *Disables browser page caching for forms which are mapped to a post.

@@ -136,7 +136,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     }
     $js_field = str_replace('-','_',$form_field);
     //if the value was filtered, let's skip it
-    if(0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){ 
+    if( 0 === strpos($form_field,'cf7_2_post_filter-') ){ 
       continue;
     }
     $terms_id = array();

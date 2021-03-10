@@ -168,13 +168,15 @@ abstract class Form_2_Post_Mapper {
     $this->_save_to_DB($this->post_map_meta_fields, 'cf7_2_post_map_meta-');
   }
   protected function _save_to_DB($fields_and_value, $prefix){
-    foreach($fields_and_value as $form_field=>$post_field){
+    // debug_msg($fields_and_value, "saving $prefix ");
+    foreach($fields_and_value as $post_field=>$form_field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-      update_post_meta($this->cf7_post_ID, $prefix.$post_field,$cf7_field);
-      if(isset($this->old_db_fields[$prefix.$post_field]) ){
-        unset($this->old_db_fields[$prefix.$post_field]);
+      update_post_meta($this->cf7_post_ID, $prefix.$form_field, $post_field);
+      if(isset($this->old_db_fields[$prefix.$form_field]) ){
+        unset($this->old_db_fields[$prefix.$form_field]);
       }
     }
+    // debug_msg($this->old_db_fields, "old: $prefix ");
   }
   protected function _save_taxonomy_fields(){
     /*
@@ -182,7 +184,8 @@ abstract class Form_2_Post_Mapper {
       cf7_2_post_map_taxonomy_names-<taxonomy_slug>
       so we need to keep track of the field name prefix length to strip the slug
     */
-    $fields = get_mapped_fields('cf7_2_post_map_taxonomy_');
+    $fields = $this->get_mapped_fields('cf7_2_post_map_taxonomy_');
+    debug_msg($fields, 'cf7_2_post_map_taxonomy_');
     $len_c2p_taxonomy = strlen('value-');
     $len_c2p_name = strlen('name-');
     $len_c2p_names = strlen('names-');
@@ -241,7 +244,7 @@ abstract class Form_2_Post_Mapper {
       update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
     }
 
-    //debug_msg($slugs, "saved taxonomy ");
+    debug_msg($slugs, "saved taxonomy ");
     //save the taxonomy properties
     $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
     //make sure they are unique
@@ -265,18 +268,27 @@ abstract class Form_2_Post_Mapper {
     $this->post_properties['taxonomy'] = array();
     //set the version of this plugin.
     $this->post_properties['version'] = CF7_2_POST_VERSION;
-    //set post type.
-    $this->post_properties['type'] = sanitize_text_field( $_POST['mapped_post_type']);
-    //current status of mapper.
-    $this->post_properties['map']= sanitize_text_field($_POST['c2p_mapped_status']);//'publish'|'draft';
     //setup additional properties.
     $this->set_post_properties();
     //track old settings to remove surplus.
     $this->old_db_fields = get_post_meta($this->cf7_post_ID);
+    foreach($this->old_db_fields as $name=>$value){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      if( false===strpos($name, '_cf7_2_post') ){
+        unset($this->old_db_fields[$name]);
+      }
+    }
+    // debug_msg($this->old_db_fields, 'old fields ');
 
     //save properties to DB.
-    $this->_save_to_DB($this->post_properties, '_cf7_2_post-');
-
+    // $this->_save_to_DB($this->post_properties, '_cf7_2_post-');
+    foreach($this->post_properties as $prop=>$value){
+      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
+      update_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$prop, $value);
+      if(isset($this->old_db_fields['_cf7_2_post-'.$prop]) ){
+        unset($this->old_db_fields['_cf7_2_post-'.$prop]);
+      }
+    }
     //save post fields
     $this->_save_post_fields();
     //save meta fields
@@ -302,7 +314,7 @@ abstract class Form_2_Post_Mapper {
     //set flush rules flag. @since 3.8.2.
     update_post_meta($this->cf7_post_ID,'_cf7_2_post_flush_rewrite_rules', $this->flush_permalink_rules);
     //register the mapper with the factory.
-    $this->factory->register($this);
+    self::$factory->register($this);
     return true;
   }
   /**
@@ -437,6 +449,8 @@ abstract class Form_2_Post_Mapper {
    }else{
      $form_field = array_search($post_field, $this->post_map_meta_fields);
    }
+
+   // debug_msg("$form_field->$post_field");
    return $form_field;
   }
   /**

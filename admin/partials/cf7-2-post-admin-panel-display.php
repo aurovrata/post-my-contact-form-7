@@ -44,7 +44,7 @@
        <label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
        <select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options select-hybrid">
          <option class="default-option" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
-         <option class="filter-option" value="c2p_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
+         <option class="filter-option" value="cf7_2_post_filter-'.$post_type.'-%2$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
        </select>
      </div><span class="cf7-post-msg"></span>
    </li>';
@@ -52,22 +52,19 @@
    //%2 - field id/name.
    //%3 - mapped form field.
  ?>
-<h3><?php esc_html_e('Save submissions as ','post-my-contact-form-7' ); ?><span id="custom-post-title"><?= $post_name ;?>&nbsp;(<code><?= $post_type?></code>)</span></h3>
+<h1><?= esc_html('Save submissions as ','post-my-contact-form-7' ); ?><span id="custom-post-title"><?= $post_name;?>&colon;&nbsp;<code><?= $post_type?></code></span></h1>
 <?php if(!is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')):
-   $form = get_post($cf7_post_id);
-?>
+   $form = get_post($cf7_post_id); ?>
    <input type="hidden" id="c2p-cf7-key" value="<?=$form->post_name?>"/>
    <input type="hidden" id="c2p-mapping-changed" name="c2p_mapping_changes" value="0"/>
-
+   <input type="hidden" id="c2p-mapping-status" name="mapped_post_map" value="<?=$post_mapper->get('map')?>"/>
 <?php endif;?>
 
-<input type="hidden" name="action" value="save_post_mapping"/>
  <?php wp_nonce_field('cf7_2_post_mapping', 'cf7_2_post_nonce', false, true);?>
-
-<h2><?=__('Save form to post','post-my-contact-form-7' )?></h2>
 <input name="mapped_post_type"  id="mapped-post-type" value="<?= $post_mapper->get('type');?>" type="hidden">
 
 <div id="c2p-factory-post">
+   <h2><?=__('Map form to...','post-my-contact-form-7' )?></h2>
    <div>
       <label class="post_type_labels" for="post-type-source"><?=__('Post Type:','post-my-contact-form-7')?></label>
       <span id="post-type-display">
@@ -113,7 +110,7 @@
      <div class="clear"></div>
    </div><!-- end post-type-select -->
 </div>
-<h2><?=__('Default Post Fields', 'post-my-contact-form-7')?></h2>
+<h2><?=__('Map form fields to default post fields', 'post-my-contact-form-7')?></h2>
 <div id="c2p-mapped-fields">
    <ul id="c2p-default-post-fields">
       <?php
@@ -125,13 +122,13 @@
       echo sprintf($post_fields, __('Post author', 'post-my-contact-form-7' ),'author',$post_mapper->get_mapped_form_field('author'));
       ?>
    </ul>
-   <h2><?=__('Post Meta Fields','post-my-contact-form-7' )?></h2>
+   <h2><?=__('Map form fields to post meta-fields','post-my-contact-form-7' )?></h2>
    <ul id="c2p-post-meta-fields">
       <?php include_once 'cf7-2-post-field-metabox.php'; ?>
    </ul>
    <?= $factory->get_all_metafield_menus();?>
    <p><?=__('Custom fields can be used to add extra metadata to a post that you can <a href="https://codex.wordpress.org/Using_Custom_Fields">use in your theme</a>','post-my-contact-form-7')?>.</p>
-   <h2><?=__('Post Taxonomy','post-my-contact-form-7' )?></h2>
+   <h2><?=__('Map form fields to post taxonomy','post-my-contact-form-7' )?></h2>
    <p>
       <?= sprintf(
          __('Only %1$s form fields can be mapped to a taxonomy, create the field with empty options and the plugin will populate the field with the taxonomy terms it is mapped to.','post-my-contact-form-7' ),'<strong>checkbox | radio| select</strong>')?>

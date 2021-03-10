@@ -174,10 +174,10 @@ class CF72Post_Mapping_Factory {
       $mapper=null;
       switch($source){
         case 'system':
-          $mapper = new Form_2_System_Post($post_id);
+          $mapper = new Form_2_System_Post($post_id, $this);
           break;
         case 'factory':
-          $mapper = new Form_2_Custom_Post($post_id);
+          $mapper = new Form_2_Custom_Post($post_id, $this);
           break;
       }
       if(isset($mapper) && is_a($mapper, 'Form_2_Post_Mapper' )) $mapped = $mapper->save_mapping();
@@ -469,7 +469,7 @@ class CF72Post_Mapping_Factory {
       //find out if this user has a post already created/saved
       $args = array(
       	'posts_per_page'   => 1,
-      	'post_type'        => $this->post_properties['type'],
+      	'post_type'        => $mapper->post_properties['type'],
       	'author'	   => $user->ID,
       	'post_status'      => 'any'
       );
@@ -504,7 +504,7 @@ class CF72Post_Mapping_Factory {
         $post_value = '';
         $skip_loop = false;
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
           continue;
         }
 
@@ -536,11 +536,11 @@ class CF72Post_Mapping_Factory {
       //
       //----------- meta fields
       //
-      //debug_msg($this->post_map_meta_fields, "loading meta fields mappings...");
+      //debug_msg($mapper->post_map_meta_fields, "loading meta fields mappings...");
       foreach($mapper->post_map_meta_fields as $form_field => $post_field){
         $post_value='';
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ) {
+        if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
           continue;
         }
         //get the meta value
@@ -564,7 +564,7 @@ class CF72Post_Mapping_Factory {
         }
         $post_value='';
         $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
-        //$script .= $this->get_field_script($form_field, $post_value);
+        //$script .= $mapper->get_field_script($form_field, $post_value);
         if(!empty($post_value)){
           $field_and_values[str_replace('-','_',$form_field)] = $post_value;
         }
@@ -575,7 +575,7 @@ class CF72Post_Mapping_Factory {
       $load_chosen_script=false;
       foreach($mapper->post_map_taxonomy as $form_field => $taxonomy){
         //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'c2p_filter-') || 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
           continue;
         }
         $terms_id = array();
@@ -629,22 +629,6 @@ class CF72Post_Mapping_Factory {
     ob_end_clean();
     return $script;
   }
-  /**
-   * Function to return taxonomy terms as either options list for dropdown, checkbox, or radio
-   * This is used for system post mapping in conjunstion with the filter 'cf7_2_post_load-{$post_type}'
-   * @since 1.3.2
-   * @param   String    $taxonomy     The taxonomy slug from which to retrieve the terms.
-   * @param   String    $parent     the parent branch for which to retrieve the terms (by default 0).
-   * @param   Array     $post_term_ids an array of term ids which a post has been tagged with
-   * @param   String    $field form field name for which this taxonomy is mapped to.
-   * @param   String    $field_type the type of field in which the tersm are going to be listed
-   * @return  String    json encoded HTML script to be used as value for the $field     .
-  **/
-  // public function get_taxonomy_mapping($taxonomy, $parent=0, $post_term_ids, $field){
-  //   $this->load_form_fields();
-  //   $script = $this->get_taxonomy_terms( $taxonomy, $parent, $post_term_ids, $field, $this->cf7_form_fields[$field] );
-  //   return json_encode($script);
-  // }
   /**
   * Function to retrieve jquery script for form field taxonomy capture
   *
