@@ -136,6 +136,11 @@ class CF72Post_Mapping_Factory {
             $mapper = new Form_2_Custom_Post($cf7_post_id, $this);
         }
         $mapper->load_post_mapping($form->post_name); //load DB values
+        /** @since 3.2.0 get the form terms if any */
+        $terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array('fields'=>'id=>slug') );
+        if(!is_wp_error( $terms )){
+          $mapper->form_terms = $terms;
+        }
       }
      }
      return $mapper;
@@ -454,11 +459,11 @@ class CF72Post_Mapping_Factory {
   * @param   Int  $cf7_2_post_id   a specific post to which this form submission is mapped/saved
   * @return    Array  cf7 form field=>value pairs.
   */
-  public static function get_form_values($form_id, $cf7_2_post_id=''){
+  public function get_form_values($form_id, $cf7_2_post_id=''){
     //is user logged in?
     $load_saved_values = false;
     $post=null;
-    $mapper = self::get_post_mapper($form_id);
+    $mapper = $this->get_post_mapper($form_id);
     $field_and_values = array();
     $unmapped_fields = array();
     $mapper->load_form_fields(); //this loads the cf7 form fields and their type
@@ -499,7 +504,7 @@ class CF72Post_Mapping_Factory {
 
     }
       //we now need to load the save meta field values
-      foreach($mapper->post_map_fields as $form_field => $post_field){
+      foreach($mapper->get_post_map_fields() as $form_field => $post_field){
         $post_key ='';
         $post_value = '';
         $skip_loop = false;
@@ -536,8 +541,8 @@ class CF72Post_Mapping_Factory {
       //
       //----------- meta fields
       //
-      //debug_msg($mapper->post_map_meta_fields, "loading meta fields mappings...");
-      foreach($mapper->post_map_meta_fields as $form_field => $post_field){
+      $cf7_form_fields = $mapper->get_cf7_form_fields();
+      foreach($mapper->get_post_map_meta_fields() as $form_field => $post_field){
         $post_value='';
         //if the value was filtered, let's skip it
         if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
@@ -557,7 +562,8 @@ class CF72Post_Mapping_Factory {
       /*
        Finally let's also allow a user to load values for unammaped fields
       */
-      $unmapped_fields = array_diff_key( $mapper->cf7_form_fields, $mapper->post_map_meta_fields, $mapper->post_map_fields, $mapper->post_map_taxonomy );
+
+      $unmapped_fields = array_diff_key( $cf7_form_fields, $mapper->get_post_map_meta_fields(), $mapper->get_post_map_fields(), $mapper->get_post_map_taxonomy() );
       foreach($unmapped_fields as $form_field=>$type){
         if('submit' == $type){
           continue;
@@ -573,7 +579,7 @@ class CF72Post_Mapping_Factory {
       // ------------ taxonomy fields
       //
       $load_chosen_script=false;
-      foreach($mapper->post_map_taxonomy as $form_field => $taxonomy){
+      foreach($mapper->get_post_map_taxonomy() as $form_field => $taxonomy){
         //if the value was filtered, let's skip it
         if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
           continue;
@@ -593,8 +599,8 @@ class CF72Post_Mapping_Factory {
         }
         //load the list of terms
         //debug_msg("buidling options for taxonomy ".$taxonomy);
-        $field_type = $mapper->cf7_form_fields[$form_field];
-        $options = $mapper->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type);
+        $field_type = $cf7_form_fields[$form_field];
+        $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
         //for legacy purpose
         $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
         if( $apply_jquery_select ){
@@ -621,7 +627,7 @@ class CF72Post_Mapping_Factory {
   * @param   Array  $field_and_values   array of $field_name=>$values pairs
   * @param   Int  $cf7_2_post_id   a specific post to which this form submission is mapped/saved
   */
-  public function get_form_field_script($nonce){
+  public function get_form_field_script($nonce, $mapper){
     ob_start();
     $factory = $this;
     include( plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-script.php');
@@ -639,9 +645,10 @@ class CF72Post_Mapping_Factory {
   * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   String $field_type the type of field in which the tersm are going to be listed
   * @param   int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
+  * @param   Form_2_Post_Mapper $mapper post mapping object.
   * @return  String a jquery code to be executed once the page is loaded.
   */
-   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0){
+   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0, $mapper){
     $args = array(
       'parent' => $parent,
       'hide_empty' => 0,
@@ -769,7 +776,7 @@ class CF72Post_Mapping_Factory {
       }
       //get children
       $parent_level = $level;
-      $script .= $mapper->get_taxonomy_terms($taxonomy, $term_id, $post_terms, $field, $field_type, $level+1);
+      $script .= $this->get_taxonomy_terms($taxonomy, $term_id, $post_terms, $field, $field_type, $level+1, $mapper);
       if($is_optgroup) $script .='</optgroup>';
     }
     if('select' != $field_type) $script .='</fieldset>';
@@ -864,14 +871,16 @@ class CF72Post_Mapping_Factory {
       $post_type
     ));
     $has_fields = false;
-    $disabled=$html='';
+    $disabled=$html=$display=$display_select='';
+    $input = 'custom_meta_key';
+
     if(empty($selected_field)){
       $disabled=' disabled="true"';
     }
+
     if(false !== $metas){
       $html = '<div id="c2p-'.$post_type.'" class="system-post-metafield">'.PHP_EOL;
-      $select = '<select'.$disabled.' class="existing-fields">'.PHP_EOL;
-      $select .= '<option value="">'.__('Select a field','post-my-contact-form-7').'</option>'.PHP_EOL;
+      $select = '<option value="">'.__('Select a field','post-my-contact-form-7').'</option>'.PHP_EOL;
       foreach($metas as $row){
         if( 0=== strpos( $row->meta_key, '_') &&
         /**
@@ -885,17 +894,31 @@ class CF72Post_Mapping_Factory {
           //skip _meta_keys, assuming system fields.
           continue;
         }//end if
-        $selected = ($selected_field == $row->meta_key) ? ' selected="true"':'';
+        $selected='';
+        if($selected_field == $row->meta_key){
+          $selected = ' selected="true"';
+          $disabled='';
+        }
         $select .= '<option value="'.$row->meta_key.'"'.$selected.'>'.$row->meta_key.'</option>'.PHP_EOL;
         $has_fields = true;
       }
       if($has_fields){
+        $display = ' display-none';
+        $input = 'custom_meta_key';
+        if(!empty($selected_field) && empty($selected)){
+          $input = $selected_field;
+          $disabled =' disabled="true"';
+          $display_select = ' display-none';
+          $display = '';
+        }
+        $select = '<select'.$disabled.' class="existing-fields'.$display_select.'">'.PHP_EOL.$select;
         $select .= '<option value="cf72post-custom-meta-field">'.__('Custom field','post-my-contact-form-7').'</option>'.PHP_EOL;
         $select .='</select>'.PHP_EOL;
         $html .= $select;
-        $html .= '<input'.$disabled.' class="cf7-2-post-map-label-custom display-none" type="text" value="custom_meta_key" disabled />'.PHP_EOL;
-        $html .= '</div>';
-      }else $html='';
+
+      }
+      $html .= '<input class="cf7-2-post-map-label-custom'.$display.'" type="text" value="'.$input.'" '.(empty($display) ? '' : 'disabled ').'/>'.PHP_EOL;
+      $html .= '</div>';
     }
     return $html;
   }

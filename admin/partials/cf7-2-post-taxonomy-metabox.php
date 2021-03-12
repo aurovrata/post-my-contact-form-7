@@ -1,45 +1,5 @@
 <?php
-  /**
-   * Get taxonomy data
-   */
-  // require_once plugin_dir_path(dirname(dirname( __FILE__ ))) . 'includes/class-cf7-2-post-factory.php';
-
-  /**
-   * Get post data
-   */
-  // if ( isset($_GET['id']) ) {
-  //   $cf7_post_id = $_GET['id']; // should validate to integer?
-  //
-  //   if ( isset($this->post_mapping_factory) && $cf7_post_id == $this->post_mapping_factory->get_cf7_post_id() ) {
-  //     $post_mapper = $this->post_mapping_factory;
-  //   } else {
-  //     $post_mapper = Cf7_2_Post_System::get_factory($cf7_post_id);
-  //     $this->post_mapping_factory = $post_mapper;
-  //   }
-  // }
-
-  /**
-   * Mapping action
-   */
-  // $is_new_mapping = true;
-  //
-  // switch ( $post_mapper->get('map') ) {
-  //   case 'draft':
-  //     $is_new_mapping = true;
-  //     break;
-  //   case 'publish':
-  //     $is_new_mapping = false;
-  //     break;
-  // }
-
-  /**
-   * styles
-   */
-  // $published_class = '';
-  //
-  // if ( !$is_new_mapping ) {
-  //   $published_class = ' class="mapping-published"';
-  // }
+  
 
    /**
     * Loop taxonomies
@@ -67,7 +27,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       <span class="dashicons dashicons-minus remove-field"></span>
     </div>
     <span class="cf7-post-msg"></span>
-    <div class="custom-taxonomy-input-fields hide-if-js">
+    <div class="custom-taxonomy-input-fields display-none">
       <p>
         <?= __('Choose a taxonomy, in blue are existing public taxonomies', 'post-my-contact-form-7'); ?>
       </p>

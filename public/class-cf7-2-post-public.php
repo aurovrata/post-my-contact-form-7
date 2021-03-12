@@ -139,11 +139,9 @@ class Cf7_2_Post_Public {
     //let get the corresponding factory object,
     $factory = c2p_get_factory();
     if($factory->is_mapped($cf7_id)){
+      $mapper = $factory->get_post_mapper($cf7_id);
       //let's ensure the page does not cache our values.
       $this->not_form_page = false;
-
-      //$plugin_dir = plugin_dir_url( __FILE__ );
-      $factory = Cf7_2_Post_System::get_factory($cf7_id);
       //unique nonce
       $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
 
@@ -152,11 +150,11 @@ class Cf7_2_Post_Public {
       if(isset($attr['cf7_2_post_id'])){
         $cf7_2_post_id = $attr['cf7_2_post_id'];
       }
-      $form_values = $factory->get_form_values($cf7_2_post_id);
-      $inline_script = $factory->get_form_field_script( $nonce );
+      $form_values = $factory->get_form_values($cf7_id, $cf7_2_post_id);
+      $inline_script = $factory->get_form_field_script( $nonce,$mapper );
       wp_enqueue_script($this->plugin_name.'-load'); //previously registered.
       wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
-      $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $factory->cf7_key, $form_values);
+      $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $mapper->cf7_key, $form_values);
       $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$inline_script.PHP_EOL.$scripts.'</div>';
       /**
       * Action for enqueueing other scripts.
@@ -164,7 +162,7 @@ class Cf7_2_Post_Public {
       * @param string $cf7_key unique key of form being printed.
       * @param int $cf7_2_post_id post ID of form being printed.
       */
-      do_action('cf72post_form_printed_to_screen', $factory->cf7_key, $cf7_2_post_id);
+      do_action('cf72post_form_printed_to_screen', $mapper->cf7_key, $cf7_2_post_id);
     }
     return $output;
   }

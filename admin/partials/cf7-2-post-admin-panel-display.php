@@ -57,6 +57,7 @@
    $form = get_post($cf7_post_id); ?>
    <input type="hidden" id="c2p-cf7-key" value="<?=$form->post_name?>"/>
    <input type="hidden" id="c2p-mapping-changed" name="c2p_mapping_changes" value="0"/>
+   <input type="hidden" id="c2p-active-tab" name="c2p_active_tab" value="0"/>
    <input type="hidden" id="c2p-mapping-status" name="mapped_post_map" value="<?=$post_mapper->get('map')?>"/>
 <?php endif;?>
 
@@ -64,7 +65,13 @@
 <input name="mapped_post_type"  id="mapped-post-type" value="<?= $post_mapper->get('type');?>" type="hidden">
 
 <div id="c2p-factory-post">
-   <h2><?=__('Map form to...','post-my-contact-form-7' )?></h2>
+  <div class="c2p-title-header">
+    <h2><?=__('Map form to...','post-my-contact-form-7' )?></h2>
+    <div class="toggle toggle-light"></div>
+  </div>
+   <p>
+     <?= __('You can either map your form to a custom post or an existing post type.','post-my-contact-form-7');?>
+   </p>
    <div>
       <label class="post_type_labels" for="post-type-source"><?=__('Post Type:','post-my-contact-form-7')?></label>
       <span id="post-type-display">
@@ -107,7 +114,9 @@
      <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>has_archive</label>
      <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>exclude_from_search</label>
      <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>publicly_queryable</label>
-     <div class="clear"></div>
+     <p>
+        <?= sprintf(__('To understand how to parametrise your custom post, please read the WordPress post registration <a href="%s">documentation</a>.','post-my-contact-form-7'), 'https://developer.wordpress.org/reference/functions/register_post_type/#parameter-detail-information');?>
+     </p>
    </div><!-- end post-type-select -->
 </div>
 <h2><?=__('Map form fields to default post fields', 'post-my-contact-form-7')?></h2>

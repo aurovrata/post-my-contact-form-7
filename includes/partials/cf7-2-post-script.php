@@ -40,9 +40,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     * this can now be deprecated.
     */
     $taxonomies = array();
-    $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $factory->cf7_key );
-    $taxonomies = array_merge($factory->get_mapped_taxonomy(), $taxonomies);
-    $form_fields = $factory->get_form_fields();
+    $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $mapper->cf7_key );
+    $taxonomies = array_merge($mapper->get_mapped_taxonomy(), $taxonomies);
+    $form_fields = $mapper->get_form_fields();
     foreach($form_fields as $field=>$type){
       if(isset($taxonomies[$field]) ) continue;
 
@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       $js_form = 'cf7Form';
       $json_value = 'data.'.$json_var;
       $default_script = true;
-      $form_id = $factory->cf7_post_ID; //submisison mapped post id.
+      $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
       /**
       * @since 2.0.0
       * filter to modify the way the field is set.  This is introduced for plugin developers
@@ -70,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       * @param string  $key  unique cf7 form key.
       * @return boolean  false to print a custom script from the called function, true for the default script printed by this plugin.
       */
-      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $factory->cf7_key)){
+      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key)){
         $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
         $isFiltered = false;
         switch($type){
@@ -108,7 +108,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             break;
           default:
             $isFiltered = true;
-            $format = apply_filters('cf7_2_post_field_mapping_tag_'.$type, '', $field, $form_id, $json_value, $js_form, $factory->cf7_key);
+            $format = apply_filters('cf7_2_post_field_mapping_tag_'.$type, '', $field, $form_id, $json_value, $js_form, $mapper->cf7_key);
             break;
         }
         if(!$isFiltered){
@@ -129,14 +129,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     //load the taxonomy required
     //legacy
 
-    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $factory->cf7_post_ID, $form_field, $factory->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $factory->cf7_post_ID, $form_field, $factory->cf7_key);
+    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
 
     if($load_chosen){
       $load_chosen_script = true;
     }
     $js_field = str_replace('-','_',$form_field);
     //if the value was filtered, let's skip it
-    if( 0 === strpos($form_field,'cf7_2_post_filter-') ){ 
+    if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
       continue;
     }
     $terms_id = array();
@@ -145,7 +145,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     switch($field_type){
       case 'select':
-        if( $factory->field_has_option($form_field, 'multiple') ){
+        if( $mapper->field_has_option($form_field, 'multiple') ){
           $form_field = '"'.$form_field.'[]"';
         }
         if($load_chosen){
@@ -176,7 +176,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     }
   }
   if($load_chosen_script):
-    $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $factory->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $factory->cf7_post_ID);
+    $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $mapper->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $mapper->cf7_post_ID);
     if(!$delay_chosen_script):
     ?>
       $(".js-select2", cf7Form).each(function(){

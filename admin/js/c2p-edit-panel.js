@@ -5,30 +5,46 @@
     selectedOptions = new Array();
 
   let formFields, $form = $('textarea#wpcf7-form'),
-    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false;;
+    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false;
   $(document).ready(function(){
-    let init=true;
+    $('#c2p-active-tab').val($tab.index());
+    //status toggle.
+    let $status = $('#c2p-mapping-status'),
+      tstatus = $status.val()=='draft'?false:true,
+      $tggl = $('#c2p-factory-post .toggle'),
+      init = true;
+    $tggl.toggles( {
+      drag:false,
+      text:{ on:c2pLocal.live, off:c2pLocal.draft },
+      on: tstatus});
+    $tggl.on('toggle', function(e, active) {
+      if (active) $status.val('publish');
+      else $status.val('draft');
+    });
     //switch posts if need be.
     switchPostSource();
-    //initialise the select fields adn populate them.
-    $tab.on('keypress click', function(){
+    //initialise mapping editor.
+    function initC2PEditor(){
       formFields={};
       if($('#wpcf7-form-hidden').length>0) $form = $('#wpcf7-form-hidden'); //Smart Grid form.
       scanFormTags($form.text());
       //populate fields.
-      $('.cf7-2-post-field select').fillCF7fields(init);
+      $('.cf7-2-post-field select.field-options').fillCF7fields(init);
       init=false;
       //transform select fields into select-hybrid.
       $('#cf7-2-post select.select-hybrid:not(:disabled)').each(function(){
         isEmpty(this['_hselect']) ? new HybridSelect(this, {}) : this._hselect.refresh();
       })
-    });
+    }
+    //initialise the select fields adn populate them.
+    $tab.on('keypress click', initC2PEditor);
     $('#cf7-2-post').change('select.select-hybrid',function(e){
       let $this = $(e.target);
       if(e.target.selectedIndex>0) $this.addClass('cf7-post-mapped');
       else $this.removeClass('cf7-post-mapped');
     });
-  });
+    initC2PEditor(); //on document ready.
+  }); //document ready.
   function scanFormTags(search){
     let cf7TagRegexp = /\[(.[^\s]*)\s*(.[^\s\]]*)[\s\[]*(.[^\[]*\"source:([^\s]*)\"[\s^\[]*|[.^\[]*(?!\"source:)[^\[]*)\]/img,
       match = cf7TagRegexp.exec(search);
@@ -65,10 +81,14 @@
       $option = $m.find('option.filter-option');
       Object.keys(formFields).forEach(function(f){
         //for taxnomies, skip fields which are not checkbox|radio|select.
-        if($m.is('.taxonomy-options') && ['checkbox','radio','select'].indexOf(f.replace('*',''))<0) return true;
+        if($m.is('.taxonomy-options') && ['checkbox','radio','select'].indexOf(formFields[f].replace('*',''))<0) return true;
         $option.before('<option value="'+f+'">'+f+' ['+formFields[f]+']'+'</option>');
       })
+      if(isEmpty(v)) continue;
       $m.val(v);//.change();
+      if(0==v.indexOf('cf7_2_post_filter-')){
+        c2pFilterHelperCode.call($m.closest('li').get(0),v);
+      }
     }
     return $menu;
   }
@@ -79,16 +99,16 @@
       type='';
     switch($source.val()){
       case 'factory':
-        $('#post-type-exists').hide(); //system posts.
-        $('#post-type-select').show(); //factory post options.
+        $('#post-type-exists').hide().find(':input').prop('disabled',true); //system posts.
+        $('#post-type-select').show().find(':input').prop('disabled',false); //factory post options.
         type = $('input#custom-post-type').val();
         $('#custom-post-title').html($('#post-plural-name').val()+' (<code>'+type+'</code>)')
         break;
       case 'system':
         type = $post.val();
         $('#custom-post-title').html($post.html().replace(type, '<code>'+type+'</code>'));
-        $('#post-type-select').hide(); //factory post options.
-        $('#post-type-exists').show();//system posts.
+        $('#post-type-select').hide().find(':input').prop('disabled',true); //factory post options.
+        $('#post-type-exists').show().find(':input').prop('disabled',false);//system posts.
         break;
     }
     $mapped_type.val(type);
@@ -131,16 +151,25 @@
     //let duplicate the field.
     let fieldList = e.delegateTarget,
       scroll = e.target.getBoundingClientRect(), //position of add button.
-      field = e.target.closest('.post-meta-field'), //the field being cloned.
+      field = e.target.closest('li'), //the field being cloned.
       keyName = '', //name of meta-field.
       idx=0, //index.
       $cloneField = $(field).clone(), //clone.
-      postType=$('input#mapped-post-type').val(); //post type mapped to.
+      postType=$('input#mapped-post-type').val(), //post type mapped to.
+      $prev = $('select.autofill-field-name',$(field).prev());
+
     //remove the add button on the cloned field.
     $cloneField.find('span.add-more-field').remove();
+    $cloneField.removeClass('default-meta-field');
+    //add cloned field to DOM list of fields.
+    $(fieldList).children('li:last').before($cloneField);
     //setup the clone field.
     if($('#post-type-exists').is(':visible') && $('#c2p-'+postType).length>0){ //system post.
       $cloneField.find('.post-field-name').html($('#c2p-'+postType).html());
+      if($prev.length>0){
+        $('select.existing-fields',$cloneField).addClass('display-none');
+        $('input.cf7-2-post-map-label-custom',$cloneField).removeClass('display-none');
+      }
     }else{
       let label = field.querySelector('.cf7-2-post-map-labels');
       keyName = label.value; //name of meta-field.
@@ -152,44 +181,45 @@
     }
     //enable the new field
     let $ffMenu = $cloneField.find('select.field-options');
+
     //setup the filter.
     $ffMenu.find('option.filter-option').val('cf7_2_post_filter-'+postType+'-'+keyName);
     //populate with latest form fields.
     $ffMenu.fillCF7fields();
-    //add cloned field to DOM list of fields.
-    $(fieldList).children('li:last').before($cloneField);
-    $cloneField.wrap('<li></li>');
     //enable the new field.
     $cloneField.find(':input').each(function(){
+      if(this.classList.contains('display-none')) return true;
       this.disabled=false;
       if(this.nodeName==='SELECT') new HybridSelect(this); //nice select.
     });
     //add remove button and error msg.
     $cloneField.append('<span class="dashicons dashicons-minus remove-field"></span>');
-    $cloneField.after('<span class="cf7-post-msg"></span>');
+    $cloneField.append('<span class="cf7-post-msg"></span>');
     //scroll down window.
     let down = e.target.getBoundingClientRect();
     window.scrollBy(0, down.top - scroll.top);
     if($cloneField.children('.cf7-2-post-map-labels:first').is('select')){
       return;//this is a select dropdown of existing post meta-fields, nothing to autofill.
     }
-    if($cloneField.is('.autofill-field-name')){
-      let $previous = $cloneField.prevAll('.custom-meta-field:first').find('select.field-options').find('option:selected');
-      let $select = $cloneField.find('select.field-options');
-      if(Object.keys(formFields).pop() != $previous.val() ){ //last field not used.
-        $select.addClass('autofill-field-name'); //allows change to autofill.
-        let $nextOption = $select.find('option[value="'+$previous.val()+'"]').next();
-        $nextOption.prop('selected','true'); //select.
-        $select.val($nextOption.val()).trigger('change');
-        let name = $nextOption.val().replace(/-/g,'_');
-        $cloneField.find('input.cf7-2-post-map-labels').val(name).trigger('change');
-        if( $nextOption.next().val() != $select.find('option:last').val()){
-          $cloneField.nextAll('.custom-meta-field:first').addClass('autofill-field-name'); //prep for autofill.
-        }
+    if($prev.length>0){
+      let ff = Object.keys(formFields), mf=[];;
+      $('#c2p-mapped-fields select.field-options').each(function(){
+        if(this.value.indexOf('cf7_2_post_filter-')==0) return true; //skip.
+        let rem = this.value;
+        ff = ff.filter(function(e){
+          return rem != e;
+        });
+      });
+      //fill up the new field with the first available unused form field.
+      if(ff.length>0){
+        $('select.field-options', $cloneField).val(ff[0]).get(0).dispatchEvent(new Event('change'));
+        $('.cf7-2-post-map-label-custom', $cloneField).val(ff[0].replace(/-/g,'_'));
       }
-      $cloneField.removeClass('autofill-field-name');
+      $('select.field-options', $cloneField).addClass('autofill-field-name');
     }else{ //enable autofill on the select
-      $cloneField.find('select.field-options').addClass('autofill-field-name');
+      if($('.cf7-2-post-map-label-custom', $cloneField).is(':visible')){
+        $('select.field-options', $cloneField).addClass('autofill-field-name');
+      }
     }
   });
   //bind and delegate add-more/remove taxonomy fields.
@@ -254,13 +284,17 @@
     switch(true){
       case field.classList.contains('existing-fields'): //post dropdpown.
         if( fv == 'cf72post-custom-meta-field'){ //switch to input text field.
-          field.classList.add('display-none'); //hide post field dropdown.
-          fc.querySelector('.cf7-2-post-map-label-custom').classList.remove('display-none'); //show text input.
+          field.classList.add('display-none');
+          field.disabled=true; //hide & disable post field dropdown.
+          field = fc.querySelector('.cf7-2-post-map-label-custom');
+          field.disabled=false;
+          field.classList.remove('display-none'); //show text input.
           fv = e.target.parentNode.nextElementSibling.value;
         }
         //setup the form field menu values.
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
+        ffMenu.classList.add('autofill-field-name');
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
@@ -278,6 +312,10 @@
               return false;
             }
           });
+          if(ffMenu.classList.contains('autofill-field-name')){
+            let pf = fc.querySelector('.cf7-2-post-map-label-custom');
+            if('custom_meta_key'==pf.value) pf.value = fv.replace(/-/g,'_');
+          }
         }else{ //filter option selelected, display helper code.
            c2pFilterHelperCode.call(fc,fv);
         }
@@ -296,7 +334,9 @@
         input.disabled = isSystem;//no need to be submitted
         input = fc.querySelector('span.taxonomy-name');
         input.innerHTML = '<strong>'+tax.innerText+'</strong>';
-        fc.querySelector('input.taxonomy-source').value = isSystem ? 'system':'factory';
+        input = fc.querySelector('input.taxonomy-source');
+        input.value = isSystem ? 'system':'factory';
+        input.setAttribute('name','cf7_2_post_map_taxonomy_source-'+tax.value);
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;

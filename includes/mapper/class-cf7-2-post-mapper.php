@@ -110,7 +110,7 @@ abstract class Form_2_Post_Mapper {
    * @access protected
    * @var array $form_terms an array of terms.
    **/
-   protected $form_terms=array();
+   public $form_terms=array();
    /**
    * an array of post_id=>array($post_type =>[factory|system])); key value pairs.
    * @since 3.4.0
@@ -138,6 +138,42 @@ abstract class Form_2_Post_Mapper {
    * @since    1.0.0
    * @param    int    $cf7_post_id the ID of the CF7 form.
    */
+   /**
+   * Getter for $post_map_fields
+   *
+   *@since 5.0.0
+   *@return Array return $post_map_fields property.
+   */
+   public function get_post_map_fields(){
+     return $this->post_map_fields;
+   }
+   /**
+   * Getter for $post_map_meta_fields
+   *
+   *@since 5.0.0
+   *@return Array return $post_map_meta_fields property.
+   */
+   public function get_post_map_meta_fields(){
+     return $this->post_map_meta_fields;
+   }
+   /**
+   * Getter for $post_map_taxonomy
+   *
+   *@since 5.0.0
+   *@return Array return $post_map_taxonomy property.
+   */
+   public function get_post_map_taxonomy(){
+     return $this->post_map_taxonomy;
+   }
+   /**
+   * Getter for $cf7_form_fields
+   *
+   *@since 5.0.0
+   *@return Array return $cf7_form_fields property.
+   */
+   public function get_cf7_form_fields(){
+     return $this->cf7_form_fields;
+   }
   /**
    * Strips mapped fields from the admin $_POST form saving.
    *
@@ -176,7 +212,6 @@ abstract class Form_2_Post_Mapper {
         unset($this->old_db_fields[$prefix.$form_field]);
       }
     }
-    // debug_msg($this->old_db_fields, "old: $prefix ");
   }
   protected function _save_taxonomy_fields(){
     /*
@@ -184,8 +219,8 @@ abstract class Form_2_Post_Mapper {
       cf7_2_post_map_taxonomy_names-<taxonomy_slug>
       so we need to keep track of the field name prefix length to strip the slug
     */
+    // debug_msg($_POST, 'POST ');
     $fields = $this->get_mapped_fields('cf7_2_post_map_taxonomy_');
-    debug_msg($fields, 'cf7_2_post_map_taxonomy_');
     $len_c2p_taxonomy = strlen('value-');
     $len_c2p_name = strlen('name-');
     $len_c2p_names = strlen('names-');
@@ -201,6 +236,7 @@ abstract class Form_2_Post_Mapper {
             $this->taxonomy_properties[$slug] =  array();
           }
           $this->taxonomy_properties[$slug]['source'] = $value;
+          $slugs[]= $slug;
           break;
         case (0 === strpos($field,'names-') ): //Plural name.
           $slug = substr($field,$len_c2p_names);
@@ -218,12 +254,12 @@ abstract class Form_2_Post_Mapper {
           $this->taxonomy_properties[$slug]['singular_name'] = $value;
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
-        case (0 === strpos($field,'slug-') ): //taxonomy slug.
-          if( !isset($this->taxonomy_properties[$value]) ){
-            $this->taxonomy_properties[$value] =  array();
-          }
-          $slugs[]= $value;
-          break;
+        // case (0 === strpos($field,'slug-') ): //taxonomy slug.
+        //   if( !isset($this->taxonomy_properties[$value]) ){
+        //     $this->taxonomy_properties[$value] =  array();
+        //   }
+        //   $slugs[]= $value;
+        //   break;
         case (0 === strpos($field,'value-') ): //form field mapped to taxonomy.
           $slug = substr($field,$len_c2p_taxonomy);
           $post_map_taxonomy[$value] = $slug;
@@ -236,15 +272,18 @@ abstract class Form_2_Post_Mapper {
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       if(isset($this->old_db_fields['cf7_2_post_map_taxonomy_source-'.$slug]) ){
         unset($this->old_db_fields['cf7_2_post_map_taxonomy_source-'.$slug]);
-        unset($this->old_db_fields['cf7_2_post_map_taxonomy_names-'.$slug]);
-        unset($this->old_db_fields['cf7_2_post_map_taxonomy_name-'.$slug]);
+        if('factory'==$this->taxonomy_properties[$slug]['source']){
+          unset($this->old_db_fields['cf7_2_post_map_taxonomy_names-'.$slug]);
+          unset($this->old_db_fields['cf7_2_post_map_taxonomy_name-'.$slug]);
+        }
       }
       update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug,$this->taxonomy_properties[$slug]['source']);
-      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
-      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
+      if('factory'==$this->taxonomy_properties[$slug]['source']){
+        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
+        update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
+      }
     }
 
-    debug_msg($slugs, "saved taxonomy ");
     //save the taxonomy properties
     $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
     //make sure they are unique
@@ -272,9 +311,11 @@ abstract class Form_2_Post_Mapper {
     $this->set_post_properties();
     //track old settings to remove surplus.
     $this->old_db_fields = get_post_meta($this->cf7_post_ID);
+    // debug_msg($this->old_db_fields, "old: ");
+
     foreach($this->old_db_fields as $name=>$value){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-      if( false===strpos($name, '_cf7_2_post') ){
+      if( false===strpos($name, 'cf7_2_post') ){
         unset($this->old_db_fields[$name]);
       }
     }
@@ -376,9 +417,12 @@ abstract class Form_2_Post_Mapper {
     }
     //get taxonomies
     foreach($this->post_properties['taxonomy'] as $slug){
-      $taxonomy_array = array('slug'=> $slug );
-      $taxonomy_array['name'] = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug, true);
-      $taxonomy_array['singular_name'] = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug, true);
+      $taxonomy_array = array(
+        'slug'=> $slug,
+        'name'=>'',
+        'singular_name'=>'',
+        'source'=>''
+       );
       /**
       * Load the source of the taxonomy, 'factor' if created by this plugin, 'system' if existing
       *@since 1.1.0
@@ -386,8 +430,18 @@ abstract class Form_2_Post_Mapper {
       $source = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug, true);
       if(!$source){ //for pre-1.1 version we need to ensure we set some defaults
        $source = 'factory';
-      }
+       $taxonomy_array['name'] = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug, true);
+       $taxonomy_array['singular_name'] = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug, true);
+     }else{ //load labels from system props.
+       $system_tax = get_taxonomies( array('public'=>true, '_builtin' => true),'objects' );
+       if(isset($system_tax[$slug])){
+         $taxonomy_array['name'] = $system_tax[$slug]->labels->name;
+         $taxonomy_array['singular_name'] = $system_tax[$slug]->labels->singular_name;
+       }
+     }
       $taxonomy_array['source'] = $source;
+
+
 
       $this->taxonomy_properties[ $slug ] = $taxonomy_array;
       $cf7_field = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug, true);
@@ -434,23 +488,24 @@ abstract class Form_2_Post_Mapper {
    switch($data_type){
      case 'meta-field':
        $prefix = 'cf7_2_post_map_meta-' ;
+       $search = $this->post_map_meta_fields;
        break;
      case 'taxonomy':
        $prefix =  'cf7_2_post_map_taxonomy-';
+       $search = $this->post_map_taxonomy;
        break;
      case 'field':
      default:
        $prefix =  'cf7_2_post_map-';
+       $search = $this->post_map_fields;
        break;
    }
    $form_field = false;
-   if( empty($this->post_map_meta_fields)){
+   if( empty($search)){
      $form_field = get_post_meta($this->cf7_post_ID, $prefix.$post_field,true);
    }else{
-     $form_field = array_search($post_field, $this->post_map_meta_fields);
+     $form_field = array_search($post_field, $search);
    }
-
-   // debug_msg("$form_field->$post_field");
    return $form_field;
   }
   /**

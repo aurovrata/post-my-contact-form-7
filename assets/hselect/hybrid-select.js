@@ -161,7 +161,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     let _ = this;
     if(_.el.value === _.value) return; //not need to update.
     let sel = _.hselect.options.querySelector(`.hybrid-option[data-hso-value="${_.el.value}"`);
-    sel = [..._.hselect.options.children].indexOf(o); //index in hybrid.
+    sel = [..._.hselect.options.children].indexOf(sel); //index in hybrid.
     _.updateSelection(sel, false);
   }
   //trigger events.

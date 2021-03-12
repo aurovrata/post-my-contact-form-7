@@ -1,3 +1,21 @@
+#c2p-factory-post h2 {
+	display: inline-block;
+	margin-top: 0 !important;
+}
+#c2p-factory-post .toggle {
+	float: right;
+  margin-top: 1px;
+  width: 75px;
+  height: 25px;
+}
+#c2p-factory-post .toggle-on {
+	background: #007cba;
+  color: white;
+}
+#c2p-factory-post .toggle-on, #c2p-factory-post .toggle-off {
+	font-weight: bold;
+	font-size: 1.2rem;
+}
 .add-more-field::before {
     padding-right: 2px;
 }
@@ -73,7 +91,7 @@ label{
 .post_type_labels {
     font-size: 1.1em;
 }
-.display-none,
+.display-none,.display-none+.hybrid-select-js,
 #cf7-2-post .cf7-2-post-map-labels.hide{
   display:none;
 }
@@ -176,7 +194,7 @@ label[for="post_type"] {
     width: 200px;
     padding: 3px 0;
 }
-#cf7-2-post .post-meta-field,
+/* #cf7-2-post .post-meta-field, */
 #cf7-2-post .custom-taxonomy-field{
   min-width: 460px;
 }
@@ -262,6 +280,12 @@ p.cf7-post-error-msg span.code{
     -ms-animation: color-change 1s 3;
     animation: color-change 1s 3;
 }
+#c2p-default-post-fields, #c2p-post-meta-fields, #c2p-taxonomy-fields {
+	background-color: white;
+	padding: 10px 5px;
+	border-radius: 3px;
+	border: solid 1px #dddada;
+}
 #menu-position {
 	display: inline-block;
 }
@@ -269,9 +293,11 @@ p.cf7-post-error-msg span.code{
 #c2p-post-meta-fields > li {margin: 0;}
 label.post_type_cb_labels {
 	border-bottom: blue 1px dotted;
-	padding-bottom: 2px;
+	padding: 2px 4px;
 	margin-right: 8px;
-  display: inline-block;
+	display: inline-block;
+	background-color: #ececec;
+	border-radius: 6px;
 }
 @-webkit-keyframes color-change {
     0% { background-color: red; }

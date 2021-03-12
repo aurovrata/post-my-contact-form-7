@@ -107,9 +107,12 @@ class Cf7_2_Post_Admin {
     if( 'toplevel_page_wpcf7'==$hook or
     ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
 
+        $plugin_dir = plugin_dir_url( __DIR__ );
         wp_enqueue_style( 'cf7-2-post-panel-css', plugin_dir_url( __FILE__ ) . 'css/mapping-panel.css');
-        wp_enqueue_style('hybrid-select-css', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.css', array(), $this->version, 'all' );
-        wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
+        wp_enqueue_style('hybrid-select-css', $plugin_dir . 'assets/hselect/hybrid-select.css', array(), $this->version, 'all' );
+        // wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
+        wp_enqueue_style('jquery-toggles-css', $plugin_dir . "assets/jquery-toggles/css/toggles.css", array(), $this->version, 'all' );
+        wp_enqueue_style('jquery-toggles-light-css', $plugin_dir . "assets/jquery-toggles/css/themes/toggles-light.css", array('jquery-toggles-css'), $this->version, 'all' );
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/cf7-2-post-mapping.css', array('dashicons'), $this->version, 'all' );
     }//
     $factory = c2p_get_factory();
@@ -135,13 +138,17 @@ class Cf7_2_Post_Admin {
     if( 'toplevel_page_wpcf7'==$hook or
     ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox'), $this->version, true );
-      wp_enqueue_script('jquery-clibboard', plugin_dir_url( __DIR__ ) . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
+      $plugin_dir = plugin_dir_url( __DIR__ );
+      wp_enqueue_script('jquery-toggles', $plugin_dir . 'assets/jquery-toggles/toggles.min.js', array( 'jquery' ), $this->version, true );
+      wp_enqueue_script('jquery-clibboard', $plugin_dir . 'assets/clipboard/clipboard.min.js', array('jquery'),$this->version,true);
       wp_localize_script( $this->plugin_name, 'c2pLocal', array(
         'warning' => __('Warning: Field already selected!', 'post-my-contact-form-7'),
         'copy'=> __('Click to copy!', 'post-my-contact-form-7'),
-        'paste'=> __('Paste helper code into your theme functions.php file.', 'post-my-contact-form-7')
+        'paste'=> __('Paste helper code into your theme functions.php file.', 'post-my-contact-form-7'),
+        'draft'=> __('draft','post-my-contact-form-7'),
+        'live'=> __('live','post-my-contact-form-7'),
       ));
-      wp_enqueue_script('hybrid-select', plugin_dir_url( __DIR__ ) . 'assets/hselect/hybrid-select.js', null, $this->version, true );
+      wp_enqueue_script('hybrid-select', $plugin_dir . 'assets/hselect/hybrid-select.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
     }
     $factory = c2p_get_factory();
@@ -327,19 +334,15 @@ class Cf7_2_Post_Admin {
     switch ( $column ) {
       case 'map_cf7_2_post' :
         $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
-        //$form = WPCF7_ContactForm::get_instance($post_id);
-        $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
-        if(!current_user_can($capability)){
-          return;
-        }
+
         if ($post_type){
           $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
-          $url = admin_url( 'admin.php?page=map_cf7_2_post&id=' . $post_id . '&action=edit' );
-          echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? 'Draft:':'Mapped:').$post_type.'</a>';
+          $url = admin_url( 'admin.php?page=wpcf7&post=' . $post_id . '&active-tab='.get_option('_c2p_active_tab',0) );
+          echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? __('Draft:','post-my-contact-form-7' ):__('Mapped:','post-my-contact-form-7' )).$post_type.'</a>';
           echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
         }else{
-          $url = admin_url( 'admin.php?page=map_cf7_2_post&id=' . $post_id . '&action=new' );
-          echo '<a class="cf7-2-post-map-link" href="'.$url.'">Create new</a>';
+          $url = admin_url( 'admin.php?page=wpcf7&post=' . $post_id . '&active-tab='.get_option('_c2p_active_tab',0) );
+          echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.__('Create new','post-my-contact-form-7').'</a>';
         }
         break;
       case 'cf7_2_post' :
@@ -429,7 +432,7 @@ class Cf7_2_Post_Admin {
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
     //check if any changes on the form.
     if(isset($_POST['c2p_mapping_changes']) && 0 == $_POST['c2p_mapping_changes']) return;
-
+    update_option('_c2p_active_tab',sanitize_text_field($_POST['c2p_active_tab']));
     $factory = c2p_get_factory();
     $factory->save($post_id);
   }
