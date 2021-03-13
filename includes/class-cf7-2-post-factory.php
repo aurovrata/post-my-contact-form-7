@@ -850,7 +850,9 @@ class CF72Post_Mapping_Factory {
     $factory = self::get_factory();
     $html = '<div class="system-posts-metafields display-none">'.PHP_EOL;
     foreach($factory->get_system_posts() as $post_type=>$label){
+      $html .= '<div id="c2p-'.$post_type.'" class="system-post-metafield">'.PHP_EOL;
       $html .= $factory->get_metafield_menu($post_type,'');
+      $html .= '</div>'.PHP_EOL;
     }
     $html .= '</div>'.PHP_EOL;
     return $html;
@@ -870,8 +872,9 @@ class CF72Post_Mapping_Factory {
       WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
       $post_type
     ));
-    $has_fields = false;
-    $disabled=$html=$display=$display_select='';
+    $has_fields = $found_existing=false;
+    $disabled=$html=$display='';
+    $display_select=' select-hybrid';
     $input = 'custom_meta_key';
 
     if(empty($selected_field)){
@@ -879,7 +882,7 @@ class CF72Post_Mapping_Factory {
     }
 
     if(false !== $metas){
-      $html = '<div id="c2p-'.$post_type.'" class="system-post-metafield">'.PHP_EOL;
+      $html = '';
       $select = '<option value="">'.__('Select a field','post-my-contact-form-7').'</option>'.PHP_EOL;
       foreach($metas as $row){
         if( 0=== strpos( $row->meta_key, '_') &&
@@ -898,6 +901,7 @@ class CF72Post_Mapping_Factory {
         if($selected_field == $row->meta_key){
           $selected = ' selected="true"';
           $disabled='';
+          $found_existing = true;
         }
         $select .= '<option value="'.$row->meta_key.'"'.$selected.'>'.$row->meta_key.'</option>'.PHP_EOL;
         $has_fields = true;
@@ -905,7 +909,7 @@ class CF72Post_Mapping_Factory {
       if($has_fields){
         $display = ' display-none';
         $input = 'custom_meta_key';
-        if(!empty($selected_field) && empty($selected)){
+        if(!empty($selected_field) && !$found_existing){
           $input = $selected_field;
           $disabled =' disabled="true"';
           $display_select = ' display-none';
@@ -918,7 +922,6 @@ class CF72Post_Mapping_Factory {
 
       }
       $html .= '<input class="cf7-2-post-map-label-custom'.$display.'" type="text" value="'.$input.'" '.(empty($display) ? '' : 'disabled ').'/>'.PHP_EOL;
-      $html .= '</div>';
     }
     return $html;
   }

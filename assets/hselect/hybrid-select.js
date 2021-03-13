@@ -301,6 +301,7 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
         return;  // bubbling selection
       }
       e.stopPropagation();
+      _.emit('hybrid-select-'+e.type); //notify other hselect fields that his one is being opened.
     }
     if(_.hselect.classList.contains('active')) {
       _.closeSelect();
@@ -314,13 +315,17 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     _.event(document, 'add',{
       click: _.close
     });
-
+    //close if another hselect field opens.
+    _.event(document,'add',{
+      'hybrid-select-click':_.close
+    });
   }
   //close hybrid dropdown.
   hsProtype.closeSelect = function(blur){
-    let _ = this, e = arguments[0];
+    let _ = this, e = arguments[0],e2 = arguments[1];
 
     if(e && e.target && e.target.classList.contains('hselect-option')) return;
+    if(e2 && e2.target.isSameNode(_.el)) return;
 
     _.hselect.classList.remove('active');
     //reset the option hover index.
@@ -329,6 +334,9 @@ GitHub: https://github.com/aurovrata/hybrid-html-select
     //stop listening to external clicks.
     _.event(document, 'remove',{
       click: _.close
+    });
+    _.event(document,'remove',{
+      'hybrid-select-click':_.close
     });
     if(blur) _.blur(); //remove focus.
   }

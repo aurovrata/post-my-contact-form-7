@@ -80,8 +80,19 @@
       $m.children().remove(':not(.filter-option):not(.default-option)');
       $option = $m.find('option.filter-option');
       Object.keys(formFields).forEach(function(f){
-        //for taxnomies, skip fields which are not checkbox|radio|select.
-        if($m.is('.taxonomy-options') && ['checkbox','radio','select'].indexOf(formFields[f].replace('*',''))<0) return true;
+        switch(true){
+          case $m.is('#cf7-2-thumbnail'): /*IS*/
+            if(['file'].indexOf(formFields[f].replace('*',''))<0) return true;
+            break;
+          case $m.is('.taxonomy-options'):/*IS*/
+            if(['checkbox','radio','select'].indexOf(formFields[f].replace('*',''))<0) return true;
+            break;
+          case $m.is('#cf7-2-slug'):
+          case $m.is('#cf7-2-author'):
+          case $m.is('#cf7-2-title'): /*NOT*/
+            if(['textarea','file'].indexOf(formFields[f].replace('*',''))>=0) return true;
+
+          }
         $option.before('<option value="'+f+'">'+f+' ['+formFields[f]+']'+'</option>');
       })
       if(isEmpty(v)) continue;
@@ -212,8 +223,8 @@
       });
       //fill up the new field with the first available unused form field.
       if(ff.length>0){
-        $('select.field-options', $cloneField).val(ff[0]).get(0).dispatchEvent(new Event('change'));
-        $('.cf7-2-post-map-label-custom', $cloneField).val(ff[0].replace(/-/g,'_'));
+        $('select.field-options', $cloneField).val(ff[0]).change().get(0).dispatchEvent(new Event('change'));
+        $('.cf7-2-post-map-label-custom', $cloneField).val(ff[0].replace(/-/g,'_')).change();
       }
       $('select.field-options', $cloneField).addClass('autofill-field-name');
     }else{ //enable autofill on the select
