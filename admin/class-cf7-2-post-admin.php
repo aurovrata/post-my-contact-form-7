@@ -147,6 +147,7 @@ class Cf7_2_Post_Admin {
         'paste'=> __('Paste helper code into your theme functions.php file.', 'post-my-contact-form-7'),
         'draft'=> __('draft','post-my-contact-form-7'),
         'live'=> __('live','post-my-contact-form-7'),
+        'warn'=>__('CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.')
       ));
       wp_enqueue_script('hybrid-select', $plugin_dir . 'assets/hselect/hybrid-select.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
@@ -333,15 +334,16 @@ class Cf7_2_Post_Admin {
 
     switch ( $column ) {
       case 'map_cf7_2_post' :
-        $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
+        $page = 'admin.php?page=wpcf7&';
+        if(defined('CF7_GRID_VERSION')) $page = 'post.php?action=edit&';
+        $url = admin_url( "{$page}post={$post_id}&active-tab=".get_option('_c2p_active_tab',0) );
 
+        $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
         if ($post_type){
           $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
-          $url = admin_url( 'admin.php?page=wpcf7&post=' . $post_id . '&active-tab='.get_option('_c2p_active_tab',0) );
           echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? __('Draft:','post-my-contact-form-7' ):__('Mapped:','post-my-contact-form-7' )).$post_type.'</a>';
           echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
         }else{
-          $url = admin_url( 'admin.php?page=wpcf7&post=' . $post_id . '&active-tab='.get_option('_c2p_active_tab',0) );
           echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.__('Create new','post-my-contact-form-7').'</a>';
         }
         break;
@@ -686,8 +688,25 @@ class Cf7_2_Post_Admin {
       $cf7_post_id = $_GET['post'];
       $factory = c2p_get_factory();
       $post_mapper = $factory->get_post_mapper($cf7_post_id);
-  		include_once 'partials/cf7-2-post-admin-panel-display.php';
+  		include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-admin-panel-display.php';
     }
 	}
-
+  /**
+  *
+  *
+  *@since 5.0.0
+  *@param string $param text_description
+  *@return string text_description
+  */
+  public function set_c2p_panel_tab(){
+    global $wp_filter;
+    $tab = 3; //zero based.
+    foreach( $wp_filter['wpcf7_editor_panels']->callbacks as $idx=>$cb ){
+      foreach($cb as $key=>$val){
+        $tab++;
+        if(strpos($key,'add_mapping_panel')!==false) break 2;
+      }
+    }
+    update_option('_c2p_active_tab',$tab);
+  }
 }

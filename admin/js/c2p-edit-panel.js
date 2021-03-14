@@ -2,17 +2,16 @@
 	'use strict';
   const removeButton = '<span class="dashicons dashicons-minus remove-field"></span>',
     errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>',
-    selectedOptions = new Array();
+    selectedOptions = new Array(),
+    $status = $('#c2p-mapping-status');
 
   let formFields, $form = $('textarea#wpcf7-form'),
-    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false;
+    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false, init=true;
   $(document).ready(function(){
     $('#c2p-active-tab').val($tab.index());
     //status toggle.
-    let $status = $('#c2p-mapping-status'),
-      tstatus = $status.val()=='draft'?false:true,
-      $tggl = $('#c2p-factory-post .toggle'),
-      init = true;
+    let tstatus = $status.val()=='draft'?false:true,
+      $tggl = $('#c2p-factory-post .toggle');
     $tggl.toggles( {
       drag:false,
       text:{ on:c2pLocal.live, off:c2pLocal.draft },
@@ -62,7 +61,7 @@
       }
       match = cf7TagRegexp.exec(search); //search next.
     }
-    console.log(formFields);
+    // console.log(formFields);
   }
   function isEmpty(v){
     if('undefined' === typeof v || null===v) return true;
@@ -96,7 +95,9 @@
         $option.before('<option value="'+f+'">'+f+' ['+formFields[f]+']'+'</option>');
       })
       if(isEmpty(v)) continue;
-      $m.val(v);//.change();
+      if($('option[value="'+v+'"]',$m).length>0) $m.val(v);//.change();
+      else c2pUpdateMapping(); //broken mapping.
+
       if(0==v.indexOf('cf7_2_post_filter-')){
         c2pFilterHelperCode.call($m.closest('li').get(0),v);
       }
@@ -123,7 +124,7 @@
         break;
     }
     $mapped_type.val(type);
-    if(!c2pChanged) c2pUpdateMapping();
+    if(!init) c2pUpdateMapping();
     if(e){
       //clear any existing custom meta/taxonomy fields.
       $('#c2p-post-meta-fields li:not(.default-meta-field)').remove();
@@ -142,6 +143,7 @@
   function c2pUpdateMapping(){
     $('#c2p-mapping-changed').val(1);
     c2pChanged = true;
+    if($status.val()!='draft') alert(c2pLocal.warn);
   }
   /*
    *setup some events.
@@ -363,7 +365,7 @@
         update = false;
         break;
     }
-    if(update && !c2pChanged) c2pUpdateMapping();
+    if(update) c2pUpdateMapping();
   });
   function c2pEditTaxonomy(show){
     let fc = this.closest('li');

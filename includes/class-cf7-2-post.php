@@ -218,6 +218,7 @@ class Cf7_2_Post {
 
     /** @since 5.0 */
     $this->loader->add_filter( 'wpcf7_editor_panels', $plugin_admin, 'add_mapping_panel');
+    $this->loader->add_action( 'admin_init', $plugin_admin, 'set_c2p_panel_tab');
 
 
 	}
