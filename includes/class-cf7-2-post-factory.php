@@ -104,6 +104,13 @@ class CF72Post_Mapping_Factory {
    * @return Form_2_Post_Mapper  a factory oject
    */
   public function get_post_mapper( $cf7_post_id ){
+    if($cf7_post_id<0){
+      $mapper =  new Form_2_Custom_Post($cf7_post_id, $this);
+      $map = $this->get_default_mapping();
+      $mapper->init_default($map['type'],$map['name'],$map['names']);
+      $mapper->init_default_mapping($map);
+      return $mapper;
+    }
     // $this = self::get_factory();
     //if mapper exists, return it.
     if(isset($this->post_mappers[$cf7_post_id])){
@@ -144,6 +151,27 @@ class CF72Post_Mapping_Factory {
       }
      }
      return $mapper;
+   }
+   /**
+   * Setup a default mapping for new post mappers.
+   *
+   *@since 5.0.0
+   *@return Array array of mapping arguments.
+   */
+   protected function get_default_mapping(){
+     return array(
+       'type'=>apply_filters('c2p_default_new_form_post_type_mapping','contact_form'),
+       'name'=>apply_filters('c2p_default_new_form_post_name_mapping','Contact Form'),
+       'names'=>apply_filters('c2p_default_new_form_post_names_mapping','Contact Forms'),
+       'post'=> apply_filters('c2p_default_new_form_post_mapping', array(
+         'title'=>'your-name',
+         'excerpt'=>'your-subject',
+         'editor'=>'your-message'
+       )),
+       'meta'=> apply_filters('c2p_default_new_form_postmeta_mapping', array(
+         'contact-email'=>'your-email',
+       ))
+     );
    }
    /**
    * Track mappers.

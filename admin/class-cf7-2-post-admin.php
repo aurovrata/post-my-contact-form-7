@@ -75,14 +75,16 @@ class Cf7_2_Post_Admin {
   * @since 1.1.0
   */
   public function check_plugin_dependency() {
-    //if either the polylang for the cf7 plugin is not active anymore, deactive this extension
-    if(is_plugin_active("post-my-contact-form-7/cf7-2-post.php") &&
-      !is_plugin_active("contact-form-7/wp-contact-form-7.php") ){
-        deactivate_plugins( "post-my-contact-form-7/cf7-2-post.php" );
-        wp_die( '<strong>Post My CF7 Form</strong> requires <strong>CF7 plugin</strong> and has been deactivated!' );
-        debug_msg("Deactivating CF7 Polylang Module Enxtension");
+    if( !is_plugin_active('contact-form-7/wp-contact-form-7.php') ){
+      deactivate_plugins( "post-my-contact-form-7/cf7-2-post.php" );
+      wp_die( __('<strong>Post My CF7 Form</strong> requires <strong>CF7 plugin</strong> and has been deactivated!','post-my-contact-form-7') );
     }
-
+		/** @since 5.0.0 hook the smart grid form saving action to fix double save_post hook call*/
+    if(is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')){
+			add_action('cf7sg_save_post', array($this, 'save_post_mapping'), 10);
+    }else{
+			add_action('save_post_wpcf7_contact_form', array($this, 'save_post_mapping'), 10);
+		}
   }
   /**
 	 * Load the required dependencies for this plugin.
@@ -174,101 +176,23 @@ class Cf7_2_Post_Admin {
         $wp_post_types[WPCF7_ContactForm::post_type]->supports[] = 'custom-fields';
     }
   }
-  /**
-  * Adds a new sub-menu
-  * Add a new sub-menu to the Contact main menu to edit mapping post
-  *
-  */
-  public function add_cf7_sub_menu(){
-    /**
-    *change capability for plugin, defaut to admin users.
-    *@since 3.0.0
-    */
-    $capability = apply_filters('cf7_2_post_mapping_capability', 'manage_options');
-    if('manage_options'!== $capability){ //validate capability.
-        $roles = wp_roles();
-        $is_valid=false;
-        foreach($roles as $role){
-            if(in_array($capability, $role['capabilities'])){
-                $is_valid=true;
-                break;
-            }
-        }
-        if(!$is_valid) $cabability = 'manage_options';
-    }
-    // add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $function = '' )
-    $hook2 = add_submenu_page(
-      'wpcf7', //parent slug
-      'CF7 Form to post', //page title
-      'Map CF7 to Post', //menu title
-      $capability, //capability
-      'map_cf7_2_post', //menu_slug -> scteen_id , change this and chage self::map_screen_id
-      array($this,'display_mapping_page')); //fn
-      self::$map_screen_id = $hook2;
-      //new page loading to trigger meta box
-      add_action('load-'.$hook2, array($this, 'load_admin_page'), 10);
-      add_action('add_meta_boxes_'.$hook2, array($this, 'add_metabox'), 10);
-  }
-  /**
-  * Function to load custom admin page metabox.
-  * Hooked on 'load-{self::map_screen_id}'
-  *@since 3.0.0
-  */
-  public function load_admin_page(){
-    /* Trigger the add_meta_boxes hooks to allow meta boxes to be added */
-    //debug_msg(get_current_screen(), 'setup metabox, ->'.self::$map_screen_id.':');
-    do_action('add_meta_boxes_'.self::$map_screen_id, null);
-    do_action('add_meta_boxes', self::$map_screen_id, null);
 
-    /* Add screen option: user can choose between 1 or 2 columns (default 2) */
-    add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
-  }
   /**
-  * Function to add a few metabox
-  * Hooked to 'add_meta_box_{self::$map_screen_id}'
-  *@since 3.0.0
+  * Add helper metabox to edito page.
+  *
+  *@since 5.0.0
+  *@param string $param text_description
+  *@return string text_description
   */
-  public function add_metabox(){
-    //submit
-    add_meta_box(
-        'submit', //Meta box ID
-        __('Save form to post','post-my-contact-form-7' ), //Meta box Title
-        array($this,'show_submit_metabox'), //Callback defining the plugin's innards
-        self::$map_screen_id, // Screen to which to add the meta box
-        'side' // Context
-    );
+  public function add_helper_metabox(){
     //helper
     add_meta_box(
         'helper', //Meta box ID
-        __('Actions &amp; Filters','post-my-contact-form-7' ), //Meta box Title
+        __('CF7 2 Post:<br/> Actions &amp; Filters','post-my-contact-form-7' ), //Meta box Title
         array($this,'show_helper_metabox'), //Callback defining the plugin's innards
-        self::$map_screen_id, // Screen to which to add the meta box
+        'wpcf7_contact_form', // Screen to which to add the meta box
         'side' // Context
     );
-    //field
-    add_meta_box(
-        'field', //Meta box ID
-        __('Custom Meta Fields','post-my-contact-form-7' ), //Meta box Title
-        array($this,'show_field_metabox'), //Callback defining the plugin's innards
-        self::$map_screen_id, // Screen to which to add the meta box
-        'normal' // Context
-    );
-    //taxonomy
-    add_meta_box(
-        'taxonomy', //Meta box ID
-        __('Taxonomies','post-my-contact-form-7' ), //Meta box Title
-        array($this,'show_taxonomy_metabox'), //Callback defining the plugin's innards
-        self::$map_screen_id, // Screen to which to add the meta box
-        'normal' // Context
-    );
-  }
-  /**
-  * Display submit metabox
-  * Callback fn above.
-  *@since 3.0.0
-  */
-  public function show_submit_metabox(){
-    include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-submit-metabox.php';
   }
   /**
   * Display helper metabox
@@ -276,6 +200,7 @@ class Cf7_2_Post_Admin {
   *@since 3.0.0
   */
   public function show_helper_metabox(){
+    $closed =' closed';
     include_once plugin_dir_path(__FILE__) . 'partials/cf7-2-post-helper-metabox.php';
   }
   /**
@@ -349,7 +274,7 @@ class Cf7_2_Post_Admin {
         break;
       case 'cf7_2_post' :
         $capability = apply_filters('cf7_2_post_view_submit_capability', 'manage_options');
-        if(!current_user_can($capability)){
+        if(!current_user_can($capability,$post_id)){
           return;
         }
         $submit = get_post_meta( $post_id , '_cf7_2_post_form_submitted' , true );
@@ -432,11 +357,12 @@ class Cf7_2_Post_Admin {
   public function save_post_mapping($post_id){
     // debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
-    //check if any changes on the form.
-    if(isset($_POST['c2p_mapping_changes']) && 0 == $_POST['c2p_mapping_changes']) return;
     update_option('_c2p_active_tab',sanitize_text_field($_POST['c2p_active_tab']));
-    $factory = c2p_get_factory();
-    $factory->save($post_id);
+    //check if any changes on the form.
+    if($_POST['mapped_post_default'] || $_POST['c2p_mapping_changes']){
+      $factory = c2p_get_factory();
+      $factory->save($post_id);
+    }
   }
   /**
   *Disables browser page caching for forms which are mapped to a post.
@@ -684,21 +610,23 @@ class Cf7_2_Post_Admin {
 	*@since 5.0.0
 	*/
 	public function display_amdin_panel(){
+    $cf7_post_id = -1;//for new forms.
     if(isset($_GET['post'])){
       $cf7_post_id = $_GET['post'];
-      $factory = c2p_get_factory();
-      $post_mapper = $factory->get_post_mapper($cf7_post_id);
-  		include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-admin-panel-display.php';
     }
+    $factory = c2p_get_factory();
+    $post_mapper = $factory->get_post_mapper($cf7_post_id);
+		include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-admin-panel-display.php';
 	}
   /**
-  *
+  * find the panel index for this plugin on the cf7 editor.
   *
   *@since 5.0.0
   *@param string $param text_description
   *@return string text_description
   */
   public function set_c2p_panel_tab(){
+    if(get_option('_c2p_active_tab',0)) return;
     global $wp_filter;
     $tab = 3; //zero based.
     foreach( $wp_filter['wpcf7_editor_panels']->callbacks as $idx=>$cb ){

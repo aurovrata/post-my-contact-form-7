@@ -32,6 +32,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       'exclude_from_search'   => true, //cannot be searched from front-end.
       'publicly_queryable'    => false //can be queried from front-end.
     );
+    $this->post_properties['default']=0;
     $post_type = $this->cf7_key = $cf7_key;
     $this->post_properties['map']='draft';
     $this->post_properties['type']=$post_type;
@@ -39,7 +40,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     $this->post_properties['singular_name']=$singular_name;
     $this->post_properties['plural_name']=$plural_name;
     $this->post_properties['type_source'] = 'factory';
-    $this->post_properties['cf7_title']=get_the_title($this->cf7_post_ID);
+    $this->post_properties['cf7_title']=$singular_name;
 
     $this->post_properties['taxonomy']=array();
     //supports
@@ -49,9 +50,9 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     //filter the support capabilities for more user customisation
     $this->post_properties['supports'] = apply_filters('cf7_2_post_supports_'.$post_type, $this->post_properties['supports']);
     //make sure we have custom-fields support
-    if( !in_array('custom-fields',$this->post_properties['supports']) ){
-      $this->post_properties['supports'][]='custom-fields';
-    }
+    // if( !in_array('custom-fields',$this->post_properties['supports']) ){
+    //   $this->post_properties['supports'][]='custom-fields';
+    // }
     //capabilities
     $reference = array(
         'edit_post' => '',
@@ -77,21 +78,23 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
   * @since 5.0.0
   */
   protected function set_post_properties(){
-  
+
     //initial supports, set the rest from the admin $_POST
     $this->post_properties['supports'] = array('custom-fields' );
     //make sure the arrays are initialised
     $len_mapped_post = strlen('mapped_post_');
     $properties = $this->get_mapped_fields('mapped_post_');
-
+    // debug_msg($properties, 'props ');
     //properties of factory post
-    foreach($properties as $value => $prop){
+    foreach($properties as $prop =>$value){
       switch ($prop){
         case 'menu_position': //properties with values.
         case 'type':
         case 'type_source':
         case 'singular_name':
         case 'plural_name':
+        case 'default':
+        case 'map':
           $this->post_properties[$prop]=$value;
           break;
         default: //properties with boolean, unchked are blank and skipped.
@@ -100,7 +103,15 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       }
     }
     //let's save the properties if this is a factory mapping
-
+    if($this->post_properties['default']){ //default mapping.
+      $form = get_post($this->cf7_post_ID);
+      $names = $name = $form->post_title;
+      if( 's'!= substr($names,-1) ) $names.='s';
+      $this->post_properties['singular_name']=$name;
+      $this->post_properties['plural_name']=$names;
+      $this->post_properties['type']='c2p-'.$form->post_name;
+      $this->post_properties['default']=0;
+    }
     //let's get the capabilities
     $reference = array(
         'edit_post' => '',
@@ -122,7 +133,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     }
     //enable support for selected post fields.
     $fields = $this->get_mapped_fields('cf7_2_post_map-');
-    foreach($fields as $post_field=>$cf7_field){
+    foreach($fields as $cf7_field=>$post_field){
       //keep track of custom post type support
       switch($post_field){
         case 'title':
@@ -138,10 +149,25 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     }
 
     //set flush rules flag. @since 3.8.2.
-    if($this->post_properties['public'] || $this->post_properties['publicly_queryable']){
+    if($this->get('public') || $this->get('publicly_queryable')){
       $this->flush_permalink_rules = true;
     }
     return true;
+  }
+  /**
+  * Setup default mapping.
+  *
+  *@since 5.0.0
+  *@param Array $args array of key=>value arguments.
+  */
+  public function init_default_mapping($args){
+    $this->post_properties['default']=1; //flag this as a default mapping.
+    if(isset($args['post'])){
+      foreach($args['post'] as $pf=>$ff) $this->post_map_fields[$ff]=$pf;
+    }
+    if(isset($args['meta'])){
+      foreach($args['meta'] as $pf=>$ff) $this->post_map_meta_fields[$ff]=$pf;
+    }
   }
 
 }

@@ -134,7 +134,7 @@ function filter_user_post_for_prefill($query_args, $post_type, $form_key){
   </div>
 </div>
 
-<div id="loading-hooks" class="postbox closed">
+<div id="loading-hooks" class="postbox<?=$closed?>">
   <div class="postbox-header">
     <h4><?=__('Form loading hooks', 'post-my-contact-form-7')?></h4>
     <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Loading Hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
@@ -302,7 +302,7 @@ function filter_posts_query_prefill_{$form_key_f}($args, $post_type, $cf7_key){
     </ul>
   </div>
 </div>
-<div id="submit-hooks" class="postbox closed">
+<div id="submit-hooks" class="postbox<?=$closed?>">
   <div class="postbox-header">
     <h4><?=__('Form submitted hooks','post-my-contact-form-7')?></h4>
     <button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?=__('Toggle panel: Submitted hooks','post-my-contact-form-7')?></span><span class="toggle-indicator" aria-hidden="true"></span></button>

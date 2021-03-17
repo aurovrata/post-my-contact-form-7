@@ -6,7 +6,7 @@
     $status = $('#c2p-mapping-status');
 
   let formFields, $form = $('textarea#wpcf7-form'),
-    $tab = $('#cf7-2-post-tab'),selectedCount = 0, c2pChanged=false, init=true;
+    $tab = $('#cf7-2-post-tab'),selectedCount = 0, init=true;
   $(document).ready(function(){
     $('#c2p-active-tab').val($tab.index());
     //status toggle.
@@ -19,6 +19,7 @@
     $tggl.on('toggle', function(e, active) {
       if (active) $status.val('publish');
       else $status.val('draft');
+      $('#c2p-mapping-changed').val(1);
     });
     //switch posts if need be.
     switchPostSource();
@@ -142,7 +143,6 @@
   }
   function c2pUpdateMapping(){
     $('#c2p-mapping-changed').val(1);
-    c2pChanged = true;
     if($status.val()!='draft') alert(c2pLocal.warn);
   }
   /*

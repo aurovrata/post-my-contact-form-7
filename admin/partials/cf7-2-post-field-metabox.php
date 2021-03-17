@@ -28,7 +28,7 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       </div>
       <?php
       //display the meta-field's form field dropdown.
-      echo sprintf( $select_form_fields, $post_field, $cf7_field, "-{$post_mapper->get('type')}", '');
+      echo sprintf( $select_form_fields, "-$post_field", $cf7_field, "-{$post_mapper->get('type')}", '');
       ?>
       <span class="dashicons dashicons-minus remove-field"></span>
     </div><span class="cf7-post-msg"></span>

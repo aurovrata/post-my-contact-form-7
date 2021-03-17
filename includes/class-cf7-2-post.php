@@ -159,15 +159,10 @@ class Cf7_2_Post {
 		$this->loader->add_action('admin_head', $plugin_admin, 'disable_browser_page_cache', 1);
     //modify the CF7 post type
     $this->loader->add_action('init', $plugin_admin, 'modify_cf7_post_type',20);
-    //cf7 sub-menu
-    $this->loader->add_action('admin_menu',  $plugin_admin, 'add_cf7_sub_menu' );
     //$this->loader->add_filter( 'custom_menu_order', $plugin_admin, 'change_cf7_submenu_order' );
     //modify the cf7 list table columns
     $this->loader->add_filter('manage_wpcf7_contact_form_posts_columns' , $plugin_admin, 'modify_cf7_list_columns',30,1);
     $this->loader->add_action('manage_wpcf7_contact_form_posts_custom_column', $plugin_admin, 'populate_custom_column',10,2);
-    //ajax submission
-    // $this->loader->add_action('wp_ajax_save_post_mapping', $plugin_admin, 'ajax_save_post_mapping');
-    // $this->loader->add_action('wp_ajax_get_meta_options', $plugin_admin, 'ajax_get_meta_options');
     //register dynamic posts
     $this->loader->add_action('init',$plugin_admin, 'register_dynamic_posts',20);
     //make sure our dependent plugins exists.
@@ -176,8 +171,7 @@ class Cf7_2_Post {
     $this->loader->add_action( 'admin_print_footer_scripts', $plugin_admin, 'inject_footer_script');
     //quick-edit
     $this->loader->add_action( 'quick_edit_custom_box',   $plugin_admin, 'quick_edit_box', 20, 2 );
-    //save quick edit
-    $this->loader->add_action('save_post_wpcf7_contact_form', $plugin_admin, 'save_post_mapping', 10);
+
     //hide mapping submenu page.
     //$this->loader->add_filter( 'custom_menu_order', $plugin_admin, 'hide_mapping_menu', 10);
     /**
@@ -220,6 +214,11 @@ class Cf7_2_Post {
     $this->loader->add_filter( 'wpcf7_editor_panels', $plugin_admin, 'add_mapping_panel');
     $this->loader->add_action( 'admin_init', $plugin_admin, 'set_c2p_panel_tab');
 
+		/** @since 5.0.0 hook the smart grid form saving action to fix double save_post hook call
+		* calls to save_post_mapping moved to 'admin_init' hook above.
+		*/
+    //show helper metabox.
+		$this->loader->add_action( 'add_meta_boxes_wpcf7_contact_form', $plugin_admin,'add_helper_metabox' );
 
 	}
 

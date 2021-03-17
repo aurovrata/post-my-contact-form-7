@@ -6,7 +6,7 @@ if(!empty($mapped_fields)){
  ?>
 <div class="cf72post-field">
   <label><?=$cf7_field?></label>
-  <?php if(false && current_user_can('edit_others_posts')):?>
+  <?php if(false && current_user_can('edit_others_posts',$post->ID)):?>
     <input type="text" class="field-value" name="<?= $post_field?>" value="<?= get_post_meta($post->ID, $post_field , true)?>" />
   <?php else:
     $value =  get_post_meta($post->ID, $post_field , true);

@@ -58,6 +58,7 @@
 <input type="hidden" id="c2p-mapping-changed" name="c2p_mapping_changes" value="0"/>
 <input type="hidden" id="c2p-active-tab" name="c2p_active_tab" value="0"/>
 <input type="hidden" id="c2p-mapping-status" name="mapped_post_map" value="<?=$post_mapper->get('map')?>"/>
+<input type="hidden" name="mapped_post_default" value="<?=$post_mapper->get('default')?>"/>
 <input name="mapped_post_type"  id="mapped-post-type" value="<?= $post_mapper->get('type');?>" type="hidden">
 
  <?php wp_nonce_field('cf7_2_post_mapping', 'cf7_2_post_nonce', false, true);?>
@@ -96,22 +97,22 @@
        <?=__('Attributes','post-my-contact-form-7')?>
      </p>
      <label class="post_type_cb_labels">
-        <input type="checkbox" <?php $post_mapper->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>hierarchical</label>
+        <input type="checkbox" <?= $post_mapper->is('hierarchical','checked="checked"');?> name="mapped_post_hierarchical"/>hierarchical</label>
      <label class="post_type_cb_labels">
-        <input type="checkbox" <?php $post_mapper->is('public','checked="checked"');?> name="mapped_post_public"/>public</label>
+        <input type="checkbox" <?= $post_mapper->is('public','checked="checked"');?> name="mapped_post_public"/>public</label>
      <label class="post_type_cb_labels">
-        <input type="checkbox" <?php $post_mapper->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>show_ui</label>
+        <input type="checkbox" <?= $post_mapper->is('show_ui','checked="checked"');?> name="mapped_post_show_ui"/>show_ui</label>
      <label class="post_type_cb_labels">
-        <input id="menu-position-checkbox" type="checkbox" <?php $post_mapper->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>show_in_menu</label>
+        <input id="menu-position-checkbox" type="checkbox" <?= $post_mapper->is('show_in_menu','checked="checked"');?> name="mapped_post_show_in_menu"/>show_in_menu</label>
      <div id="menu-position">
         <label class="post_type_cb_labels">menu_position<input style="width:45px;" type="number" value="<?= $post_mapper->get('menu_position');?>" size="3" name="mapped_post_menu_position"/></label>
      </div>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('show_in_admin_bar','checked="checked"');?> name="mapped_post_show_in_admin_bar"/>show_in_admin_bar</label>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('show_in_nav_menus','checked="checked"');?> name="mapped_post_show_in_nav_menus"/>show_in_nav_menus</label>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>can_export</label>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>has_archive</label>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>exclude_from_search</label>
-     <label class="post_type_cb_labels"><input type="checkbox" <?php $post_mapper->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>publicly_queryable</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is('show_in_admin_bar','checked="checked"');?> name="mapped_post_show_in_admin_bar"/>show_in_admin_bar</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is( 'show_in_nav_menus', 'checked="checked"' );?> name="mapped_post_show_in_nav_menus"/>show_in_nav_menus</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is('can_export','checked="checked"');?> name="mapped_post_can_export"/>can_export</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is('has_archive','checked="checked"');?> name="mapped_post_has_archive"/>has_archive</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is('exclude_from_search','checked="checked"');?> name="mapped_post_exclude_from_search"/>exclude_from_search</label>
+     <label class="post_type_cb_labels"><input type="checkbox" <?= $post_mapper->is('publicly_queryable','checked="checked"');?> name="mapped_post_publicly_queryable"/>publicly_queryable</label>
      <p>
         <?= sprintf(__('To understand how to parametrise your custom post, please read the WordPress post registration <a href="%s">documentation</a>.','post-my-contact-form-7'), 'https://developer.wordpress.org/reference/functions/register_post_type/#parameter-detail-information');?>
      </p>
@@ -143,4 +144,11 @@
    <ul id="c2p-taxonomy-fields">
       <?php include_once 'cf7-2-post-taxonomy-metabox.php'; ?>
    </ul>
+</div>
+
+<div>
+  <?php if(!defined('CF7_GRID_VERSION')){
+    $closed ='';
+    include_once 'cf7-2-post-helper-metabox.php';
+  }?>
 </div>

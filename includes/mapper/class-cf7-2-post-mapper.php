@@ -188,7 +188,14 @@ abstract class Form_2_Post_Mapper {
       if(empty($value)) continue;
       if (0===strpos($field, $field_prefix)){
         $post_field = substr($field, $prefix_length);
-        $fields[sanitize_text_field($value)]=$post_field;
+        switch($field_prefix){
+          case 'mapped_post_':
+            $fields[$post_field]=sanitize_text_field($value);
+            break;
+          default:
+            $fields[sanitize_text_field($value)]=$post_field;
+            break;
+        }
       }
     }
     return $fields;
@@ -598,7 +605,7 @@ abstract class Form_2_Post_Mapper {
   * @param String $option option to check e.g. 'multiple'
   * @return boolean true if the option is set, false otherwise
   */
-  protected function field_has_option($field_name, $option){
+  public function field_has_option($field_name, $option){
    return in_array($option, $this->cf7_form_fields_options[$field_name] );
   }
   /**
@@ -1072,10 +1079,8 @@ abstract class Form_2_Post_Mapper {
    * else the property value is the 2nd parameter is ommited.
    */
   public function is($property, $echo_string_or_value_if_null=null){
-    if( !isset($this->post_properties[$property]) ) $return = '';
-    else{
-      $return = ( $this->post_properties[$property]!= false && isset($echo_string_or_value_if_null) ) ? $echo_string_or_value_if_null: '';
-    }
-    return $return;
+    if( !isset($this->post_properties[$property]) ) return '';
+    $echo = isset($echo_string_or_value_if_null) ? $echo_string_or_value_if_null: $this->post_properties[$property];
+    return $this->post_properties[$property] ? $echo : '';
   }
 }
