@@ -12,7 +12,6 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 This plugin enables the mapping of your CF7 forms to custom posts, including featured images, files, meta-fields and taxonomies
 
 == Description ==
-**NOTE WordPress 5.0 & Gutenberg editor udpate** - this plugin is now compatible with WP 5.0, however, the Gutenberg editor does not recognise [shortcodes with hyphons](https://www.getgutenberg.io/documentation/content/shortcodes/) (dash) characters, so a new shortcode is introduced from v3.9.0, `[cf7form ...]`. Your form table will now display this new shortcode.  Creating new pages/posts with Gutenberg from now on will require you use this new shortcode.  The old remains active for existing content.
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
 
@@ -603,5 +602,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 
 == Change Log ==
 = 5.0.0 =
-* rewrite of admin-handling code.
+* complete rewrite of admin mapping editor.
+* partial rewrite of post factory.
+* creation of mapper classes to handle form mapping to/loading from the DB.
 * added 'cf7_2_post_delete_submitted_posts' filter.
