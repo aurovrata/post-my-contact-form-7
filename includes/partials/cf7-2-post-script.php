@@ -11,26 +11,26 @@ if ( ! defined( 'ABSPATH' ) ) {
    (function(){ //make scope local to this script
      $( document).ready(function() {
        var fname;
-       var cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
+       var $cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
        var $input;
-       if(cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
+       if($cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
          //if the smart grid is enabled, execute the loading once the grid is ready
-         cf7Form.on('cf7SmartGridReady', function(){
+         $cf7Form.on('cf7SmartGridReady', function(){
            preloadForm($(this));
          });
        }else{
-         preloadForm(cf7Form);
+         preloadForm($cf7Form);
        }
        // function to load all the data into the form
-       function preloadForm(cf7Form){
+       function preloadForm($cf7Form){
          var data = '';
-         if('function' == typeof $.fn.post2CF7FormData) data = cf7Form.post2CF7FormData('<?=$nonce?>');
+         if('function' == typeof $.fn.post2CF7FormData) data = $cf7Form.post2CF7FormData('<?=$nonce?>');
          else if( 'undefined' != typeof window['<?=$nonce?>'] ) data = window['<?=$nonce?>'];
          <?php /*@since 3.1.0 store form nonce for transient storage of post ID*/?>
          fname = '<input type="hidden" name="_cf72post_nonce" value="<?= $nonce ?>" />';
-         cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+         $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
          if(0 === data.length){
-           cf7Form.trigger("<?= $nonce ?>", data);
+           $cf7Form.trigger("<?= $nonce ?>", data);
            return false;
          }
   <?php
@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
       $json_var = str_replace('-','_',$field);
       //setup sprintf format, %1 = $field (field name), %2 = $json_var (json data variable)
-      $js_form = 'cf7Form';
+      $js_form = '$cf7Form';
       $json_value = 'data.'.$json_var;
       $default_script = true;
       $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
@@ -84,16 +84,16 @@ if ( ! defined( 'ABSPATH' ) ) {
           case 'email':
           case 'time':
           case 'hidden':
-            $format .= 'cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+            $format .= '$cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'select':
-            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+            $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'dynamic_select':
-            $format .= 'cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+            $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'textarea':
-            $format .= 'cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+            $format .= '$cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
             break;
           case 'radio':
           case 'checkbox':
@@ -103,7 +103,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
             $format .= '$.each(arr , function(index, value){'.PHP_EOL;
             //$format .= '  var search = +value;'.PHP_EOL;
-            $format .= "  cf7Form.find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
+            $format .='$cf7Form'. ".find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
             $format .= '});';
             break;
           default:
@@ -151,26 +151,26 @@ if ( ! defined( 'ABSPATH' ) ) {
         if($load_chosen){
       ?>
       fname = JSON.parse(data.<?php echo $js_field?>);
-      cf7Form.find('select[name=<?php echo $form_field?>]').addClass('js-select2').append(fname);
+      $cf7Form.find('select[name=<?php echo $form_field?>]').addClass('js-select2').append(fname);
       <?php
 
         }else{
       ?>
       fname = JSON.parse(data.<?php echo $js_field?>);
-      cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
+      $cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
       <?php
         }
         break;
       case 'radio':
       ?>
       fname = JSON.parse(data.<?php echo $js_field?>);
-      cf7Form.find('span.<?php echo $form_field?> span.wpcf7-radio').html(fname);
+      $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-radio').html(fname);
         <?php
         break;
       case 'checkbox':
       ?>
       fname = JSON.parse(data.<?php echo $js_field?>);
-      cf7Form.find('span.<?php echo $form_field?> span.wpcf7-checkbox').html(fname);
+      $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-checkbox').html(fname);
         <?php
         break;
     }
@@ -179,7 +179,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $mapper->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $mapper->cf7_post_ID);
     if(!$delay_chosen_script):
     ?>
-      $(".js-select2", cf7Form).each(function(){
+      $(".js-select2", $cf7Form).each(function(){
         $(this).select2();
       })
       <?php
@@ -189,17 +189,23 @@ if ( ! defined( 'ABSPATH' ) ) {
     ?>
         if(data.map_post_id !== undefined){
           fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
-          cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+          $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
         }
  <?php
  if(is_user_logged_in()):
    $user = wp_get_current_user();
    ?>
           fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?=$user->ID?>" />';
-          cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+          $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
 <?php endif; ?>
         /* trigger the formMapped event to let other scripts that the form is now ready */
-        cf7Form.trigger("<?= $nonce ?>", data);
+        if( $cf7Form.is('.cf7-smart-grid .wpcf7-form') && !$cf7Form.is('.cf7sg-ready') ){
+          $cf7Form.on('cf7SmartGridReady', function(){
+            $cf7Form.trigger("<?= $nonce ?>", data)
+          })
+        }else{
+          $cf7Form.trigger("<?= $nonce ?>", data);
+        }
         //console.log('<?= $nonce ?> form ready');
       }//end preloadForm()
     }); //document ready

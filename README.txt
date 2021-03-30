@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 5.7.0
-Stable tag: trunk
+Stable tag: 4.1.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ This plugin enables the mapping of your CF7 forms to custom posts, including fea
 == Description ==
 
 This plugin enables the mapping of each form field to a post field.   Each forms submitted from your website will then be saved as a new post which you can manage in your dashboard and display on the front end.
+
+[youtube https://www.youtube.com/playlist?list=PLblJwjs_dFBtQzwPMoMFf-vsXkhuKHKhV]
 
 You can submit and map to a post all of the following fields,
 

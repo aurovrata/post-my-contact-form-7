@@ -831,36 +831,38 @@ abstract class Form_2_Post_Mapper {
               $file = array($_FILES[$form_field]['name']=>$file); //file name
             }
           }
-          foreach($file as $filename=>$path){
-            if(!file_exists($path)) continue;
-            //wp_upload_bits( $name, $deprecated, $bits, $time )
-            $upload_file = wp_upload_bits($filename, null, @file_get_contents($path));
-            if (!$upload_file['error']) {
-            	$wp_filetype = wp_check_filetype($filename, null );
-            	$attachment = array(
-            		'post_mime_type' => $wp_filetype['type'],
-            		'post_parent' => $post_id,
-            		'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
-            		'post_content' => '',
-            		'post_status' => 'inherit'
-            	);
-              //wp_insert_attachment( $attachment, $filename, $parent_post_id );
-            	$attachment_id = wp_insert_attachment( $attachment, $upload_file['file'], $post_id );
-            	if (!is_wp_error($attachment_id)) {
-            		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-                //wp_generate_attachment_metadata( $attachment_id, $file ); for images
-            		$attachment_data = wp_generate_attachment_metadata( $attachment_id, $upload_file['file'] );
-            		wp_update_attachment_metadata( $attachment_id,  $attachment_data );
-                set_post_thumbnail( $post_id, $attachment_id );
-            	}else{
-                debug_msg($attachment_id, 'error while attaching to post '.$post_id.'... ');
+          if(!empty($file)){
+            foreach($file as $filename=>$path){
+              if(!file_exists($path)) continue;
+              //wp_upload_bits( $name, $deprecated, $bits, $time )
+              $upload_file = wp_upload_bits($filename, null, @file_get_contents($path));
+              if (!$upload_file['error']) {
+              	$wp_filetype = wp_check_filetype($filename, null );
+              	$attachment = array(
+              		'post_mime_type' => $wp_filetype['type'],
+              		'post_parent' => $post_id,
+              		'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
+              		'post_content' => '',
+              		'post_status' => 'inherit'
+              	);
+                //wp_insert_attachment( $attachment, $filename, $parent_post_id );
+              	$attachment_id = wp_insert_attachment( $attachment, $upload_file['file'], $post_id );
+              	if (!is_wp_error($attachment_id)) {
+              		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+                  //wp_generate_attachment_metadata( $attachment_id, $file ); for images
+              		$attachment_data = wp_generate_attachment_metadata( $attachment_id, $upload_file['file'] );
+              		wp_update_attachment_metadata( $attachment_id,  $attachment_data );
+                  set_post_thumbnail( $post_id, $attachment_id );
+              	}else{
+                  debug_msg($attachment_id, 'error while attaching to post '.$post_id.'... ');
+                }
+              }else{
+                debug_msg($upload_file, 'error while uploading the file, '.$filename.' to the Media Gallery... ');
               }
-            }else{
-              debug_msg($upload_file, 'error while uploading the file, '.$filename.' to the Media Gallery... ');
+              //at this point skip the rest of the loop as the file is saved
+              $skip_loop = true;
+              //we need a special treatment
             }
-            //at this point skip the rest of the loop as the file is saved
-            $skip_loop = true;
-            //we need a special treatment
           }
           break;
       }
