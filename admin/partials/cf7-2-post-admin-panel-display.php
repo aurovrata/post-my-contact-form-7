@@ -23,6 +23,7 @@
      break;
  }
  $post_type = $post_mapper->get('type');
+ // debug_msg($post_mapper, 'post mapper ');
  $source = $post_mapper->get('type_source');
  $post_name = '';
  $class_factory = '';

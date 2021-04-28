@@ -149,7 +149,7 @@
    *setup some events.
    */
   //existing post selection
-  $('#c2p-factory-post').on('change', '#post-type-source, #system-post-type, #custom-post-source, #post-plural-name', switchPostSource);
+  $('#c2p-factory-post').on('change', '#post-type-source, #system-post-type, #custom-post-type, #custom-post-source, #post-plural-name, #post_singular_name', switchPostSource);
   //auto-fill the meta-field name and clone meta-field.
   $('#c2p-post-meta-fields').on('click', '.add-more-field, .remove-field', function(e){
     switch(true){
@@ -310,6 +310,7 @@
         ffMenu.classList.add('autofill-field-name');
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
         break;
+      case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         break;

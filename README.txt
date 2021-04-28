@@ -79,7 +79,7 @@ Contact Form 7 does not allow you to pre-fill fields before your form is display
 
 = Contact Form 7 list table =
 
-This plugin re-organises the CF7 dashboard list table, using the cf7 custom post list table to permit other developpers to easily add custom columns to the list table.  You can therefore use [WP functionality](http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types) to customise your table.  For example you could view how many submits a form has received.
+This plugin re-organises the CF7 dashboard list table, using the cf7 custom post list table to permit other developers to easily add custom columns to the list table.  You can therefore use [WP functionality](http://justintadlock.com/archives/2011/06/27/custom-columns-for-custom-post-types) to customise your table.  For example you could view how many submits a form has received.
 
 = Other hooks =
 
@@ -95,7 +95,7 @@ The plugin has been coded with additional actions and filters to allow you to ho
 
 * [CF7 Google Map](https://wordpress.org/plugins/cf7-google-map/) - allows google maps to be inserted into a Contact Form 7.  Unlike other plugins, this one allows map settings to be done at the form level, enabling diverse maps to be configured for each forms.
 
-*[Smart Grid Layout Design for CF7](https://wordpress.org/plugins/cf7-grid-layout/) - allows responsive grid layout Conctact Form 7 form designs, enabling modular designs of complex forms, and rich inter-linking of your CMS data with taxonomy/posts populated dynamic dropdown fields.
+*[Smart Grid Layout Design for CF7](https://wordpress.org/plugins/cf7-grid-layout/) - allows responsive grid layout Contact Form 7 form designs, enabling modular designs of complex forms, and rich inter-linking of your CMS data with taxonomy/posts populated dynamic dropdown fields.
 
 = Privacy Notices =
 
@@ -161,14 +161,14 @@ If you wish to redirect to the newly saved post (assuming it is published, see F
 }`
 = 2. map a form to a post? =
 
-In the Contact Form 7 table list you will notice a new column has been added which allows you to create a new custom post mapping.  This will take you to a new screen where you will see your existing fields listed in select dropdowns.  Map your form fields to either a default field (eg title, content, excerpt, or author), or create a custom (meta) field, or even create a new taxonomy for your post.  Once you have mapped your form you can save it as a draft or publish it.  Once published you cannot edit the mapping anymore, so be warned.  As of version 1.2.0 you will have to delete the whole form and start again to remap it.  Subsequent versions may introduce a 'delete' button.
+In the Contact Form 7 table list you will notice a new column has been added which allows you to create a new custom post mapping.  This will take you to a new screen where you will see your existing fields listed in select dropdowns.  Map your form fields to either a default field (eg title, content, excerpt, or author), or create a custom (meta) field, or even create a new taxonomy for your post.  Once you have mapped your form you can toggle its status from on to off.  In the off position, the plugin will no longer capture form submissions and save them to the mapped post.
 
 = 3. I made a mistake in my form mapping, how do I correct it once it is created? =
 
-as of v2.0.0 you can now quick-edit (inline edit) your form in the forms table listing and reset your form mapping to `draft` mode which will allow you to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
+Yuo can simply modify the mapping at any given time, however if a mapping has been live and saving submissions to your post, then it is not recommended to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
 
 = 4. How do remove a mapping? =
-You can quick-edit a form in the Contact Form table and delete the mapping.
+Simply toggle the status to off.
 
 = 5. How do I map a field to a taxonomy ? =
 
@@ -188,7 +188,7 @@ This is a little more complex.  You will need to create an input field in your f
 
 There are are 2 filters provided to achieve this.  In both cases, these filters are fired if the form is mapped to a post type only.  The default behaviour is for the plugin to seek any draft saved form values for teh current user.  A form is saved (draft) if the `save` button tag is used which allows a user to save a partially filled form and to submit it at a later stage.  If a draft form is found for the current user, then the first filter will not be fired,
 
-1. the `cf7_2_post_filter_cf7_field_value` is fired for each field, and a herlper code is availabe in the mapping edit admin page (see the [Screenshot](https://wordpress.org/plugins/post-my-contact-form-7/#screenshots) #8), filter #7.
+1. the `cf7_2_post_filter_cf7_field_value` is fired for each field, and a helper code is available in the mapping edit admin page (see the [Screenshot](https://wordpress.org/plugins/post-my-contact-form-7/#screenshots) #8), filter #7.
 
 2. `cf7_2_post_form_values` is fired at the end of values pre-fill process, and allows all the values to be filtered, including those that may have been loaded if the current user as a draft form saved.
 `
@@ -235,7 +235,7 @@ if(!empty($args) && isset($args[0]['id'])){
   }
 }
 `
-= 10. How to use custom javascript script on the form front-end ? =
+= 10. How to use custom JavaScript script on the form front-end ? =
 
 The plugin fires a number of jQuery scripts in order to map saved submissions back to draft forms.  So if you have a form which your users can save before submitting and you need to customise some additional functionality on your form on `$(document).ready()`, then you need to make sure it fires after the plugin's scripts have finished.  In order to achieve this, the script fires a custom event on the form, `cf7Mapped`, which you can use to ensure you script fires in the right order, here is how you would enable this,
 `
@@ -282,7 +282,7 @@ foreach($faults as $post){
 
 = 15. I have enabled a save button on my form, but draft submissions are not being validated! =
 
-This is the default functionality for saving draft submissions.  This is especially useful for avery large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
+This is the default functionality for saving draft submissions.  This is especially useful for a very large forms which users may take several visits to your site to complete.  Email notifications of draft submissions are also disabled.  If you wish to override this, you may do with the filters `cf7_2_post_draft_skips_validation` & `cf7_2_post_draft_skips_mail` examples of which are given in the documentation *Filters & Actions* below.
 
 = 16. How do I publish posts automatically on form submission ? =
 
@@ -292,14 +292,14 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 
 the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See this [screenshot](https://ps.w.org/post-my-contact-form-7/assets/screenshot-7.png) for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
 
-If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen opttions](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
+If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen options](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
 
 = 18. I mapped some fields to post meta-fields, why can't I see them in the dashboard? =
 
-When you map your form fields to the custom post meta fields, you need to to ensure that these meta-fields are displayed in the post edit page of yoru dashboard using [meta-boxes](https://developer.wordpress.org/reference/functions/add_meta_box/).  You can custom [create these meta-boxes](https://www.smashingmagazine.com/2011/10/create-custom-post-meta-boxes-wordpress/) in  your functions.php file or you can also use a plugin.  However, without these meta-boxees you won't be able to see your field values when you edit your posts.
+When you map your form fields to the custom post meta fields, you need to to ensure that these meta-fields are displayed in the post edit page of your dashboard using [meta-boxes](https://developer.wordpress.org/reference/functions/add_meta_box/).  You can custom [create these meta-boxes](https://www.smashingmagazine.com/2011/10/create-custom-post-meta-boxes-wordpress/) in  your functions.php file or you can also use a plugin.  However, without these metaboxes you won't be able to see your field values when you edit your posts.
 
 = 19. Why does my form page have no-cache metas ? =
-As of v3.0.0 the no-cache metas have been added by default to pages with embeded forms that are being mapped by this plugin.  Note this does not affect pages with forms which are not mapped.  This is done to ensure that forms with pre-loaded field values (saved draft forms or forms with pre-filled values) are not being cached by the browser and as a result load spurious values.
+As of v3.0.0 the no-cache metas have been added by default to pages with embedded forms that are being mapped by this plugin.  Note this does not affect pages with forms which are not mapped.  This is done to ensure that forms with pre-loaded field values (saved draft forms or forms with pre-filled values) are not being cached by the browser and as a result load spurious values.
 
 If your form is not being saved by users and not being pre-filled, then you may decide to disable the no-cache metas with the following filter,
 `
@@ -314,7 +314,7 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 Use the filer provided in the filter & actions helper metabox of the mapping page in the dashboard (see [screenshot 8](https://ps.w.org/post-my-contact-form-7/assets/screenshot-8.png)). Use the *filter terms list* (#4 in the section Form Loading Hooks),
 
 = 22. Can I map deeper levels of my hierarchical taxonomy to a select2 field? =
-As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a javascript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attribtues to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
+As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a JavaScript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attribtues to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
 
 `
 /add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup', 'turn_off_grouping', 10, 5);
@@ -407,7 +407,7 @@ function delete_posted_data($delete_data, $post_type,$form_key){
 9. 9.Follow the screenshot instructions to map a field to a taxonomy.
 
 == Filters & Actions for Developers ==
-The following are hooks preimarly aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
+The following are hooks primarily aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
 
 = 'cf7_2_post_filter_taxonomy_registration-{$taxonomy_slug}' =
 This filter allows you to customise [taxonomies arguments](https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments) before they are registered.
@@ -459,7 +459,7 @@ For more information on taxonomy query arguments, please refer to the [WP codex 
 
 = 'cf7_2_post_filter_cf7_taxonomy_select2' =
 
-This filter expects a boolean, by default it is `true` and enables [jquery select2 plugin](https://select2.github.io/) on select dropdown fields.
+This filter expects a boolean, by default it is `true` and enables [jQuery select2 plugin](https://select2.github.io/) on select dropdown fields.
 To disable it, do the following
 
 `
@@ -475,7 +475,7 @@ function disable_select2_plugin($enable, $cf7_post_id, $form_field){
 `
 = 'cf7_2_post_filter_cf7_delay_select2_launch' =
 
-This allows you manually launch the select2 jquery dropdonw fields.  This is required if you need to customise the select dropdown on windows load event with your own jquery scripts before the select2 transformation is applied.  Please read the FAQ on custom scripts to make sure you trigger your script after the form is mapped.
+This allows you manually launch the select2 jQuery dropdown fields.  This is required if you need to customise the select dropdown on windows load event with your own jQuery scripts before the select2 transformation is applied.  Please read the FAQ on custom scripts to make sure you trigger your script after the form is mapped.
 `
 add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');`
 

@@ -326,7 +326,7 @@ abstract class Form_2_Post_Mapper {
         unset($this->old_db_fields[$name]);
       }
     }
-    // debug_msg($this->old_db_fields, 'old fields ');
+    // debug_msg($this->post_properties, 'props ');
 
     //save properties to DB.
     // $this->_save_to_DB($this->post_properties, '_cf7_2_post-');

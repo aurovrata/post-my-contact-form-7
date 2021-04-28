@@ -36,6 +36,9 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
     $post_type = $this->cf7_key = $cf7_key;
     $this->post_properties['map']='draft';
     $this->post_properties['type']=$post_type;
+    if(strlen($post_type) > 20){ //fix pho notice for post registration.
+      $this->post_properties['type']=substr($post_type,0,20);
+    }
     $this->post_properties['version'] = CF7_2_POST_VERSION;
     $this->post_properties['singular_name']=$singular_name;
     $this->post_properties['plural_name']=$plural_name;
@@ -109,7 +112,10 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       if( 's'!= substr($names,-1) ) $names.='s';
       $this->post_properties['singular_name']=$name;
       $this->post_properties['plural_name']=$names;
-      $this->post_properties['type']='c2p-'.$form->post_name;
+      $this->post_properties['type']=$this->cf7_key;
+      if(strlen($this->cf7_key) > 20){ //fix pho notice for post registration.
+        $this->post_properties['type']=substr($this->cf7_key,0,20);
+      }
       $this->post_properties['default']=0;
     }
     //let's get the capabilities

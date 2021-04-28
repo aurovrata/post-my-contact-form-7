@@ -299,7 +299,7 @@ class CF72Post_Mapping_Factory {
     if(!isset($mapper->post_properties['supports']['author'])) $mapper->post_properties['supports'][]='author';
   	$args = array(
   		'label'                 => $mapper->post_properties['singular_name'],
-  		'description'           => 'Post for CF7 Form'. $mapper->post_properties['cf7_title'],
+  		'description'           => 'Post for CF7 Form '. $mapper->post_properties['cf7_title'],
   		'labels'                => $labels,
       'supports'              => apply_filters('cf7_2_post_supports_'.$mapper->post_properties['type'], $mapper->post_properties['supports']),
   		'taxonomies'            => $mapper->post_properties['taxonomy'],
@@ -336,7 +336,6 @@ class CF72Post_Mapping_Factory {
 
     //allow additional settings
     $args = apply_filters('cf7_2_post_register_post_'.$mapper->post_properties['type'], $args );
-
   	register_post_type( $mapper->post_properties['type'], $args );
     //link the taxonomy and the post
     foreach($mapper->post_properties['taxonomy'] as $taxonomy_slug){
