@@ -30,7 +30,7 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       //display the meta-field's form field dropdown.
       echo sprintf( $select_form_fields, "-$post_field", $cf7_field, "-{$post_mapper->get('type')}", '');
       ?>
-      <span class="dashicons dashicons-minus remove-field"></span>
+      <span class="dashicons dashicons-remove remove-field"></span>
     </div><span class="cf7-post-msg"></span>
   </li>
 <?php endforeach;?>
@@ -47,6 +47,6 @@ foreach( $mapped_fields as $cf7_field => $post_field ):
       ?>
       </div>
       <?= sprintf( $select_form_fields, '-meta_key_1','','', 'disabled="true"'); //display the form field selevt.?>
-      <span class="dashicons dashicons-plus add-more-field"></span>
+      <span class="dashicons dashicons-insert add-more-field"></span>
   </div>
 </li>

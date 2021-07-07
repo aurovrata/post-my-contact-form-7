@@ -190,6 +190,7 @@ abstract class Form_2_Post_Mapper {
         $post_field = substr($field, $prefix_length);
         switch($field_prefix){
           case 'mapped_post_':
+          case 'cf7_2_post_map_taxonomy_':
             $fields[$post_field]=sanitize_text_field($value);
             break;
           default:
@@ -226,8 +227,9 @@ abstract class Form_2_Post_Mapper {
       cf7_2_post_map_taxonomy_names-<taxonomy_slug>
       so we need to keep track of the field name prefix length to strip the slug
     */
-    // debug_msg($_POST, 'POST ');
+    debug_msg($_POST, 'POST ');
     $fields = $this->get_mapped_fields('cf7_2_post_map_taxonomy_');
+    debug_msg($fields, 'taxonomy mapped fields ');
     $len_c2p_taxonomy = strlen('value-');
     $len_c2p_name = strlen('name-');
     $len_c2p_names = strlen('names-');
@@ -235,7 +237,7 @@ abstract class Form_2_Post_Mapper {
     //keep track of all the taxonomy slugs in the the slugs array
     $slugs=array();
     $post_map_taxonomy = array();
-    foreach($fields as $value=>$field){
+    foreach($fields as $field=>$value){
       switch(true){
         case (0 === strpos($field,'source-') ): //taxonomy source.
           $slug = substr($field,$len_c2p_source);

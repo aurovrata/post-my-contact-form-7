@@ -1,5 +1,5 @@
 <?php
-  
+
 
    /**
     * Loop taxonomies
@@ -24,7 +24,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
           <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
         </option>
       </select>
-      <span class="dashicons dashicons-minus remove-field"></span>
+      <span class="dashicons dashicons-remove remove-field"></span>
     </div>
     <span class="cf7-post-msg"></span>
     <div class="custom-taxonomy-input-fields display-none">
@@ -36,15 +36,15 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         <strong><?= __('Plural Name', 'post-my-contact-form-7')?></strong>
       </label>
       <?php $readonly = ('system'==$taxonomy['source']) ? 'readonly="true"' : '';?>
-      <input class="cf7-2-post-map-labels plural-name" type="text" <?=$readonly?> name="cf7_2_post_map_taxonomy_names-<?= $post_taxonomy; ?>" value="<?= $taxonomy['name']?>" />
+      <input class="c2p-tax-labels plural-name" type="text" <?=$readonly?> name="cf7_2_post_map_taxonomy_names-<?= $post_taxonomy; ?>" value="<?= $taxonomy['name']?>" />
       <label for="cf7_2_post_map_taxonomy_name-<?= $post_taxonomy; ?>">
         <strong><?=__('Singular Name', 'post-my-contact-form-7'); ?></strong>
       </label>
-      <input class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?=$post_taxonomy; ?>" <?=$readonly?> value="<?=$taxonomy['singular_name']; ?>">
+      <input class="c2p-tax-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?=$post_taxonomy; ?>" <?=$readonly?> value="<?=$taxonomy['singular_name']; ?>">
       <label for="cf7_2_post_map_taxonomy_slug-<?=$post_taxonomy; ?>">
         <strong><?=__('Slug', 'post-my-contact-form-7'); ?></strong>
       </label>
-      <input class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?=$post_taxonomy; ?>" <?=$readonly?> value="<?=$post_taxonomy; ?>" />
+      <input class="c2p-tax-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?=$post_taxonomy; ?>" <?=$readonly?> value="<?=$post_taxonomy; ?>" />
       <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?=$post_taxonomy; ?>" value="<?=$taxonomy['source']; ?>" />
       <button class="button-link close-details">
         <span class="screen-reader-text">
@@ -79,7 +79,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         <?=__('Hook with a filter', 'post-my-contact-form-7' )?>
       </option>
     </select>
-    <span class="dashicons dashicons-plus add-more-field"></span>
+    <span class="dashicons dashicons-insert add-more-field"></span>
   </div>
   <span class="cf7-post-msg"></span>
   <div class="display-none custom-taxonomy-input-fields">
@@ -91,15 +91,15 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       <strong><?= __('Plural Name', 'post-my-contact-form-7')?></strong>
     </label>
     <input type="hidden" class="taxonomy-source"  name="cf7_2_post_map_taxonomy_source-<?= $taxonomy_slug;?>" disabled="disabled" value="factory"/>
-    <input disabled="disabled" class="cf7-2-post-map-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?= $taxonomy_slug;?>" value="<?=__('New Categories', 'post-my-contact-form-7' )?>">
+    <input disabled="disabled" class="c2p-tax-labels plural-name" type="text" name="cf7_2_post_map_taxonomy_names-<?= $taxonomy_slug;?>" value="<?=__('New Categories', 'post-my-contact-form-7' )?>">
     <label for="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>">
       <strong><?=__('Singular Name', 'post-my-contact-form-7' )?></strong>
     </label>
-    <input disabled="disabled" class="cf7-2-post-map-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>" value="New Category">
+    <input disabled="disabled" class="c2p-tax-labels singular-name" type="text" name="cf7_2_post_map_taxonomy_name-<?= $taxonomy_slug;?>" value="New Category">
     <label for="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>">
       <strong><?=__('Slug', 'post-my-contact-form-7' )?></strong>
     </label>
-    <input disabled="disabled" class="cf7-2-post-map-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>" value="<?= $taxonomy_slug;?>" />
+    <input disabled="disabled" class="c2p-tax-labels taxonomy-slug" type="text" name="cf7_2_post_map_taxonomy_slug-<?= $taxonomy_slug;?>" value="<?= $taxonomy_slug;?>" />
     <button class="button-link close-details">
      <span class="focus button save-taxonomy">
        <?= __('Save', 'post-my-contact-form-7')?>

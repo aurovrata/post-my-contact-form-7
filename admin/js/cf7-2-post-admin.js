@@ -1,7 +1,7 @@
 (function( $ ) {
 	'use strict';
-  //var addButton = '<span id="add-more-field" class="dashicons dashicons-plus"></span>';
-  var removeButton = '<span class="dashicons dashicons-minus remove-field"></span>';
+  //var addButton = '<span id="add-more-field" class="dashicons dashicons-insert"></span>';
+  var removeButton = '<span class="dashicons dashicons-remove remove-field"></span>';
   var errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>';
   var selectedOptions = new Array();
   var selectedCount = 0;

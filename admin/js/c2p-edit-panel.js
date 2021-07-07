@@ -1,6 +1,6 @@
 (function( $ ) {
 	'use strict';
-  const removeButton = '<span class="dashicons dashicons-minus remove-field"></span>',
+  const removeButton = '<span class="dashicons dashicons-remove remove-field"></span>',
     errorBox = '<p class="cf7-post-error-msg"></p><div class="clear"></div>',
     selectedOptions = new Array(),
     $status = $('#c2p-mapping-status');
@@ -206,7 +206,7 @@
       if(this.nodeName==='SELECT') new HybridSelect(this); //nice select.
     });
     //add remove button and error msg.
-    $cloneField.append('<span class="dashicons dashicons-minus remove-field"></span>');
+    $cloneField.append('<span class="dashicons dashicons-remove remove-field"></span>');
     $cloneField.append('<span class="cf7-post-msg"></span>');
     //scroll down window.
     let down = e.target.getBoundingClientRect();
@@ -272,7 +272,7 @@
     $ffMenu.fillCF7fields();
     //add cloned field to DOM list of fields.
     $(fieldList).children('li:last').before($cloneField);
-    $ffMenu.after('&nbsp;<span class="dashicons dashicons-minus remove-field"></span>');
+    $ffMenu.after('&nbsp;<span class="dashicons dashicons-remove remove-field"></span>');
     //enable the new field.
     $cloneField.find('span.link-button').removeClass('disabled').addClass('enabled');
     $cloneField.find(':input').each(function(){
@@ -361,7 +361,12 @@
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+field.value;
         if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        fc.querySelector('.plural-name').setAttribute('name','cf7_2_post_map_taxonomy_names-'+fv);
+        fc.querySelector('.singular-name').setAttribute('name','cf7_2_post_map_taxonomy_name-'+fv);
+        field.setAttribute('name','cf7_2_post_map_taxonomy_slug-'+fv);
         break;
+      case field.classList.contains('plural-name'): //update taxonomy label.
+        fc.querySelector('.taxonomy-label-field > .taxonomy-name').innerHTML('<strong>'+fv+'</strong>');
       default:
         update = false;
         break;
