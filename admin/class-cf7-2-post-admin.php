@@ -360,6 +360,7 @@ class Cf7_2_Post_Admin {
     update_option('_c2p_active_tab',sanitize_text_field($_POST['c2p_active_tab']));
     //check if any changes on the form.
     if($_POST['mapped_post_default'] || $_POST['c2p_mapping_changes']){
+      // debug_msg('saving mapping....');
       $factory = c2p_get_factory();
       $factory->save($post_id);
     }

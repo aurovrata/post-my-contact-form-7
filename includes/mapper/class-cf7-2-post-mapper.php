@@ -209,6 +209,7 @@ abstract class Form_2_Post_Mapper {
   }
   protected function _save_post_meta_fields(){
     $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-');
+    // debug_msg($this->post_map_meta_fields, 'update metas ');
     $this->_save_to_DB($this->post_map_meta_fields, 'cf7_2_post_map_meta-');
   }
   protected function _save_to_DB($fields_and_value, $prefix){
@@ -227,9 +228,9 @@ abstract class Form_2_Post_Mapper {
       cf7_2_post_map_taxonomy_names-<taxonomy_slug>
       so we need to keep track of the field name prefix length to strip the slug
     */
-    debug_msg($_POST, 'POST ');
+    // debug_msg($_POST, 'POST ');
     $fields = $this->get_mapped_fields('cf7_2_post_map_taxonomy_');
-    debug_msg($fields, 'taxonomy mapped fields ');
+    // debug_msg($fields, 'taxonomy mapped fields ');
     $len_c2p_taxonomy = strlen('value-');
     $len_c2p_name = strlen('name-');
     $len_c2p_names = strlen('names-');

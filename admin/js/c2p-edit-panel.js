@@ -157,6 +157,7 @@
         break;
       case e.target.classList.contains('remove-field'):
         e.target.closest('li').remove();
+        c2pUpdateMapping();
         return false;
       default:
         return false;
@@ -248,6 +249,7 @@
         return false;
       case e.target.classList.contains('remove-field'):
         e.target.closest('li').remove();
+        c2pUpdateMapping();
         return false;
       default:
         return false;
