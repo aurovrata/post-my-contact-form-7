@@ -627,12 +627,36 @@ class CF72Post_Mapping_Factory {
         //load the list of terms
         //debug_msg("buidling options for taxonomy ".$taxonomy);
         $field_type = $cf7_form_fields[$form_field];
-        $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
-        //for legacy purpose
-        $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
-        if( $apply_jquery_select ){
-          wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-          wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
+
+        /** @since 5.0 allow hybrid dropdown fields */
+        if( $mapper->field_has_class($form_field, 'hybrid-select') ){
+          $limit = ($field_type == 'checkbox' || $mapper->field_has_option($form_field, 'multiple'))? -1:1;
+          $hdd = array(
+            'limitSelection' => $limit,
+            'fieldName' => $form_field,
+            `optionLabel`=>'function (lbl){return `<span class="${lbl[1]}">${lbl[0]}</span>`}'
+          );
+          $options = array(
+            'hybriddd'=>apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key),
+            'dataset'=>$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $field_type, $mapper)
+          );
+          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', array(),CF7_2_POST_VERSION);
+        }else{
+          $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
+          switch($field_type){
+            case 'checkbox':
+            case 'radio':
+              wp_enqueue_style('c2p-css',plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/cf7-2-post-styling.css', array(),CF7_2_POST_VERSION);
+              break;
+            case 'select':
+          }
+          //for legacy purpose
+          $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
+          if( $apply_jquery_select ){
+            wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+            wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
+          }
         }
         $field_and_values[str_replace('-','_',$form_field)] = wp_json_encode($options);
 
@@ -663,23 +687,57 @@ class CF72Post_Mapping_Factory {
     return $script;
   }
   /**
-  * Function to retrieve jquery script for form field taxonomy capture
-  *
-  * @since 1.2.0
+  * method to return an array of value=>labels for constructing a hybrid dropdown.
+  * (https://aurovrata.github.io/hybrid-html-dropdown/)
+  * @since 5.0.0
   * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
   * @param   Int  $parent  the parent ID of child terms to fetch
-  * @param   Array  $post_terms an array of terms which a post has been tagged with
+  * @param   String   $pslug parent slug.
   * @param   String   $field form field name for which this taxonomy is mapped to.
-  * @param   String $field_type the type of field in which the tersm are going to be listed
-  * @param   int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
   * @param   Form_2_Post_Mapper $mapper post mapping object.
-  * @return  String a jquery code to be executed once the page is loaded.
+  * @return  Array value->label pairs for hybrid dropdown..
   */
-   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0, $mapper){
+  protected function build_hybrid_dropdown($taxonomy, $parent, $pslug, $field, $mapper){
+    $terms = $this->filter_taxonomy_query($taxonomy, $parent, $field, $mapper);
+    $options = array();
+    if( is_wp_error( $terms ) ){
+      debug_msg('Taxonomy '.$taxonomy.' does not exist');
+      return $options;
+    }else if( empty($terms) ){
+      //debug_msg("No Terms found for taxonomy: ".$taxonomy.", parent ".$parent);
+      return $options;
+    }
+    $branches = array();
+    foreach($terms as $t){
+      $id = $t->term_id;
+      $label = apply_filters('cf72post_filter_hybriddd_term_attributes',array(), $t, $field, $mapper->cf7_key);
+      if(!is_array($label)) $label = array();
+      $classes = "term-{$id} slug-{$t->slug}" . $parent>0 ? " parent-slug-{$pslug} parent-term-{$parent}":'';
+      $options[$id] = array_merge(
+        array('label'=>array_merge( array($t->name, $classes), $label) ),
+        $this->build_hybrid_dropdown($taxonomy, $id,$t->slug, $field, $mapper)
+      );
+      // $options[$id]
+    }
+    return $options;
+  }
+
+  /**
+  * method to filter the taxonomy query for mapped taxonomy fields.
+  *
+  * @since 5.0.0
+  * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
+  * @param   Int  $parent  the parent ID of child terms to fetch
+  * @param   String   $field form field name for which this taxonomy is mapped to.
+  * @param   Form_2_Post_Mapper $mapper post mapping object.
+  *@return Array|WP_Error a collectoin of WP_Term objects or an error.
+  */
+  protected function filter_taxonomy_query($taxonomy, $parent, $field, $mapper){
     $args = array(
-      'parent' => $parent,
       'hide_empty' => 0,
+      'parent' => $parent
     );
+
     $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_ID, $taxonomy, $field, $mapper->cf7_key);
     /**
     * allows for more felxibility in filtering taxonomy options.
@@ -696,6 +754,24 @@ class CF72Post_Mapping_Factory {
     }else{
       $terms = get_terms($taxonomy, $args);
     }
+    return $terms;
+  }
+  /**
+  * Function to retrieve jquery script for form field taxonomy capture
+  * Request: public/
+  * @since 1.2.0
+  * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
+  * @param   Int  $parent  the parent ID of child terms to fetch
+  * @param   Array  $post_terms an array of terms which a post has been tagged with
+  * @param   String   $field form field name for which this taxonomy is mapped to.
+  * @param   String $field_type the type of field in which the tersm are going to be listed
+  * @param   int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
+  * @param   Form_2_Post_Mapper $mapper post mapping object.
+  * @return  String a jquery code to be executed once the page is loaded.
+  */
+   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0, $mapper){
+    $terms = $this->filter_taxonomy_query($taxonomy, $parent, $field, $mapper);
+
     if( is_wp_error( $terms ) ){
       debug_msg('Taxonomy '.$taxonomy.' does not exist');
       return '';
@@ -704,15 +780,18 @@ class CF72Post_Mapping_Factory {
       return'';
     }
     //build the list
-    $term_class = 'cf72post-'.$taxonomy;
-    $nl = '';//PHP_EOL;
-    $script = '<fieldset class="top-level '.$term_class.'">';
-    if($parent > 0){
-      $script = '<fieldset class="cf72post-child-terms parent-term-'.$parent.'">';
-      $term_class .= ' cf72post-child-term';
+    $script = ''; //html text to insert into field.
+    //if conventional checkbox or radio field, wrap it in a fieldset.
+    if('select' != $field_type){
+      $term_class = 'cf72post-'.$taxonomy;
+      $nl = '';//PHP_EOL;
+      $script = '<fieldset class="c2p-top-level '.$term_class.'">';
+      if($parent > 0){
+        $script = '<fieldset class="cf72post-child-terms parent-term-'.$parent.'">';
+        $term_class .= ' cf72post-child-term';
+      }
     }
-    //if we are dealing with a dropdown, then don't group fieldsets
-    if('select' == $field_type) $script = '';
+
     //loop over all terms
     foreach($terms as $term){
       $term_id = $term->term_id;
@@ -782,8 +861,8 @@ class CF72Post_Mapping_Factory {
           if( in_array($term_id, $post_terms) ){
             $check = 'checked';
           }
-          $script .='<div id="'.$term->slug.'" class="radio-term"><input'.$attributes.' type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
-          $script .='<label>'.$term->name.'</label></div>'.$nl;
+          $script .='<div id="'.$term->slug.'" class="radio-term"><label><input'.$attributes.' type="radio" name="'.$field.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
+          $script .=$term->name.'</label></div>'.$nl;
           break;
         case 'checkbox':
           $check = '';
@@ -794,8 +873,8 @@ class CF72Post_Mapping_Factory {
           if( !$mapper->field_has_option($field, 'exclusive') ){
             $field_name = $field.'[]';
           }
-          $script .='<div id="'.$term->slug.'" class="checkbox-term"><input'.$attributes.' type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
-          $script .='<label>'.$term->name.'</label></div>'.$nl;
+          $script .='<div id="'.$term->slug.'" class="checkbox-term"><label><input'.$attributes.' type="checkbox" name="'.$field_name.'" value="'.$term_id.'" class="'.$custom_class.'" '.$check.'/>';
+          $script .=$term->name.'</label></div>'.$nl;
           break;
         default:
           return ''; //nothing more to do here

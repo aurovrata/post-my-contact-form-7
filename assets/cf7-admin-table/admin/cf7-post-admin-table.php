@@ -183,7 +183,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
         }
         if(function_exists('get_current_screen')){
           $screen = get_current_screen(); //use screen option after intial basic check else it may throw fatal error
-          return ( 'contact_page_wpcf7-new' == $screen->base || 'toplevel_page_wpcf7' == $screen->base );
+          return ( !empty($screen) && 'contact_page_wpcf7-new' == $screen->base || 'toplevel_page_wpcf7' == $screen->base );
         }else{
           return false;
         }

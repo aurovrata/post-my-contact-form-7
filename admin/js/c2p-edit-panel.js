@@ -143,7 +143,11 @@
   }
   function c2pUpdateMapping(){
     $('#c2p-mapping-changed').val(1);
-    if($status.val()!='draft') alert(c2pLocal.warn);
+    if($status.val()!='draft'){
+      alert(c2pLocal.warn);
+      $('#c2p-factory-post .toggle').toggles(false);
+      $status.val('draft');
+    }
   }
   /*
    *setup some events.

@@ -69,6 +69,15 @@ abstract class Form_2_Post_Mapper {
 	 * @var      array    $cf7_form_fields_options    an array containing CF7 field name and its array of options, {'field name'=>array()}.
 	 */
   protected $cf7_form_fields_options =array();
+
+  /**
+	 * The CF7 form fields options.
+	 *
+	 * @since    5.0.0
+	 * @access    protected
+	 * @var      array    $cf7_form_fields_classes    an array containing CF7 field name and its array of options, {'field name'=>array()}.
+	 */
+  protected $cf7_form_fields_classes =array();
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -598,6 +607,7 @@ abstract class Form_2_Post_Mapper {
         $type = str_replace('*', '', $type);
         $this->cf7_form_fields[$element['name']]=$type;
         $this->cf7_form_fields_options[$element['name']]=$element['options'];
+        $this->cf7_form_fields_classes[$element['name']]=$element->get_option('class', 'class');
       }
     }
   }
@@ -610,6 +620,16 @@ abstract class Form_2_Post_Mapper {
   */
   public function field_has_option($field_name, $option){
    return in_array($option, $this->cf7_form_fields_options[$field_name] );
+  }
+  /**
+  * Check if a cf7 field name has a class
+  * @since 5.0.0
+  * @param String $field_name name of cf7 field
+  * @param String $class class to check e.g. 'hybrid-select'
+  * @return boolean true if the class is set, false otherwise
+  */
+  public function field_has_class($field_name, $class){
+   return in_array($class, $this->cf7_form_fields_classes[$field_name] );
   }
   /**
   * Set the post type capability.
