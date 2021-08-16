@@ -124,8 +124,14 @@ if ( ! defined( 'ABSPATH' ) ) {
   Taxonomy fields
   */
   $load_chosen_script = false;
-
+  $hdd = array();
   foreach($taxonomies as $form_field => $taxonomy){
+    $js_field = str_replace('-','_',$form_field);
+    /** @since 5.0.0 skip if hybrid*/
+    if( $mapper->field_has_class($form_field, 'hybrid-select') ){
+      $hdd[]=$js_field;
+      continue;
+    }
     //load the taxonomy required
     //legacy
 
@@ -134,7 +140,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     if($load_chosen){
       $load_chosen_script = true;
     }
-    $js_field = str_replace('-','_',$form_field);
     //if the value was filtered, let's skip it
     if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
       continue;
@@ -187,17 +192,36 @@ if ( ! defined( 'ABSPATH' ) ) {
   endif
   //finally we need to cater for the post_id if there is one
     ?>
-        if(data.map_post_id !== undefined){
-          fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
-          $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
-        }
+    if(data.map_post_id !== undefined){
+      fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
+      $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+    }
  <?php
+ /** @since 5.0.0 init hybrid dropdown */
+ if(!empty($hdd)):
+ echo "['".implode("','",$hdd)."']"?>.forEach(function(f){
+   if(data[f]){
+     let fn = data[f].fieldName,
+       el = $('.'+fn+'> .hybrid-select', $cf7Form).not('.hybrid-no-init').get(0);
+     if(el){
+       new HybridDropdown(el, Object.assign(data[f],{
+         'optionLabel':function (lbl){
+           return `<span class="${lbl[1]}">${lbl[0]}</span>`
+         }
+       }))
+     }
+   }
+
+ })
+ <?php
+endif; //empty hdd
  if(is_user_logged_in()):
    $user = wp_get_current_user();
    ?>
           fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?=$user->ID?>" />';
           $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
 <?php endif; ?>
+
         /* trigger the formMapped event to let other scripts that the form is now ready */
         if( $cf7Form.is('.cf7-smart-grid .wpcf7-form') && !$cf7Form.is('.cf7sg-ready') ){
           $cf7Form.on('cf7SmartGridReady', function(){

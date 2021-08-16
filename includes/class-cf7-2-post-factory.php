@@ -634,16 +634,17 @@ class CF72Post_Mapping_Factory {
           $hdd = array(
             'limitSelection' => $limit,
             'fieldName' => $form_field,
-            `optionLabel`=>'function (lbl){return `<span class="${lbl[1]}">${lbl[0]}</span>`}'
+            'selectedValues'=>$terms_id,
           );
-          $options = array(
-            'hybriddd'=>apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key),
-            'dataset'=>$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $field_type, $mapper)
-          );
-          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', array(),CF7_2_POST_VERSION);
+          $hdd = (array) apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key);
+          $hdd['dataSet']=$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $mapper);
+          $options = $hdd;
+          // debug_msg($options, $form_field);
+          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.js', array('jquery'),CF7_2_POST_VERSION,true);
+          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.css', array(),CF7_2_POST_VERSION);
         }else{
           $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
+          $options = wp_json_encode($options);
           switch($field_type){
             case 'checkbox':
             case 'radio':
@@ -658,7 +659,7 @@ class CF72Post_Mapping_Factory {
             wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
           }
         }
-        $field_and_values[str_replace('-','_',$form_field)] = wp_json_encode($options);
+        $field_and_values[str_replace('-','_',$form_field)] = $options;
 
       }
     //filter the values
@@ -712,12 +713,8 @@ class CF72Post_Mapping_Factory {
       $id = $t->term_id;
       $label = apply_filters('cf72post_filter_hybriddd_term_attributes',array(), $t, $field, $mapper->cf7_key);
       if(!is_array($label)) $label = array();
-      $classes = "term-{$id} slug-{$t->slug}" . $parent>0 ? " parent-slug-{$pslug} parent-term-{$parent}":'';
-      $options[$id] = array_merge(
-        array('label'=>array_merge( array($t->name, $classes), $label) ),
-        $this->build_hybrid_dropdown($taxonomy, $id,$t->slug, $field, $mapper)
-      );
-      // $options[$id]
+      $classes = 'term-'.$id.' slug-'.$t->slug . ($parent>0 ? ' parent-slug-'.$pslug.' parent-term-' . $parent : '');
+      $options[$id] = array('label'=>(array($t->name, $classes) + $label) ) + $this->build_hybrid_dropdown($taxonomy, $id, $t->slug, $field, $mapper);
     }
     return $options;
   }
