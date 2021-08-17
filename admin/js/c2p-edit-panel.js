@@ -324,14 +324,16 @@
         msgBox.innerHTML ='';
         if(isEmpty(fv)) break;
         if(fv.indexOf('cf7_2_post_filter-') < 0){
-          let all = [...document.querySelector('#c2p-default-post-fields').children].concat( [...document.querySelector('#c2p-post-meta-fields').children] );
+          let all = [...document.querySelector('#c2p-default-post-fields').children,
+            ...document.querySelector('#c2p-post-meta-fields').children,
+            ...document.querySelector('#c2p-taxonomy-fields').children];
           [].forEach.call(all, (l,i)=>{
             if(l==fc || l.classList.contains('default-meta-field')) return true;
             if(l.querySelector('.field-options').value === fv){ //field already mapped.
               msgBox.innerHTML = c2pLocal.warning;
               return false;
             }
-          });
+          })
           if(ffMenu.classList.contains('autofill-field-name')){
             let pf = fc.querySelector('.cf7-2-post-map-label-custom');
             if('custom_meta_key'==pf.value) pf.value = fv.replace(/-/g,'_');
@@ -379,6 +381,7 @@
     }
     if(update) c2pUpdateMapping();
   });
+
   function c2pEditTaxonomy(show){
     let fc = this.closest('li');
     if(show){

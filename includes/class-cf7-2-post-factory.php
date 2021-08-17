@@ -635,13 +635,14 @@ class CF72Post_Mapping_Factory {
             'limitSelection' => $limit,
             'fieldName' => $form_field,
             'selectedValues'=>$terms_id,
+            'dataSet'=>array(''=>__('Select an item','post-my-contact-form-7'))
           );
           $hdd = (array) apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key);
-          $hdd['dataSet']=$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $mapper);
+          $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $mapper);
           $options = $hdd;
           // debug_msg($options, $form_field);
-          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.js', array('jquery'),CF7_2_POST_VERSION,true);
-          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.css', array(),CF7_2_POST_VERSION);
+          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', array(),CF7_2_POST_VERSION);
         }else{
           $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
           $options = wp_json_encode($options);
@@ -777,7 +778,7 @@ class CF72Post_Mapping_Factory {
       return'';
     }
     //build the list
-    $script = ''; //html text to insert into field.
+    $script = $term_class = ''; //html text to insert into field.
     //if conventional checkbox or radio field, wrap it in a fieldset.
     if('select' != $field_type){
       $term_class = 'cf72post-'.$taxonomy;

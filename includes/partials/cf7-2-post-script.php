@@ -206,6 +206,7 @@ if ( ! defined( 'ABSPATH' ) ) {
      if(el){
        new HybridDropdown(el, Object.assign(data[f],{
          'optionLabel':function (lbl){
+           if('string' == typeof lbl) return `<span>${lbl}</span>`
            return `<span class="${lbl[1]}">${lbl[0]}</span>`
          }
        }))

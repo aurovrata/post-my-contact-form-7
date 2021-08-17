@@ -297,7 +297,7 @@ function filter_posts_query_prefill_{$form_key_f}($args, $post_type, $cf7_key){
   if('{$form_key}'!=$cf7_key) return $args;
   //modify the $args to target the post to prefill the form for this user.
   rturn $args
-}" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('prfill post query.','post-my-contact-form-7')?>
+}" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('prefill post query.','post-my-contact-form-7')?>
     </li>
     </ul>
   </div>
@@ -437,14 +437,14 @@ return $post_title;
           break;
       }
       //setup clipboard
-      $('#helper .helper-list li a').each(function(){
+      $('#admin-hooks .helper-list li a, #loading-hooks .helper-list li a, #submit-hooks .helper-list li a').each(function(){
         new Clipboard($(this)[0], {
           text: function(trigger) {
             var $target = $(trigger);
             var text = $target.data('cf72post');
             //get postType
-            var postType = $('#mapped_post_type').val();
-            var formKey = $('#post_name').val();
+            var postType = $('#mapped-post-type').val();
+            var formKey = $('#c2p-cf7-key').val();
             /** @since 4.1.2 fix post types in function names. */
             text = text.replace(/\{\$post_type\}/gi, postType);
             postType = postType.replace(/-/g,'_');
@@ -452,7 +452,7 @@ return $post_title;
             text = text.replace(/\{\$form_key\}/gi, formKey);
             formKey = formKey.replace(/-/g,'_');
             text = text.replace(/\{\$form_key_f\}/gi, formKey);
-
+            return text;
           }
         });
       });
