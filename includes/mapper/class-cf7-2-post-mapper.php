@@ -77,7 +77,7 @@ abstract class Form_2_Post_Mapper {
 	 * @access    protected
 	 * @var      array    $cf7_form_fields_classes    an array containing CF7 field name and its array of options, {'field name'=>array()}.
 	 */
-  protected $cf7_form_fields_classes =array();
+  protected $cf7_form_fields_classes = array();
   /**
 	 * The CF7 form fields mapped to post fields.
 	 *
@@ -607,7 +607,7 @@ abstract class Form_2_Post_Mapper {
         $type = str_replace('*', '', $type);
         $this->cf7_form_fields[$element['name']]=$type;
         $this->cf7_form_fields_options[$element['name']]=$element['options'];
-        $this->cf7_form_fields_classes[$element['name']]=$element->get_option('class', 'class');
+        $this->cf7_form_fields_classes[$element['name']]=(array)$element->get_option('class', 'class');
       }
     }
   }

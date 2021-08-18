@@ -60,9 +60,11 @@ class Cf7_2_Post_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-    $plugin_dir = plugin_dir_url( __FILE__ );
-    wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
-		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
+    $plugin_dir = plugin_dir_url( __DIR__ );
+    wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'public/js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'punbic/js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
+    wp_register_script('hybriddd-js',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true);
+    wp_register_style('hybriddd-css',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
 	}
   /**
   * Saves a cf7 form submission to its mapped post
@@ -154,8 +156,10 @@ class Cf7_2_Post_Public {
       $inline_script = $factory->get_form_field_script( $nonce,$mapper );
       wp_enqueue_script($this->plugin_name.'-load'); //previously registered.
       wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
+      wp_add_inline_script($this->plugin_name.'-load', $inline_script);
       $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $mapper->cf7_key, $form_values);
-      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$inline_script.PHP_EOL.$scripts.'</div>';
+      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$scripts.'</div>';
+      //$inline_script.PHP_EOL.
       /**
       * Action for enqueueing other scripts.
       * @since 3.8.0.

@@ -5,34 +5,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 //header( "Content-type: application/javascript; charset: UTF-8" );
 ?>
-<script type="text/javascript">
 (function( $ ) {
   'use strict';
-   (function(){ //make scope local to this script
-     $( document).ready(function() {
-       var fname;
-       var $cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
-       var $input;
-       if($cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
-         //if the smart grid is enabled, execute the loading once the grid is ready
-         $cf7Form.on('cf7SmartGridReady', function(){
-           preloadForm($(this));
-         });
-       }else{
-         preloadForm($cf7Form);
+   $( document).ready(function() {
+     var fname;
+     var $cf7Form = $("div#<?= $nonce ?> form.wpcf7-form");
+     var $input;
+     if($cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
+       //if the smart grid is enabled, execute the loading once the grid is ready
+       $cf7Form.on('cf7SmartGridReady', function(){
+         preloadForm($(this));
+       });
+     }else{
+       preloadForm($cf7Form);
+     }
+     // function to load all the data into the form
+     function preloadForm($cf7Form){
+       var data = '';
+       if('function' == typeof $.fn.post2CF7FormData) data = $cf7Form.post2CF7FormData('<?=$nonce?>');
+       else if( 'undefined' != typeof window['<?=$nonce?>'] ) data = window['<?=$nonce?>'];
+       <?php /*@since 3.1.0 store form nonce for transient storage of post ID*/?>
+       fname = '<input type="hidden" name="_cf72post_nonce" value="<?= $nonce ?>" />';
+       $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+       if(0 === data.length){
+         $cf7Form.trigger("<?= $nonce ?>", data);
+         return false;
        }
-       // function to load all the data into the form
-       function preloadForm($cf7Form){
-         var data = '';
-         if('function' == typeof $.fn.post2CF7FormData) data = $cf7Form.post2CF7FormData('<?=$nonce?>');
-         else if( 'undefined' != typeof window['<?=$nonce?>'] ) data = window['<?=$nonce?>'];
-         <?php /*@since 3.1.0 store form nonce for transient storage of post ID*/?>
-         fname = '<input type="hidden" name="_cf72post_nonce" value="<?= $nonce ?>" />';
-         $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
-         if(0 === data.length){
-           $cf7Form.trigger("<?= $nonce ?>", data);
-           return false;
-         }
   <?php
     /**
     * filter fields mapped to taxonomy (in case mapping is done on a system post)
@@ -127,8 +125,10 @@ if ( ! defined( 'ABSPATH' ) ) {
   $hdd = array();
   foreach($taxonomies as $form_field => $taxonomy){
     $js_field = str_replace('-','_',$form_field);
+    $field_type = $form_fields[$form_field];
+
     /** @since 5.0.0 skip if hybrid*/
-    if( $mapper->field_has_class($form_field, 'hybrid-select') ){
+    if( $mapper->field_has_class($form_field, 'hybrid-select') && 'select'!=$field_type ){
       $hdd[]=$js_field;
       continue;
     }
@@ -146,25 +146,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     }
     $terms_id = array();
 
-    $field_type = $form_fields[$form_field];
-
     switch($field_type){
       case 'select':
         if( $mapper->field_has_option($form_field, 'multiple') ){
           $form_field = '"'.$form_field.'[]"';
         }
-        if($load_chosen){
-      ?>
-      fname = JSON.parse(data.<?php echo $js_field?>);
-      $cf7Form.find('select[name=<?php echo $form_field?>]').addClass('js-select2').append(fname);
-      <?php
-
-        }else{
       ?>
       fname = JSON.parse(data.<?php echo $js_field?>);
       $cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
+      $('select.hybrid-select').not('.hybrid-no-init').each(function(){
+        new HybridDropdown(this,{});
+      })
       <?php
-        }
+
         break;
       case 'radio':
       ?>
@@ -212,28 +206,25 @@ if ( ! defined( 'ABSPATH' ) ) {
        }))
      }
    }
-
  })
  <?php
 endif; //empty hdd
  if(is_user_logged_in()):
    $user = wp_get_current_user();
    ?>
-          fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?=$user->ID?>" />';
-          $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+        fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?=$user->ID?>" />';
+        $cf7Form.find('input[name=_wpcf7]').parent().append(fname);
 <?php endif; ?>
 
-        /* trigger the formMapped event to let other scripts that the form is now ready */
-        if( $cf7Form.is('.cf7-smart-grid .wpcf7-form') && !$cf7Form.is('.cf7sg-ready') ){
-          $cf7Form.on('cf7SmartGridReady', function(){
-            $cf7Form.trigger("<?= $nonce ?>", data)
-          })
-        }else{
-          $cf7Form.trigger("<?= $nonce ?>", data);
-        }
-        //console.log('<?= $nonce ?> form ready');
-      }//end preloadForm()
-    }); //document ready
-  })(); //call local function to execute it.
+      /* trigger the formMapped event to let other scripts that the form is now ready */
+      if( $cf7Form.is('.cf7-smart-grid .wpcf7-form') && !$cf7Form.is('.cf7sg-ready') ){
+        $cf7Form.on('cf7SmartGridReady', function(){
+          $cf7Form.trigger("<?= $nonce ?>", data)
+        })
+      }else{
+        $cf7Form.trigger("<?= $nonce ?>", data);
+      }
+      //console.log('<?= $nonce ?> form ready');
+    }//end preloadForm()
+  }); //document ready
 })( jQuery );
-</script>

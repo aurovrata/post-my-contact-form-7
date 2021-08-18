@@ -627,10 +627,14 @@ class CF72Post_Mapping_Factory {
         //load the list of terms
         //debug_msg("buidling options for taxonomy ".$taxonomy);
         $field_type = $cf7_form_fields[$form_field];
-
         /** @since 5.0 allow hybrid dropdown fields */
-        if( $mapper->field_has_class($form_field, 'hybrid-select') ){
-          $limit = ($field_type == 'checkbox' || $mapper->field_has_option($form_field, 'multiple'))? -1:1;
+        $isHybrid = $mapper->field_has_class($form_field, 'hybrid-select');
+        if($isHybrid){
+          wp_enqueue_script('hybriddd-js'); //previously registered.
+          wp_enqueue_style('hybriddd-css');
+        }
+        if( $isHybrid &&  $field_type != 'select'){
+          $limit = ($field_type == 'checkbox')? -1:1;
           $hdd = array(
             'limitSelection' => $limit,
             'fieldName' => $form_field,
@@ -641,8 +645,6 @@ class CF72Post_Mapping_Factory {
           $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $mapper);
           $options = $hdd;
           // debug_msg($options, $form_field);
-          wp_enqueue_script('hybriddd-js',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-          wp_enqueue_style('hybriddd-css',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', array(),CF7_2_POST_VERSION);
         }else{
           $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
           $options = wp_json_encode($options);
@@ -661,7 +663,6 @@ class CF72Post_Mapping_Factory {
           }
         }
         $field_and_values[str_replace('-','_',$form_field)] = $options;
-
       }
     //filter the values
     $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_ID , $mapper->post_properties['type'], $mapper->cf7_key, $post);
