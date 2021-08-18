@@ -62,7 +62,7 @@ class Cf7_2_Post_Public {
 	public function enqueue_scripts() {
     $plugin_dir = plugin_dir_url( __DIR__ );
     wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'public/js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
-		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'punbic/js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'public/js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
     wp_register_script('hybriddd-js',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true);
     wp_register_style('hybriddd-css',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
 	}
