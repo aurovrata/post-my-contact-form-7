@@ -608,3 +608,6 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * partial rewrite of post factory.
 * creation of mapper classes to handle form mapping to/loading from the DB.
 * added 'cf7_2_post_delete_submitted_posts' filter.
+* fix save draft form for file fields.
+* include Hybrid Dropdown fields
+* release new youtube tutorials.

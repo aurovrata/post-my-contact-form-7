@@ -348,6 +348,35 @@ class Cf7_2_Post_Public {
     return $results;
   }
   /**
+  * Method to skip CF7 plugin calidation of file fields when saving draft form.
+  * Hooked to 'wpcf7_validate_file'
+  *@since 5.0.0
+  * @param WPCF7_Validation $results   validation object
+  * @param WPCF7_FormTag $tags  file tag object.
+  * @return WPCF7_Validation  validation results
+  */
+  public function save_skips_file_validation($result, $tag){
+    if( !isset($_POST['save_cf7_2_post']) || 'false'==$_POST['save_cf7_2_post']){
+      return $result;
+    }
+    $cf7form = WPCF7_ContactForm::get_current();
+    $cf7_id = $cf7form->id();
+    $cf7_post = get_post($cf7_id, ARRAY_A);
+    $cf7_key = $cf7_post['post_name'];
+    /**
+    * Filter to skip validation if this form is being saved as a draft
+    * @since 2.0.0
+    * @param boolean $skip_validation  default to true
+    * @param string $cf7_key  current form's unique key identifier
+    */
+    $skip_validation = true;
+
+    if(apply_filters('cf7_2_post_draft_skips_validation', $skip_validation, $cf7_key)){
+      $result = new WPCF7_Validation();
+    }
+    return $result;
+  }
+  /**
   * Map author to hidden field on form load.
   *
   *@since 3.9.0

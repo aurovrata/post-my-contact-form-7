@@ -248,6 +248,8 @@ class Cf7_2_Post {
     $this->loader->add_action( 'wpcf7_init', $plugin_public, 'save_button_shortcode_handler' );
     //skip validation for saved forms
     $this->loader->add_filter( 'wpcf7_validate', $plugin_public, 'save_skips_wpcf7_validate', 100, 2 );
+		$this->loader->add_filter( 'wpcf7_validate_file', $plugin_public, 'save_skips_file_validation', 100, 2 );
+    $this->loader->add_filter( 'wpcf7_validate_file*', $plugin_public, 'save_skips_file_validation', 100, 2 );
     //add the author map for logged in user @since 3.9.0.
     $this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_public, 'add_hidden_fields', 100, 2 );
 		//filter message for draft saved forms.

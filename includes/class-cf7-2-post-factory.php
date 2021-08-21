@@ -625,7 +625,7 @@ class CF72Post_Mapping_Factory {
           }
         }
         //load the list of terms
-        //debug_msg("buidling options for taxonomy ".$taxonomy);
+        debug_msg($terms_id, "buidling options for taxonomy ".$taxonomy." ");
         $field_type = $cf7_form_fields[$form_field];
         /** @since 5.0 allow hybrid dropdown fields */
         $isHybrid = $mapper->field_has_class($form_field, 'hybrid-select');
