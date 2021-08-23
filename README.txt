@@ -610,4 +610,4 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * added 'cf7_2_post_delete_submitted_posts' filter.
 * fix save draft form for file fields.
 * include Hybrid Dropdown fields
-* release new youtube tutorials.
+* release of new YouTube tutorials.

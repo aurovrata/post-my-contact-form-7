@@ -370,10 +370,15 @@ button.button-link.close-details {
   background:none;
   margin-left: 0;
 }
-
 .custom-meta-field .nice-select, #post_taxonomy_map .nice-select {
     float: none;
     clear: unset;
     display: inline-block;
     vertical-align: middle;
+}
+#c2p-tax-notes, #cf7-2-post p,#c2p-tax-notes li {
+	margin: 0;
+}
+#c2p-tax-notes li {
+	list-style: inside;
 }

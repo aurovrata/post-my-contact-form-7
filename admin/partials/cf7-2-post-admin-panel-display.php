@@ -142,20 +142,20 @@
       <?= sprintf(
          __('Only %1$s form fields can be mapped to a taxonomy, create the field with empty options and the plugin will populate the field with the taxonomy terms it is mapped to.','post-my-contact-form-7' ), '<strong>checkbox|radio|select</strong>')?>
    </p>
-   <ul>
+   <ul id="c2p-tax-notes">
      <li>
        <?= sprintf(
           __('You can now use the %1$s in your %2$s field tag, to convert your field into a %3$s field','post-my-contact-form-7' ), '<strong>class:hybrid-select</strong>', '<em>[checkbox|radio|select]</em>', '<a href="https://aurovrata.github.io/hybrid-html-dropdown/">Hybrid Dropdown</a>')?>
      </li>
      <li>
        <?= sprintf(
-          __('You can now use the %1$s in your %2$s field tag, to convert your field into a %2$s field','post-my-contact-form-7' ), '<strong>class:js-select2</strong>', '<em>[select]</em>', '<a href="https://select2.org/">Select2</a>')?>
+          __('You can now use the %1$s in your %2$s field tag, to convert your field into a %3$s field','post-my-contact-form-7' ), '<strong>class:js-select2</strong>', '<em>[select]</em>', '<a href="https://select2.org/">Select2</a>')?>
      </li>
      <li>
        <?=
        sprintf(
-         __('For more details see this <a href="">YouTube tutorial</a>.','post-my-contact-form-7' ),
-       '');
+         __('For more details see this <a href="%1$s">YouTube tutorial</a>.','post-my-contact-form-7' ),
+       'https://www.youtube.com/watch?v=9lK9eHFhGPk&list=PLblJwjs_dFBtQzwPMoMFf-vsXkhuKHKhV');
        ?>
      </li>
    </ul>

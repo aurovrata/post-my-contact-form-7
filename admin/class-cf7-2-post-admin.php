@@ -478,7 +478,7 @@ class Cf7_2_Post_Admin {
     $submitted = get_post_meta($post->ID,'_cf7_2_post_form_submitted', true);
     $checked = ' disabled';
     $hidden = ' disabled';
-    debug_msg("post id: {$post->ID}, s $submitted");
+    // debug_msg("post id: {$post->ID}, s $submitted");
     switch($submitted){
       case 'yes':
         $checked = ' checked';
