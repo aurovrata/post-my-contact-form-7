@@ -33,7 +33,7 @@
       init=false;
       //transform select fields into select-hybrid.
       $('#cf7-2-post select.select-hybrid:not(:disabled)').each(function(){
-        isEmpty(this['_hselect']) ? new HybridSelect(this, {}) : this._hselect.refresh();
+        isEmpty(this['_hybriddd']) ? new HybridDropdown(this, {}) : this._hybriddd.refresh();
       })
     }
     //initialise the select fields adn populate them.
@@ -46,21 +46,23 @@
     initC2PEditor(); //on document ready.
   }); //document ready.
   function scanFormTags(search){
-    let cf7TagRegexp = /\[(.[^\s]*)\s*(.[^\s\]]*)[\s\[]*(.[^\[]*\"source:([^\s]*)\"[\s^\[]*|[.^\[]*(?!\"source:)[^\[]*)\]/img,
-      match = cf7TagRegexp.exec(search);
+    let rgx = /\[(.[^\s\\\]]+)\s+(.[^\s\]]+)[\s\[]*(.[^\[]*\"source:([^\s]*)\"[\s^\[]*|[.^\[]*(?!\"source:)[^\[]*)\]/img,
+      match = rgx.exec(search);
     while(null != match && match.length>2){
       switch(match[1].replace('*','')){
         case 'recaptcha':
         case 'recaptch':
-        case 'acceptance':
+        // case 'acceptance':
         case 'submit':
         case 'save':
+        case 'group':
+        case 'step':
           break;//tags with no fields of interest.
         default:
           formFields[match[2]] = match[1];
           break;
       }
-      match = cf7TagRegexp.exec(search); //search next.
+      match = rgx.exec(search); //search next.
     }
     // console.log(formFields);
   }
@@ -208,7 +210,7 @@
     $cloneField.find(':input').each(function(){
       if(this.classList.contains('display-none')) return true;
       this.disabled=false;
-      if(this.nodeName==='SELECT') new HybridSelect(this); //nice select.
+      if(this.nodeName==='SELECT') new HybridDropdown(this); //nice select.
     });
     //add remove button and error msg.
     $cloneField.append('<span class="dashicons dashicons-remove remove-field"></span>');
@@ -283,7 +285,7 @@
     $cloneField.find('span.link-button').removeClass('disabled').addClass('enabled');
     $cloneField.find(':input').each(function(){
       this.disabled=false;
-      if(this.nodeName==='SELECT') new HybridSelect(this); //nice select.
+      if(this.nodeName==='SELECT') new HybridDropdown(this); //nice select.
     });
     //add remove button and error msg.
     let down = e.target.getBoundingClientRect();
@@ -314,7 +316,7 @@
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
         ffMenu.classList.add('autofill-field-name');
-        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
         break;
       case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
@@ -349,26 +351,26 @@
         input.value = tax.dataset.name;
         input.disabled = isSystem; //no need to be submitted
         input = fc.querySelector('input.plural-name');
-        input.value = tax.innerText;
+        input.value = tax.innerHTML;
         input.disabled = isSystem; //no need to be submitted
         input = fc.querySelector('input.taxonomy-slug');
         input.value = tax.value;
         input.disabled = isSystem;//no need to be submitted
         input = fc.querySelector('span.taxonomy-name');
-        input.innerHTML = '<strong>'+tax.innerText+'</strong>';
+        input.innerHTML = '<strong>'+tax.innerHTML+'</strong>';
         input = fc.querySelector('input.taxonomy-source');
         input.value = isSystem ? 'system':'factory';
         input.setAttribute('name','cf7_2_post_map_taxonomy_source-'+tax.value);
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;
-        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
         break;
       case field.classList.contains('taxonomy-slug'): //update in factory custom taxonomy slug.
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+field.value;
-        if(ffMenu._hselect) ffMenu._hselect.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
         fc.querySelector('.plural-name').setAttribute('name','cf7_2_post_map_taxonomy_names-'+fv);
         fc.querySelector('.singular-name').setAttribute('name','cf7_2_post_map_taxonomy_name-'+fv);
         field.setAttribute('name','cf7_2_post_map_taxonomy_slug-'+fv);

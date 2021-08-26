@@ -111,7 +111,7 @@ class Cf7_2_Post_Admin {
 
         $plugin_dir = plugin_dir_url( __DIR__ );
         wp_enqueue_style( 'cf7-2-post-panel-css', plugin_dir_url( __FILE__ ) . 'css/mapping-panel.css');
-        wp_enqueue_style('hybrid-select-css', $plugin_dir . 'assets/hselect/hybrid-select.css', array(), $this->version, 'all' );
+        wp_enqueue_style('hybrid-select-css', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', array(), $this->version, 'all' );
         // wp_enqueue_style('jquery-select2-css', plugin_dir_url( __DIR__ ) . 'assets/select2/css/select2.min.css', array(), $this->version, 'all' );
         wp_enqueue_style('jquery-toggles-css', $plugin_dir . "assets/jquery-toggles/css/toggles.css", array(), $this->version, 'all' );
         wp_enqueue_style('jquery-toggles-light-css', $plugin_dir . "assets/jquery-toggles/css/themes/toggles-light.css", array('jquery-toggles-css'), $this->version, 'all' );
@@ -151,7 +151,7 @@ class Cf7_2_Post_Admin {
         'live'=> __('live','post-my-contact-form-7'),
         'warn'=>__('CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.')
       ));
-      wp_enqueue_script('hybrid-select', $plugin_dir . 'assets/hselect/hybrid-select.js', null, $this->version, true );
+      wp_enqueue_script('hybrid-select', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
     }
     $factory = c2p_get_factory();
