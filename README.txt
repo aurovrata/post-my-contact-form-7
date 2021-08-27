@@ -603,8 +603,11 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
-= 5.0.1 =
+= 5.1.0 =
 * update hybrid dropdown library in admin.
+* fix admin styling issues.
+* fix taxonomy mapper.
+* enable mapping of taxonomy to multiple form fields.
 = 5.0.0 =
 * complete rewrite of admin mapping editor.
 * partial rewrite of post factory.

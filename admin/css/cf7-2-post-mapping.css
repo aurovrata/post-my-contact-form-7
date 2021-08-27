@@ -42,6 +42,10 @@ ol.helper-list {
 .select2-container:not(.select2-container--disabled):hover {
     width: auto !important;
 }
+#cf7-2-post .default-meta-field select:disabled {
+	width: max-content;
+	max-width: 400px;
+}
 .hybrid-option.system-taxonomy {
     color: #0015ff;
 }
@@ -92,6 +96,7 @@ label{
     font-size: 1.1em;
 }
 .display-none,.display-none+.hybrid-select-js,
+#c2p-mapped-fields .display-none + .cf7-post-msg,
 #cf7-2-post .cf7-2-post-map-labels.hide{
   display:none;
 }

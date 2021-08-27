@@ -16,7 +16,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         </span>&nbsp;
         (<span class="enabled link-button edit-taxonomy"><?= __('Edit', 'post-my-contact-form-7')?></span>)
       </label>
-      <select class="select-hybrid field-options taxonomy-options" name="cf7_2_post_map_taxonomy_value-<?=$post_taxonomy;?>" value="<?=$cf7_field?>">
+      <select class="select-hybrid field-options taxonomy-options" name="cf7_2_post_map_taxonomy_value-<?=$post_taxonomy;?>/<?=$cf7_field?>" value="<?=$cf7_field?>">
         <option class="default-option" selected="true" value="">
           <?= __('Select a form field', 'post-my-contact-form-7' )?>
         </option>

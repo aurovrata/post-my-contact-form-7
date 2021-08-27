@@ -246,7 +246,7 @@ abstract class Form_2_Post_Mapper {
     $len_c2p_source = strlen('source-');
     //keep track of all the taxonomy slugs in the the slugs array
     $slugs=array();
-    $post_map_taxonomy = array();
+
     foreach($fields as $field=>$value){
       switch(true){
         case (0 === strpos($field,'source-') ): //taxonomy source.
@@ -255,7 +255,7 @@ abstract class Form_2_Post_Mapper {
             $this->taxonomy_properties[$slug] =  array();
           }
           $this->taxonomy_properties[$slug]['source'] = $value;
-          $slugs[]= $slug;
+          if(!isset($slugs[$slug])) $slugs[$slug]=array();
           break;
         case (0 === strpos($field,'names-') ): //Plural name.
           $slug = substr($field,$len_c2p_names);
@@ -273,21 +273,19 @@ abstract class Form_2_Post_Mapper {
           $this->taxonomy_properties[$slug]['singular_name'] = $value;
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
-        // case (0 === strpos($field,'slug-') ): //taxonomy slug.
-        //   if( !isset($this->taxonomy_properties[$value]) ){
-        //     $this->taxonomy_properties[$value] =  array();
-        //   }
-        //   $slugs[]= $value;
-        //   break;
         case (0 === strpos($field,'value-') ): //form field mapped to taxonomy.
           $slug = substr($field,$len_c2p_taxonomy);
-          $post_map_taxonomy[$value] = $slug;
+          $slug = str_replace("/$value",'',$slug);
+          /** @since 5.1 allow multiple fields to map a given taxonomy */
+          if(!isset($slugs[$slug])) $slugs[$slug]=array();
+          $slugs[$slug][]=$value;
+          $this->post_map_taxonomy[$value] = $slug;
           //debug_msg("POST FIELD: ".$value."=".substr($field,$len_cf7_2_post_map_meta));
           break;
       }
     }
     //save the taxonomy mappings so they can be created
-    foreach($slugs as $slug){
+    foreach($slugs as $slug=>$field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
       if(isset($this->old_db_fields['cf7_2_post_map_taxonomy_source-'.$slug]) ){
         unset($this->old_db_fields['cf7_2_post_map_taxonomy_source-'.$slug]);
@@ -301,19 +299,13 @@ abstract class Form_2_Post_Mapper {
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug,$this->taxonomy_properties[$slug]['name']);
         update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug,$this->taxonomy_properties[$slug]['singular_name']);
       }
+      //map the cf7 fields to the taxonomies
+      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug,$field);
     }
 
     //save the taxonomy properties
-    $this->post_properties['taxonomy'] = array_merge($this->post_properties['taxonomy'],$slugs );
-    //make sure they are unique
-    $this->post_properties['taxonomy'] = array_unique($this->post_properties['taxonomy']);
+    $this->post_properties['taxonomy'] = array_unique( array_merge( $this->post_properties['taxonomy'], array_keys($slugs) ) );
     update_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy', $this->post_properties['taxonomy']);
-    //map the cf7 fields to the taxonomies
-    foreach($post_map_taxonomy as $cf7_field=>$taxonomy){
-      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
-      update_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$taxonomy,$cf7_field);
-    }
-    $this->post_map_taxonomy = array_merge($this->post_map_taxonomy, $post_map_taxonomy);
 
     return true;
   }
@@ -464,7 +456,8 @@ abstract class Form_2_Post_Mapper {
 
       $this->taxonomy_properties[ $slug ] = $taxonomy_array;
       $cf7_field = get_post_meta ($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug, true);
-      $this->post_map_taxonomy[$cf7_field] = $taxonomy_array['slug'];
+      if(!is_array($cf7_field)) $cf7_field = array($cf7_field); /** @since 5.1.0 */
+      foreach($cf7_field as $f) $this->post_map_taxonomy[$f] = $taxonomy_array['slug'];
     }
      //debug_msg($this->post_map_taxonomy,"mapped taxonomies... ");
     //set Title
@@ -490,7 +483,7 @@ abstract class Form_2_Post_Mapper {
   *
   * @since    5.0.0
   * @param String  $taxonomy taxonomy id..
-  * @return String form field this taxonomy is mapped to.
+  * @return Mixed single or array of form field this taxonomy is mapped to.
   */
   public function get_taxonomy_mapped_form_field( $taxonomy=null){
    return $this->_form_field( $taxonomy, 'taxonomy' );
@@ -501,7 +494,7 @@ abstract class Form_2_Post_Mapper {
   * @since 5.0.0
   * @param String $post_field optional post meta field if already mapped.
   * @param String  $data_type   the type of mapping, 'field' | 'meta-field' | 'taxonomy'
-  * @return String form field this taxonomy is mapped to.
+  * @return Mixed form field this post field is ampped to or an array of form fields this taxonomy is mapped to.
   */
   private function _form_field($post_field, $data_type){
    switch($data_type){
@@ -694,7 +687,7 @@ abstract class Form_2_Post_Mapper {
    // }else{
    $result .= '<select class="taxonomy-list'.(empty($taxonomy_slug)?'':' select-hybrid').'">';
    // }
-   if('' === $taxonomy_slug){
+   if(empty($taxonomy_slug)){
      $result .= '<option value="" data-name="" >'.__('Choose a Taxonomy', 'post-my-contact-form-7' ). '</option>';
    }
    $default_slug = sanitize_title( $this->get('singular_name') ).'_categories';
@@ -709,8 +702,12 @@ abstract class Form_2_Post_Mapper {
 
    $system_taxonomies = get_taxonomies( array('public'=>true, '_builtin' => false), 'objects' );
    //inset the default post tags and category
-   $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';
-   $result .= '<option value="category" data-name="'.__('Post Category', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Categories', 'post-my-contact-form-7' ). '</option>';
+   if('post_tag' !=$taxonomy_slug){
+     $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';
+   }
+   if('category' !=$taxonomy_slug){
+     $result .= '<option value="category" data-name="'.__('Post Category', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Categories', 'post-my-contact-form-7' ). '</option>';
+   }
    foreach($system_taxonomies as $taxonomy){
      if( !empty($taxonomy_slug) && $taxonomy_slug==$taxonomy->name ) continue;
      $result .= '<option value="'.$taxonomy->name.'" data-name="'.$taxonomy->labels->singular_name.'" class="system-taxonomy">';

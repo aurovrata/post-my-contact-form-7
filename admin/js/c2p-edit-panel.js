@@ -340,6 +340,13 @@
             let pf = fc.querySelector('.cf7-2-post-map-label-custom');
             if('custom_meta_key'==pf.value) pf.value = fv.replace(/-/g,'_');
           }
+          if(field.classList.contains('taxonomy-options')){
+            let tax = fc.querySelector('input.taxonomy-slug');
+            field.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value)
+            if(ffMenu._hybriddd){ //refresh hybrid select.
+              ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value});
+            }
+          }
         }else{ //filter option selelected, display helper code.
            c2pFilterHelperCode.call(fc,fv);
         }
@@ -362,15 +369,19 @@
         input.value = isSystem ? 'system':'factory';
         input.setAttribute('name','cf7_2_post_map_taxonomy_source-'+tax.value);
         //update the form-field select name and filter.
-        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value);
+        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;
-        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd){ //refresh hybrid select.
+          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value});
+        }
         break;
       case field.classList.contains('taxonomy-slug'): //update in factory custom taxonomy slug.
         //update the form-field select name and filter.
         ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+field.value;
-        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd){ //refresh hybrid select.
+          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+field.value});
+        }
         fc.querySelector('.plural-name').setAttribute('name','cf7_2_post_map_taxonomy_names-'+fv);
         fc.querySelector('.singular-name').setAttribute('name','cf7_2_post_map_taxonomy_name-'+fv);
         field.setAttribute('name','cf7_2_post_map_taxonomy_slug-'+fv);
