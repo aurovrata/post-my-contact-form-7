@@ -286,7 +286,7 @@ This is the default functionality for saving draft submissions.  This is especia
 
 = 16. How do I publish posts automatically on form submission ? =
 
-The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use the filter 'cf7_2_post_status_{$post_type}' and return [a valid post status](https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values). See the Filters & Hooks section of this documentation for more information.
+The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use the filter 'cf7_2_post_status_{$post_type}' and return [a valid post status](https://wordpress.org/support/article/post-status/). See the Filters & Hooks section of this documentation for more information.
 
 = 17. How do I make custom posts publicly visible on the front-end ?=
 
@@ -603,6 +603,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.1.1 =
+* improve hook helper code.
+* pass branch array to cf7_2_post_filter_taxonomy_query hook.
 = 5.1.0 =
 * update hybrid dropdown library in admin.
 * fix admin styling issues.

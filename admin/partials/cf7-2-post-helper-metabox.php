@@ -222,8 +222,8 @@ function field_default_value($value, $cf7_id, $field, $cf7form_key, $form_terms)
 */
 function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
   /*This filter allows you to pre-fill/select taxonomy terms fields for new submissions.*/
-  //assuming you have defined a checkbox field called city-locations for cf7 form 'contact-us'.
-  if('contact-us' == $cf7_key &amp; 'city-locations' == $field){
+  //assuming you have defined a checkbox field called city-locations for your f7 form '{$form_key}'.
+  if('{$form_key}' == $cf7_key &amp; 'city-locations' == $field){
     $term = get_term_by('name','London','location_categories');
     $terms_id = array();
     $terms_id[] = $term->term_id;
@@ -232,21 +232,22 @@ function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
 }" href="javascript:void(0);"><?=__('Default Term Values Filter','post-my-contact-form-7')?></a> <?=__('taxonomy terms in dropdown/radio/checkbox.','post-my-contact-form-7')?>
         </li>
         <li>2.4)
-          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_taxonomy_query', 'filter_taxonomy_terms',10, 5);
-  /**
-  * Function to filter the list of terms shown in a mapped taxonomy field.  For example if you have a select field you can restrict the options listed to a select set of terms.
-  * @param array $query an array of query attributes for the taxonomy.
-  * @param string $cf7_id  the form id being loaded.
-  * @param string $taxonomy the taxonomy slug being queried.
-  * @param string $field the field name in the form being loaded.
-  * @param string $cf7_key unique key identifying your form.
-  * @return array an array taxonomy query attributes (see codex page:https://developer.wordpress.org/reference/functions/get_terms/).
-  */
-  function filter_taxonomy_terms($query, $cf7_id, $taxonomy, $field, $cf7_key){
+          <a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_taxonomy_query', 'filter_taxonomy_terms',10, 6);
+/**
+* Function to filter the list of terms shown in a mapped taxonomy field.  For example if you have a select field you can restrict the options listed to a select set of terms.
+* @param array $query an array of query attributes for the taxonomy.
+* @param string $cf7_id  the form id being loaded.
+* @param string $taxonomy the taxonomy slug being queried.
+* @param string $field the field name in the form being loaded.
+* @param string $cf7_key unique key identifying your form.
+* @param mixed $branch an array of parent IDs for hierarchical taxonomies, else 0.
+* @return array an array taxonomy query attributes (see codex page:https://developer.wordpress.org/reference/functions/get_terms/).
+*/
+function filter_taxonomy_terms($query, $cf7_id, $taxonomy, $field, $cf7_key, $branch){
   // NOTE: the plugin iterates through each terms it finds to get its children.
   //so for hierarchical taxonomy this filter will be recursively called on each term and its children.
   //in the example below I am assuming that I have a dropdown field which map to my (hierarchical) locations taxonomy.  I want restrict the listed options to my top level terms 'UK', 'France' and 'Germany'.Furthermore, I don't want to list the children of these capital cities, namely 'London', 'Paris', 'Berlin'.
-  if($cf7_key == 'travel-form' && $field=='locations'){//verify this is the correct form.
+  if($cf7_key == '{$form_key}' && $field=='locations'){//verify this is the correct form.
     switch($query['parent']){
       case 0: //this is the first (top-level) iteration of this filter.
         $query['slug'] = array('uk', 'france', 'germany');//restrict our top level terms.
@@ -353,7 +354,7 @@ function publish_new_{$post_type_f}($status, $ckf7_key, $submitted_data){
 */
 function force_validation($skip_validation, $cf7_key){
   /*For forms which have a save button, the validation of draft forms are skipped by default. This filter allows you to force validation of draft forms.*/
-  if('my-form' == $cf7_key){
+  if('{$form_key}' == $cf7_key){
     $skip_validation = false;
   }
   return skip_validation;
@@ -369,7 +370,7 @@ function force_validation($skip_validation, $cf7_key){
 */
 function force_notification($time, $cf7_key){
   /*The post ID to which a submission is saved to is stored as a transient value in the WordPress database cache.  This is helpful is you want to redirect your form submission to another page and display the results.  You can access the saved post ID on the redirected page. This transient value is cached for 5 minutes, but you may need to keep this value in the cache for a longer period if you expect your users to visit the redirected page at a later state. */
-  if('my-form' == $cf7_key){
+  if('{$form_key}' == $cf7_key){
     $time = 60*60*1; //this is 1 hour.
   }
   return $time;
@@ -385,7 +386,7 @@ function force_notification($time, $cf7_key){
 */
 function force_notification($skip_mail, $cf7_key){
   /*For forms which have a save button, the mail sending of draft forms is skipped by default. This filter allows you to force mail notification of draft forms. */
-  if('my-form' == $cf7_key){
+  if('{$form_key}' == $cf7_key){
     skip_mail = false;
   }
   return skip_mail;

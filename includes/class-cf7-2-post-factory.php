@@ -633,6 +633,10 @@ class CF72Post_Mapping_Factory {
           wp_enqueue_script('hybriddd-js'); //previously registered.
           wp_enqueue_style('hybriddd-css');
         }
+        /** @since 5.1.1 track branch for taxonomy filter */
+        $branch = 0;
+        if(is_taxonomy_hierarchical($taxonomy)) $branch = array(0);
+
         if( $isHybrid &&  $field_type != 'select'){
           $limit = ($field_type == 'checkbox')? -1:1;
           $hdd = array(
@@ -642,11 +646,12 @@ class CF72Post_Mapping_Factory {
             'dataSet'=>array(''=>__('Select an item','post-my-contact-form-7'))
           );
           $hdd = (array) apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key);
-          $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, 0, '' , $form_field, $mapper);
+
+          $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, $branch, '' , $form_field, $mapper);
           $options = $hdd;
           // debug_msg($options, $form_field);
         }else{
-          $options = $this->get_taxonomy_terms($taxonomy, 0, $terms_id, $form_field, $field_type, 0, $mapper);
+          $options = $this->get_taxonomy_terms($taxonomy, $branch, $terms_id, $form_field, $field_type, 0, $mapper);
           $options = wp_json_encode($options);
           switch($field_type){
             case 'checkbox':
@@ -694,14 +699,15 @@ class CF72Post_Mapping_Factory {
   * (https://aurovrata.github.io/hybrid-html-dropdown/)
   * @since 5.0.0
   * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
-  * @param   Int  $parent  the parent ID of child terms to fetch
+  * @param   Mixed  $branch  array of parent IDs for hierarchical taxonomies, else 0
   * @param   String   $pslug parent slug.
   * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   Form_2_Post_Mapper $mapper post mapping object.
   * @return  Array value->label pairs for hybrid dropdown..
   */
-  protected function build_hybrid_dropdown($taxonomy, $parent, $pslug, $field, $mapper){
-    $terms = $this->filter_taxonomy_query($taxonomy, $parent, $field, $mapper);
+  protected function build_hybrid_dropdown($taxonomy, $branch, $pslug, $field, $mapper){
+    $terms = $this->filter_taxonomy_query($taxonomy, $branch, $field, $mapper);
+
     $options = array();
     if( is_wp_error( $terms ) ){
       debug_msg('Taxonomy '.$taxonomy.' does not exist');
@@ -710,13 +716,17 @@ class CF72Post_Mapping_Factory {
       //debug_msg("No Terms found for taxonomy: ".$taxonomy.", parent ".$parent);
       return $options;
     }
-    $branches = array();
     foreach($terms as $t){
       $id = $t->term_id;
       $label = apply_filters('cf72post_filter_hybriddd_term_attributes',array(), $t, $field, $mapper->cf7_key);
       if(!is_array($label)) $label = array();
-      $classes = 'term-'.$id.' slug-'.$t->slug . ($parent>0 ? ' parent-slug-'.$pslug.' parent-term-' . $parent : '');
-      $options[$id] = array('label'=>(array($t->name, $classes) + $label) ) + $this->build_hybrid_dropdown($taxonomy, $id, $t->slug, $field, $mapper);
+      $classes = 'term-'.$id.' slug-'.$t->slug;
+      if(is_array($branch)){
+        array_pop($branch);
+        $branch[]=$t->parent;
+        $classes .= ($t->parent>0 ? ' parent-slug-'.$pslug.' parent-term-' . $t->parent : '');
+        $options[$id] = array('label'=>(array($t->name, $classes) + $label) ) + $this->build_hybrid_dropdown($taxonomy, array_merge($branch,array($id)), $t->slug, $field, $mapper);
+      }
     }
     return $options;
   }
@@ -726,18 +736,21 @@ class CF72Post_Mapping_Factory {
   *
   * @since 5.0.0
   * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
-  * @param   Int  $parent  the parent ID of child terms to fetch
+  * @param   Array  $branch  the parent ID of child terms to fetch
   * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   Form_2_Post_Mapper $mapper post mapping object.
   *@return Array|WP_Error a collectoin of WP_Term objects or an error.
   */
-  protected function filter_taxonomy_query($taxonomy, $parent, $field, $mapper){
+  protected function filter_taxonomy_query($taxonomy, $branch, $field, $mapper){
+    if(is_array($branch)) $parent = end($branch);
+    else $parent = $branch;
+
     $args = array(
       'hide_empty' => 0,
       'parent' => $parent
     );
 
-    $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_ID, $taxonomy, $field, $mapper->cf7_key);
+    $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_ID, $taxonomy, $field, $mapper->cf7_key, $branch);
     /**
     * allows for more felxibility in filtering taxonomy options.
     *@since 3.5.0
@@ -760,7 +773,7 @@ class CF72Post_Mapping_Factory {
   * Request: public/
   * @since 1.2.0
   * @param   String $taxonomy  the taxonomy slug for which to return the list of terms
-  * @param   Int  $parent  the parent ID of child terms to fetch
+  * @param   Mixed  $branch  array of parent IDs, else 0
   * @param   Array  $post_terms an array of terms which a post has been tagged with
   * @param   String   $field form field name for which this taxonomy is mapped to.
   * @param   String $field_type the type of field in which the tersm are going to be listed
@@ -768,8 +781,11 @@ class CF72Post_Mapping_Factory {
   * @param   Form_2_Post_Mapper $mapper post mapping object.
   * @return  String a jquery code to be executed once the page is loaded.
   */
-   protected function get_taxonomy_terms( $taxonomy, $parent, $post_terms, $field, $field_type, $level=0, $mapper){
-    $terms = $this->filter_taxonomy_query($taxonomy, $parent, $field, $mapper);
+   protected function get_taxonomy_terms( $taxonomy, $branch, $post_terms, $field, $field_type, $level=0, $mapper){
+    $terms = $this->filter_taxonomy_query($taxonomy, $branch, $field, $mapper);
+
+    if(is_array($branch))  $parent = end($branch);
+    else $parent = $branch;
 
     if( is_wp_error( $terms ) ){
       debug_msg('Taxonomy '.$taxonomy.' does not exist');
@@ -879,9 +895,13 @@ class CF72Post_Mapping_Factory {
           return ''; //nothing more to do here
           break;
       }
-      //get children
-      $parent_level = $level;
-      $script .= $this->get_taxonomy_terms($taxonomy, $term_id, $post_terms, $field, $field_type, $level+1, $mapper);
+      if(is_array($branch)){
+        array_pop($branch); //in case it was reset in the query filter.
+        $branch[]=$term->parent;
+        //get children
+        $parent_level = $level;
+        $script .= $this->get_taxonomy_terms($taxonomy, array_merge($branch,array($term_id)), $post_terms, $field, $field_type, $level+1, $mapper);
+      }
       if($is_optgroup) $script .='</optgroup>';
     }
     if('select' != $field_type) $script .='</fieldset>';
