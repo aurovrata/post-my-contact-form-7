@@ -78,7 +78,7 @@ class Cf7_2_Post_Public {
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?
     $factory = c2p_get_factory();
-    if($factory->is_mapped($cf7_post_id)){
+    if($factory->is_live($cf7_post_id)){
       $mapper = $factory->get_post_mapper($cf7_post_id);
 
       //load all the submittec values
@@ -265,7 +265,7 @@ class Cf7_2_Post_Public {
     $disabled = false;
     $cf7_form = wpcf7_get_current_contact_form();
     $factory = c2p_get_factory();
-    if(!$factory->is_mapped($cf7_form->id())){
+    if(!$factory->is_live($cf7_form->id())){
       $disabled = true;
     }
     //enqueue required scripts and styles

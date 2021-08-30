@@ -622,7 +622,7 @@ abstract class Form_2_Post_Mapper {
   * @return boolean true if the class is set, false otherwise
   */
   public function field_has_class($field_name, $class){
-   return in_array($class, $this->cf7_form_fields_classes[$field_name] );
+   return (isset($this->cf7_form_fields_classes[$field_name])) ? in_array($class, $this->cf7_form_fields_classes[$field_name] ) : false;
   }
   /**
   * Set the post type capability.

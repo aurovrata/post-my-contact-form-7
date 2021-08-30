@@ -130,6 +130,22 @@ function filter_user_post_for_prefill($query_args, $post_type, $form_key){
   return $query_args;
 }" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('user post query for form prefill.','post-my-contact-form-7')?>
       </li>
+      <li class="system-hook factory-hook">1.7
+        <a class="helper" data-cf72post="add_filter('cf7_2_post_delete_submitted_posts', 'delete_posts_on_delete_form',10, 3);
+/**
+* Function to filter whether to delete all submitted posts when a mapped form is deleted.
+* When a mapped form is deleted, you can flag all the posts that were created from the this form submisison for deletion.
+* @param Boolean $delete_posts, flag posts for deletion, default is false.
+* @param String $post_type post type being mapped to.
+* @param String $form_key unique key identifying the current form.
+* @return Boolean flag posts for deletion.
+*/
+function delete_posts_on_delete_form($delete_posts, $post_type, $form_key){
+  //you can check by post type or form key.
+  if('{$form_key}'==$form_key) $delete_posts = true;
+  return $delete_posts;
+}" href="javascript:void(0);"><?=__('Filter','post-my-contact-form-7')?></a> <?=__('flag delete posts on delete form.','post-my-contact-form-7')?>
+      </li>
     </ul>
   </div>
 </div>

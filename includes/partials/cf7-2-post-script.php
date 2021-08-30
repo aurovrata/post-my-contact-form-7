@@ -125,6 +125,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   $hdd = array();
   foreach($taxonomies as $form_field => $taxonomy){
     $js_field = str_replace('-','_',$form_field);
+    if(0===strpos($form_field,'cf7_2_post_filter-')) continue; //nothing to do here.
     $field_type = $form_fields[$form_field];
 
     /** @since 5.0.0 skip if hybrid*/

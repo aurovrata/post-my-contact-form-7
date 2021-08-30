@@ -603,6 +603,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.2.0 =
+* enable front-end form display for 'draft' forms.
+* added helper for 'cf7_2_post_delete_submitted_posts' hook.
 = 5.1.1 =
 * improve hook helper code.
 * pass branch array to cf7_2_post_filter_taxonomy_query hook.
