@@ -735,12 +735,14 @@ class CF72Post_Mapping_Factory {
       $label = apply_filters('cf72post_filter_hybriddd_term_attributes',array(), $t, $field, $mapper->cf7_key);
       if(!is_array($label)) $label = array();
       $classes = 'term-'.$id.' slug-'.$t->slug;
+      $kids = array();
       if(is_array($branch)){
         array_pop($branch);
         $branch[]=$t->parent;
         $classes .= ($t->parent>0 ? ' parent-slug-'.$pslug.' parent-term-' . $t->parent : '');
-        $options[$id] = array('label'=>(array($t->name, $classes) + $label) ) + $this->build_hybrid_dropdown($taxonomy, array_merge($branch,array($id)), $t->slug, $field, $mapper);
+        $kids = $this->build_hybrid_dropdown($taxonomy, array_merge($branch,array($id)), $t->slug, $field, $mapper);
       }
+      $options[$id] = array('label'=>(array($t->name, $classes) + $label) ) + $kids;
     }
     return $options;
   }
@@ -756,13 +758,9 @@ class CF72Post_Mapping_Factory {
   *@return Array|WP_Error a collectoin of WP_Term objects or an error.
   */
   protected function filter_taxonomy_query($taxonomy, $branch, $field, $mapper){
-    if(is_array($branch)) $parent = end($branch);
-    else $parent = $branch;
-
-    $args = array(
-      'hide_empty' => 0,
-      'parent' => $parent
-    );
+    $args = array('hide_empty' => 0);
+    //for hierarchical taxonomy...
+    if(is_array($branch)) $args['parent'] = end($branch);
 
     $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_ID, $taxonomy, $field, $mapper->cf7_key, $branch);
     /**

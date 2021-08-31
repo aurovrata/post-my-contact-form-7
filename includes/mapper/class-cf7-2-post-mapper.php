@@ -1009,24 +1009,25 @@ abstract class Form_2_Post_Mapper {
     //
     //--------------- taxonomies
     //
+    $value = array(); /** @since 5.2 collect all mapped taxonomies in case multiple amppings */
     foreach($this->post_map_taxonomy as $form_field => $taxonomy){
-      $value = '';
+      if(!isset($value[$taxonomy])) $value[$taxonomy] = array();
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
-        $value = apply_filters($form_field, array(), $post_id, $cf7_form_data);
+        $value[$taxonomy] = apply_filters($form_field, $value[$taxonomy], $post_id, $cf7_form_data);
       }else if(isset( $cf7_form_data[$form_field] )){
         if( is_array( $cf7_form_data[$form_field] ) ){
-          $value = array_map( 'intval', $cf7_form_data[$form_field] );
+          $value[$taxonomy] = array_merge( $value[$taxonomy], array_map( 'intval', $cf7_form_data[$form_field]));
         }else{
           //debug_msg($cf7_form_data[$form_field], $taxonomy." values ");
-          $value = array_map( 'intval',  array( $cf7_form_data[$form_field] ) );
+          $value[$taxonomy] = array_merge( $value[$taxonomy], array_map( 'intval',  array( $cf7_form_data[$form_field] ) ));
         }
       }
-      if( !empty($value) ){
-        $term_taxonomy_ids = wp_set_object_terms( $post_id , $value, $taxonomy );
-        if ( is_wp_error( $term_taxonomy_ids ) ) {
-        	debug_msg($term_taxonomy_ids, " Unable to set taxonomy (".$taxonomy.") terms");
-          debug_msg($value, "Attempted to set these term values ");
-        }
+    }
+    foreach($value as $taxonomy=>$terms) {
+      $term_taxonomy_ids = wp_set_object_terms( $post_id , $terms, $taxonomy );
+      if ( is_wp_error( $term_taxonomy_ids ) ) {
+        debug_msg($term_taxonomy_ids, " Unable to set taxonomy (".$taxonomy.") terms");
+        debug_msg($value, "Attempted to set these term values ");
       }
     }
     /**

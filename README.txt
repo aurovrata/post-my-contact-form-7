@@ -606,6 +606,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 = 5.2.0 =
 * enable front-end form display for 'draft' forms.
 * added helper for 'cf7_2_post_delete_submitted_posts' hook.
+* update hybrid dropdown library.
 = 5.1.1 =
 * improve hook helper code.
 * pass branch array to cf7_2_post_filter_taxonomy_query hook.
