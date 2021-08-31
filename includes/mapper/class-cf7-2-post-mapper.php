@@ -845,7 +845,7 @@ abstract class Form_2_Post_Mapper {
               $file = cf7sg_extract_submitted_files($cf7_files);
             }
           }else{
-            if(isset($cf7_files[$form_field])){ //if set handle upload.
+            if(!empty($cf7_files[$form_field])){ //if set handle upload.
               $file = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
 
               $file = array($_FILES[$form_field]['name']=>$file); //file name
@@ -966,7 +966,7 @@ abstract class Form_2_Post_Mapper {
               $files = cf7sg_extract_submitted_files($cf7_files);
             }
           }else{
-            if(isset($cf7_files[$form_field])){ //if set handle upload.
+            if(!empty($cf7_files[$form_field])){ //if set handle upload.
               $files = $cf7_files[$form_field][0]; /** file path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
 
               $files = array($_FILES[$form_field]['name']=>$files); //file name
@@ -985,8 +985,8 @@ abstract class Form_2_Post_Mapper {
             }
           }
           //if(isset($cf7_form_data[$form_field])){ //if not submitted=disabled.
-          if(empty($file_url)) $file_url = '';
           if(count($file_url)==1) $file_url = $file_url[0];
+          if(empty($file_url)) $file_url = '';
           update_post_meta($post_id, $post_field, $file_url);
           //}
         }else{

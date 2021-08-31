@@ -316,11 +316,12 @@
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
         ffMenu.classList.add('autofill-field-name');
-        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh(); //refresh hybrid select.
+        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
         break;
       case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
         ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
+        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
         break;
       case field.classList.contains('field-options'): //check if field already used.
         msgBox.innerHTML ='';
