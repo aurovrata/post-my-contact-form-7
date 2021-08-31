@@ -958,7 +958,8 @@ abstract class Form_2_Post_Mapper {
         }
         if( 'file' == $this->cf7_form_fields[$form_field] ){
           $cf7_files = $submission->uploaded_files();
-          $file_url = $files = '';
+          $file_url = '';
+          $files = array();
 
           if(defined('CF7_GRID_VERSION') && version_compare(CF7_GRID_VERSION, '4.9.0','>=')){
             $cf7_files = $cf7_form_data[$form_field]; //file path stored in posted data as of v4.9.

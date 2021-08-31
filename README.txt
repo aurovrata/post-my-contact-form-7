@@ -603,9 +603,10 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+* fix files empty loop.
 = 5.2.1 =
 * fix add custom meta field issue.
-* fix file field handling when no file uploaded. 
+* fix file field handling when no file uploaded.
 = 5.2.0 =
 * enable front-end form display for 'draft' forms.
 * added helper for 'cf7_2_post_delete_submitted_posts' hook.
