@@ -413,19 +413,24 @@ class Cf7_2_Post_Admin {
    * @since 2.0.0
   **/
   public function cf7_shortcode_tags(){
-    if ( class_exists( 'WPCF7_TagGenerator' ) ) {
-      $tag_generator = WPCF7_TagGenerator::get_instance();
-      $tag_generator->add(
-        'save', //tag id
-        __( 'save', 'post-my-contact-form-7' ), //tag button label
-        array($this,'save_tag_generator'), //callback
-        array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
-      );
+    if(isset($_GET['post'])){
+      $factory = c2p_get_factory();
+      if(!$factory->is_mapped($_GET['post'])) return;
+      //only display save button for mapped forms.
+      if ( class_exists( 'WPCF7_TagGenerator' ) ) {
+        $tag_generator = WPCF7_TagGenerator::get_instance();
+        $tag_generator->add(
+          'save', //tag id
+          __( 'save', 'post-my-contact-form-7' ), //tag button label
+          array($this,'save_tag_generator'), //callback
+          array( 'nameless' => 1 ) //option name less = true, ie no name for this tag
+        );
+      }
     }
   }
 
   /**
-	 * Sav button tag screen displayt.
+	 * Save button tag screen displayt.
 	 *
 	 * This function is called by cf7 plugin, and is registered with a hooked function above
 	 *

@@ -59,13 +59,23 @@ class Cf7_2_Post_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function register_scripts() {
     $plugin_dir = plugin_dir_url( __DIR__ );
     wp_register_script( $this->plugin_name.'-save', $plugin_dir . 'public/js/cf7-2-post-save-draft.js', array( 'jquery' ), $this->version, true );
 		wp_register_script( $this->plugin_name.'-load', $plugin_dir . 'public/js/cf7-2-post-public.js', array( 'jquery' ), $this->version, true );
     wp_register_script('hybriddd-js',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true);
-    wp_register_style('hybriddd-css',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
 	}
+  /**
+  * Register style
+  *
+  *@since 5.2.2
+  */
+  public function register_styles(){
+    $plugin_dir = plugin_dir_url( __DIR__ );
+    wp_register_style( $this->plugin_name.'-css', $plugin_dir . 'public/css/cf7-2-post-styling.css', null, $this->version);
+    wp_register_style('hybriddd-css',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
+
+  }
   /**
   * Saves a cf7 form submission to its mapped post
   * Hooks 'wpcf7_before_send_mail' just after all validation is done
@@ -159,7 +169,7 @@ class Cf7_2_Post_Public {
       wp_add_inline_script($this->plugin_name.'-load', $inline_script);
       $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $mapper->cf7_key, $form_values);
       $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$scripts.'</div>';
-      //$inline_script.PHP_EOL.
+      wp_enqueue_style($this->plugin_name.'-css');
       /**
       * Action for enqueueing other scripts.
       * @since 3.8.0.
@@ -265,6 +275,8 @@ class Cf7_2_Post_Public {
     $disabled = false;
     $cf7_form = wpcf7_get_current_contact_form();
     $factory = c2p_get_factory();
+    $mapper = $factory->get_post_mapper($cf7_form->id());
+
     if(!$factory->is_live($cf7_form->id())){
       $disabled = true;
     }
@@ -274,7 +286,8 @@ class Cf7_2_Post_Public {
       'cf72post_save',
       array(
         'disabled'=>$disabled,
-        'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' )
+        'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' ),
+        'paint'=>apply_filters('c2p_autostyle_save_button', true, $mapper->cf7_key)
       )
     );
     $tag = new WPCF7_FormTag( $tag );

@@ -1,3 +1,7 @@
 .c2p-top-level fieldset {
 	margin-left: 10px;
 }
+input[type=submit].cf7_2_post_save {
+	border-style: solid;
+	border-width: 1px;
+}

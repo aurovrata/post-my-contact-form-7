@@ -165,7 +165,7 @@ In the Contact Form 7 table list you will notice a new column has been added whi
 
 = 3. I made a mistake in my form mapping, how do I correct it once it is created? =
 
-Yuo can simply modify the mapping at any given time, however if a mapping has been live and saving submissions to your post, then it is not recommended to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
+You can simply modify the mapping at any given time, however if a mapping has been live and saving submissions to your post, then it is not recommended to make changes.  Unless you have a fair understanding of WordPress posts and meta-fields structures and how these are saved in the database, I highly recommend that you delete any existing posts that may have been saved from form submissions that used the previous mappings.  Failing to do this without a proper understanding of the changes you are making to an existing mapping with previously saved post submissions could lead to difficult errors to debug and fix once you start creating post submissions that have a different mapping.  Consider yourself warned!
 
 = 4. How do remove a mapping? =
 Simply toggle the status to off.
@@ -290,7 +290,7 @@ The default behaviour is to save post to 'draft' status.  If you wish to change 
 
 = 17. How do I make custom posts publicly visible on the front-end ?=
 
-the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See this [screenshot](https://ps.w.org/post-my-contact-form-7/assets/screenshot-7.png) for the posts settings you need to enable or disable for making your posts public as well as queryable on the front-end.
+the default configuration of the plugin mapped custom posts are only visible in the dashboard.  This a security feature.  If you want your posts to be visible on the front-end, then you need to change the registration attributes.  See this [screenshot](https://ps.w.org/post-my-contact-form-7/assets/screenshot-7.png) for the posts settings you need to enable or disable for making your posts public as well as query-able on the front-end.
 
 If you have created a custom taxonomy for your post, you can include these into your main menu by enabling them in the Appearance->Menu [screen options](https://codex.wordpress.org/Dashboard_Screen#Screen_Options) dropdown of your Dashboard.
 
@@ -314,7 +314,7 @@ Once a form is submitted the `_cf7_2_post_form_submitted` meta-field is updated 
 Use the filer provided in the filter & actions helper metabox of the mapping page in the dashboard (see [screenshot 8](https://ps.w.org/post-my-contact-form-7/assets/screenshot-8.png)). Use the *filter terms list* (#4 in the section Form Loading Hooks),
 
 = 22. Can I map deeper levels of my hierarchical taxonomy to a select2 field? =
-As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a JavaScript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attribtues to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
+As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a JavaScript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attributes to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
 
 `
 /add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup', 'turn_off_grouping', 10, 5);
@@ -394,6 +394,17 @@ function delete_posted_data($delete_data, $post_type,$form_key){
   return $delete_data;
 }
 `
+
+= 26. Save draft button is auto-styled, how to custom style it? =
+The save button is automatically styled (with inline style script) to be the inverse colours of the submit button as well as having a 1px wide border.  The border line style is set using rules included in the CSS stylesheet and can be overridden with custom CSS.
+The auto-styling of the colour and background colour can also be overridden or altogether switched off with the following filter in your functions.php file,
+
+`
+add_filter('c2p_autostyle_save_button', '__return_false');
+`
+
+the filter also passes the form key, should you want to distinguish between forms.
+
 == Screenshots ==
 
 1. 1.You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -603,6 +614,10 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.3.0 =
+* enable inverse auto-style of draft submit.
+* added 'c2p_autostyle_save_button' filter to switch off autostyling.
+* hide save tag in admin from non-mapped forms.
 * fix files empty loop.
 = 5.2.1 =
 * fix add custom meta field issue.

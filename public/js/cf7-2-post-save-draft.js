@@ -2,9 +2,22 @@
 	'use strict';
 
 	$(document).ready(function(){
-    var $save = $('form.wpcf7-form input[type=submit].cf7_2_post_save');
+    var $save = $('form.wpcf7-form input[type=submit].cf7_2_post_save'), style;
+    if(cf72post_save.paint){
+      var sbmt = $('form.wpcf7-form input[type=submit]').get(0);
+      if(sbmt){
+        sbmt = window.getComputedStyle(sbmt);
+        style = document.createElement('style');
+        style.setAttribute('id','c2p-save-button');
+        style.type = "text/css";
+        style.innerText = 'input[type=submit].cf7_2_post_save:not(:hover){background:'+sbmt['color']+';color:'+sbmt['background-color']+';border-color:'+sbmt['background-color']+'}';
+        document.head.appendChild(style);
+      }
+    }
+
     $save.each(function(){
 			var $form = $(this).closest("form.wpcf7-form");
+
       //localized cf72post_save.disabled = true if form is not mapped.
       $('input[type=submit].wpcf7-submit', $form).on('click', function(event){
         var $this = $(this);

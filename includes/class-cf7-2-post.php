@@ -234,7 +234,8 @@ class Cf7_2_Post {
 		$plugin_public = new Cf7_2_Post_Public( $this->get_plugin_name(), $this->get_version() );
     /* WP hooks */
 		//$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+    $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles' );
     $this->loader->add_filter( 'do_shortcode_tag', $plugin_public, 'load_cf7_script', 4,3 ); //4: add before cf7 grid.
 		//no cahing metas
 		$this->loader->add_action('wp_head', $plugin_public, 'disable_browser_page_cache', 1);
