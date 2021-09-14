@@ -1,3 +1,22 @@
 #wpbody-content .inline-edit-row-page .inline-edit-col-right {
     margin-top: 0;
 }
+.c2p-post-type {
+	font-weight: bold;
+}
+.display-none, .inline-edit-col .display-none.c2p-delete-mapping{display:none}
+.c2p-delete-warning {
+	line-height: normal;
+	clear: both;
+}
+a:hover + .popup {
+	display: block;
+	position: absolute;
+	background: black;
+	color: white;
+	padding: 2px 5px;
+	margin-left: 5px;
+}
+.c2p-delete-data a span {
+	font-weight: bold;
+}

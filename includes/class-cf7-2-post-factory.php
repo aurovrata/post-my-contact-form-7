@@ -316,13 +316,13 @@ class CF72Post_Mapping_Factory {
   		'publicly_queryable'    => !empty($mapper->post_properties['publicly_queryable']),
   	);
     $reference = array(
-        'edit_post' => '',
-        'edit_posts' => '',
-        'edit_others_posts' => '',
-        'publish_posts' => '',
-        'read_post' => '',
-        'read_private_posts' => '',
-        'delete_post' => ''
+      'edit_post' => '',
+      'edit_posts' => '',
+      'edit_others_posts' => '',
+      'publish_posts' => '',
+      'read_post' => '',
+      'read_private_posts' => '',
+      'delete_post' => ''
     );
     $capabilities = array_filter(apply_filters('cf7_2_post_capabilities_'.$mapper->post_properties['type'], $reference));
     $diff=array_diff_key($reference, $capabilities);

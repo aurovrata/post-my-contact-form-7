@@ -673,60 +673,60 @@ abstract class Form_2_Post_Mapper {
    return '<input'.$disabled.' name="cf7_2_post_map_meta-'.$post_field.'" class="cf7-2-post-map-labels" type="text" value="'.$post_field.'"/>';
  }
 
- /**
+  /**
   * Function to display a dropdown list of taxonomies
   * Called by the dashbaord page.
   * @since 1.1.0
   * @param      string    $taxonomy_slug  slug of taxonomy to show as selected    .
   * @return     string    html select element.
- **/
- public function get_taxonomy_listing($taxonomy_slug=null){
-   $result = '';
-   // if('publish' == $this->post_properties['map']){
-   //   $result .= '<select disabled>';
-   // }else{
-   $result .= '<select class="taxonomy-list'.(empty($taxonomy_slug)?'':' select-hybrid').'">';
-   // }
-   if(empty($taxonomy_slug)){
-     $result .= '<option value="" data-name="" >'.__('Choose a Taxonomy', 'post-my-contact-form-7' ). '</option>';
-   }
-   $default_slug = sanitize_title( $this->get('singular_name') ).'_categories';
-   $result .= '<option class="factory-taxonomy" value="'.$default_slug.'" data-name="'.__('New Category', 'post-my-contact-form-7' ). '" class="factory-taxonomy">'.__('New Categories', 'post-my-contact-form-7' ). '</option>';
-   if(!empty($taxonomy_slug) &&
-   isset($this->taxonomy_properties[$taxonomy_slug])){
-     $taxonomy = $this->taxonomy_properties[$taxonomy_slug];
-     $result .= '<option selected data-name="'.$taxonomy['singular_name'].'" value="'.$taxonomy_slug.'" class="'.$taxonomy['source'].'-taxonomy">';
-     $result .= $taxonomy['name'];
-     $result .= '</option>';
-   }
+  **/
+  public function get_taxonomy_listing($taxonomy_slug=null){
+    $result = '';
+    // if('publish' == $this->post_properties['map']){
+    //   $result .= '<select disabled>';
+    // }else{
+    $result .= '<select class="taxonomy-list'.(empty($taxonomy_slug)?'':' select-hybrid').'">';
+    // }
+    if(empty($taxonomy_slug)){
+      $result .= '<option value="" data-name="" >'.__('Choose a Taxonomy', 'post-my-contact-form-7' ). '</option>';
+    }
+    $default_slug = sanitize_title( $this->get('singular_name') ).'_categories';
+    $result .= '<option class="factory-taxonomy" value="'.$default_slug.'" data-name="'.__('New Category', 'post-my-contact-form-7' ). '" class="factory-taxonomy">'.__('New Categories', 'post-my-contact-form-7' ). '</option>';
+    if(!empty($taxonomy_slug) &&
+    isset($this->taxonomy_properties[$taxonomy_slug])){
+      $taxonomy = $this->taxonomy_properties[$taxonomy_slug];
+      $result .= '<option selected data-name="'.$taxonomy['singular_name'].'" value="'.$taxonomy_slug.'" class="'.$taxonomy['source'].'-taxonomy">';
+      $result .= $taxonomy['name'];
+      $result .= '</option>';
+    }
 
-   $system_taxonomies = get_taxonomies( array('public'=>true, '_builtin' => false), 'objects' );
-   //inset the default post tags and category
-   if('post_tag' !=$taxonomy_slug){
-     $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';
-   }
-   if('category' !=$taxonomy_slug){
-     $result .= '<option value="category" data-name="'.__('Post Category', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Categories', 'post-my-contact-form-7' ). '</option>';
-   }
-   foreach($system_taxonomies as $taxonomy){
-     if( !empty($taxonomy_slug) && $taxonomy_slug==$taxonomy->name ) continue;
-     $result .= '<option value="'.$taxonomy->name.'" data-name="'.$taxonomy->labels->singular_name.'" class="system-taxonomy">';
-     $result .= $taxonomy->labels->name;
-     $result .= '</option>';
-   }
-   $result .= '</select>';
+    $system_taxonomies = get_taxonomies( array('public'=>true, '_builtin' => false), 'objects' );
+    //inset the default post tags and category
+    if('post_tag' !=$taxonomy_slug){
+      $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';
+    }
+    if('category' !=$taxonomy_slug){
+      $result .= '<option value="category" data-name="'.__('Post Category', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Categories', 'post-my-contact-form-7' ). '</option>';
+    }
+    foreach($system_taxonomies as $taxonomy){
+      if( !empty($taxonomy_slug) && $taxonomy_slug==$taxonomy->name ) continue;
+      $result .= '<option value="'.$taxonomy->name.'" data-name="'.$taxonomy->labels->singular_name.'" class="system-taxonomy">';
+      $result .= $taxonomy->labels->name;
+      $result .= '</option>';
+    }
+    $result .= '</select>';
 
-   return $result;
- }
+    return $result;
+  }
 
- /**
- * Save the submitted form data to a new/existing post
- * calling this function assumes the mapped post_type exists and is published
- * hooked to 'wpcf7_before_send_mail' which calls $public->save_cf7_2_post() and in turn calls this.
- *@since 1.0.0
- *@param WPCF7_Submission $submission cf7 submission object.
- */
- public function save_form_2_post($submission){
+  /**
+  * Save the submitted form data to a new/existing post
+  * calling this function assumes the mapped post_type exists and is published
+  * hooked to 'wpcf7_before_send_mail' which calls $public->save_cf7_2_post() and in turn calls this.
+  *@since 1.0.0
+  *@param WPCF7_Submission $submission cf7 submission object.
+  */
+  public function save_form_2_post($submission){
     $cf7_form_data = $submission->get_posted_data();
     $is_submitted = true;
     if(isset($cf7_form_data['save_cf7_2_post']) && 'true'==$cf7_form_data['save_cf7_2_post']){
@@ -1064,36 +1064,46 @@ abstract class Form_2_Post_Mapper {
     }
     /** @since 4.1.0 reutnr post id to handle post link mail tags in public class */
     return $post_id;
- }
- /**
+  }
+  /**
   * Delete a post mapping
   *
   * @since 1.0.0
   * @param     boolean    $delete_all_posted_data     .
- **/
- public function delete_mapping($delete_all_posted_data){
-   //TODO delete all meta_fields for this post
-   //delete_post_meta($post_id, $meta_key, $meta_value);
-   foreach($this->post_properties as $key=>$value){
-     delete_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key);
-   }
-   foreach($this->post_map_fields as $cf7_field=>$post_field){
+  */
+  public function delete_mapping(){
+    $post_type = $this->post_properties['type'];
+    $delete_all_posted_data = apply_filters('c2p_delete_all_submitted_posts', false, $post_type, $this->cf7_key);
+    $source = $this->post_properties['type_source'];
+    if('system'==$source || $delete_all_posted_data){
+     foreach($this->post_properties as $key=>$value){
+       delete_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key);
+     }
+    }
+    foreach($this->post_map_fields as $cf7_field=>$post_field){
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field);
-   }
-   foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
+    }
+    foreach($this->post_map_meta_fields as $cf7_field=>$post_field){
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_meta-'.$post_field);
-   }
-   //taxonomy mapping
-   delete_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy');
-   foreach($this->post_properties['taxonomy'] as $slug){
+    }
+    //taxonomy mapping
+    delete_post_meta($this->cf7_post_ID, '_cf7_2_post-taxonomy');
+    foreach($this->post_properties['taxonomy'] as $slug){
      //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug);
-   }
-   //TODO if( true==$delete_all_posted_data ) then we should remove all posted data
- }
- /**
+    }
+    if($delete_all_posted_data){
+      $query = apply_filters('c2p_delete_all_submitted_posts_query',array('numberposts'=>-1), $post_type, $this->cf7_key);
+      $query['post_type'] = $post_type;
+      $allposts= get_posts( $query );
+      foreach ($allposts as $eachpost) {
+        wp_delete_post( $eachpost->ID, true );
+      }
+    }
+  }
+  /**
 	 * Get mapped custom post property.
 	 *
 	 * @since    1.0.0
