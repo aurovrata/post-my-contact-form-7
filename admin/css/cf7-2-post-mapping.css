@@ -96,7 +96,7 @@ label{
     font-size: 1.1em;
 }
 .display-none,.display-none+.hybrid-select-js,
-#c2p-mapped-fields .display-none + .cf7-post-msg,
+#c2p-mapped-fields .display-none:not(.custom-taxonomy-input-fields) + .cf7-post-msg,
 #cf7-2-post .cf7-2-post-map-labels.hide{
   display:none;
 }

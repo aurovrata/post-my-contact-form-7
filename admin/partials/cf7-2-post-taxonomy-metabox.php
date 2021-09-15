@@ -7,6 +7,8 @@
 $mapped_taxonomy = $post_mapper->get_mapped_taxonomy();
 foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
   $taxonomy =  $post_mapper->get_taxonomy($post_taxonomy);
+  $val = $cf7_field;
+  if(strpos($cf7_field,'cf7_2_post_filter-')===0) $val = '';
   ?>
   <li>
     <div class="custom-taxonomy-field cf7-2-post-field">
@@ -16,7 +18,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         </span>&nbsp;
         (<span class="enabled link-button edit-taxonomy"><?= __('Edit', 'post-my-contact-form-7')?></span>)
       </label>
-      <select class="select-hybrid field-options taxonomy-options" name="cf7_2_post_map_taxonomy_value-<?=$post_taxonomy;?>/<?=$cf7_field?>" value="<?=$cf7_field?>">
+      <select class="select-hybrid field-options taxonomy-options" name="cf7_2_post_map_taxonomy_value-<?=$post_taxonomy;?>/<?=$val?>" value="<?=$cf7_field?>">
         <option class="default-option" selected="true" value="">
           <?= __('Select a form field', 'post-my-contact-form-7' )?>
         </option>

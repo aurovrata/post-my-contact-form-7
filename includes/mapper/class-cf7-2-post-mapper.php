@@ -248,6 +248,7 @@ abstract class Form_2_Post_Mapper {
     $slugs=array();
 
     foreach($fields as $field=>$value){
+      if(empty($value)) continue; //skip empty mappings.
       switch(true){
         case (0 === strpos($field,'source-') ): //taxonomy source.
           $slug = substr($field,$len_c2p_source);
@@ -275,7 +276,8 @@ abstract class Form_2_Post_Mapper {
           break;
         case (0 === strpos($field,'value-') ): //form field mapped to taxonomy.
           $slug = substr($field,$len_c2p_taxonomy);
-          $slug = str_replace("/$value",'',$slug);
+          if(0===strpos($value,'cf7_2_post_filter-')) $slug = str_replace('/','',$slug);
+          else $slug = str_replace("/$value",'',$slug);
           /** @since 5.1 allow multiple fields to map a given taxonomy */
           if(!isset($slugs[$slug])) $slugs[$slug]=array();
           $slugs[$slug][]=$value;
@@ -284,6 +286,7 @@ abstract class Form_2_Post_Mapper {
           break;
       }
     }
+    // debug_msg($slugs, 'slugs ');
     //save the taxonomy mappings so they can be created
     foreach($slugs as $slug=>$field){
       //update_post_meta($post_id, $meta_key, $meta_value, $prev_value);
@@ -1080,6 +1083,7 @@ abstract class Form_2_Post_Mapper {
        delete_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key);
      }
     }
+    delete_post_meta($this->cf7_post_ID, '_cf7_2_post_flush_rewrite_rules');
     foreach($this->post_map_fields as $cf7_field=>$post_field){
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field);
     }
@@ -1093,6 +1097,7 @@ abstract class Form_2_Post_Mapper {
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_names-'.$slug);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_name-'.$slug);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug);
+     delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug);
     }
     if($delete_all_posted_data){
       $query = apply_filters('c2p_delete_all_submitted_posts_query',array('numberposts'=>-1), $post_type, $this->cf7_key);

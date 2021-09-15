@@ -313,14 +313,14 @@
           fv = e.target.parentNode.nextElementSibling.value;
         }
         //setup the form field menu values.
-        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
+        // ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
         ffMenu.classList.add('autofill-field-name');
         if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
         break;
       case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
-        ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
+        // ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
         break;
       case field.classList.contains('field-options'): //check if field already used.
@@ -351,6 +351,7 @@
         }else{ //filter option selelected, display helper code.
            c2pFilterHelperCode.call(fc,fv);
         }
+
         break;
       case field.classList.contains('taxonomy-list'): //taxonomy selected.
         let tax = field.querySelector('option:checked'),
@@ -370,15 +371,19 @@
         input.value = isSystem ? 'system':'factory';
         input.setAttribute('name','cf7_2_post_map_taxonomy_source-'+tax.value);
         //update the form-field select name and filter.
-        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value);
+        let v = ffMenu.value;
+        if( v.indexOf('cf7_2_post_filter-') == 0){ //filter option.
+          v='';
+          c2pFilterHelperCode.call(fc,'cf7_2_post_filter-'+tax.value); //update filter.
+        }
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;
         if(ffMenu._hybriddd){ //refresh hybrid select.
-          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value});
+          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+v});
         }
         break;
       case field.classList.contains('taxonomy-slug'): //update in factory custom taxonomy slug.
         //update the form-field select name and filter.
-        ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
+        // ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+field.value);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+field.value;
         if(ffMenu._hybriddd){ //refresh hybrid select.
           ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+field.value});

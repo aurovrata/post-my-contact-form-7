@@ -622,6 +622,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * added 'c2p_delete_all_submitted_posts' boolean filter when deleting mapping.
 * added 'c2p_delete_all_submitted_posts_query' filter post query.
 * enable mapping delete.
+* added mapping delete in form table quick-edit
 = 5.2.1 =
 * fix add custom meta field issue.
 * fix file field handling when no file uploaded.
