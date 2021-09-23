@@ -135,8 +135,10 @@
       //update default post field hooks.
       [].forEach.call(document.querySelector('#c2p-default-post-fields').children, (l,i)=>{
         let f = l.querySelector('.field-options'),
-          pf = f.getAttribute('name').replace('cf7_2_post_map-',''),
+          pf = f.getAttribute('name'),
           fo = f.querySelector('.filter-option');
+          if(!pf && f._hybriddd) pf = f._hybriddd.opt.fieldName;
+          pf = pf.replace('cf7_2_post_map-','');
         fo.value = 'cf7_2_post_filter-'+type+'-'+pf;
         if(fo.selected) c2pFilterHelperCode.call(l,fo.value);
       });
