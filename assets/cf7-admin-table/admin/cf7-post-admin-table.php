@@ -146,7 +146,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
       $form_id = 0;
       $forms = get_posts(array(
         'post_type' => 'wpcf7_contact_form',
-        'post_name' => $form_key
+        'post_name__in' => array($form_key)
       ));
       if(!empty($forms)){
         $form_id = $forms[0]->ID;

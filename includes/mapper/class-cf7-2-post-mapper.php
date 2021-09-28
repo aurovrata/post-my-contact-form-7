@@ -1072,17 +1072,13 @@ abstract class Form_2_Post_Mapper {
   * Delete a post mapping
   *
   * @since 1.0.0
-  * @param     boolean    $delete_all_posted_data     .
   */
   public function delete_mapping(){
     $post_type = $this->post_properties['type'];
-    $delete_all_posted_data = apply_filters('c2p_delete_all_submitted_posts', false, $post_type, $this->cf7_key);
     $source = $this->post_properties['type_source'];
-    if('system'==$source || $delete_all_posted_data){
      foreach($this->post_properties as $key=>$value){
        delete_post_meta($this->cf7_post_ID, '_cf7_2_post-'.$key);
      }
-    }
     delete_post_meta($this->cf7_post_ID, '_cf7_2_post_flush_rewrite_rules');
     foreach($this->post_map_fields as $cf7_field=>$post_field){
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map-'.$post_field);
@@ -1099,7 +1095,7 @@ abstract class Form_2_Post_Mapper {
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy-'.$slug);
      delete_post_meta($this->cf7_post_ID, 'cf7_2_post_map_taxonomy_source-'.$slug);
     }
-    if($delete_all_posted_data){
+    if(apply_filters('c2p_delete_all_submitted_posts', false, $post_type, $this->cf7_key)){
       $query = apply_filters('c2p_delete_all_submitted_posts_query',array('numberposts'=>-1), $post_type, $this->cf7_key);
       $query['post_type'] = $post_type;
       $allposts= get_posts( $query );

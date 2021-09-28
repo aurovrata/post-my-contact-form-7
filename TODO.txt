@@ -1,3 +1,5 @@
+- improve loading of resources by validating form being loaded.
+
 
 - factory class, update function has a TODO on line 402
 - set menu_icon in post mapping page (http://codex.wordpress.org/Function_Reference/register_post_type)
@@ -14,4 +16,4 @@ DONE
 - post editor / user profile editor on front-end.  Not just edit drafts. see this question )
 - add edit button for saved mappings in map edit page
 
-- check compatibility with googlemap plugin v1.8
+- DONE check compatibility with googlemap plugin v1.8

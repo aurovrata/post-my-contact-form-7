@@ -158,6 +158,7 @@
    */
   //existing post selection
   $('#c2p-factory-post').on('change', '#post-type-source, #system-post-type, #custom-post-type, #custom-post-source, #post-plural-name, #post_singular_name', switchPostSource);
+  $('#c2p-factory-post').on('change','input.c2cpt-attribute', c2pUpdateMapping);
   //auto-fill the meta-field name and clone meta-field.
   $('#c2p-post-meta-fields').on('click', '.add-more-field, .remove-field', function(e){
     switch(true){

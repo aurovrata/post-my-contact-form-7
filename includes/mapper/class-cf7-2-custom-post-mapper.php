@@ -106,8 +106,7 @@ class Form_2_Custom_Post extends Form_2_Post_Mapper{
       }
     }
     //let's save the properties if this is a factory mapping
-    debug_msg('set default mapping','',true);
-    if($this->post_properties['default']){ //default mapping.
+    if(isset($this->post_properties['default']) && $this->post_properties['default']){ //default mapping.
       $form = get_post($this->cf7_post_ID);
       $names = $name = $form->post_title;
       if( 's'!= substr($names,-1) ) $names.='s';

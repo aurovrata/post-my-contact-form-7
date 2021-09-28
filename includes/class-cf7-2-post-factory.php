@@ -196,7 +196,7 @@ class CF72Post_Mapping_Factory {
 
   /**
 	 * Store the mapping in the CF7 post & create the custom post mapping.
-	 * This is called by the plugin admin class function ajax_save_post_mapping whih is hooked to the ajax form call
+	 * This is
 	 * @since    5.0.0
    * @return  boolean   true if successful
    */
@@ -645,7 +645,7 @@ class CF72Post_Mapping_Factory {
         $isHybrid = $mapper->field_has_class($form_field, 'hybrid-select');
         if($isHybrid){
           wp_enqueue_script('hybriddd-js'); //previously registered.
-          wp_enqueue_style('hybriddd-css');
+          wp_enqueue_style('hybriddd-style');
         }
         /** @since 5.1.1 track branch for taxonomy filter */
         $branch = 0;

@@ -73,7 +73,7 @@ class Cf7_2_Post_Public {
   public function register_styles(){
     $plugin_dir = plugin_dir_url( __DIR__ );
     wp_register_style( $this->plugin_name.'-css', $plugin_dir . 'public/css/cf7-2-post-styling.css', null, $this->version);
-    wp_register_style('hybriddd-css',$plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
+    wp_register_style('hybriddd-style', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.css', null, $this->version);
 
   }
   /**

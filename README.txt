@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.8.0
+Tested up to: 5.8.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -624,6 +624,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * enable mapping delete.
 * added mapping delete in form table quick-edit
 * fix filter taxonomy mapping.
+* fix udpate of cpt attributes bug.
 = 5.2.1 =
 * fix add custom meta field issue.
 * fix file field handling when no file uploaded.
