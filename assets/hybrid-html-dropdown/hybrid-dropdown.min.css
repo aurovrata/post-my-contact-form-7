@@ -52,8 +52,19 @@ select.hybridddised{
 	max-height: none;
 	min-width: auto;
 }
+/* hdd image grid with columns */
+.hybriddd-wrapper.hybriddd-grid {
+	width: calc( var(--hybriddd-item, 50px) * var(--hybriddd-col));
+}
+.hybrid-dropdown .hybriddd-grid ul.hybriddd-options {
+	display: grid;
+	grid-template-columns: repeat(var(--hybriddd-col), 1fr);
+}
 .hybrid-dropdown.hybriddd-none .hybriddd-options > li {
 	display: inline-block;
+}
+.hybrid-dropdown .hybriddd-grid .hybriddd-options > li {
+	display: flex;
 }
 .hybrid-dropdown.hybriddd-top .hybriddd-wrapper{
   bottom:var(--hybriddd-top);
