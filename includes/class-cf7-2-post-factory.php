@@ -104,7 +104,7 @@ class CF72Post_Mapping_Factory {
    * @return Form_2_Post_Mapper  a factory oject
    */
   public function get_post_mapper( $cf7_post_id ){
-    if($cf7_post_id<0){
+    if($cf7_post_id===0){
       $mapper =  new Form_2_Custom_Post($cf7_post_id, $this);
       $map = $this->get_default_mapping();
       $mapper->init_default($map['type'],$map['name'],$map['names']);

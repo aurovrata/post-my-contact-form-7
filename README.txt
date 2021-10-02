@@ -625,6 +625,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * added mapping delete in form table quick-edit
 * fix filter taxonomy mapping.
 * fix update of cpt attributes bug.
+* fix post type creation bug on new and unmapped posts
 = 5.2.1 =
 * fix add custom meta field issue.
 * fix file field handling when no file uploaded.
