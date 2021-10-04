@@ -614,6 +614,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.3.1 =
+* update hybrid library.
 = 5.3.0 =
 * enable inverse auto-style of draft submit.
 * added 'c2p_autostyle_save_button' filter to switch off autostyling.
