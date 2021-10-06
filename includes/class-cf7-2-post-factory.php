@@ -123,13 +123,17 @@ class CF72Post_Mapping_Factory {
     $form = get_post($cf7_post_id);
     //debug_msg('type='.$post_type);
     if(empty($post_type)){ //let's create a new one
-      $plural_name = $singular_name = $form->post_title;
+      $plural_name = $singular_name = 'Undefined';
+      $slug = 'undefined';
+      if(isset($form)){
+        $plural_name = $singular_name = $form->post_title;
+        if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
+        $slug = $form->post_name;
+      }
       $mapper = new Form_2_Custom_Post($cf7_post_id, $this);
       $mapper->cf7_key = $post_type;
-      if( 's'!= substr($plural_name,-1) ) $plural_name.='s';
-      $mapper->init_default($form->post_name,$singular_name,$plural_name);
+      $mapper->init_default($slug,$singular_name,$plural_name);
     }else{
-
       $post_type_source = get_post_meta($cf7_post_id,'_cf7_2_post-type_source',true);
       $map = get_post_meta($cf7_post_id,'_cf7_2_post-map',true);
       if( isset($this->post_mappers[$cf7_post_id]) ){
