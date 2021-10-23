@@ -296,7 +296,43 @@ if(!class_exists('Cf7_WP_Post_Table')){
 
           break;
         case 'cf7_key':
-          echo '<span class="cf7-form-key">'.$form->post_name.'</span>';
+          $update = '';
+          $errors = get_post_meta($post_id, '_config_errors', true);
+          if(!empty($errors)) $update = 'cf7-errors';
+          echo '<span class="cf7-form-key" data-update="'.$update.'">'.$form->post_name.'</span>';
+          break;
+      }
+    }
+    /**
+    * Add a script to the admin table page to highlight form uddates.
+    * hooked to 'admin_footer'.
+    *@since 5.3.2
+    */
+    public function update_form_highlight(){
+      $screen = get_current_screen();
+      if (!isset($screen) || 'wpcf7_contact_form' != $screen->post_type){
+        return;
+      }
+      switch( $screen->base ){
+        case 'edit':
+        /** @since 4.11.5 enable cf7 form errors to be notified */
+        ?>
+        <script type="text/javascript">
+        (function($){
+          $(document).ready(function(){
+            $('tbody#the-list tr').each(function(){
+              var $tr = $(this);
+              var update = $tr.find('.cf7-form-key').data('update');
+              switch(update){
+                case 'cf7-errors':
+                  $tr.find('a.row-title').addClass(update).after('<span class="cf7sg-popup display-none"><?=__('CF7 plugin has found misconfiguration errors on this form.', 'post-my-contact-form-7')?></span>').parent().css('position','relative');
+                  break;
+              }
+            });
+          });
+        })(jQuery);
+        </script>
+        <?php
           break;
       }
     }
@@ -395,7 +431,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
           'cf7key' => '',
       ), $atts );
       if(empty($a['cf7key'])){
-        return '<em>' . __('cf7-form shortcode missing key','cf7-admin-table') . '</em>';
+        return '<em>' . __('cf7-form shortcode missing key','post-my-contact-form-7') . '</em>';
       }
       //else get the post ID
       $form = get_posts(array(
@@ -412,7 +448,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
         }
         return do_shortcode('[contact-form-7 id="'.$id.'"'.$attributes.']');
       }else{
-        return '<em>' . __('cf7-form shortcode key error, unable to find form','cf7-admin-table') . '</em>';
+        return '<em>' . __('cf7-form shortcode key error, unable to find form','post-my-contact-form-7') . '</em>';
       }
     }
   } //end class

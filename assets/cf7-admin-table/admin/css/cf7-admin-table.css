@@ -42,3 +42,24 @@
 #shortcode {
     line-height: 1.2em;
 }
+.display-none{display: none;}
+span.cf7sg-popup {
+	background: rgba(227, 224, 224, 0.81);
+	border-radius: 5px;
+	top: -2.2em;
+	left: 10px;
+	position: absolute;
+	transition: 500ms ease;
+	padding: .4em;
+	white-space: nowrap;
+	line-height: normal;
+	border: solid 1px;
+}
+.row-title.cf7-errors:hover+span.cf7sg-popup {display: block;}
+
+.row-title.cf7-errors::after {
+	content: '\2731';
+	color: #d10000;
+	position: absolute;
+	top: -5px;
+}
