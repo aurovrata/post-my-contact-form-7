@@ -246,7 +246,7 @@
     }
   });
   //bind and delegate add-more/remove taxonomy fields.
-  $('#c2p-taxonomy-fields').on('click', '.add-more-field, .remove-field, .edit-taxonomy.enabled, .button.save-taxonomy', function(e){
+  $('#c2p-taxonomy-fields').on('click', '.add-more-field, .remove-field, .edit-taxonomy.enabled, .button.save-taxonomy, .php-filter-button, .php-close.dashicons', function(e){
     switch(true){
       case e.target.classList.contains('add-more-field'):
         break;
@@ -259,6 +259,26 @@
       case e.target.classList.contains('remove-field'):
         e.target.closest('li').remove();
         c2pUpdateMapping();
+        return false;
+      case e.target.classList.contains('php-filter-button'):
+        let l = e.delegateTarget.querySelector('ul.php-filters');
+        if(!l){
+          let f = document.createDocumentFragment(),list;
+          l = document.createElement('ul');
+          l.classList.add('php-filters');
+          l.innerHTML = '<span class="dashicons dashicons-plus-alt php-close"></span>';
+          e.target.closest('ul').append(l);
+          list = document.querySelectorAll('#c2p-helper-lists li.c2p-taxonomy');
+          [].forEach.call(list, (e)=>{l.appendChild(e)});
+          l.appendChild(f.cloneNode(true));
+        }
+        let p = $(e.target).position();
+        l.style['top'] = p.top+'px';
+        l.style['left'] = p.left+'px';
+        l.classList.remove('display-none');
+        return false;
+      case e.target.classList.contains('php-close'):
+        e.target.closest('ul').classList.add('display-none');
         return false;
       default:
         return false;
@@ -351,8 +371,10 @@
               ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value});
             }
           }
+          ffMenu.parentNode.classList.remove('hooked');
         }else{ //filter option selelected, display helper code.
            c2pFilterHelperCode.call(fc,fv);
+           ffMenu.parentNode.classList.add('hooked');
         }
 
         break;

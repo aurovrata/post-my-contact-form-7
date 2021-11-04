@@ -387,3 +387,53 @@ button.button-link.close-details {
 #c2p-tax-notes li {
 	list-style: inside;
 }
+.custom-taxonomy-field span.php-filter-button {
+	background-image: url('./image/php-sprite.png');
+	width: 22px;
+	display: inline-block;
+	height: 11px;
+	background-size: 200%;
+	vertical-align: text-bottom;
+	margin-left: 4px;
+	border: solid 1px blue;
+	border-radius: 3px;
+	padding: 1px 2px;
+  display: none;
+}
+.dashicons.remove-field + .php-filter-button {
+	display: inline-block;
+}
+.hooked .dashicons.remove-field + .php-filter-button {
+	display: none;
+}
+.custom-taxonomy-field span.php-filter-button:hover {
+	cursor: pointer;
+	color: blue;
+  background-position-x: 26px;
+}
+ul.php-filters > li {
+	display: block;
+}
+#c2p-taxonomy-fields{
+	position: relative;
+}
+ul.php-filters:not(.display-none) {
+	display: inline-block;
+	position: absolute;
+	border: solid 1px;
+	border-radius: 3px;
+	padding: 3px;
+	list-style: none;
+	margin: -22px 0 0 3px;
+	background-color: white;
+  z-index: 108;
+}
+ul.php-filters .dashicons {
+	position: absolute;
+	top: -13px;
+	right: -6px;
+	width: 14px;
+	height: 14px;
+	background: white;
+	transform: rotate(45deg);
+}

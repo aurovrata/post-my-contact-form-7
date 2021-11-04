@@ -11,7 +11,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
   if(strpos($cf7_field,'cf7_2_post_filter-')===0) $val = '';
   ?>
   <li>
-    <div class="custom-taxonomy-field cf7-2-post-field">
+    <div class="custom-taxonomy-field cf7-2-post-field<?= empty($val)?' hooked':'';?>">
       <label class="taxonomy-label-field cf7-2-post-map-labels">
         <span class="taxonomy-name">
           <strong><?= $taxonomy['name']; ?></strong>
@@ -27,6 +27,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
         </option>
       </select>
       <span class="dashicons dashicons-remove remove-field"></span>
+      <span class="php-filter-button"></span>
     </div>
     <span class="cf7-post-msg"></span>
     <div class="custom-taxonomy-input-fields display-none">
@@ -82,6 +83,7 @@ foreach( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
       </option>
     </select>
     <span class="dashicons dashicons-insert add-more-field"></span>
+    <span class="php-filter-button"></span>
   </div>
   <span class="cf7-post-msg"></span>
   <div class="display-none custom-taxonomy-input-fields">
