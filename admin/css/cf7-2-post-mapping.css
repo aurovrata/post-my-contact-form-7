@@ -411,13 +411,13 @@ button.button-link.close-details {
 	color: blue;
   background-position-x: 26px;
 }
-ul.php-filters > li {
+#c2p-taxonomy-fields ul.helper-list > li {
 	display: block;
 }
 #c2p-taxonomy-fields{
 	position: relative;
 }
-ul.php-filters:not(.display-none) {
+#c2p-taxonomy-fields ul.helper-list:not(.display-none) {
 	display: inline-block;
 	position: absolute;
 	border: solid 1px;
@@ -428,7 +428,7 @@ ul.php-filters:not(.display-none) {
 	background-color: white;
   z-index: 108;
 }
-ul.php-filters .dashicons {
+#c2p-taxonomy-fields ul.helper-list .dashicons {
 	position: absolute;
 	top: -13px;
 	right: -6px;

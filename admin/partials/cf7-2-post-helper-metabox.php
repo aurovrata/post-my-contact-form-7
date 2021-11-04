@@ -240,8 +240,8 @@
   function modify_my_terms($terms_id, $cf7_id, $field, $cf7_key){
     /*This filter allows you to pre-fill/select taxonomy terms fields for new submissions.*/
     //assuming you have defined a checkbox field called city-locations for your f7 form '{$form_key}'.
-    if('{$form_key}' == $cf7_key &amp; 'city-locations' == $field){
-      $term = get_term_by('name','London','location_categories');
+    if('{$form_key}' == $cf7_key &amp; '{$field}' == $field){
+      $term = get_term_by(...);
       $terms_id = array();
       $terms_id[] = $term->term_id;
     }
@@ -264,7 +264,7 @@
     // NOTE: the plugin iterates through each terms it finds to get its children.
     //so for hierarchical taxonomy this filter will be recursively called on each term and its children.
     //in the example below I am assuming that I have a dropdown field which map to my (hierarchical) locations taxonomy.  I want restrict the listed options to my top level terms 'UK', 'France' and 'Germany'.Furthermore, I don't want to list the children of these capital cities, namely 'London', 'Paris', 'Berlin'.
-    if($cf7_key == '{$form_key}' && $field=='locations'){//verify this is the correct form.
+    if($cf7_key == '{$form_key}' && '{$field}'==$field){//verify this is the correct form.
       switch($query['parent']){
         case 0: //this is the first (top-level) iteration of this filter.
           $query['slug'] = array('uk', 'france', 'germany');//restrict our top level terms.
@@ -458,11 +458,11 @@
         $('#admin-hooks .helper-list li a, #loading-hooks .helper-list li a, #submit-hooks .helper-list li a').each(function(){
           new Clipboard($(this)[0], {
             text: function(trigger) {
-              var $target = $(trigger);
-              var text = $target.data('cf72post');
-              //get postType
-              var postType = $('#mapped-post-type').val();
-              var formKey = $('#c2p-cf7-key').val();
+              let $target = $(trigger),
+                text = $target.data('cf72post'),
+                postType = $('#mapped-post-type').val(),
+                formKey = $('#c2p-cf7-key').val(),
+                f = trigger.closest('ul');
               /** @since 4.1.2 fix post types in function names. */
               text = text.replace(/\{\$post_type\}/gi, postType);
               postType = postType.replace(/-/g,'_');
@@ -470,6 +470,9 @@
               text = text.replace(/\{\$form_key\}/gi, formKey);
               formKey = formKey.replace(/-/g,'_');
               text = text.replace(/\{\$form_key_f\}/gi, formKey);
+              if(f && f.dataset.field){
+                text = text.replace(/\{\$field\}/gi, f.dataset.field);
+              }
               return text;
             }
           });

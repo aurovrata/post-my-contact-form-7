@@ -261,11 +261,11 @@
         c2pUpdateMapping();
         return false;
       case e.target.classList.contains('php-filter-button'):
-        let l = e.delegateTarget.querySelector('ul.php-filters');
+        let l = e.delegateTarget.querySelector('ul.helper-list');
         if(!l){
           let f = document.createDocumentFragment(),list;
           l = document.createElement('ul');
-          l.classList.add('php-filters');
+          l.classList.add('helper-list');
           l.innerHTML = '<span class="dashicons dashicons-plus-alt php-close"></span>';
           e.target.closest('ul').append(l);
           list = document.querySelectorAll('#c2p-helper-lists li.c2p-taxonomy');
@@ -276,6 +276,8 @@
         l.style['top'] = p.top+'px';
         l.style['left'] = p.left+'px';
         l.classList.remove('display-none');
+        p = e.target.closest('li').querySelector('.field-options');
+        if(p) l.setAttribute('data-field',p.value);
         return false;
       case e.target.classList.contains('php-close'):
         e.target.closest('ul').classList.add('display-none');
