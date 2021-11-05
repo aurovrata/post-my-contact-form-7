@@ -217,6 +217,7 @@ abstract class Form_2_Post_Mapper {
 
   }
   protected function _save_post_meta_fields(){
+    // debug_msg($_POST, '$_POST ');
     $this->post_map_meta_fields = $this->get_mapped_fields('cf7_2_post_map_meta_value-');
     // debug_msg($this->post_map_meta_fields, 'update metas ');
     $this->_save_to_DB($this->post_map_meta_fields, 'cf7_2_post_map_meta-');

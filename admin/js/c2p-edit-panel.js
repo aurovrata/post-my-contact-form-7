@@ -346,7 +346,9 @@
       case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
         // ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
-        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
+        if(ffMenu._hybriddd){ //refresh hybrid select.
+          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv});
+        }
         break;
       case field.classList.contains('field-options'): //check if field already used.
         msgBox.innerHTML ='';
@@ -365,6 +367,9 @@
           if(ffMenu.classList.contains('autofill-field-name')){
             let pf = fc.querySelector('.cf7-2-post-map-label-custom');
             if('custom_meta_key'==pf.value) pf.value = fv.replace(/-/g,'_');
+            if(ffMenu._hybriddd){ //refresh hybrid select.
+              ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+pf.value});
+            }
           }
           if(field.classList.contains('taxonomy-options')){
             let tax = fc.querySelector('input.taxonomy-slug');

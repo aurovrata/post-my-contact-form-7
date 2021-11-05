@@ -614,7 +614,8 @@ class Cf7_2_Post_Admin {
    * @param      Array    $mailtags     tag-name.
    * @return     string    $p2     .
   **/
-  public function email_tags( $mailtags = array() ) {
+  public function email_tags( $mailtags ) {
+    // debug_msg($mailtags, 'mail tags ');
     $cf7_form = WPCF7_ContactForm::get_current();
     $cf7_post_id = $cf7_form->id();
     //is this form mapped yet?

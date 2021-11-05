@@ -614,6 +614,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.4.0 =
+* fix auto mapping of meta fields.
+* added hooks shortcut for taxonomy mappings.
 = 5.3.1 =
 * update hybrid library.
 = 5.3.0 =

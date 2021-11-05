@@ -375,6 +375,9 @@ button.button-link.close-details {
   background:none;
   margin-left: 0;
 }
+select.hybridddised.display-none + .hybrid-dropdown {
+	display: none;
+}
 .custom-meta-field .nice-select, #post_taxonomy_map .nice-select {
     float: none;
     clear: unset;
