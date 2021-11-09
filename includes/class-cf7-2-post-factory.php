@@ -513,180 +513,178 @@ class CF72Post_Mapping_Factory {
     $unmapped_fields = array();
     $mapper->load_form_fields(); //this loads the cf7 form fields and their type
 
-
+    //find out if this user has a post already created/saved
+    $args = array(
+    	'posts_per_page'   => 1,
+    	'post_type'        => $mapper->post_properties['type'],
+    	'post_status'      => 'any'
+    );
+    if(!empty($cf7_2_post_id)){ //search for the sepcific mapped/saved post
+      $args['post__in']=array($cf7_2_post_id);
+    }
+    //filter by submission value for newer version so as not to break older version
+    if( version_compare( CF7_2_POST_VERSION , $mapper->post_properties['version'] , '>=') ){
+      $args['meta_query'] = array(
+  		array(
+  			'key'     => '_cf7_2_post_form_submitted',
+  			'value'   => 'no',
+  			'compare' => 'LIKE',
+  		));
+    }
     if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
-      //find out if this user has a post already created/saved
-      $args = array(
-      	'posts_per_page'   => 1,
-      	'post_type'        => $mapper->post_properties['type'],
-      	'author'	   => $user->ID,
-      	'post_status'      => 'any'
-      );
-      if(!empty($cf7_2_post_id)){ //search for the sepcific mapped/saved post
-        $args['post__in']=array($cf7_2_post_id);
-      }
-      //filter by submission value for newer version so as not to break older version
-      if( version_compare( CF7_2_POST_VERSION , $mapper->post_properties['version'] , '>=') ){
-        $args['meta_query'] = array(
-    		array(
-    			'key'     => '_cf7_2_post_form_submitted',
-    			'value'   => 'no',
-    			'compare' => 'LIKE',
-    		));
-      }
-
-
-      $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $mapper->post_properties['type'], $mapper->cf7_key);
-      $posts_array = get_posts( $args );
-      //debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
-      if(!empty($posts_array)){
-        $post = $posts_array[0];
-        $load_saved_values = true;
-        $field_and_values['map_post_id']= $post->ID;
-        wp_reset_postdata();
-      }
-
+      $args['author'] = $user->ID;
     }
-      //we now need to load the save meta field values
-      foreach($mapper->get_post_map_fields() as $form_field => $post_field){
-        $post_key ='';
-        $post_value = '';
-        $skip_loop = false;
-        //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
-          continue;
-        }
 
-        switch($post_field){
-          case 'title':
-          case 'author':
-          case 'excerpt':
-            $post_key = 'post_'.$post_field;
-            break;
-          case 'editor':
-            $post_key ='post_content';
-            break;
-          case 'slug':
-            $post_key ='post_name';
-            break;
-          case 'thumbnail':
-            break;
-        }
-        if($load_saved_values) {
-          $post_value = $post->{$post_key};
-        }else{
-          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
-        }
+    $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $mapper->post_properties['type'], $mapper->cf7_key);
+    $posts_array = get_posts( $args );
+    // debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
+    if(!empty($posts_array)){
+      $post = $posts_array[0];
+      $load_saved_values = true;
+      $field_and_values['map_post_id']= $post->ID;
+      wp_reset_postdata();
+    }
 
-        if(!empty($post_value)){
-          $field_and_values[str_replace('-','_',$form_field)] = $post_value;
-        }
+    //we now need to load the save meta field values
+    foreach($mapper->get_post_map_fields() as $form_field => $post_field){
+      $post_key ='';
+      $post_value = '';
+      $skip_loop = false;
+      //if the value was filtered, let's skip it
+      if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        continue;
       }
-      //
-      //----------- meta fields
-      //
-      $cf7_form_fields = $mapper->get_cf7_form_fields();
-      foreach($mapper->get_post_map_meta_fields() as $form_field => $post_field){
-        $post_value='';
-        //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
-          continue;
-        }
-        //get the meta value
-        if($load_saved_values) {
-          $post_value = get_post_meta($post->ID, $post_field, true);
-        }else{
-          //debug_msg('spllygin filter cf7_2_post_filter_cf7_field_value'. $form_field);
-          $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
-        }
-        if(!empty($post_value)){
-          $field_and_values[str_replace('-','_',$form_field)] = $post_value;
-        }
-      }
-      /*
-       Finally let's also allow a user to load values for unammaped fields
-      */
 
-      $unmapped_fields = array_diff_key( $cf7_form_fields, $mapper->get_post_map_meta_fields(), $mapper->get_post_map_fields(), $mapper->get_post_map_taxonomy() );
-      foreach($unmapped_fields as $form_field=>$type){
-        if('submit' == $type){
-          continue;
-        }
-        $post_value='';
+      switch($post_field){
+        case 'title':
+        case 'author':
+        case 'excerpt':
+          $post_key = 'post_'.$post_field;
+          break;
+        case 'editor':
+          $post_key ='post_content';
+          break;
+        case 'slug':
+          $post_key ='post_name';
+          break;
+        case 'thumbnail':
+          break;
+      }
+      if($load_saved_values) {
+        $post_value = $post->{$post_key};
+      }else{
         $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
-        //$script .= $mapper->get_field_script($form_field, $post_value);
-        if(!empty($post_value)){
-          $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+      }
+
+      if(!empty($post_value)){
+        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+      }
+    }
+    //
+    //----------- meta fields
+    //
+    $cf7_form_fields = $mapper->get_cf7_form_fields();
+    foreach($mapper->get_post_map_meta_fields() as $form_field => $post_field){
+      $post_value='';
+      //if the value was filtered, let's skip it
+      if( 0 === strpos($form_field,'cf7_2_post_filter-') ) {
+        continue;
+      }
+      //get the meta value
+      if($load_saved_values) {
+        $post_value = get_post_meta($post->ID, $post_field, true);
+      }else{
+        //debug_msg('spllygin filter cf7_2_post_filter_cf7_field_value'. $form_field);
+        $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
+      }
+      if(!empty($post_value)){
+        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+      }
+    }
+    /*
+     Finally let's also allow a user to load values for unammaped fields
+    */
+
+    $unmapped_fields = array_diff_key( $cf7_form_fields, $mapper->get_post_map_meta_fields(), $mapper->get_post_map_fields(), $mapper->get_post_map_taxonomy() );
+    foreach($unmapped_fields as $form_field=>$type){
+      if('submit' == $type){
+        continue;
+      }
+      $post_value='';
+      $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
+      //$script .= $mapper->get_field_script($form_field, $post_value);
+      if(!empty($post_value)){
+        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+      }
+    }
+    //
+    // ------------ taxonomy fields
+    //
+    $load_chosen_script=false;
+    foreach($mapper->get_post_map_taxonomy() as $form_field => $taxonomy){
+      //if the value was filtered, let's skip it
+      if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
+        continue;
+      }
+      $terms_id = array();
+      if( $load_saved_values ) {
+        $terms = get_the_terms($post, $taxonomy);
+        if(empty($terms)) $terms = array();
+        foreach($terms as $term){
+          $terms_id[] = $term->term_id;
+        }
+      }else{
+        $terms_id = apply_filters('cf7_2_post_filter_cf7_taxonomy_terms',$terms_id, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
+        if( is_string($terms_id) ){
+          $terms_id = array($terms_id);
         }
       }
-      //
-      // ------------ taxonomy fields
-      //
-      $load_chosen_script=false;
-      foreach($mapper->get_post_map_taxonomy() as $form_field => $taxonomy){
-        //if the value was filtered, let's skip it
-        if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
-          continue;
-        }
-        $terms_id = array();
-        if( $load_saved_values ) {
-          $terms = get_the_terms($post, $taxonomy);
-          if(empty($terms)) $terms = array();
-          foreach($terms as $term){
-            $terms_id[] = $term->term_id;
-          }
-        }else{
-          $terms_id = apply_filters('cf7_2_post_filter_cf7_taxonomy_terms',$terms_id, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
-          if( is_string($terms_id) ){
-            $terms_id = array($terms_id);
-          }
-        }
-        //load the list of terms
-        // debug_msg($terms_id, "buidling options for taxonomy ".$taxonomy." ");
-        $field_type = $cf7_form_fields[$form_field];
-        /** @since 5.0 allow hybrid dropdown fields */
-        $isHybrid = $mapper->field_has_class($form_field, 'hybrid-select');
-        if($isHybrid){
-          wp_enqueue_script('hybriddd-js'); //previously registered.
-          wp_enqueue_style('hybriddd-style');
-        }
-        /** @since 5.1.1 track branch for taxonomy filter */
-        $branch = 0;
-        if(is_taxonomy_hierarchical($taxonomy)) $branch = array(0);
-
-        if( $isHybrid &&  $field_type != 'select'){
-          $limit = ($field_type == 'checkbox')? -1:1;
-          $hdd = array(
-            'limitSelection' => $limit,
-            'fieldName' => $form_field,
-            'selectedValues'=>$terms_id,
-            'dataSet'=>array(''=>__('Select an item','post-my-contact-form-7'))
-          );
-          $hdd = (array) apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key);
-
-          $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, $branch, '' , $form_field, $mapper);
-          $options = $hdd;
-          // debug_msg($options, $form_field);
-        }else{
-          $options = $this->get_taxonomy_terms($taxonomy, $branch, $terms_id, $form_field, $field_type, 0, $mapper);
-          $options = wp_json_encode($options);
-          switch($field_type){
-            case 'checkbox':
-            case 'radio':
-              wp_enqueue_style('c2p-css',plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/cf7-2-post-styling.css', array(),CF7_2_POST_VERSION);
-              break;
-            case 'select':
-          }
-          //for legacy purpose
-          $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
-          if( $apply_jquery_select ){
-            wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
-            wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
-          }
-        }
-        $field_and_values[str_replace('-','_',$form_field)] = $options;
+      //load the list of terms
+      // debug_msg($terms_id, "buidling options for taxonomy ".$taxonomy." ");
+      $field_type = $cf7_form_fields[$form_field];
+      /** @since 5.0 allow hybrid dropdown fields */
+      $isHybrid = $mapper->field_has_class($form_field, 'hybrid-select');
+      if($isHybrid){
+        wp_enqueue_script('hybriddd-js'); //previously registered.
+        wp_enqueue_style('hybriddd-style');
       }
+      /** @since 5.1.1 track branch for taxonomy filter */
+      $branch = 0;
+      if(is_taxonomy_hierarchical($taxonomy)) $branch = array(0);
+
+      if( $isHybrid &&  $field_type != 'select'){
+        $limit = ($field_type == 'checkbox')? -1:1;
+        $hdd = array(
+          'limitSelection' => $limit,
+          'fieldName' => $form_field,
+          'selectedValues'=>$terms_id,
+          'dataSet'=>array(''=>__('Select an item','post-my-contact-form-7'))
+        );
+        $hdd = (array) apply_filters('cf72post_filter_hybriddd_options', $hdd,$form_field,$mapper->cf7_key);
+
+        $hdd['dataSet']=$hdd['dataSet']+$this->build_hybrid_dropdown($taxonomy, $branch, '' , $form_field, $mapper);
+        $options = $hdd;
+        // debug_msg($options, $form_field);
+      }else{
+        $options = $this->get_taxonomy_terms($taxonomy, $branch, $terms_id, $form_field, $field_type, 0, $mapper);
+        $options = wp_json_encode($options);
+        switch($field_type){
+          case 'checkbox':
+          case 'radio':
+            wp_enqueue_style('c2p-css',plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/cf7-2-post-styling.css', array(),CF7_2_POST_VERSION);
+            break;
+          case 'select':
+        }
+        //for legacy purpose
+        $apply_jquery_select = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
+        if( $apply_jquery_select ){
+          wp_enqueue_script('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array('jquery'),CF7_2_POST_VERSION,true);
+          wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
+        }
+      }
+      $field_and_values[str_replace('-','_',$form_field)] = $options;
+    }
     //filter the values
     $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_ID , $mapper->post_properties['type'], $mapper->cf7_key, $post);
     //make sure the field names are with underscores
@@ -765,7 +763,6 @@ class CF72Post_Mapping_Factory {
     $args = array('hide_empty' => 0);
     //for hierarchical taxonomy...
     if(is_array($branch)) $args['parent'] = end($branch);
-
     $args = apply_filters('cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_ID, $taxonomy, $field, $mapper->cf7_key, $branch);
     /**
     * allows for more felxibility in filtering taxonomy options.

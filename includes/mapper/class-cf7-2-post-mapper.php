@@ -58,7 +58,7 @@ abstract class Form_2_Post_Mapper {
 	 *
 	 * @since    5.0.0
 	 * @access    protected
-	 * @var      array    $cf7_form_fields    an array containing CF7 fields, {'field name'=>'field type'}.
+	 * @var      array    $old_db_fields    an array containing CF7 fields, {'field name'=>'field type'}.
 	 */
   protected $old_db_fields =array();
   /**
@@ -812,7 +812,7 @@ abstract class Form_2_Post_Mapper {
     if(isset($_POST['_map_post_id']) && !empty($_POST['_map_post_id'])){
       $post_id = $_POST['_map_post_id']; //this is an existing post being updated
       $wp_post = get_post($post_id);
-      $post['post_status'] = $wp_post->post_status;
+      $post['post_status'] = $post_status;
       $post['post_author'] = $wp_post->post_author;
       $post['post_title'] = $wp_post->post_title;
       $is_update = true;
@@ -934,7 +934,7 @@ abstract class Form_2_Post_Mapper {
     }
     /*If $hasPostFields is false we have no post fields to update.*/
     if($hasPostFields){
-      $post_id = wp_insert_post ( $post );
+      $post_id = wp_update_post ( $post );
     }
     //
     //-------------- meta fields
