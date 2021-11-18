@@ -5,9 +5,15 @@
     selectedOptions = new Array(),
     $status = $('#c2p-mapping-status');
 
-  let formFields, $form = $('textarea#wpcf7-form'),
+  let fieldTags, formFields, $form = $('textarea#wpcf7-form'),
     $tab = $('#cf7-2-post-tab'),selectedCount = 0, init=true;
   $(document).ready(function(){
+    fieldTags = []; /** @since 5.4.2 fix tag scanning */
+    $('form.tag-generator-panel .insert-box input.tag').each((i,el)=>{
+      fieldTags.push(el.name);
+    });
+    fieldTags = fieldTags.join('|');
+
     $('#c2p-active-tab').val($tab.index());
     //status toggle.
     let tstatus = $status.val()=='draft'?false:true,
@@ -46,23 +52,22 @@
     initC2PEditor(); //on document ready.
   }); //document ready.
   function scanFormTags(search){
-    let rgx = /\[(.[^\s\\\]]+)\s+(.[^\s\]]+)[\s\[]*(.[^\[]*\"source:([^\s]*)\"[\s^\[]*|[.^\[]*(?!\"source:)[^\[]*)\]/img,
-      match = rgx.exec(search);
-    while(null != match && match.length>2){
-      switch(match[1].replace('*','')){
-        case 'recaptcha':
-        case 'recaptch':
-        // case 'acceptance':
-        case 'submit':
-        case 'save':
-        case 'group':
-        case 'step':
-          break;//tags with no fields of interest.
-        default:
-          formFields[match[2]] = match[1];
-          break;
+    /** @since v5.4.6 improved cf7 tag regex pattern. */
+    let rgx = new RegExp('\\[(('+fieldTags+')\\*?)(?:[\\s](.*?))?(?:[\\s](\\/))?\\]','igm'),
+      match = null;
+    while(null !== (match = rgx.exec(search)) ){
+      if(match.length>3){
+        let fMatch = /^([^\s="':]+)([\s]+.*)?$/i.exec(match[3]);
+        if(fMatch && fMatch[1]){
+          switch(match[2]){
+            case 'group'://special case which is not a field.
+              break;
+            default:
+              formFields[fMatch[1]] = match[1];
+              break;
+          }
+        }
       }
-      match = rgx.exec(search); //search next.
     }
     // console.log(formFields);
   }

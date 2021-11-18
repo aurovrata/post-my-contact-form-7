@@ -220,7 +220,6 @@ class Cf7_2_Post {
 		*/
     //show helper metabox.
 		$this->loader->add_action( 'add_meta_boxes_wpcf7_contact_form', $plugin_admin,'add_helper_metabox' );
-
 	}
 
 	/**
