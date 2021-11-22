@@ -750,17 +750,7 @@ abstract class Form_2_Post_Mapper {
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }
-    if( 'filter' == $this->get('type_source')){
-      /**
-      * Action to by-pass the form submission process altogether.
-      * @since v1.3.0
-      * @param string $key unique form key.
-      * @param array $data array of submitted key=>value pairs.
-      * @param array $file array of submitted files if any.
-      */
-      do_action( 'cf7_2_post_save_submission', $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
-      return;
-    }
+    
     //create a new post
     //get the form email recipient
     $author = 1;

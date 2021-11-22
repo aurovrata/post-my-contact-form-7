@@ -113,6 +113,16 @@ class Cf7_2_Post_Public {
         }
         return $value;
       },10,3);
+    }else if( $factory->is_filter($cf7_post_ID)){
+      /**
+      * Action to by-pass the form submission process altogether.
+      * @since v1.3.0
+      * @param string $key unique form key.
+      * @param array $data array of submitted key=>value pairs.
+      * @param array $file array of submitted files if any.
+      */
+      do_action( 'cf7_2_post_save_submission', get_cf7form_key($cf7_post_ID), $submission->get_posted_data(), $submission->uploaded_files());
+      return;
     }
 
     return $cf7_form;

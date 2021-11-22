@@ -482,21 +482,33 @@ class CF72Post_Mapping_Factory {
         return true;
       default:
         return false;
-     }
-   }
-   /**
-   * Checks if a form mapping is published
-   * @since 2.0.0
-   */
-   public function is_live($cf7_post_ID){
-     $map = get_post_meta($cf7_post_ID, '_cf7_2_post-map', true);
-     switch($map){
-       case 'publish':
-         return true;
-       default:
-         return false;
-      }
     }
+  }
+  /**
+  * Checks if a form mapping is published
+  * @since 2.0.0
+  * @param int $cf7_post_ID form ID
+  * @return boolean true if mapping is live and accpeting submissions.
+  */
+  public function is_live($cf7_post_ID){
+    $map = get_post_meta($cf7_post_ID, '_cf7_2_post-map', true);
+    switch($map){
+      case 'publish':
+        return true;
+      default:
+        return false;
+    }
+  }
+  /**
+  * Backward compatibility for filtered mappings.
+  *
+  * @since 5.4.3
+  * @param int $cf7_post_ID form ID
+  * @return boolean true if mapped using a filter.
+  */
+  public function is_filter($cf7_post_ID){
+    return 'filter' === get_post_meta($cf7_post_ID, '_cf7_2_post-type_source',true);
+  }
   /**
   * Builds a set of field=>value pairs to pre-populate a mapped form
   * Called by Cf7_2_Post_Public::load_cf7_script()

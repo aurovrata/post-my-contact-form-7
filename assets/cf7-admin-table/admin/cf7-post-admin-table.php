@@ -155,6 +155,21 @@ if(!class_exists('Cf7_WP_Post_Table')){
       return $form_id;
     }
     /**
+     * Get a form key from its id
+     *
+     * @since 1.2.0
+     * @param      string    $id     form id.
+     * @return      string    form post key.
+    **/
+    public static function form_key($id){
+      $key = null;
+      $form = get_post($id);
+      if(!empty($form)){
+        $key = $form->post_name;
+      }
+      return $key;
+    }
+    /**
     *  Checks if this is the admin table list page
     *
     * @since 1.1.3
@@ -455,6 +470,11 @@ if(!class_exists('Cf7_WP_Post_Table')){
   if(!function_exists('get_cf7form_id')){
     function get_cf7form_id($cf7_key){
     	return Cf7_WP_Post_Table::form_id($cf7_key);
+    }
+  }
+  if(!function_exists('get_cf7form_key')){
+    function get_cf7form_key($cf7_id){
+    	return CF7SG_WP_Post_Table::form_key($cf7_id);
     }
   }
 }
