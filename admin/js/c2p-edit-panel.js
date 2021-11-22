@@ -8,7 +8,7 @@
   let fieldTags, formFields, $form = $('textarea#wpcf7-form'),
     $tab = $('#cf7-2-post-tab'),selectedCount = 0, init=true;
   $(document).ready(function(){
-    fieldTags = []; /** @since 5.4.2 fix tag scanning */
+    fieldTags = ['hidden']; /** @since 5.4.2 fix tag scanning */
     $('form.tag-generator-panel .insert-box input.tag').each((i,el)=>{
       fieldTags.push(el.name);
     });
