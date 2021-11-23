@@ -339,6 +339,9 @@ button.button-link.close-details {
 .error-msg{
   color:red;
 }
+#c2p-filter-clipboard {
+	position: relative;
+}
 .popup {
     display: none;
     position: absolute;
@@ -350,6 +353,10 @@ button.button-link.close-details {
     font-weight: bold;
     border-radius: 3px;
 }
+#c2p-filter-clipboard .popup {
+    top: auto;
+    bottom: 23px;
+  }
 .cf7-post-msg a.code:hover + span.popup{
   display:block;
   width: max-content;

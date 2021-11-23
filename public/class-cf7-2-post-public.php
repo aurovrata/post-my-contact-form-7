@@ -89,14 +89,21 @@ class Cf7_2_Post_Public {
     //is this form mapped yet?
     $factory = c2p_get_factory();
     if($factory->is_live($cf7_post_id)){
-      $mapper = $factory->get_post_mapper($cf7_post_id);
-
-      //load all the submittec values
-      //$cf7_form_data = array();
-      //$tags = $cf7_form->scan_form_tags(); //get your form tags
       //the curent submission object from cf7 plugin
       $submission = WPCF7_Submission::get_instance();
-      //debug_msg($submission, "saving form data ");
+
+      if( $factory->is_filter($cf7_post_id)){ //backward compatibility.
+        /**
+        * Action to by-pass the form submission process altogether.
+        * @since v1.3.0
+        * @param string $key unique form key.
+        * @param array $data array of submitted key=>value pairs.
+        * @param array $file array of submitted files if any.
+        */
+        do_action( 'cf7_2_post_save_submission', get_cf7form_key($cf7_post_id), $submission->get_posted_data(), $submission->uploaded_files());
+        return;
+      }
+      $mapper = $factory->get_post_mapper($cf7_post_id);
       $post_id = $mapper->save_form_2_post($submission);
       /** @since 4.1.0 handle post link mail tag.
       * NOTE: the post_Id could be either a submitted form or a draft save.
@@ -113,18 +120,7 @@ class Cf7_2_Post_Public {
         }
         return $value;
       },10,3);
-    }else if( $factory->is_filter($cf7_post_ID)){
-      /**
-      * Action to by-pass the form submission process altogether.
-      * @since v1.3.0
-      * @param string $key unique form key.
-      * @param array $data array of submitted key=>value pairs.
-      * @param array $file array of submitted files if any.
-      */
-      do_action( 'cf7_2_post_save_submission', get_cf7form_key($cf7_post_ID), $submission->get_posted_data(), $submission->uploaded_files());
-      return;
     }
-
     return $cf7_form;
   }
   /**

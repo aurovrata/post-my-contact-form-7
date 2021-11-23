@@ -11,7 +11,7 @@
  */
 
  // require_once plugin_dir_path( dirname( __DIR__ ) ) . 'includes/class-cf7-2-posst-factory.php' ;
-
+ 
  //action
  $is_new_mapping = true;
  switch($post_mapper->get('map')){

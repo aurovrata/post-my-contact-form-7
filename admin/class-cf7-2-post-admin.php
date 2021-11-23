@@ -384,10 +384,18 @@ class Cf7_2_Post_Admin {
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
     update_option('_c2p_active_tab',sanitize_text_field($_POST['c2p_active_tab']));
     //check if any changes on the form.
-    if($_POST['mapped_post_default'] || $_POST['c2p_mapping_changes']){
-      // debug_msg('saving mapping....');
-      $factory = c2p_get_factory();
-      $factory->save($post_id);
+    switch($_POST['mapped_post_type_source']){
+      case 'system':
+      case 'custom':
+        if($_POST['mapped_post_default'] || $_POST['c2p_mapping_changes']){
+          // debug_msg('saving mapping....');
+          $factory = c2p_get_factory();
+          $factory->save($post_id);
+        }
+        break;
+      case 'filter':
+        update_post_meta($post_id, '_cf7_2_post-map', sanitize_text_field($_POST['mapped_post_map']));
+        break;
     }
   }
   /**
@@ -649,12 +657,23 @@ class Cf7_2_Post_Admin {
 	*/
 	public function display_amdin_panel(){
     $cf7_post_id = -1;//for new forms.
+    $cf7_key = null;
     if(isset($_GET['post'])){
       $cf7_post_id = $_GET['post'];
+      $cf7_key = get_cf7form_key($cf7_post_id);
+      get_post_meta($cf7_post_id, '_cf7_2_post-type_source',true);
     }
     $factory = c2p_get_factory();
-    $post_mapper = $factory->get_post_mapper($cf7_post_id);
-		include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-admin-panel-display.php';
+
+    if(isset($cf7_key) and apply_filters('cf7_2_post_save_with_filter', false, $cf7_key)){
+      update_post_meta($cf7_post_id, '_cf7_2_post-type_source','filter');
+      $status = get_post_meta($cf7_post_id, '_cf7_2_post-map', true);
+      if(!$status) $status = 'publish';
+      include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-with-filter-admin-panel-display.php';
+    }else{
+      $post_mapper = $factory->get_post_mapper($cf7_post_id);
+  		include_once plugin_dir_path(__FILE__).'partials/cf7-2-post-admin-panel-display.php';
+    }
 	}
   /**
   * find the panel index for this plugin on the cf7 editor.
