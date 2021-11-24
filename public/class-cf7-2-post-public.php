@@ -159,10 +159,10 @@ class Cf7_2_Post_Public {
     $cf7_id = $attr['id'];
     //let get the corresponding factory object,
     $factory = c2p_get_factory();
-    if($factory->is_mapped($cf7_id){
+    if( $factory->is_mapped($cf7_id) ){
       $cf7_2_post_id ='';
       $cf7_key = get_cf7form_key($cf7_id);
-      if(!$factory->is_filter($cf7_id)){
+      if( !$factory->is_filter($cf7_id) ){
         $mapper = $factory->get_post_mapper($cf7_id);
         //let's ensure the page does not cache our values.
         $this->not_form_page = false;
