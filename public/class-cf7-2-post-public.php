@@ -105,23 +105,26 @@ class Cf7_2_Post_Public {
       }
       $mapper = $factory->get_post_mapper($cf7_post_id);
       $post_id = $mapper->save_form_2_post($submission);
-      /** @since 4.1.0 handle post link mail tag.
-      * NOTE: the post_Id could be either a submitted form or a draft save.
-      * either way, the mail tag filter will only fire for submitted forms.
-      */
-      add_filter('wpcf7_special_mail_tags', function($value, $tag, $html) use ($post_id){
-        switch($tag){
-          case 'cf7_2_post-edit':
-            $value = admin_url('post.php?post='.$post_id.'&action=edit');
-            break;
-          case 'cf7_2_post-permalink':
-            $value = get_permalink($post_id);
-            break;
-        }
-        return $value;
-      },10,3);
+      self::setup_mailtags_for_mapped_post($post_id); /** @since 5.4.3 */
     }
     return $cf7_form;
+  }
+  /** @since 4.1.0 handle post link mail tag.
+  * NOTE: the post_Id could be either a submitted form or a draft save.
+  * either way, the mail tag filter will only fire for submitted forms.
+  */
+  static public function setup_mailtags_for_mapped_post($post_id){
+    add_filter('wpcf7_special_mail_tags', function($value, $tag, $html) use ($post_id){
+      switch($tag){
+        case 'cf7_2_post-edit':
+          $value = admin_url('post.php?post='.$post_id.'&action=edit');
+          break;
+        case 'cf7_2_post-permalink':
+          $value = get_permalink($post_id);
+          break;
+      }
+      return $value;
+    },10,3);
   }
   /**
    * Function to skip mail if this is a draft form being sent.
@@ -156,33 +159,35 @@ class Cf7_2_Post_Public {
     $cf7_id = $attr['id'];
     //let get the corresponding factory object,
     $factory = c2p_get_factory();
-    if($factory->is_mapped($cf7_id)){
-      $mapper = $factory->get_post_mapper($cf7_id);
-      //let's ensure the page does not cache our values.
-      $this->not_form_page = false;
-      //unique nonce
-      $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
-
-      //verify if this cf7 form is mapped to a specific post.
+    if($factory->is_mapped($cf7_id){
       $cf7_2_post_id ='';
-      if(isset($attr['cf7_2_post_id'])){
-        $cf7_2_post_id = $attr['cf7_2_post_id'];
+      $cf7_key = get_cf7form_key($cf7_id);
+      if(!$factory->is_filter($cf7_id)){
+        $mapper = $factory->get_post_mapper($cf7_id);
+        //let's ensure the page does not cache our values.
+        $this->not_form_page = false;
+        //unique nonce
+        $nonce = 'cf7_2_post_'.wp_create_nonce( 'cf7_2_post'.rand() );
+        //verify if this cf7 form is mapped to a specific post.
+        if(isset($attr['cf7_2_post_id'])){
+          $cf7_2_post_id = $attr['cf7_2_post_id'];
+        }
+        $form_values = $factory->get_form_values($cf7_id, $cf7_2_post_id);
+        $inline_script = $factory->get_form_field_script( $nonce,$mapper );
+        wp_enqueue_script($this->plugin_name.'-load'); //previously registered.
+        wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
+        wp_add_inline_script($this->plugin_name.'-load', $inline_script);
+        $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $mapper->cf7_key, $form_values);
+        $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$scripts.'</div>';
+        wp_enqueue_style($this->plugin_name.'-css');
       }
-      $form_values = $factory->get_form_values($cf7_id, $cf7_2_post_id);
-      $inline_script = $factory->get_form_field_script( $nonce,$mapper );
-      wp_enqueue_script($this->plugin_name.'-load'); //previously registered.
-      wp_localize_script($this->plugin_name.'-load', $nonce, $form_values);
-      wp_add_inline_script($this->plugin_name.'-load', $inline_script);
-      $scripts = apply_filters('cf7_2_post_form_append_output', '', $attr, $nonce, $mapper->cf7_key, $form_values);
-      $output = '<div id="'.$nonce.'" class="cf7_2_post cf7_form_'.$cf7_id.'">'.$output.PHP_EOL.$scripts.'</div>';
-      wp_enqueue_style($this->plugin_name.'-css');
       /**
       * Action for enqueueing other scripts.
       * @since 3.8.0.
       * @param string $cf7_key unique key of form being printed.
       * @param int $cf7_2_post_id post ID of form being printed.
       */
-      do_action('cf72post_form_printed_to_screen', $mapper->cf7_key, $cf7_2_post_id);
+      do_action('cf72post_form_printed_to_screen', $cf7_key, $cf7_2_post_id);
     }
     return $output;
   }
@@ -281,7 +286,8 @@ class Cf7_2_Post_Public {
     $disabled = false;
     $cf7_form = wpcf7_get_current_contact_form();
     $factory = c2p_get_factory();
-    $mapper = $factory->get_post_mapper($cf7_form->id());
+    $cf7_key = get_cf7form_key($cf7_form->id());
+    // $mapper = $factory->get_post_mapper($cf7_form->id());
 
     if(!$factory->is_live($cf7_form->id())){
       $disabled = true;
@@ -293,7 +299,7 @@ class Cf7_2_Post_Public {
       array(
         'disabled'=>$disabled,
         'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' ),
-        'paint'=>apply_filters('c2p_autostyle_save_button', true, $mapper->cf7_key)
+        'paint'=>apply_filters('c2p_autostyle_save_button', true, $cf7_key)
       )
     );
     $tag = new WPCF7_FormTag( $tag );

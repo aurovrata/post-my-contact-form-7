@@ -349,8 +349,13 @@ class Cf7_2_Post_Admin {
     if(!current_user_can($capability))  return;
     if(isset($_POST['delete_c2p_map']) && $_POST['delete_c2p_map'] == $post_id){
       $factory = c2p_get_factory();
-      $mapper = $factory->get_post_mapper($post_id);
-      $mapper->delete_mapping();
+      if(!$factory->is_filter($post_id)){ /** @since 5.4.3 */
+        $mapper = $factory->get_post_mapper($post_id);
+        $mapper->delete_mapping();
+      }else{
+        delete_post_meta($post_id, '_cf7_2_post-map');
+        delete_post_meta($post_id, '_cf7_2_post-type_source');
+      }
     }
   }
   /**
@@ -433,7 +438,7 @@ class Cf7_2_Post_Admin {
   **/
   public function delete_cf7_post($cf7_post_id){
     $factory = c2p_get_factory();
-    if($factory->is_mapped($cf7_post_id)){
+    if($factory->is_mapped($cf7_post_id) and !$factory->is_filter($cf7_post_id)){
       //TODO load settings to allow users to delete all submitted form post data when deleting a mapping
       $mapper = $factory->get_post_mapper($cf7_post_id);
       $delete_all_posts = apply_filters('cf7_2_post_delete_submitted_posts', false, $mapper->get('type'), $mapper->cf7_key);
@@ -577,8 +582,8 @@ class Cf7_2_Post_Admin {
     );
   }
   /**
-  *
-  *
+  * Display custom post metabox for admin edit map
+  * Called by add_meta_box();
   *@since 3.4.0
   *@param string $param text_description
   *@return string text_description
@@ -658,14 +663,15 @@ class Cf7_2_Post_Admin {
 	public function display_amdin_panel(){
     $cf7_post_id = -1;//for new forms.
     $cf7_key = null;
+    $factory = c2p_get_factory();
+    $is_filter = false;
     if(isset($_GET['post'])){
       $cf7_post_id = $_GET['post'];
       $cf7_key = get_cf7form_key($cf7_post_id);
-      get_post_meta($cf7_post_id, '_cf7_2_post-type_source',true);
+      $is_filter = ($factory->is_filter($cf7_post_id) || apply_filters('cf7_2_post_save_with_filter', false, $cf7_key));
     }
-    $factory = c2p_get_factory();
 
-    if(isset($cf7_key) and apply_filters('cf7_2_post_save_with_filter', false, $cf7_key)){
+    if($is_filter){
       update_post_meta($cf7_post_id, '_cf7_2_post-type_source','filter');
       $status = get_post_meta($cf7_post_id, '_cf7_2_post-map', true);
       if(!$status) $status = 'publish';
