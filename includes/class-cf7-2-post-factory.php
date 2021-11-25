@@ -365,6 +365,7 @@ class CF72Post_Mapping_Factory {
     );
     self::$mapped_post_types = array();
     foreach($cf7_posts as $post){
+      if('filter'==$post->origin) continue; //skip as not mapped by plugin.
       self::$mapped_post_types[$post->ID]=array($post->type=>$post->origin);
     }
     return self::$mapped_post_types;
