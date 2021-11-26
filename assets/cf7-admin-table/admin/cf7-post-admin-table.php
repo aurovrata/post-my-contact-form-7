@@ -474,7 +474,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
   }
   if(!function_exists('get_cf7form_key')){
     function get_cf7form_key($cf7_id){
-    	return CF7SG_WP_Post_Table::form_key($cf7_id);
+    	return CF7_WP_Post_Table::form_key($cf7_id);
     }
   }
 }

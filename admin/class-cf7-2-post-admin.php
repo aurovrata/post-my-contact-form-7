@@ -275,6 +275,8 @@ class Cf7_2_Post_Admin {
           echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? __('Draft:','post-my-contact-form-7' ):__('Mapped:','post-my-contact-form-7' )).$post_type.'</a>';
           echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
           echo '<input type="hidden" class="cf7-2-post-type c2p-'.$post_source.'" value="'.$post_type.'"/>';
+        }else if($post_source){
+          echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? __('Draft w/ ','post-my-contact-form-7' ):__('Mapped w/ ','post-my-contact-form-7' )).$post_source.'</a>';
         }else{
           echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.__('Create new','post-my-contact-form-7').'</a>';
         }

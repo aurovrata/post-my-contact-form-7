@@ -41,10 +41,12 @@ $cf7_key_flat = str_replace('-','_',$cf7_key);
 </div>
 <script type="text/javascript">
 (function($){
-  new Clipboard(document.querySelector('#c2p-filter-clipboard a.code'));
+  $(document).ready(function(){
+    new Clipboard(document.querySelector('#c2p-filter-clipboard a.code'));
+  })
 })( jQuery )
 </script>
-<div>
+<div class="c2p-filter">
   <?php if(!defined('CF7_GRID_VERSION')){
     $closed ='';
     echo '<h2>'.__('Hooks & Filters to customise the mapping', 'post-my-contact-form-7').'</h2>';
