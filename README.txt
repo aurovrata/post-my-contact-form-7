@@ -614,6 +614,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.4.4 =
+* fix code typo in admin class.
 = 5.4.3 =
 * fix compatibility of mappings handled with filter.
 = 5.4.2 =

@@ -270,8 +270,8 @@ class Cf7_2_Post_Admin {
 
         $post_type =  get_post_meta( $post_id , '_cf7_2_post-type' , true );
         $post_source =  get_post_meta( $post_id , '_cf7_2_post-type_source' , true );
+        $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
         if ($post_type){
-          $status = get_post_meta( $post_id , '_cf7_2_post-map' , true );
           echo '<a class="cf7-2-post-map-link" href="'.$url.'">'.('draft'==$status ? __('Draft:','post-my-contact-form-7' ):__('Mapped:','post-my-contact-form-7' )).$post_type.'</a>';
           echo '<input type="hidden" class="cf7-2-post-status" value="'.$status.'"/>';
           echo '<input type="hidden" class="cf7-2-post-type c2p-'.$post_source.'" value="'.$post_type.'"/>';
