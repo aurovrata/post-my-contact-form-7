@@ -750,7 +750,7 @@ abstract class Form_2_Post_Mapper {
       do_action( 'cf7_2_post_save-'.$this->get('type'), $this->cf7_key, $cf7_form_data, $submission->uploaded_files());
       return;
     }
-    
+
     //create a new post
     //get the form email recipient
     $author = 1;
@@ -935,7 +935,7 @@ abstract class Form_2_Post_Mapper {
       update_post_meta($post_id, '_cf7_2_post_form_submitted','yes'); //form is submitted
     }
 
-    //debug_msg($cf7_form_data, "submitted data ");
+    // debug_msg($this->post_map_meta_fields, "submitted data ");
 
     foreach($this->post_map_meta_fields as $form_field => $post_field){
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){

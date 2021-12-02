@@ -3,7 +3,7 @@
 // $is_new_mapping = true;
 $select_form_fields='<select %4$s name="cf7_2_post_map_meta_value%1$s" value="%2$s" class="field-options post-options select-hybrid">
   <option class="default-option" selected="true" value="">'. __('Select a form field', 'post-my-contact-form-7' ). '</option>
-  <option class="filter-option" value="c2p_filter%3$s%1$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
+  <option class="filter-option" value="cf7_2_post_filter%3$s%1$s">'.__('Hook with a filter', 'post-my-contact-form-7' ). '</option>
 </select>';
 //%1 - post-field name.
 //%2 - form-field name.
