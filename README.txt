@@ -237,18 +237,32 @@ if(!empty($args) && isset($args[0]['id'])){
 `
 = 10. How to use custom JavaScript script on the form front-end ? =
 
-The plugin fires a number of jQuery scripts in order to map saved submissions back to draft forms.  So if you have a form which your users can save before submitting and you need to customise some additional functionality on your form on `$(document).ready()`, then you need to make sure it fires after the plugin's scripts have finished.  In order to achieve this, the script fires a custom event on the form, `cf7Mapped`, which you can use to ensure you script fires in the right order, here is how you would enable this,
+The plugin fires a number of jQuery scripts in order to map saved submissions back to draft forms.  So if you need to customise some additional functionality on your form on `$(document).ready()`, then you need to make sure it fires after the plugin's scripts have finished.  In order to achieve this, the script fires a custom event on the form, the form id built using a nonce to ensure the event is unique to the form (in case you have multiple forms on the same page), which you can use to ensure you script fires in the right order, here is how you would enable this,
+
 `
-(function( $ ) {
-	'use strict';
-  $( function() { //the jQuery equivalent of document.ready()
-    var cf7Form = $('div.cf7_2_post form.wpcf7-form'); //this ensures you target the mapped forms
-    cf7Form.on('formMapped', function(){
-      //fire your script
-    });
-  });
-})( jQuery );
+add_filter('cf7_2_post_form_append_output', 'append_my_script', 10, 4);
+function append_my_script($output, $attr, $nonce, $cf7form_key){
+  if(!isset($attr['id'])){
+    return $output;
+  }
+  $cf7_id = $attr['id'];
+  if(19 == $cf7_id){ //check this is your form
+    $output .= '<script type="text/javascript">';
+    $output .= '(function( $ ) {';
+    $output .= '  //fire your script once the form nonce event is triggered';
+    $output .= '  $(document).on("'.$nonce.'", $("div#'.$nonce.' form.wpcf7-form"), function() {';
+    $output .= '  var cf7Form = $("div#'.$nonce.' form.wpcf7-form");';
+    $output .= '  ... //your custom scripting';
+    $output .= '});';
+    $output .= '})( jQuery );';
+    $output .= '</script>';
+  }
+  return $output;
+}
 `
+
+NOTE: the plugin wraps your form with a `<div/>` element whose id is the event nonce iteself.  So if you prefer to enqueue your js file on the page instead of appending it, simply query the element `$('div.cf7_2_post')`  and extract its `id` attribute to bind the event.
+
 = 11. Is it possible to save my form to an existing post type? =
 
 yes, but you need to know how to use WordPress hooks in your functions.php file in order to get it to work.  If you map your form, you now have a dropdown to select the type of post to which you want to save it to.  When you select 'Existing Post' from the option, instructions will show up on screen to map your form.
@@ -317,7 +331,7 @@ Use the filer provided in the filter & actions helper metabox of the mapping pag
 As of v3.8, 2 new hooks have been introduced to allow you to custom map your taxonomy terms to form fields that use a JavaScript plugin to allow users to select terms which are nested deeper than the default parent-child setup provide by this plugin.  An example of such a js plugin is the Select2 extension, [Select2-to-tree](https://github.com/clivezhg/select2-to-tree).  This plugin requires the select options to have specific classes and attributes to be set (see the [documentation](https://github.com/clivezhg/select2-to-tree#2-directly-create-the-select-elementsee-example-2-in-exampleexamplehtml)).  To achieve this, here is an example of code you can place in your `functions.php`,
 
 `
-/add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup', 'turn_off_grouping', 10, 5);
+add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup', 'turn_off_grouping', 10, 5);
 function turn_off_grouping($isGrouped, $cf7_post_id, $field, $term, $cf7_key){
   if('my-contact-from' == $cf7_key && 'your-country' == $field){
     $isGrouped = false;
@@ -405,6 +419,14 @@ add_filter('c2p_autostyle_save_button', '__return_false');
 
 the filter also passes the form key, should you want to distinguish between forms.
 
+= 27. How can I customise the intialisation of a Select2 field? =
+
+If you want to load your own intialisation script to customise the select2 dropdown then you need to use the filter below to stop the plugin from using the default initialisation.  Please read the FAQ 10 on how to load custom scripts to make sure you trigger your script after the form is mapped.
+
+`
+add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');
+`
+
 == Screenshots ==
 
 1. 1.You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -484,100 +506,7 @@ function disable_select2_plugin($enable, $cf7_post_id, $form_field){
   return $enable;
 }
 `
-= 'cf7_2_post_filter_cf7_delay_select2_launch' =
 
-This allows you manually launch the select2 jQuery dropdown fields.  This is required if you need to customise the select dropdown on windows load event with your own jQuery scripts before the select2 transformation is applied.  Please read the FAQ on custom scripts to make sure you trigger your script after the form is mapped.
-`
-add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');`
-
-= 'cf7_2_post_filter_cf7_taxonomy_select_optgroup' =
-
-This filter expects a boolean, by default it is `false` and disables [`optgroup`](http://www.w3schools.com/tags/tag_optgroup.asp) on select dropdown options.
-To enable grouped options for hierarchical taxonomy top level term, you can use this filter.  Note however, that child term options will be grouped by their top-level parent only as nested `optgroup` are not allowed. Furthermore the parent term will not be selectable. Therefore this option only makes sense if you have a hierarchical taxonomy with only single level child terms which can be selected.  To enable grouped options,
-
-`
-add_filter('cf7_2_post_filter_cf7_taxonomy_select_optgroup','enable_grouped_options',10,4);
-function enable_grouped_options($enable, $cf7_post_id, $form_field, $parent_term){
-  if(20 == $cf7_post_id && 'your-option' == $form_field){
-    //we assume here that cf7 form 20 has a dropdown field called 'your-option' which was mapped to a hierarchical taxonomy
-    //you can even filter it based on the parent term, so as to group some and not others.
-    //the attribute $parent_term is a WP_Term object
-    switch($parent_term->name){
-      case 'Others':
-        $enable=false;
-        break;
-      default:
-        $enable=true;
-        break;
-    }
-  }
-  return $enable;
-}
-`
-
-= `cf7_2_post_filter_user_draft_form_query` =
-This filter is useful to change the behaviour in which previously submitted values can be edited by a user.  By default the plugin loads forms values that have been saved using the 'save' button.  However, you can modify this by changing the default post query such as the example below,
-`
-add_filter('cf7_2_post_filter_user_draft_form_query','load_published_submissions',10,2);
-function load_published_submissions($query_args, $post_type){
-  if('submitted-reports' == post_type){
-    //we assume a cf7 form allowing users to submit online reports has been mapped to a post_type submitted-reports'
-    if(is_user_logged_in()){
-      $user = wp_get_current_user();
-      //load this user's previously submitted values
-      $query_args = array(
-      	'posts_per_page'   => 1,
-      	'post_type'        => post_type,
-      	'author'	   => $user->ID,
-      	'post_status'      => 'published'
-      );
-    }
-  }
-  return $query_args;
-}
-`
-
-= `cf7_2_post_form_append_output` =
-
-this filter is fired when the cf7 shortcode output is printed, it allows you to add a custom script at the end of your form should you need it,
-`
-add_filter('cf7_2_post_form_append_output', 'append_my_script', 10, 4);
-function append_my_script($output, $attr, $nonce, $cf7form_key){
-  if(!isset($attr['id'])){
-    return $output;
-  }
-  $cf7_id = $attr['id'];
-  if(19 == $cf7_id){ //check this is your form
-    $output .= '<script type="text/javascript">';
-    $output .= '(function( $ ) {';
-    $output .= '  //fire your script once the form nonce event is triggered';
-    $output .= '  $(document).on("'.$nonce.'", $("div#'.$nonce.' form.wpcf7-form"), function() {';
-    $output .= '  var cf7Form = $("div#'.$nonce.' form.wpcf7-form");';
-    $output .= '  ... //your custom scripting';
-    $output .= '});';
-    $output .= '})( jQuery );';
-    $output .= '</script>';
-  }
-  return $output;
-}
-`
-
-= `cf7_2_post_form_values` =
-This filter allows you to load default values into your mapped forms. If the current user has a saved form, this filter will override any values you set.
-
-`
-add_filter('cf7_2_post_form_values', 'set_default_location', 10, 3);
-function set_default_location($values, $$cf7_id, $mapped_post_type, $cf7_key){
-  if('travel_post' != mapped_post_type){
-    return values;
-  }
-  if('contact-us' == cf7_key){ //check this is your form
-    $field_name = 'location-rental';
-    $values[$field_name] .= 'Paris';
-  }
-  return $values;
-}
-`
 = 'cf7_2_post_register_post_{post_type}' =
 
 this filter allows you to tweak the arguments used to register the custom_post type, for example, if you want to modify the [rewrite front-end slug](https://codex.wordpress.org/Function_Reference/register_post_type#rewrite) for the post type,
