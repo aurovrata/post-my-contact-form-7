@@ -798,10 +798,16 @@ abstract class Form_2_Post_Mapper {
                   'post_status'=> $post_status,
                   'post_title'  => $post_title
                 );
-    $post_id = '';
+    /** @since 5.5 integrate Stripe payment */
+    $post_id = false;
+    if ( empty( $_POST['_wpcf7_stripe_payment_intent'] )) {
+  		$post_id = get_transient( $_POST['_cf72post_nonce'] );
+  	}
     $is_update = false;
     if(isset($_POST['_map_post_id']) && !empty($_POST['_map_post_id'])){
       $post_id = $_POST['_map_post_id']; //this is an existing post being updated
+    }
+    if(!empty($post_id)){
       $wp_post = get_post($post_id);
       $post['post_status'] = $post_status;
       $post['post_author'] = $wp_post->post_author;
