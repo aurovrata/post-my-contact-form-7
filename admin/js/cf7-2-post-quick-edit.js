@@ -32,14 +32,16 @@
             $warn.show();
             if($type.is('.c2p-factory')){
               let $data = $('.c2p-delete-data',$delete),
-                $filter = $('span', $data).not('.popup'),
+                $filter = $('span', $data).not('.popup'), $clip, text;
+              if($filter.length>0){
                 $clip = $('a',$data).remove(),
                 text = $clip.data('clipboard-text').replace('${post_type}',$type.val());
-              $clip.attr('data-clipboard-text', text).text($filter.text());
-              $filter.after($clip);
-              $filter.remove();
-              $data.show();
-              new Clipboard($clip[0]);
+                $clip.attr('data-clipboard-text', text).text($filter.text());
+                $filter.after($clip);
+                $filter.remove();
+                $data.show();
+                new Clipboard($clip[0]);
+              }
             }
           }else{
             $warn.hide();

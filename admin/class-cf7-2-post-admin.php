@@ -387,13 +387,13 @@ class Cf7_2_Post_Admin {
   * @since 5.0.0
   */
   public function save_post_mapping($post_id){
-    // debug_msg($_POST, "save post ");
+    //debug_msg($_POST, "save post ");
     if( !isset($_POST['cf7_2_post_nonce']) || !wp_verify_nonce( $_POST['cf7_2_post_nonce'],'cf7_2_post_mapping') ) return;
     update_option('_c2p_active_tab',sanitize_text_field($_POST['c2p_active_tab']));
     //check if any changes on the form.
     switch($_POST['mapped_post_type_source']){
       case 'system':
-      case 'custom':
+      case 'factory':
         if($_POST['mapped_post_default'] || $_POST['c2p_mapping_changes']){
           // debug_msg('saving mapping....');
           $factory = c2p_get_factory();

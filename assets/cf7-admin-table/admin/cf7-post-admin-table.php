@@ -179,7 +179,7 @@ if(!class_exists('Cf7_WP_Post_Table')){
   			return false;
   		}else{
         $screen = get_current_screen();
-        return ( 'edit' == $screen->base && '' == $screen->action );
+        return ( !empty($screen) and 'edit' == $screen->base and '' == $screen->action );
       }
     }
     /**

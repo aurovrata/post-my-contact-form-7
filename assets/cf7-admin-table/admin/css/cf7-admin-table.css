@@ -63,3 +63,9 @@ span.cf7sg-popup {
 	position: absolute;
 	top: -5px;
 }
+fieldset label.c2p-delete-mapping span.title {
+	width: 100%;
+}
+.c2p-delete-warning {
+	max-width: 26em;
+}

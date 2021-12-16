@@ -543,6 +543,10 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.4.5 =
+* fix quick edit form table css/warning msg/filter.
+* fix factory source setup on initial admin page.
+* prevent taxonomy mapping field setup saving custom category.
 = 5.4.4 =
 * fix code typo in admin class.
 * fix meta-fields hook mapping.

@@ -37,7 +37,7 @@ function delete_all_submissions($post_query, $post_type, $cf7_key){
 	if('${post_type}'!=$post_type) return $post_query;
 	//modify the query such as to delete posts by a certain author or a perticular date...
   return $post_query;
-}" href="javascript:void(0);"></a><?= __('Use this <span>filter</span> in your functions.php file to control the deletion','post-my-cf7-form')?><span class="popup display-none">Click to Copy!</span></div>
+}" href="javascript:void(0);"></a><?= __('WARNING: this will also delete all saved submissions!  Use this <span>filter</span> in your <code>functions.php</code> file to control the deletion of saved submissions.','post-my-cf7-form')?><span class="popup display-none">Click to Copy!</span></div>
 
 				</div>
 			</label>

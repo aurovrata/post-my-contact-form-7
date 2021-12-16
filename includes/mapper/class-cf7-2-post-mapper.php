@@ -705,6 +705,7 @@ abstract class Form_2_Post_Mapper {
     }
 
     $system_taxonomies = get_taxonomies( array('public'=>true, '_builtin' => false), 'objects' );
+    // debug_msg($system_taxonomies, 'system tax ');
     //inset the default post tags and category
     if('post_tag' !=$taxonomy_slug){
       $result .= '<option value="post_tag" data-name="'.__('Post Tag', 'post-my-contact-form-7' ). '" class="system-taxonomy">'.__('Post Tags', 'post-my-contact-form-7' ). '</option>';

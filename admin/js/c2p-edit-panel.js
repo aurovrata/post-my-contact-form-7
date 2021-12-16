@@ -303,7 +303,7 @@
     let label = field.querySelector('.taxonomy-slug');
     tSlug = label.value; //taxonomy slug..
     let $ffMenu = $cloneField.find('select.field-options');
-    $ffMenu.attr('name','cf7_2_post_map_taxonomy_value-'+tSlug);
+    $ffMenu.attr('data-field-name','cf7_2_post_map_taxonomy_value-'+tSlug);
     //setup the filter.
     $ffMenu.find('option.filter-option').val('cf7_2_post_filter-'+tSlug);
     //populate with latest form fields.
@@ -378,7 +378,7 @@
           }
           if(field.classList.contains('taxonomy-options')){
             let tax = fc.querySelector('input.taxonomy-slug');
-            field.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value)
+            // field.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value)
             if(ffMenu._hybriddd){ //refresh hybrid select.
               ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+ffMenu.value});
             }
@@ -414,6 +414,7 @@
           c2pFilterHelperCode.call(fc,'cf7_2_post_filter-'+tax.value); //update filter.
         }
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+tax.value;
+        // ffMenu.setAttribute('name','cf7_2_post_map_taxonomy_value-'+tax.value+'/'+v);
         if(ffMenu._hybriddd){ //refresh hybrid select.
           ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_taxonomy_value-'+tax.value+'/'+v});
         }
