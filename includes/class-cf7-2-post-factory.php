@@ -547,16 +547,19 @@ class CF72Post_Mapping_Factory {
     if(is_user_logged_in()){ //let's see if this form is already mapped for this user
       $user = wp_get_current_user();
       $args['author'] = $user->ID;
-    }
+    }else $args = array();
 
     $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $mapper->post_properties['type'], $mapper->cf7_key);
-    $posts_array = get_posts( $args );
-    // debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
-    if(!empty($posts_array)){
-      $post = $posts_array[0];
-      $load_saved_values = true;
-      $field_and_values['map_post_id']= $post->ID;
-      wp_reset_postdata();
+    
+    if(!empty($args)){
+      $posts_array = get_posts( $args );
+      // debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
+      if(!empty($posts_array)){
+        $post = $posts_array[0];
+        $load_saved_values = true;
+        $field_and_values['map_post_id']= $post->ID;
+        wp_reset_postdata();
+      }
     }
 
     //we now need to load the save meta field values

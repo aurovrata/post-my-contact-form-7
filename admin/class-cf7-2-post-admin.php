@@ -535,18 +535,18 @@ class Cf7_2_Post_Admin {
     }
     ?>
     <span>Form:&nbsp;</span>
-    <input id="cf72post_submitted" type="checkbox" value="submitted" <?=$checked?>/>
+    <input class="cf72post-submitted" type="checkbox" value="submitted" <?=$checked?>/>
     <label for="cf7_2_post_submitted">submitted.</label>
     <p><em>Uncheck to flag this submission as un-submitted.</em> This will reload this post into the form when the its author logs in again.</p>
-    <input type="hidden" id="cf72post_submitted_hidden" name="cf7_2_post_submitted" value="<?= $submitted?>" <?= $hidden?>/>
+    <input type="hidden" id="cf72post-submitted-hidden" name="cf7_2_post_submitted" value="<?= $submitted?>" <?= $hidden?>/>
     <script type="text/javascript">
     (function( $ ) {
       $(document).ready(function(){
-        $('#cf72post_submitted').on('change', function(){
+        $('input.cf72post-submitted').on('change', function(){
           if( $(this).is(':checked') ){
-            $('#cf72post_submitted_hidden').val('yes');
+            $('#cf72post-submitted-hidden').val('yes');
           }else{
-            $('#cf72post_submitted_hidden').val('no');
+            $('#cf72post-submitted-hidden').val('no');
           }
         });
       });
