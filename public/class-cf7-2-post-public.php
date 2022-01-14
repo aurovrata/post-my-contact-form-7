@@ -403,7 +403,7 @@ class Cf7_2_Post_Public {
   }
   /**
   * Map author to hidden field on form load.
-  *
+  * Hooked to 'wpcf7_form_hidden_fields'
   *@since 3.9.0
   *@param array $param array of hidden fields
   *@return array array of hidden fields

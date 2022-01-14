@@ -550,7 +550,7 @@ class CF72Post_Mapping_Factory {
     }else $args = array();
 
     $args = apply_filters('cf7_2_post_filter_user_draft_form_query', $args, $mapper->post_properties['type'], $mapper->cf7_key);
-    
+
     if(!empty($args)){
       $posts_array = get_posts( $args );
       // debug_msg($args, "looking for posts.... found, ".sizeof($posts_array));
@@ -1039,6 +1039,7 @@ class CF72Post_Mapping_Factory {
       $html = '';
       $select = '<option value="">'.__('Select a field','post-my-contact-form-7').'</option>'.PHP_EOL;
       foreach($metas as $row){
+        if(empty(trim($row->meta_key))) continue; /** @since 5.4.6 */
         if( 0=== strpos( $row->meta_key, '_') &&
         /**
         * filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
