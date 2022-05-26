@@ -738,7 +738,7 @@ abstract class Form_2_Post_Mapper {
       $is_submitted = false;
     }
     $this->load_form_fields(); //this loads the form fields and their type
-    //debug_msg($cf7_form_data);
+    // debug_msg($cf7_form_data, 'saving submission ');
     //check if this is a system post which are mapped using an action.
     if( has_action('cf7_2_post_save-'.$this->get('type')) ){
       /**
@@ -943,7 +943,6 @@ abstract class Form_2_Post_Mapper {
     }
 
     // debug_msg($this->post_map_meta_fields, "submitted data ");
-
     foreach($this->post_map_meta_fields as $form_field => $post_field){
       if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
         $value = apply_filters($form_field,'', $post_id, $cf7_form_data);

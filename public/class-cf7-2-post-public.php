@@ -294,14 +294,16 @@ class Cf7_2_Post_Public {
     }
     //enqueue required scripts and styles
     wp_enqueue_script( $this->plugin_name.'-save');
-    wp_localize_script($this->plugin_name.'-save',
-      'cf72post_save',
-      array(
-        'disabled'=>$disabled,
-        'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' ),
-        'paint'=>apply_filters('c2p_autostyle_save_button', true, $cf7_key)
-      )
-    );
+    /** @since 5.4.7 fix block-theme localise bug */
+    $localise = json_encode(array(
+      'disabled'=>$disabled,
+      'error' => __('save is disabled, form is not mapped.','post-my-contact-form-7' ),
+      'paint'=>apply_filters('c2p_autostyle_save_button', true, $cf7_key)
+    ));
+    add_action('wp_footer', function() use ($localise){
+      printf('<script type="text/javascript">var cf72post_save = %1$s</script>', $localise);
+    });
+
     $tag = new WPCF7_FormTag( $tag );
     $class = wpcf7_form_controls_class( $tag->type );
 

@@ -57,7 +57,7 @@
       });
       //verify if a message box is available
       if( !$('div.wpcf7-response-output', $form).length){
-        cf7Form.append('<div class="wpcf7-response-output wpcf7-display-none"></div>')
+        $form.append('<div class="wpcf7-response-output wpcf7-display-none"></div>')
       }
     });
   });
