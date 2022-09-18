@@ -1,0 +1,8 @@
+- map checkboxes to taxonomies not working
+https://wordpress.org/support/topic/checkbox-value-correctly-sent-via-email-but-not-stored-in-post-db/
+
+- gutenberg block theme jquery clash
+https://wordpress.org/support/topic/no-categories-appearing-when-mapping-cf7-form-fields-to-post-taxonomies/
+
+- post ID as mail tag
+ changed the class-cf7-2-post-public.php and class-cf7-2-post-admin.php files to add a [cf7_2_post-ID] mail tag.

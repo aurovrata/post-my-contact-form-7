@@ -12,19 +12,9 @@ if(!empty($mapped_fields)){
     $value =  get_post_meta($post->ID, $post_field , true);
     if(is_array($value)){
       echo '<div>';
-      foreach($value as $key=>$avalue){
-        if(is_array($avalue)){
-          echo $key.":";
-          foreach($avalue as $row=>$rvalue){
-            $out = '';
-            if(!empty($rvalue)) $out = implode(',', $rvalue);
-            output_cf72post_field($out);
-          }
-          echo '</div><div>';
-        }else{
-          echo $avalue.',';
-        }
-      }
+      // debug_msg($value, $cf7_field);
+      output_cf72post_array_field($value,'');
+      
       echo '</div>';
     }else{
       output_cf72post_field($value);
@@ -36,5 +26,14 @@ endif;?>
 }
 
  function output_cf72post_field($value){
-   echo '<span class="field-value">'.$value.'</span>';
+  echo '<span class="field-value">'.$value.'</span>';
+ }
+
+ function output_cf72post_array_field($value, $append){
+  if(is_array(reset($value))){ 
+    foreach($value as $r=>$row) output_cf72post_array_field($row, '</br>');
+  }else{
+    output_cf72post_field(implode(',', $value));
+    echo $append;
+  }
  }

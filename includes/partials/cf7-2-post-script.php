@@ -50,6 +50,51 @@ if ( ! defined( 'ABSPATH' ) ) {
       $json_value = 'data.'.$json_var;
       $default_script = true;
       $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
+      //start by checking if data is available for the field
+      echo "if(data.{$json_var} !== undefined){".PHP_EOL;
+      $format = '';
+      $isFiltered = false;
+      switch($type){
+        case 'text':
+        case 'password':
+        case 'url':
+        case 'number':
+        case 'tel':
+        case 'date':
+        case 'datetime':
+        case 'email':
+        case 'time':
+        case 'hidden':
+          $format .= '$cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+          break;
+        case 'select':
+          $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+          break;
+        case 'dynamic_select':
+          $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+          break;
+        case 'textarea':
+          $format .= '$cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
+          break;
+        case 'radio':
+        case 'checkbox':
+          $suffix = ("checkbox"===$type)?"[]":"";
+          $format .= 'fname = "%1$s' . $suffix . '";'.PHP_EOL;
+          $format .= 'var arr = data.%2$s;'.PHP_EOL;
+          $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
+          $format .= '$.each(arr , function(index, value){'.PHP_EOL;
+          //$format .= '  var search = +value;'.PHP_EOL;
+          $format .='$cf7Form'. ".find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
+          $format .= '});';
+          break;
+        default:
+          $isFiltered = true;
+          /** 
+           * Return a format string for preloading the field in javascript.
+          */
+          $format = apply_filters('cf7_2_post_field_mapping_tag_'.$type, '', $field, $form_id, $json_value, $js_form, $mapper->cf7_key);
+          break;
+      }
       /**
       * @since 2.0.0
       * filter to modify the way the field is set.  This is introduced for plugin developers
@@ -68,56 +113,13 @@ if ( ! defined( 'ABSPATH' ) ) {
       * @param string  $key  unique cf7 form key.
       * @return boolean  false to print a custom script from the called function, true for the default script printed by this plugin.
       */
-      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key)){
-        $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
-        $isFiltered = false;
-        switch($type){
-          case 'text':
-          case 'password':
-          case 'url':
-          case 'number':
-          case 'tel':
-          case 'date':
-          case 'datetime':
-          case 'email':
-          case 'time':
-          case 'hidden':
-            $format .= '$cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-            break;
-          case 'select':
-            $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-            break;
-          case 'dynamic_select':
-            $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-            break;
-          case 'textarea':
-            $format .= '$cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-            break;
-          case 'radio':
-          case 'checkbox':
-            $suffix = ("checkbox"===$type)?"[]":"";
-            $format .= 'fname = "%1$s' . $suffix . '";'.PHP_EOL;
-            $format .= 'var arr = data.%2$s;'.PHP_EOL;
-            $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
-            $format .= '$.each(arr , function(index, value){'.PHP_EOL;
-            //$format .= '  var search = +value;'.PHP_EOL;
-            $format .='$cf7Form'. ".find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
-            $format .= '});';
-            break;
-          default:
-            $isFiltered = true;
-            $format = apply_filters('cf7_2_post_field_mapping_tag_'.$type, '', $field, $form_id, $json_value, $js_form, $mapper->cf7_key);
-            break;
-        }
-        if(!$isFiltered){
-          $format .= '}'.PHP_EOL;
-          //output script
-          printf($format, $field, $json_var);
-        }else{
-          echo $format;
-        }
+      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key, $format, $json_var)){
+        //output script
+        printf($format, $field, $json_var);
       }
+      echo '}'.PHP_EOL; //finally close the data validation condition.
     }
+    
   /*
   Taxonomy fields
   */

@@ -962,9 +962,9 @@ abstract class Form_2_Post_Mapper {
           $files = array();
 
           if(defined('CF7_GRID_VERSION') && version_compare(CF7_GRID_VERSION, '4.9.0','>=')){
-            $cf7_files = $cf7_form_data[$form_field]; //file path stored in posted data as of v4.9.
-            if(!empty($cf7_files)){
-              $files = cf7sg_extract_submitted_files($cf7_files);
+             //file path stored in posted data as of v4.9.
+            if(isset($cf7_form_data[$form_field]) && !empty($cf7_form_data[$form_field])){
+              $files = cf7sg_extract_submitted_files($cf7_form_data[$form_field]);
             }
           }else{
             if(!empty($cf7_files[$form_field])){ //if set handle upload.
