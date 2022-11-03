@@ -6,3 +6,6 @@ https://wordpress.org/support/topic/no-categories-appearing-when-mapping-cf7-for
 
 - post ID as mail tag
  changed the class-cf7-2-post-public.php and class-cf7-2-post-admin.php files to add a [cf7_2_post-ID] mail tag.
+
+ - draft save file fields, overwrite any previous value.
+ https://wordpress.org/support/topic/media-uploads-saved-to-draft-but-missing-at-later-visit/#post-16033768

@@ -309,8 +309,9 @@ class Cf7_2_Post_Public {
 
 
   	$atts['class'] = $tag->get_class_option( $class );
-    $atts['class'] .=' wpcf7-submit cf7_2_post_save';
-  	$atts['id'] = $tag->get_id_option();
+    $atts['class'] .=' wpcf7-submit cf7_2_post_save ';//. apply_filters('c2p_set_save_button_class', '', $cf7_key);;
+  	$atts['id'] = $tag->get_id_option();//apply_filters('c2p_set_save_button_id', 'c2p-save-draft', $cf7_key);
+    // debug_msg($tag, $tag->get_id_option());
   	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
 
   	$value = isset( $tag->values[0] ) ? $tag->values[0] : '';

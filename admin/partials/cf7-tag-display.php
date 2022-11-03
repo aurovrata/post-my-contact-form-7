@@ -23,15 +23,21 @@
       <tbody>
     	<tr>
       	<th scope="row"><label for="tag-generator-panel-submit-values"><?=__('Label', 'post-my-contact-form-7')?></label></th>
-      	<td><input name="values" class="oneline" id="tag-generator-panel-save-values" type="text"></td>
+      	<td>
+          <input name="values" class="oneline" id="tag-generator-panel-save-values" type="text">
+          <input type="hidden" value="button" name="name" class="tg-name oneline" id="tag-generator-panel-text-name">
+        </td>
     	</tr>
     	<tr>
       	<th scope="row"><label for="tag-generator-panel-submit-id"><?=__('Id attribute', 'post-my-contact-form-7')?></label></th>
-      	<td><input name="id" class="idvalue oneline option" id="tag-generator-panel-save-id" type="text"></td>
+      	<td><input name="id" class="idvalue oneline option" id="tag-generator-panel-save-id" type="text">
+        </td>  
     	</tr>
     	<tr>
       	<th scope="row"><label for="tag-generator-panel-submit-class"><?=__('Class attribute', 'post-my-contact-form-7')?></label></th>
-      	<td><input name="class" class="classvalue oneline option" id="tag-generator-panel-save-class" type="text"></td>
+      	<td>
+          <input name="class" class="classvalue oneline option" id="tag-generator-panel-save-class" type="text">
+        </td>
     	</tr>
       </tbody>
     </table>

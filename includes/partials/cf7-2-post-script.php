@@ -41,60 +41,30 @@ if ( ! defined( 'ABSPATH' ) ) {
     $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $mapper->cf7_key );
     $taxonomies = array_merge($mapper->get_mapped_taxonomy(), $taxonomies);
     $form_fields = $mapper->get_form_fields();
-    foreach($form_fields as $field=>$type){
-      if(isset($taxonomies[$field]) ) continue;
+    $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
+      /** 
+     * Filter out fields that will be handled by other plugings.
+     * @since 5.5.0
+     * @param Array $filter_fields empty array
+     * @param Array $form_fields array opf field-name=>field-type.
+     * @param String  $key  unique cf7 form key.
+     * @param String  $form_id  wpcf7_contact_form post  id.
+     * @return Array field-name => event-key, the js script will fire an event on the form element as 'c2p-prefill-event-key' for your custom script to handle.
+     */
+    $filter_fields = apply_filters('c2p_manage_prefill_fields', array(), $form_fields, $mapper->cf7_key, $form_id);
+    $fields = array_keys($form_fields);
+    if(!empty($filter_fields)){
+      $fields = array_diff( array_keys($filter_fields), $fields );
+    }
+    foreach($fields as $field){
+      $type = $form_fields[$field];
+      if(isset($taxonomies[$field]) ) continue; //handled after.
 
       $json_var = str_replace('-','_',$field);
       //setup sprintf format, %1 = $field (field name), %2 = $json_var (json data variable)
       $js_form = '$cf7Form';
       $json_value = 'data.'.$json_var;
       $default_script = true;
-      $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
-      //start by checking if data is available for the field
-      echo "if(data.{$json_var} !== undefined){".PHP_EOL;
-      $format = '';
-      $isFiltered = false;
-      switch($type){
-        case 'text':
-        case 'password':
-        case 'url':
-        case 'number':
-        case 'tel':
-        case 'date':
-        case 'datetime':
-        case 'email':
-        case 'time':
-        case 'hidden':
-          $format .= '$cf7Form.find("input[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-          break;
-        case 'select':
-          $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-          break;
-        case 'dynamic_select':
-          $format .= '$cf7Form.find("select[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-          break;
-        case 'textarea':
-          $format .= '$cf7Form.find("textarea[name=%1$s]").val(data.%2$s).trigger("change");'.PHP_EOL;
-          break;
-        case 'radio':
-        case 'checkbox':
-          $suffix = ("checkbox"===$type)?"[]":"";
-          $format .= 'fname = "%1$s' . $suffix . '";'.PHP_EOL;
-          $format .= 'var arr = data.%2$s;'.PHP_EOL;
-          $format .= 'if(!Array.isArray(arr)) arr = new Array(data.%2$s);'.PHP_EOL;
-          $format .= '$.each(arr , function(index, value){'.PHP_EOL;
-          //$format .= '  var search = +value;'.PHP_EOL;
-          $format .='$cf7Form'. ".find('input[name=\"'+fname+'\"][value=\"'+value+'\"]').prop('checked',true).trigger('change');".PHP_EOL;
-          $format .= '});';
-          break;
-        default:
-          $isFiltered = true;
-          /** 
-           * Return a format string for preloading the field in javascript.
-          */
-          $format = apply_filters('cf7_2_post_field_mapping_tag_'.$type, '', $field, $form_id, $json_value, $js_form, $mapper->cf7_key);
-          break;
-      }
       /**
       * @since 2.0.0
       * filter to modify the way the field is set.  This is introduced for plugin developers
@@ -113,81 +83,87 @@ if ( ! defined( 'ABSPATH' ) ) {
       * @param string  $key  unique cf7 form key.
       * @return boolean  false to print a custom script from the called function, true for the default script printed by this plugin.
       */
-      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key, $format, $json_var)){
-        //output script
+      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key)){
+        $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
+        $format.= '  $cf7Form.c2pCF7Field('.$type.', %1$s, data.%2$s);'.PHP_EOL;
+        $format.= '};'.PHP_EOL;
         printf($format, $field, $json_var);
       }
-      echo '}'.PHP_EOL; //finally close the data validation condition.
+    }
+    //let other plugins handle their custom fields,
+    foreach($filter_fields as $field => $event){
+      $json_var = str_replace('-','_',$field);
+      $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
+      $format.= '  $cf7Form.trigger('.$event.',{field: %1$s,val:data.%2$s})'.PHP_EOL;
+      $format.= '};'.PHP_EOL;
+      printf($format, $field, $json_var);
     }
     
-  /*
-  Taxonomy fields
-  */
-  $load_chosen_script = false;
-  $hdd = array();
-  foreach($taxonomies as $form_field => $taxonomy){
-    $js_field = str_replace('-','_',$form_field);
-    if(0===strpos($form_field,'cf7_2_post_filter-')) continue; //nothing to do here.
-    $field_type = $form_fields[$form_field];
+    /*
+    Taxonomy fields
+    */
+    $load_chosen_script = false;
+    $hdd = array();
+    foreach($taxonomies as $form_field => $taxonomy){
+      $js_field = str_replace('-','_',$form_field);
+      if(0===strpos($form_field,'cf7_2_post_filter-')) continue; //nothing to do here.
+      $field_type = $form_fields[$form_field];
 
-    /** @since 5.0.0 skip if hybrid*/
-    if( $mapper->field_has_class($form_field, 'hybrid-select') && 'select'!=$field_type ){
-      $hdd[]=$js_field;
-      continue;
-    }
-    //load the taxonomy required
-    //legacy
+      /** @since 5.0.0 skip if hybrid*/
+      if( $mapper->field_has_class($form_field, 'hybrid-select') && 'select'!=$field_type ){
+        $hdd[]=$js_field;
+        continue;
+      }
+      //load the taxonomy required
+      //legacy
 
-    $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
+      $load_chosen = apply_filters('cf7_2_post_filter_cf7_taxonomy_chosen_select',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key) && apply_filters('cf7_2_post_filter_cf7_taxonomy_select2',true, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key);
 
-    if($load_chosen){
-      $load_chosen_script = true;
-    }
-    //if the value was filtered, let's skip it
-    if( 0 === strpos($form_field,'cf7_2_post_filter-') ){
-      continue;
-    }
-    $terms_id = array();
+      if($load_chosen){
+        $load_chosen_script = true;
+      }
+      
+      $terms_id = array();
 
-    switch($field_type){
-      case 'select':
-        if( $mapper->field_has_option($form_field, 'multiple') ){
-          $form_field = '"'.$form_field.'[]"';
-        }
-      ?>
-      fname = JSON.parse(data.<?php echo $js_field?>);
-      $cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
-      $('select.hybrid-select').not('.hybrid-no-init').each(function(){
-        new HybridDropdown(this,{});
-      })
-      <?php
-
-        break;
-      case 'radio':
-      ?>
-      fname = JSON.parse(data.<?php echo $js_field?>);
-      $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-radio').html(fname);
+      switch($field_type){
+        case 'select':
+          if( $mapper->field_has_option($form_field, 'multiple') ){
+            $form_field = '"'.$form_field.'[]"';
+          }
+        ?>
+        fname = JSON.parse(data.<?php echo $js_field?>);
+        $cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
+        $('select.hybrid-select').not('.hybrid-no-init').each(function(){
+          new HybridDropdown(this,{});
+        })
         <?php
-        break;
-      case 'checkbox':
-      ?>
-      fname = JSON.parse(data.<?php echo $js_field?>);
-      $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-checkbox').html(fname);
-        <?php
-        break;
+
+          break;
+        case 'radio':
+        ?>
+        fname = JSON.parse(data.<?php echo $js_field?>);
+        $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-radio').html(fname);
+          <?php
+          break;
+        case 'checkbox':
+        ?>
+        fname = JSON.parse(data.<?php echo $js_field?>);
+        $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-checkbox').html(fname);
+          <?php
+          break;
+      }
     }
-  }
-  if($load_chosen_script):
-    $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $mapper->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $mapper->cf7_post_ID);
-    if(!$delay_chosen_script):
-    ?>
-      $(".js-select2", $cf7Form).each(function(){
-        $(this).select2();
-      })
-      <?php
-    endif;
-  endif
-  //finally we need to cater for the post_id if there is one
+    if($load_chosen_script):
+      $delay_chosen_script = apply_filters('cf7_2_post_filter_cf7_delay_chosen_launch',false, $mapper->cf7_post_ID) || apply_filters('cf7_2_post_filter_cf7_delay_select2_launch',false, $mapper->cf7_post_ID);
+      if(!$delay_chosen_script):
+      ?>
+        $(".js-select2", $cf7Form).each(function(){
+          $(this).select2();
+        })
+        <?php
+      endif;
+    endif
+    //finally we need to cater for the post_id if there is one
     ?>
     if(data.map_post_id !== undefined){
       fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
@@ -230,4 +206,38 @@ endif; //empty hdd
       //console.log('<?= $nonce ?> form ready');
     }//end preloadForm()
   }); //document ready
+  <?php /** @since 5.5.0 introcude a field value setter on jquery form object */?>
+  //field setter for jquery form object.
+  if(!$.isFunction( $.fn.c2pCF7Field)){
+    $.fn.c2pCF7Field = function(fieldType, fieldName, fieldValue){
+      let $form = $(this), $field;
+      if(!$form.is('form.wpcf7-form')) return false;
+      if(fielType === null) fielType = '';
+      //do we have a field
+      if(typeof fieldName == 'string'  && fieldName.length > 0 ){
+        $field = $form.find(`input[name=${fieldName}]`);
+        switch(fielType){
+          case 'checkbox':
+          case 'radio':
+            fieldName = 'checkbox'===fielType ? `${fieldName}[]` : fieldName;
+            if(!Array.isArray(fieldValue)) fieldValue = new Array(fieldValue);
+            $.each(fieldValue , function(index, v){
+              $form.find(`input[name=${fieldName}][value=${v}]`).prop('checked',true).trigger('change');
+            });
+            break;
+          case 'select':
+          case 'dynamic_select':
+            $form.find(`select[name=${fieldName}]`).val(fieldValue).trigger("change");
+            break;
+          case 'textarea':
+            $form.find(`textarea[name=${fieldName}]`).val(fieldValue).trigger("change");
+            break;
+          default:
+            $form.find(`input[name=${fieldName}]`).val(fieldValue).trigger("change");
+            break;
+        }
+      }
+      return $form;
+    }
+  }
 })( jQuery );

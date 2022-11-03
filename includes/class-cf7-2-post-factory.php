@@ -584,10 +584,10 @@ class CF72Post_Mapping_Factory {
         case 'slug':
           $post_key ='post_name';
           break;
-        case 'thumbnail':
+        case 'thumbnail': 
           break;
       }
-      if($load_saved_values) {
+      if($load_saved_values && !empty($post_key)) {
         $post_value = $post->{$post_key};
       }else{
         $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
