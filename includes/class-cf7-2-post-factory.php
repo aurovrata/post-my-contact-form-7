@@ -594,7 +594,7 @@ class CF72Post_Mapping_Factory {
       }
 
       if(!empty($post_value)){
-        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+        $field_and_values[$form_field] = $post_value;
       }
     }
     //
@@ -615,7 +615,7 @@ class CF72Post_Mapping_Factory {
         $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
       }
       if(!empty($post_value)){
-        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+        $field_and_values[$form_field] = $post_value;
       }
     }
     /*
@@ -631,7 +631,7 @@ class CF72Post_Mapping_Factory {
       $post_value = apply_filters('cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_ID, $form_field, $mapper->cf7_key, $mapper->form_terms);
       //$script .= $mapper->get_field_script($form_field, $post_value);
       if(!empty($post_value)){
-        $field_and_values[str_replace('-','_',$form_field)] = $post_value;
+        $field_and_values[$form_field] = $post_value;
       }
     }
     //
@@ -699,14 +699,15 @@ class CF72Post_Mapping_Factory {
           wp_enqueue_style('jquery-select2',plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(),CF7_2_POST_VERSION);
         }
       }
-      $field_and_values[str_replace('-','_',$form_field)] = $options;
+      $field_and_values[$form_field] = $options;
     }
     //filter the values
     $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_ID , $mapper->post_properties['type'], $mapper->cf7_key, $post);
     //make sure the field names are with underscores
     $return_values = array();
     foreach($field_and_values as $field=>$value){
-      $return_values[str_replace('-','_',$field)]=$value;
+      $f = str_replace('-','_',$field);
+      $return_values[$f]=$value;
     }
     return $return_values;
   }

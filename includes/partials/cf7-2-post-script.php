@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     $taxonomies = array();
     $taxonomies = apply_filters('cf7_2_post_map_extra_taxonomy', $taxonomies , $mapper->cf7_key );
     $taxonomies = array_merge($mapper->get_mapped_taxonomy(), $taxonomies);
-    $form_fields = $mapper->get_form_fields();
+    $fields = $mapper->get_form_fields();
     $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
       /** 
      * Filter out fields that will be handled by other plugings.
@@ -51,13 +51,13 @@ if ( ! defined( 'ABSPATH' ) ) {
      * @param String  $form_id  wpcf7_contact_form post  id.
      * @return Array field-name => event-key, the js script will fire an event on the form element as 'c2p-prefill-event-key' for your custom script to handle.
      */
-    $filter_fields = apply_filters('c2p_manage_prefill_fields', array(), $form_fields, $mapper->cf7_key, $form_id);
-    $fields = array_keys($form_fields);
-    if(!empty($filter_fields)){
-      $fields = array_diff( array_keys($filter_fields), $fields );
-    }
-    foreach($fields as $field){
-      $type = $form_fields[$field];
+    // $filter_fields = apply_filters('c2p_manage_prefill_fields', array(), $form_fields, $mapper->cf7_key, $form_id);
+    // $fields = array_keys($form_fields);
+    // if(!empty($filter_fields)){
+    //   $fields = array_diff( array_keys($filter_fields), $fields );
+    // }
+    foreach($fields as $field=>$type){
+      // $type = $form_fields[$field];
       if(isset($taxonomies[$field]) ) continue; //handled after.
 
       $json_var = str_replace('-','_',$field);
@@ -83,21 +83,15 @@ if ( ! defined( 'ABSPATH' ) ) {
       * @param string  $key  unique cf7 form key.
       * @return boolean  false to print a custom script from the called function, true for the default script printed by this plugin.
       */
-      if(apply_filters('cf7_2_post_echo_field_mapping_script', $default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key)){
+      if(apply_filters_deprecated('cf7_2_post_echo_field_mapping_script', 
+        array($default_script, $form_id, $field, $type, $json_value, $js_form, $mapper->cf7_key),'5.5.0','cf7_2_post_form_values')){
         $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
-        $format.= '  $cf7Form.c2pCF7Field('.$type.', %1$s, data.%2$s);'.PHP_EOL;
+        $format.= '  $cf7Form.c2pCF7Field("'.$type.'", "%1$s", data.%2$s);'.PHP_EOL;
         $format.= '};'.PHP_EOL;
         printf($format, $field, $json_var);
       }
     }
-    //let other plugins handle their custom fields,
-    foreach($filter_fields as $field => $event){
-      $json_var = str_replace('-','_',$field);
-      $format = 'if(data.%2$s !== undefined){'.PHP_EOL;
-      $format.= '  $cf7Form.trigger('.$event.',{field: %1$s,val:data.%2$s})'.PHP_EOL;
-      $format.= '};'.PHP_EOL;
-      printf($format, $field, $json_var);
-    }
+   
     
     /*
     Taxonomy fields
@@ -210,16 +204,16 @@ endif; //empty hdd
   //field setter for jquery form object.
   if(!$.isFunction( $.fn.c2pCF7Field)){
     $.fn.c2pCF7Field = function(fieldType, fieldName, fieldValue){
-      let $form = $(this), $field;
+      let $form = $(this);
       if(!$form.is('form.wpcf7-form')) return false;
-      if(fielType === null) fielType = '';
+      if(fieldType === null) fieldType = '';
       //do we have a field
       if(typeof fieldName == 'string'  && fieldName.length > 0 ){
-        $field = $form.find(`input[name=${fieldName}]`);
-        switch(fielType){
+        
+        switch(fieldType){
           case 'checkbox':
           case 'radio':
-            fieldName = 'checkbox'===fielType ? `${fieldName}[]` : fieldName;
+            fieldName = 'checkbox'===fieldType ? `${fieldName}[]` : fieldName;
             if(!Array.isArray(fieldValue)) fieldValue = new Array(fieldValue);
             $.each(fieldValue , function(index, v){
               $form.find(`input[name=${fieldName}][value=${v}]`).prop('checked',true).trigger('change');
