@@ -8,7 +8,7 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              http://syllogic.in
+ * @link              http://www.we2ours2.in
  * @since             1.0.0
  * @package           Cf7_2_Post
  *
@@ -18,7 +18,7 @@
  * Description:       This plugin enables the mapping of your CF7 forms to custom posts.
  * Version:           5.5.0rc1
  * Author:            Aurovrata V.
- * Author URI:        http://syllogic.in
+ * Author URI:        http://www.we2ours2.in
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       post-my-contact-form-7

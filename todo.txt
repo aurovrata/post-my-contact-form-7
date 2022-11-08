@@ -9,3 +9,9 @@ https://wordpress.org/support/topic/no-categories-appearing-when-mapping-cf7-for
 
  - draft save file fields, overwrite any previous value.
  https://wordpress.org/support/topic/media-uploads-saved-to-draft-but-missing-at-later-visit/#post-16033768
+
+ - test page refresh on draft form saving
+ https://wordpress.org/support/topic/how-to-trigger-a-page-refreah-after-save/#post-16168728
+
+ - check if mapped post author IDs are being saved as authors on post
+ https://wordpress.org/support/topic/post-author-not-working-as-expected/

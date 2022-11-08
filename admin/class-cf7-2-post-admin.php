@@ -75,9 +75,10 @@ class Cf7_2_Post_Admin {
   * @since 1.1.0
   */
   public function check_plugin_dependency() {
-    if( !is_plugin_active('contact-form-7/wp-contact-form-7.php') ){
-      deactivate_plugins( "post-my-contact-form-7/cf7-2-post.php" );
-      wp_die( __('<strong>Post My CF7 Form</strong> requires <strong>CF7 plugin</strong> and has been deactivated!','post-my-contact-form-7') );
+    if( !is_plugin_active('contact-form-7/wp-contact-form-7.php') ){ 
+      deactivate_plugins( 'post-my-contact-form-7/cf7-2-post.php' );
+      $button = '<a href="'.network_admin_url('plugins.php').'">Return to Plugins</a></a>';
+      wp_die( '<p><strong>Post My CF7 Form</strong> requires <strong>Contact Form 7</strong> plugin, and has therefore been deactivated!</p>'.$button);
     }
 		/** @since 5.0.0 hook the smart grid form saving action to fix double save_post hook call*/
     if(is_plugin_active('cf7-grid-layout/cf7-grid-layout.php')){
@@ -105,6 +106,8 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles($hook) {
+    if(!class_exists('WPCF7_ContactForm')) return;
+
     $screen = get_current_screen();
     if( 'toplevel_page_wpcf7'==$hook or
     ($screen->post_type == WPCF7_ContactForm::post_type and 'post'== $screen->base) ){
@@ -136,6 +139,7 @@ class Cf7_2_Post_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts($hook) {
+    if(!class_exists('WPCF7_ContactForm')) return;
 
     $screen = get_current_screen();
     if( 'toplevel_page_wpcf7'==$hook or ($screen->post_type == WPCF7_ContactForm::post_type and 'post'==$screen->base)){

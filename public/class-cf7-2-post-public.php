@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://syllogic.in
+ * @link       http://www.we2ours2.in
  * @since      1.0.0
  *
  * @package    Cf7_2_Post
