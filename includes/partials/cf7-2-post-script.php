@@ -42,22 +42,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     $taxonomies = array_merge($mapper->get_mapped_taxonomy(), $taxonomies);
     $fields = $mapper->get_form_fields();
     $form_id = $mapper->cf7_post_ID; //submisison mapped post id.
-      /** 
-     * Filter out fields that will be handled by other plugings.
-     * @since 5.5.0
-     * @param Array $filter_fields empty array
-     * @param Array $form_fields array opf field-name=>field-type.
-     * @param String  $key  unique cf7 form key.
-     * @param String  $form_id  wpcf7_contact_form post  id.
-     * @return Array field-name => event-key, the js script will fire an event on the form element as 'c2p-prefill-event-key' for your custom script to handle.
-     */
-    // $filter_fields = apply_filters('c2p_manage_prefill_fields', array(), $form_fields, $mapper->cf7_key, $form_id);
-    // $fields = array_keys($form_fields);
-    // if(!empty($filter_fields)){
-    //   $fields = array_diff( array_keys($filter_fields), $fields );
-    // }
+    
     foreach($fields as $field=>$type){
-      // $type = $form_fields[$field];
       if(isset($taxonomies[$field]) ) continue; //handled after.
 
       $json_var = str_replace('-','_',$field);
@@ -101,7 +87,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     foreach($taxonomies as $form_field => $taxonomy){
       $js_field = str_replace('-','_',$form_field);
       if(0===strpos($form_field,'cf7_2_post_filter-')) continue; //nothing to do here.
-      $field_type = $form_fields[$form_field];
+      $field_type = $fields[$form_field];
 
       /** @since 5.0.0 skip if hybrid*/
       if( $mapper->field_has_class($form_field, 'hybrid-select') && 'select'!=$field_type ){
@@ -125,8 +111,8 @@ if ( ! defined( 'ABSPATH' ) ) {
             $form_field = '"'.$form_field.'[]"';
           }
         ?>
-        fname = JSON.parse(data.<?php echo $js_field?>);
-        $cf7Form.find('select[name=<?php echo $form_field?>]').append(fname);
+        fname = JSON.parse(data.<?= $js_field?>);
+        $cf7Form.find('select[name=<?= $form_field?>]').append(fname);
         $('select.hybrid-select').not('.hybrid-no-init').each(function(){
           new HybridDropdown(this,{});
         })
@@ -135,14 +121,14 @@ if ( ! defined( 'ABSPATH' ) ) {
           break;
         case 'radio':
         ?>
-        fname = JSON.parse(data.<?php echo $js_field?>);
-        $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-radio').html(fname);
+        fname = JSON.parse(data.<?= $js_field?>);
+        $cf7Form.find('span[data-name="<?= $form_field?>"] span.wpcf7-radio').html(fname);
           <?php
           break;
         case 'checkbox':
         ?>
-        fname = JSON.parse(data.<?php echo $js_field?>);
-        $cf7Form.find('span.<?php echo $form_field?> span.wpcf7-checkbox').html(fname);
+        fname = JSON.parse(data.<?= $js_field?>);
+        $cf7Form.find('span[data-name="<?= $form_field?>"] span.wpcf7-checkbox').html(fname);
           <?php
           break;
       }
