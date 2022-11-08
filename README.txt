@@ -547,6 +547,7 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 * fix repetitive pre-fill js script for smart grid plugin.
 * fix save button id/class attributes.
 * deprecated `cf7_2_post_echo_field_mapping_script` in favour of `cf7_2_post_form_values`
+* updated HybridDropdown js plugin to v2.2.1
 = 5.4.7 =
 * fix block-theme localise bug.
 * fix js save_draft script.

@@ -702,7 +702,18 @@ class CF72Post_Mapping_Factory {
       $field_and_values[$form_field] = $options;
     }
     //filter the values
-    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_ID , $mapper->post_properties['type'], $mapper->cf7_key, $post);
+    /** 
+     * This filter is specifically for plugin authors who want to extend this plugin to map/prefill their custom cf7 fields.
+     * @since
+     * @var Array $field_and_values an array of field-names => values that are being prefilled.
+     * @var String $cf7_post_ID the post ID to which the submission is mapped
+     * @var String $cf7_post_type the post type to which the submission is mapped
+     * @var String $cf7_key the current form's unique key
+     * @var WP_Post $cf7_post the post object to which the submission is mapped
+     * @var Array $cf7_form_fields an array of form field-names => field-types
+     * @return Array of field-names => values to prefill, ideally with the custom fields removed to be handled by another plugin.
+     */
+    $field_and_values = apply_filters('cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_ID , $mapper->post_properties['type'], $mapper->cf7_key, $post, $cf7_form_fields);
     //make sure the field names are with underscores
     $return_values = array();
     foreach($field_and_values as $field=>$value){

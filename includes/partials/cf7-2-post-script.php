@@ -202,7 +202,7 @@ endif; //empty hdd
             fieldName = 'checkbox'===fieldType ? `${fieldName}[]` : fieldName;
             if(!Array.isArray(fieldValue)) fieldValue = new Array(fieldValue);
             $.each(fieldValue , function(index, v){
-              $form.find(`input[name=${fieldName}][value=${v}]`).prop('checked',true).trigger('change');
+              $form.find(`input[name=${fieldName}][value="${v}"]`).prop('checked',true).trigger('change');
             });
             break;
           case 'select':
