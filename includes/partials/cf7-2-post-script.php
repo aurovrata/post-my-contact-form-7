@@ -190,32 +190,34 @@ endif; //empty hdd
   //field setter for jquery form object.
   if(!$.isFunction( $.fn.c2pCF7Field)){
     $.fn.c2pCF7Field = function(fieldType, fieldName, fieldValue){
-      let $form = $(this);
+      let $form = $(this),
+        $field = null;
       if(!$form.is('form.wpcf7-form')) return false;
       if(fieldType === null) fieldType = '';
       //do we have a field
       if(typeof fieldName == 'string'  && fieldName.length > 0 ){
-        
+        let pe = new CustomEvent(`c2p-prefill-field`, { name: fieldName,value: fieldValue });
         switch(fieldType){
           case 'checkbox':
           case 'radio':
             fieldName = 'checkbox'===fieldType ? `${fieldName}[]` : fieldName;
             if(!Array.isArray(fieldValue)) fieldValue = new Array(fieldValue);
             $.each(fieldValue , function(index, v){
-              $form.find(`input[name=${fieldName}][value="${v}"]`).prop('checked',true).trigger('change');
+              $field = $form.find(`input[name=${fieldName}][value="${v}"]`).prop('checked',true).trigger('change');
             });
             break;
           case 'select':
           case 'dynamic_select':
-            $form.find(`select[name=${fieldName}]`).val(fieldValue).trigger("change");
+            $field = $form.find(`select[name=${fieldName}]`).val(fieldValue).trigger("change");
             break;
           case 'textarea':
-            $form.find(`textarea[name=${fieldName}]`).val(fieldValue).trigger("change");
+            $field = $form.find(`textarea[name=${fieldName}]`).val(fieldValue).trigger("change");
             break;
           default:
-            $form.find(`input[name=${fieldName}]`).val(fieldValue).trigger("change");
+            $field = $form.find(`input[name=${fieldName}]`).val(fieldValue).trigger("change");
             break;
         }
+        $field.get(0).dispatchEvent(pe);
       }
       return $form;
     }
