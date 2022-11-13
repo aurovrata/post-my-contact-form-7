@@ -543,6 +543,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.5.1 =
+* fix PHP 8 Required parameter follows optional parameter class-cf7-2-post-factory.php on line 825.
+* fix stripe nonce error.
 = 5.5.0 =
 * fix repetitive pre-fill js script for smart grid plugin.
 * fix save button id/class attributes.

@@ -822,7 +822,7 @@ class CF72Post_Mapping_Factory {
   * @param   Form_2_Post_Mapper $mapper post mapping object.
   * @return  String a jquery code to be executed once the page is loaded.
   */
-   protected function get_taxonomy_terms( $taxonomy, $branch, $post_terms, $field, $field_type, $level=0, $mapper){
+   protected function get_taxonomy_terms( $taxonomy, $branch, $post_terms, $field, $field_type, $level, $mapper){
     $terms = $this->filter_taxonomy_query($taxonomy, $branch, $field, $mapper);
 
     if(is_array($branch))  $parent = end($branch);

@@ -800,7 +800,7 @@ abstract class Form_2_Post_Mapper {
                 );
     /** @since 5.5 integrate Stripe payment */
     $post_id = false;
-    if ( empty( $_POST['_wpcf7_stripe_payment_intent'] )) {
+    if ( isset($_POST['_wpcf7_stripe_payment_intent']) && empty( $_POST['_wpcf7_stripe_payment_intent'] ) && isset($_POST['_cf72post_nonce'])) {
   		$post_id = get_transient( $_POST['_cf72post_nonce'] );
   	}
     $is_update = false;
