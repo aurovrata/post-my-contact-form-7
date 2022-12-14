@@ -9,9 +9,11 @@
     $tab = $('#cf7-2-post-tab'),selectedCount = 0, init=true;
   $(document).ready(function(){
     fieldTags = ['hidden']; /** @since 5.4.2 fix tag scanning */
-    $('form.tag-generator-panel .insert-box input.tag').each((i,el)=>{
-      fieldTags.push(el.name);
-    });
+    if(typeof c2pLocal['wpcf7_tags'] != 'undefined'){
+      $.each(c2pLocal.wpcf7_tags,(i,tag)=>{
+        fieldTags.push(tag);
+      });
+    }
     fieldTags = fieldTags.join('|');
 
     $('#c2p-active-tab').val($tab.index());

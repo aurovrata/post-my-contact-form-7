@@ -184,7 +184,7 @@ class Cf7_2_Post {
     //delete post
     $this->loader->add_action( 'wpcf7_post_delete',$plugin_admin, 'delete_cf7_post',10,1);
     //add the 'save' button tag
-    $this->loader->add_action( 'wpcf7_admin_init', $plugin_admin, 'cf7_shortcode_tags' );
+    $this->loader->add_action( 'wpcf7_admin_init', $plugin_admin, 'cf7_shortcode_tags', 55,0 );
     /** @since 4.0.0  add save-darft message*/
     $this->loader->add_action( 'wpcf7_messages', $plugin_admin, 'draft_message' );
 

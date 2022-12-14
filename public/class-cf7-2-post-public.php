@@ -267,7 +267,7 @@ class Cf7_2_Post_Public {
       wpcf7_add_form_tag(
         array( 'save' ),
         array($this,'save_button_display'),
-        true //has name
+        false //no name
       );
     }
   }

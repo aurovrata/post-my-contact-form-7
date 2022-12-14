@@ -144,6 +144,15 @@ class Cf7_2_Post_Admin {
     $screen = get_current_screen();
     if( 'toplevel_page_wpcf7'==$hook or ($screen->post_type == WPCF7_ContactForm::post_type and 'post'==$screen->base)){
       $plugin_dir = plugin_dir_url( __DIR__ );
+      /** @since 5.5.1 fix tag name scanning.*/
+      $tags = array();
+      if(class_exists('WPCF7_FormTagsManager')){
+        $form_tags_manager = WPCF7_FormTagsManager::get_instance();
+        $tags = $form_tags_manager->collect_tag_types( array(
+          'feature' => 'name-attr',
+        ) );
+        $tags = array_filter($tags, function($t){ return !strpos($t, '*');});
+      }
 
       wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox'), $this->version, true );
       wp_enqueue_script('jquery-toggles', $plugin_dir . 'assets/jquery-toggles/toggles.min.js', array( 'jquery' ), $this->version, true );
@@ -154,7 +163,8 @@ class Cf7_2_Post_Admin {
         'paste'=> __('Paste helper code into your theme functions.php file.', 'post-my-contact-form-7'),
         'draft'=> __('draft','post-my-contact-form-7'),
         'live'=> __('live','post-my-contact-form-7'),
-        'warn'=>__('CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.')
+        'warn'=>__('CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.'),
+        'wpcf7_tags'=>$tags
       ));
       wp_enqueue_script('hybrid-select', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true );
       // wp_enqueue_script('jquery-select2', plugin_dir_url( __DIR__ ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), $this->version, true );
@@ -453,7 +463,7 @@ class Cf7_2_Post_Admin {
   }
   /**
    * Adds a 'save' button shortcode to cf7 forms
-   *
+   * hooked to 'wpcf7_admin_init'
    * @since 2.0.0
   **/
   public function cf7_shortcode_tags(){
@@ -472,7 +482,7 @@ class Cf7_2_Post_Admin {
       }
     }
   }
-
+  
   /**
 	 * Save button tag screen displayt.
 	 *

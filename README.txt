@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 6.1.0
+Tested up to: 6.1.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -546,6 +546,8 @@ As of now there is no special upgrade notes, simply  follow the normal plugin up
 = 5.5.1 =
 * fix PHP 8 Required parameter follows optional parameter class-cf7-2-post-factory.php on line 825.
 * fix stripe nonce error.
+* fix save button tag
+* fix tag list mapping.
 = 5.5.0 =
 * fix repetitive pre-fill js script for smart grid plugin.
 * fix save button id/class attributes.
