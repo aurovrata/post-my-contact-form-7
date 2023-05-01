@@ -4,8 +4,8 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 6.1.1
-Stable tag: trunk
+Tested up to: 6.2.0
+Stable tag: 5.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -543,6 +543,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.6.0 =
+* enable ck7 key (slug) quick edit.
 = 5.5.1 =
 * fix PHP 8 Required parameter follows optional parameter class-cf7-2-post-factory.php on line 825.
 * fix stripe nonce error.

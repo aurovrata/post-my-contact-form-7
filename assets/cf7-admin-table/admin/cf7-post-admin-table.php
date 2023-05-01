@@ -274,7 +274,6 @@ if(!class_exists('Cf7_WP_Post_Table')){
     * @return     Array    array of columns to display.
     */
     public function modify_cf7_list_columns($columns){
-
       if(isset($columns['title'])) $columns['title'] = __('Form','contact-form-7');
       if(isset($columns['date'])) unset($columns['date']);
       $columns['shortcode'] = 'Shortcode<br /><span class="cf7-help-tip"><a href="javascript:void();">What\'s this?</a><span class="cf7-short-info">Use this shortcode the same way you would use the contact-form-7 shortcode. (See the plugin page for more information )</span></span>';
@@ -290,18 +289,12 @@ if(!class_exists('Cf7_WP_Post_Table')){
     * @return     String    value to display.
     */
     public function populate_custom_column( $column, $post_id ) {
-      $form = get_post($post_id);
+      // debug_msg($column);
+			$form = get_post($post_id);
       switch ( $column ) {
         case 'title':
-        debug_msg($column);
-        break;
-        case 'cf7_title':
-          $title = get_the_title($post_id);
-          echo '<strong><a class="row-title" href="'. admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $post_id ) .'" aria-label="“'. $title .'” (Edit)">'. $title .'</a></strong>';
-          echo '<div class="cf7_post_'.$post_id.'" style="display:none"><span class="post_title">'.$title.'</span><span class="post_name">'.$form->post_name.'</span></div>';
-          break;
+	        break;
         case 'shortcode' :
-
     			$output = "\n" . '<span class="shortcode cf7-2-post-shortcode"><input type="text"'
     				. ' onfocus="this.select();" readonly="readonly"'
     				. ' value="' . esc_attr( '[cf7form cf7key="'.$form->post_name.'"]' ) . '"'
