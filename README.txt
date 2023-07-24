@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 6.2.0
+Tested up to: 6.2.2
 Stable tag: 5.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -438,6 +438,7 @@ add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');
 7. 7.making custom posts publicly queryable.
 8. 8.Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 9. 9.Follow the screenshot instructions to map a field to a taxonomy.
+10. 10.You can map a post field to a "Hook with a Filter" which allows you to map any value to it programmatically.  Simply click the provided link to copy the helper code and paste it in your `functions.php` file to customise the value to be saved.
 
 == Filters & Actions for Developers ==
 The following are hooks primarily aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
