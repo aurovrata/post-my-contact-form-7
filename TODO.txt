@@ -17,3 +17,6 @@ DONE
 - add edit button for saved mappings in map edit page
 
 - DONE check compatibility with googlemap plugin v1.8
+
+PHPCS refactor.
+- use '_cf72post_nonce' for transient as well as nonce validation

@@ -1,8 +1,12 @@
 <?php
 /**
-* Display quickedit options in table of wpcf7 form posts.
-* @since 5.3.0
-*/
+ * Display quickedit options in table of wpcf7 form posts.
+ *
+ * @since 5.3.0
+ * @package    Cf7_2_Post
+ * @subpackage Cf7_2_Post/admin/partials
+ */
+
 wp_nonce_field( 'c2p_quickedit_nonce', 'c2p_nonce' );
 ?>
 <fieldset class="inline-edit-col-right">

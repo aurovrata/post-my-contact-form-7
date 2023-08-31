@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -24,7 +23,7 @@
  * @subpackage Cf7_2_Post/includes
  * @author     Aurovrata V. <vrata@syllogic.in>
  */
-class Cf7_2_Post_i18n {
+class Cf7_2_Post_I18n {
 
 	/**
 	 * Load the plugin text domain for translation.
@@ -35,7 +34,7 @@ class Cf7_2_Post_i18n {
 		load_plugin_textdomain(
 			'post-my-contact-form-7',
 			false,
-			plugin_basename( dirname(__DIR__) )  . '/languages/'
+			plugin_basename( dirname( __DIR__ ) ) . '/languages/'
 		);
 
 	}

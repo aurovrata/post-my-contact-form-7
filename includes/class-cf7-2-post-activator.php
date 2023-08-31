@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Fired during plugin activation
  *
@@ -30,15 +29,17 @@ class Cf7_2_Post_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-    //no need to make any special actionvation for multisite.
-    //check if the dependent plugins are active
-    if(!is_plugin_active( 'contact-form-7/wp-contact-form-7.php' )){
-      if(is_multisite()){
-        exit('Contact Form 7 plugin needs to be activated first. If you have activated it on select sites,
-        you will need to activate the Post My CF7 Form plugin on those sites only');
-      }
-      exit('This plugin requires the Contact Form 7 plugin to be installed first');
-    }
+		// no need to make any special actionvation for multisite.
+		// check if the dependent plugins are active.
+		if ( ! is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
+			if ( is_multisite() ) {
+				exit(
+					'Contact Form 7 plugin needs to be activated first. If you have activated it on select sites,
+        you will need to activate the Post My CF7 Form plugin on those sites only'
+				);
+			}
+			exit( 'This plugin requires the Contact Form 7 plugin to be installed first' );
+		}
 	}
 
 }

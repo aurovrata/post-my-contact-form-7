@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -29,7 +28,7 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-define( 'CF7_2_POST_VERSION', '5.6.0' );
+define( 'CF7_2_POST_VERSION', '5.7.0' );
 
 /**
  * The code that runs during plugin activation.
@@ -69,7 +68,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-cf7-2-post.php';
  */
 function run_cf7_2_post() {
 
-	$plugin = new Cf7_2_Post(CF7_2_POST_VERSION);
+	$plugin = new Cf7_2_Post( CF7_2_POST_VERSION );
 	$plugin->run();
 
 }

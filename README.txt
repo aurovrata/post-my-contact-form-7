@@ -427,6 +427,20 @@ If you want to load your own intialisation script to customise the select2 dropd
 add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');
 `
 
+= Testing mapping of published forms =
+
+As of v5.7.0 you now have more control over the ability to save a submission from a form accessible to the public.  If you are developing your website and not concerned about who has access to it, then simply switch your form mapping to `live` (see screenshot #11).  However, if you are looking to map a form that is already accessible to the public on a live site, then you can test your mapping by leaving it the default `draft` mode and use the following filter to allow only certain users's submission to be saved to the mapped post,
+
+`
+// this filter is only fired when a form mapping is in draft mode.
+add_filter( 'cf7_2_post_save_draft_mapping', 'save_submitted_forms', 10, 2);
+function save_submitted_forms($allow, $cf7_key){
+	if('my-mapped-form' === $cf7_key){ 
+		if( 1 === get_current_user_id() ) $allow = true; // if current user is the admin, save the submission.
+	}
+	return $allow;
+}
+
 == Screenshots ==
 
 1. 1.You can map your form fields to post fields and meta-fields.  You can save the mapping as a draft.  You can also change the custom post attributes that will be used to create the post. The default ones are `public, show_ui, show_in_menu, can_export, has_archive, exclude_from_search`.  For more information, please consult the custom post [documentation](https://codex.wordpress.org/Function_Reference/register_post_type).
@@ -439,6 +453,7 @@ add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');
 8. 8.Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 9. 9.Follow the screenshot instructions to map a field to a taxonomy.
 10. 10.You can map a post field to a "Hook with a Filter" which allows you to map any value to it programmatically.  Simply click the provided link to copy the helper code and paste it in your `functions.php` file to customise the value to be saved.
+11. 11. When mapping a form, the mapping settings are saved in `draft` mode.  This allows you to map an existing published form that is accessible to the front-end and test the mapping to post.  Once the mapping works you can switch it to live to save all submissions to your mapped post type.  (See FAQ #28 for more info)
 
 == Filters & Actions for Developers ==
 The following are hooks primarily aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
@@ -544,6 +559,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 5.7.0 =
+* clean up code for WordPress code std compatibility.
+* introduce `cf7_2_post_save_draft_mapping` filter to allow finer control on testing draft mode mappings.
 = 5.6.0 =
 * enable ck7 key (slug) quick edit.
 = 5.5.1 =
