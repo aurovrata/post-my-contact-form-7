@@ -144,8 +144,10 @@ class Cf7_2_Post_Public {
 	 * @return     boolean    true to skip mails if this is adraft form being saved .
 	 **/
 	public function skip_cf7_mail( $skip_mail ) {
-		if ( isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
-			$skip_mail = true;
+		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			if ( isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
+				$skip_mail = true;
+			}
 		}
 		return $skip_mail;
 	}
@@ -362,8 +364,10 @@ class Cf7_2_Post_Public {
 	 * @return WPCF7_Validation  validation results.
 	 **/
 	public function save_skips_wpcf7_validate( $results, $tags ) {
-		if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
-			return $results;
+		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
+				return $results;
+			}
 		}
 		$cf7form  = WPCF7_ContactForm::get_current();
 		$cf7_id   = $cf7form->id();
@@ -416,8 +420,10 @@ class Cf7_2_Post_Public {
 	 * @return WPCF7_Validation  validation results.
 	 */
 	public function save_skips_file_validation( $result, $tag ) {
-		if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
-			return $result;
+		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
+				return $result;
+			}
 		}
 		$cf7form  = WPCF7_ContactForm::get_current();
 		$cf7_id   = $cf7form->id();
@@ -453,7 +459,7 @@ class Cf7_2_Post_Public {
 		}
 		$hidden['_map_author'] = $author;
 		// create nonce for transient storage as well as validation.
-		$hidden['_c2p_nonce'] = wp_create_nonce( 'cf7_2_post' );
+		$hidden['_c2p_nonce'] = CF72Post_Mapping_Factory::noncify();
 		return $hidden;
 	}
 	/**
@@ -466,11 +472,13 @@ class Cf7_2_Post_Public {
 	 * @return string text_description.
 	 */
 	public function draft_message( $message, $status ) {
-		if ( 'mail_sent_ok' === $status && isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
-			$form = wpcf7_get_current_contact_form();
-			if ( ! empty( $form ) ) {
-				$messages = $form->prop( 'messages' );
-				$message  = isset( $messages['draft_saved'] ) ? $messages['draft_saved'] : $message;
+		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			if ( 'mail_sent_ok' === $status && isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
+				$form = wpcf7_get_current_contact_form();
+				if ( ! empty( $form ) ) {
+					$messages = $form->prop( 'messages' );
+					$message  = isset( $messages['draft_saved'] ) ? $messages['draft_saved'] : $message;
+				}
 			}
 		}
 		return $message;
@@ -486,8 +494,10 @@ class Cf7_2_Post_Public {
 	 * @return string single value if original was single.
 	 */
 	public function array_to_single( $value, $org, $tag ) {
-		if ( is_array( $value ) && isset( $_POST[ $tag->name ] ) && ! is_array( $_POST[ $tag->name ] ) ) {
-			$value = sanitize_text_field( $_POST[ $tag->name ] ); // keep the original value.
+		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			if ( is_array( $value ) && isset( $_POST[ $tag->name ] ) && ! is_array( $_POST[ $tag->name ] ) ) {
+				$value = sanitize_text_field( wp_unslash( $_POST[ $tag->name ] ) ); // keep the original value.
+			}
 		}
 		return $value;
 	}

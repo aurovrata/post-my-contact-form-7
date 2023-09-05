@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	'use strict';
 		$( document).ready(function() {
 		var fname;
-		var $cf7Form = $("div#<?php echo esc_html( $nonce ); ?> form.wpcf7-form");
+		var $cf7Form = $("div#<?php echo esc_attr( $nonce ); ?> form.wpcf7-form");
 		var $input;
 		if($cf7Form.is('div.cf7-smart-grid.has-grid form.wpcf7-form')){
 			//if the smart grid is enabled, execute the loading once the grid is ready
@@ -29,13 +29,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 		// function to load all the data into the form
 		function preloadForm($cf7Form){
 			var data = '';
-			if('function' == typeof $.fn.post2CF7FormData) data = $cf7Form.post2CF7FormData('<?php echo esc_html( $nonce ); ?>');
-			else if( 'undefined' != typeof window['<?php echo esc_html( $nonce ); ?>'] ) data = window['<?php echo esc_html( $nonce ); ?>'];
+			if('function' == typeof $.fn.post2CF7FormData) data = $cf7Form.post2CF7FormData('<?php echo esc_attr( $nonce ); ?>');
+			else if( 'undefined' != typeof window['<?php echo esc_attr( $nonce ); ?>'] ) data = window['<?php echo esc_attr( $nonce ); ?>'];
 			<?php /*@since 3.1.0 store form nonce for transient storage of post ID*/ ?>
-			fname = '<input type="hidden" name="_cf72post_nonce" value="<?php echo esc_html( $nonce ); ?>" />';
+			fname = '<input type="hidden" name="_cf72post_nonce" value="<?php echo esc_attr( $nonce ); ?>" />';
 			$cf7Form.find('input[name=_wpcf7]').parent().append(fname);
 			if(0 === data.length){
-			$cf7Form.trigger("<?php echo esc_html( $nonce ); ?>", data);
+			$cf7Form.trigger("<?php echo esc_attr( $nonce ); ?>", data);
 			return false;
 			}
 	<?php
@@ -86,10 +86,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			'5.5.0',
 			'cf7_2_post_form_values'
 		) ) {
-			$format  = 'if(data.%2$s !== undefined){' . PHP_EOL;
-			$format .= '  $cf7Form.c2pCF7Field("' . esc_attr( $ftype ) . '", "%1$s", data.%2$s);' . PHP_EOL;
-			$format .= '};' . PHP_EOL;
-			printf( $format, esc_attr( $field ), esc_attr( $json_var ) );
+			printf(
+				'if(data.%2$s !== undefined){' . PHP_EOL . '  $cf7Form.c2pCF7Field("' . esc_attr( $ftype ) . '", "%1$s", data.%2$s);' . PHP_EOL . '};' . PHP_EOL,
+				esc_attr( $field ),
+				esc_attr( $json_var )
+			);
 		}
 	}
 
@@ -169,7 +170,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php
 	/** NB @since 5.0.0 init hybrid dropdown */
 	if ( ! empty( $hdd ) ) :
-		echo "['" . implode( "','", $hdd ) . "']";// escaped at array filling.
+		echo "['" . esc_html( implode( "','", $hdd ) ) . "']";// escaped at array filling.
 		?>
 	.forEach(function(f){
 		if(data[f]){

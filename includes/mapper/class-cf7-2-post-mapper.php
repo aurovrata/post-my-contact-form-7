@@ -203,13 +203,17 @@ abstract class CF7_2_Post_Mapper {
 	}
 	/**
 	 * Strips mapped fields from the admin $_POST form saving.
-	 * Method accessed from admon requests only.
+	 * Method accessed from admin requests only.
 	 *
 	 * @since 5.0.0
 	 * @param      String $field_prefix     field prefix used to identify where this field is mapped to.
 	 * @return     Array    array of fields mapped to post values.
 	 **/
 	protected function get_mapped_fields( $field_prefix ) {
+		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
+			debug_msg( 'ERROR saving mapping, invalid nonce' );
+			return array( 'error' => 'Invalid nonce' );
+		}
 		$prefix_length = strlen( $field_prefix );
 		$fields        = array();
 		foreach ( $_POST as $field => $value ) {
@@ -240,7 +244,6 @@ abstract class CF7_2_Post_Mapper {
 		// save post fields.
 		$this->post_map_fields = $this->get_mapped_fields( 'cf7_2_post_map-' );
 		$this->save_to_db( $this->post_map_fields, 'cf7_2_post_map-' );
-
 	}
 	/**
 	 * Save the mapped meta fields
@@ -471,8 +474,8 @@ abstract class CF7_2_Post_Mapper {
 			);
 			/**
 			* Load the source of the taxonomy, 'factor' if created by this plugin, 'system' if existing
-		   *
-			*@since 1.1.0
+			*
+			* @since 1.1.0
 			*/
 			$source = get_post_meta( $this->cf7_post_id, 'cf7_2_post_map_taxonomy_source-' . $slug, true );
 			if ( ! $source ) { // for pre-1.1 version we need to ensure we set some defaults.
@@ -517,7 +520,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @return   String form field this taxonomy is mapped to.
 	 */
 	public function get_mapped_form_field( $post_field, $is_meta = false ) {
-		return $this->_form_field( $post_field, ( $is_meta ? 'meta-field' : 'field' ) );
+		return $this->get_c2p_field( $post_field, ( $is_meta ? 'meta-field' : 'field' ) );
 	}
 	/**
 	 * Return form field mapped.
@@ -527,7 +530,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @return Mixed single or array of form field this taxonomy is mapped to.
 	 */
 	public function get_taxonomy_mapped_form_field( $taxonomy = null ) {
-		return $this->_form_field( $taxonomy, 'taxonomy' );
+		return $this->get_c2p_field( $taxonomy, 'taxonomy' );
 	}
 	/**
 	 * Get form field mapped to post field
@@ -537,7 +540,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @param String $data_type   the type of mapping, 'field' | 'meta-field' | 'taxonomy'.
 	 * @return Mixed form field this post field is ampped to or an array of form fields this taxonomy is mapped to.
 	 */
-	private function _form_field( $post_field, $data_type ) {
+	private function get_c2p_field( $post_field, $data_type ) {
 		switch ( $data_type ) {
 			case 'meta-field':
 				$prefix = 'cf7_2_post_map_meta-';
@@ -600,10 +603,10 @@ abstract class CF7_2_Post_Mapper {
 	 * @return boolean true if it is supported
 	 */
 	public function supports( $post_attribute ) {
-		if ( 'draft' == $this->post_properties['map'] ) {
+		if ( 'draft' === $this->post_properties['map'] ) {
 			return true;
 		}
-		return in_array( $post_attribute, $this->post_properties['supports'] );
+		return in_array( $post_attribute, $this->post_properties['supports'], true );
 	}
 	/**
 	 * Set an existing taxonomy for this post.
@@ -612,7 +615,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @param String $taxonomy registered taxonomy to set, if taxonomy does not exist, it will not set.
 	 */
 	public function set_taxonomy( $taxonomy ) {
-		if ( ! in_array( $taxonomy, $this->post_properties['taxonomy'] ) && taxonomy_exists( $taxonomy ) ) {
+		if ( ! in_array( $taxonomy, $this->post_properties['taxonomy'], true ) && taxonomy_exists( $taxonomy ) ) {
 			$this->post_properties['taxonomy'][] = $taxonomy;
 		}
 	}
@@ -663,7 +666,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @return boolean true if the option is set, false otherwise.
 	 */
 	public function field_has_option( $field_name, $option ) {
-		return in_array( $option, $this->cf7_form_fields_options[ $field_name ] );
+		return in_array( $option, $this->cf7_form_fields_options[ $field_name ], true );
 	}
 	/**
 	 * Check if a cf7 field name has a class
@@ -674,7 +677,7 @@ abstract class CF7_2_Post_Mapper {
 	 * @return boolean true if the class is set, false otherwise.
 	 */
 	public function field_has_class( $field_name, $class ) {
-		return ( isset( $this->cf7_form_fields_classes[ $field_name ] ) ) ? in_array( $class, $this->cf7_form_fields_classes[ $field_name ] ) : false;
+		return ( isset( $this->cf7_form_fields_classes[ $field_name ] ) ) ? in_array( $class, $this->cf7_form_fields_classes[ $field_name ], true ) : false;
 	}
 	/**
 	 * Set the post type capability.
@@ -764,7 +767,7 @@ abstract class CF7_2_Post_Mapper {
 			$result .= '<option value="category" data-name="' . __( 'Post Category', 'post-my-contact-form-7' ) . '" class="system-taxonomy">' . __( 'Post Categories', 'post-my-contact-form-7' ) . '</option>';
 		}
 		foreach ( $system_taxonomies as $taxonomy ) {
-			if ( ! empty( $taxonomy_slug ) && $taxonomy_slug == $taxonomy->name ) {
+			if ( ! empty( $taxonomy_slug ) && $taxonomy_slug === $taxonomy->name ) {
 				continue;
 			}
 			$result .= '<option value="' . $taxonomy->name . '" data-name="' . $taxonomy->labels->singular_name . '" class="system-taxonomy">';
@@ -775,7 +778,6 @@ abstract class CF7_2_Post_Mapper {
 
 		return $result;
 	}
-
 	/**
 	 * Save the submitted form data to a new/existing post
 	 * calling this function assumes the mapped post_type exists and is published
@@ -785,6 +787,10 @@ abstract class CF7_2_Post_Mapper {
 	 * @param WPCF7_Submission $submission cf7 submission object.
 	 */
 	public function save_form_2_post( $submission ) {
+		// validate nonce.
+		if ( ! isset( $_POST['_c2p_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), $factory::NONCE_ACTION ) ) {
+			return false;
+		}
 		$cf7_form_data = $submission->get_posted_data();
 		$is_submitted  = true;
 		if ( isset( $cf7_form_data['save_cf7_2_post'] ) && 'true' === $cf7_form_data['save_cf7_2_post'] ) {
@@ -796,14 +802,14 @@ abstract class CF7_2_Post_Mapper {
 		if ( has_action( 'cf7_2_post_save-' . $this->get( 'type' ) ) ) {
 			/**
 			* Action to by-pass the form submission process altogether.
-		  *
+			*
 			* @since v1.3.0
 			* @param string $key unique form key.
 			* @param array $data array of submitted key=>value pairs.
 			* @param array $file array of submitted files if any.
 			*/
 			do_action( 'cf7_2_post_save-' . $this->get( 'type' ), $this->cf7_key, $cf7_form_data, $submission->uploaded_files() );
-			return;
+			return false;
 		}
 
 		// create a new post.
@@ -858,11 +864,11 @@ abstract class CF7_2_Post_Mapper {
 		/** NB @since 5.5 integrate Stripe payment */
 		$post_id = false;
 		if ( isset( $_POST['_wpcf7_stripe_payment_intent'] ) && empty( $_POST['_wpcf7_stripe_payment_intent'] ) && isset( $_POST['_cf72post_nonce'] ) ) {
-			$post_id = get_transient( sanitize_text_field( $_POST['_cf72post_nonce'] ) );
+			$post_id = get_transient( sanitize_key( $_POST['_cf72post_nonce'] ) );
 		}
 		$is_update = false;
 		if ( isset( $_POST['_map_post_id'] ) && ! empty( $_POST['_map_post_id'] ) ) {
-			$post_id = sanitize_text_field( $_POST['_map_post_id'] ); // this is an existing post being updated.
+			$post_id = sanitize_key( $_POST['_map_post_id'] ); // this is an existing post being updated.
 		}
 		if ( ! empty( $post_id ) ) {
 			$wp_post             = get_post( $post_id );
@@ -917,19 +923,17 @@ abstract class CF7_2_Post_Mapper {
 							}
 							$movefile = wp_handle_upload( $filename, array() );
 							if ( $movefile && ! isset( $movefile['error'] ) ) {
-								$wp_filetype = wp_check_filetype( $filename, null );
-								$attachment  = array(
+								$wp_filetype   = wp_check_filetype( $filename, null );
+								$attachment    = array(
 									'post_mime_type' => $wp_filetype['type'],
 									'post_parent'    => $post_id,
 									'post_title'     => preg_replace( '/\.[^.]+$/', '', $filename ),
 									'post_content'   => '',
 									'post_status'    => 'inherit',
 								);
-								// wp_insert_attachment( $attachment, $filename, $parent_post_id ).
 								$attachment_id = wp_insert_attachment( $attachment, $movefile['file'], $post_id );
 								if ( ! is_wp_error( $attachment_id ) ) {
 									require_once ABSPATH . 'wp-admin/includes/image.php';
-									// wp_generate_attachment_metadata( $attachment_id, $file ); for images.
 									$attachment_data = wp_generate_attachment_metadata( $attachment_id, $movefile['file'] );
 									wp_update_attachment_metadata( $attachment_id, $attachment_data );
 									set_post_thumbnail( $post_id, $attachment_id );
@@ -985,8 +989,7 @@ abstract class CF7_2_Post_Mapper {
 		if ( empty( $post['post_name'] ) ) {
 			$post['post_name'] = 'cf7_' . $this->cf7_post_id . '_to_post_' . $post_id;
 			if ( isset( $post['post_title'] ) ) {
-				// sanitize_title( $title, $fallback_title, $context ).
-				$post['post_name'] = sanitize_title( $post['post_title'] );
+				$post['post_name'] = sanitize_title( $post['post_title'] ); // convert title to slug.
 			}
 		}
 		/*If $has_post_fields is false we have no post fields to update.*/
@@ -997,15 +1000,14 @@ abstract class CF7_2_Post_Mapper {
 		// -------------- meta fields
 		//
 		if ( ! $is_submitted ) {
-			update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'no' ); // form is saved
+			update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'no' ); // form is saved.
 		} else {
-			update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' ); // form is submitted
+			update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' ); // form is submitted.
 		}
 
 		foreach ( $this->post_map_meta_fields as $form_field => $post_field ) {
 			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
 				$value = apply_filters( $form_field, '', $post_id, $cf7_form_data );
-				// update_post_meta($post_id, $meta_key, $meta_value, $prev_value).
 				update_post_meta( $post_id, $post_field, $value );
 			} else {
 				/**
@@ -1016,7 +1018,7 @@ abstract class CF7_2_Post_Mapper {
 				if ( ! isset( $this->cf7_form_fields[ $form_field ] ) ) {
 					continue;
 				}
-				if ( 'file' == $this->cf7_form_fields[ $form_field ] ) {
+				if ( 'file' === $this->cf7_form_fields[ $form_field ] ) {
 					$cf7_files = $submission->uploaded_files();
 					$file_url  = '';
 					$files     = array();
@@ -1030,28 +1032,21 @@ abstract class CF7_2_Post_Mapper {
 						if ( ! empty( $cf7_files[ $form_field ] ) ) { // if set handle upload.
 							$files = $cf7_files[ $form_field ][0]; /** File path... @since 4.1.10 cf7 5.4 is now in an array!?!*/
 
-							$files = array( $_FILES[ $form_field ]['name'] => $files ); // file name
+							$files = array( $_FILES[ $form_field ]['name'] => $files ); // file name.
 						}
 					}
-					$file_url = array();
+					$file_url = '';
 					foreach ( $files as $filename => $path ) {
 						if ( ! file_exists( $path ) ) {
 							continue;
 						}
-						// wp_upload_bits( $name, $deprecated, $bits, $time ).
-						$upload_file = wp_upload_bits( $filename, null, @file_get_contents( $path ) );
+						$movefile = wp_handle_upload( $filename, false );
 
-						if ( ! $upload_file['error'] ) {
-							$file_url[] = $upload_file['url'];
+						if ( $movefile && ! isset( $movefile['error'] ) ) {
+							$file_url[] = $movefile['url'];
 						} else {
-							debug_msg( $file, 'Unable to upload file ' . $filename );
+							debug_msg( $file, 'Unable to upload file ' . $filename . ': ' . $movefile['error'] );
 						}
-					}
-					if ( count( $file_url ) == 1 ) {
-						$file_url = $file_url[0];
-					}
-					if ( empty( $file_url ) ) {
-						$file_url = '';
 					}
 					update_post_meta( $post_id, $post_field, $file_url );
 				} else {
@@ -1121,7 +1116,7 @@ abstract class CF7_2_Post_Mapper {
 			if ( ! is_numeric( $time ) ) {
 				$time = 300;
 			}
-			set_transient( sanitize_text_field( $_POST['_cf72post_nonce'] ), $post_id, $time );
+			set_transient( sanitize_key( $_POST['_cf72post_nonce'] ), $post_id, $time );
 		}
 		if ( $is_submitted ) {
 			/** NB @since 3.3.0 */
@@ -1151,7 +1146,6 @@ abstract class CF7_2_Post_Mapper {
 		// taxonomy mapping.
 		delete_post_meta( $this->cf7_post_id, '_cf7_2_post-taxonomy' );
 		foreach ( $this->post_properties['taxonomy'] as $slug ) {
-			// update_post_meta($post_id, $meta_key, $meta_value, $prev_value).
 			delete_post_meta( $this->cf7_post_id, 'cf7_2_post_map_taxonomy_names-' . $slug );
 			delete_post_meta( $this->cf7_post_id, 'cf7_2_post_map_taxonomy_name-' . $slug );
 			delete_post_meta( $this->cf7_post_id, 'cf7_2_post_map_taxonomy-' . $slug );

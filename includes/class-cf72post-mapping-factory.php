@@ -27,6 +27,13 @@ require_once plugin_dir_path( __FILE__ ) . 'mapper/class-cf7-2-system-post-mappe
  */
 class CF72Post_Mapping_Factory {
 	/**
+	 * Constant for nonce action string.
+	 *
+	 * @since 5.7.0
+	 * @access public
+	 */
+	const NONCE_ACTION = 'post_my_cf7_form';
+	/**
 	 * Cache of CF7_2_Post_Mapper objects for loaded forms.
 	 *
 	 * @since    5.0.0
@@ -52,6 +59,51 @@ class CF72Post_Mapping_Factory {
 	 */
 	protected static $factory;
 	/**
+	 * Allowed HTML for wp_kses function validation.
+	 *
+	 * @since 5.7.0
+	 * @access public
+	 * @var Array $allowed_html HTML elements and attributes.
+	 */
+	public static $allowed_html = array(
+		'input'  => array(
+			'id'       => array(),
+			'name'     => array(),
+			'value'    => array(),
+			'class'    => array(),
+			'type'     => array(),
+			'disabled' => array( 'true', 'false' ),
+		),
+		'select' => array(
+			'id'       => array(),
+			'name'     => array(),
+			'value'    => array(),
+			'class'    => array(),
+			'disabled' => array( 'true', 'false' ),
+		),
+		'option' => array(
+			'value'    => array(),
+			'class'    => array(),
+			'selected' => array( 'true', 'false' ),
+		),
+		'div'    => array(
+			'id'    => array(),
+			'class' => array(),
+		),
+		// 'span'   => array(.
+		// 'class' => array(),
+		// ),
+		// 'label'  => array(
+		// 'id'    => array(),
+		// 'for'   => array(),
+		// 'class' => array(),
+		// ),
+		// 'li'     => array(
+		// 'id'    => array(),
+		// 'class' => array(),
+		// ),
+	);
+	/**
 	 * Default Construct a Cf7_2_Post_Factory object.
 	 *
 	 * @since    1.0.0
@@ -62,6 +114,24 @@ class CF72Post_Mapping_Factory {
 			$this->get_system_posts(); // only used in dashboard.
 		}
 
+	}
+	/**
+	 * Add nonce to mapped forms for validation at submission.
+	 *
+	 * @since 5.7.0
+	 * @return string nonce value.
+	 */
+	public static function noncify() {
+		return wp_create_nonce( self::NONCE_ACTION );
+	}
+	/**
+	 * Check nonce at submission.
+	 *
+	 * @since 5.7.0
+	 * @return boolean true|false.
+	 */
+	public static function validate_nonce() {
+		return isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), self::NONCE_ACTION );
 	}
 	/**
 	 * Factory singleton object getter.
@@ -252,9 +322,13 @@ class CF72Post_Mapping_Factory {
 	 * @return  boolean   true if successful
 	 */
 	public function save( $post_id ) {
+		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
+			debug_msg( 'ERROR saving mapping, invalid nonce' );
+			return false;
+		}
 		$mapped = false;
 		if ( isset( $_POST['mapped_post_type_source'] ) ) {
-			$source = sanitize_text_field( $_POST['mapped_post_type_source'] );
+			$source = sanitize_key( $_POST['mapped_post_type_source'] );
 			$mapper = null;
 			switch ( $source ) {
 				case 'system':
@@ -793,7 +867,7 @@ class CF72Post_Mapping_Factory {
 	 * Function to print jquery script for form field initialisation
 	 *
 	 * @since 1.3.0
-	 * @param string             $nonce nonce.
+	 * @param string            $nonce nonce.
 	 * @param CF7_2_Post_Mapper $mapper mapping object.
 	 */
 	public function get_form_field_script( $nonce, $mapper ) {
@@ -809,10 +883,10 @@ class CF72Post_Mapping_Factory {
 	 * (https://aurovrata.github.io/hybrid-html-dropdown/)
 	 *
 	 * @since 5.0.0
-	 * @param   String             $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed              $branch  array of parent IDs for hierarchical taxonomies, else 0.
-	 * @param   String             $pslug parent slug.
-	 * @param   String             $field form field name for which this taxonomy is mapped to.
+	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Mixed             $branch  array of parent IDs for hierarchical taxonomies, else 0.
+	 * @param   String            $pslug parent slug.
+	 * @param   String            $field form field name for which this taxonomy is mapped to.
 	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
 	 * @return  Array value->label pairs for hybrid dropdown..
 	 */
@@ -849,9 +923,9 @@ class CF72Post_Mapping_Factory {
 	 * Method to filter the taxonomy query for mapped taxonomy fields.
 	 *
 	 * @since 5.0.0
-	 * @param   String             $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Array              $branch  the parent ID of child terms to fetch.
-	 * @param   String             $field form field name for which this taxonomy is mapped to.
+	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Array             $branch  the parent ID of child terms to fetch.
+	 * @param   String            $field form field name for which this taxonomy is mapped to.
 	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
 	 * @return Array|WP_Error a collectoin of WP_Term objects or an error.
 	 */
@@ -881,12 +955,12 @@ class CF72Post_Mapping_Factory {
 	 * Request: public/
 	 *
 	 * @since 1.2.0
-	 * @param   String             $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed              $branch  array of parent IDs, else 0.
-	 * @param   Array              $post_terms an array of terms which a post has been tagged with.
-	 * @param   String             $field form field name for which this taxonomy is mapped to.
-	 * @param   String             $field_type the type of field in which the tersm are going to be listed.
-	 * @param   int                $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
+	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Mixed             $branch  array of parent IDs, else 0.
+	 * @param   Array             $post_terms an array of terms which a post has been tagged with.
+	 * @param   String            $field form field name for which this taxonomy is mapped to.
+	 * @param   String            $field_type the type of field in which the tersm are going to be listed.
+	 * @param   int               $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
 	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
 	 * @return  String a jquery code to be executed once the page is loaded.
 	 */
@@ -1030,7 +1104,7 @@ class CF72Post_Mapping_Factory {
 	 * Regsiter a custom taxonomy
 	 *
 	 * @since 2.0.0
-	 * @param  Array              $taxonomy  a, array of taxonomy arguments.
+	 * @param  Array             $taxonomy  a, array of taxonomy arguments.
 	 * @param  CF7_2_Post_Mapper $mapper mapper pbject.
 	 */
 	protected function register_custom_taxonomy( array $taxonomy, CF7_2_Post_Mapper $mapper ) {

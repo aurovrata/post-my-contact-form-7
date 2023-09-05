@@ -35,46 +35,6 @@ switch ( $source ) {
 		$system_factory = '';
 		break;
 }
-// wp_kses allowed html.
-// TODO: bring HTML from class method to this file.
-$allowed_html = array(
-	'input'  => array(
-		'id'       => array(),
-		'name'     => array(),
-		'value'    => array(),
-		'class'    => array(),
-		'type'     => array(),
-		'disabled' => array( 'true', 'false' ),
-	),
-	'select' => array(
-		'id'       => array(),
-		'name'     => array(),
-		'value'    => array(),
-		'class'    => array(),
-		'disabled' => array( 'true', 'false' ),
-	),
-	'option' => array(
-		'value'    => array(),
-		'class'    => array(),
-		'selected' => array( 'true', 'false' ),
-	),
-	'div'    => array(
-		'id'    => array(),
-		'class' => array(),
-	),
-	'span'   => array(
-		'class' => array(),
-	),
-	'label'  => array(
-		'id'    => array(),
-		'for'   => array(),
-		'class' => array(),
-	),
-	'li'     => array(
-		'id'    => array(),
-		'class' => array(),
-	),
-);
 ?>
 <h1>
 	<?php echo esc_html( __( 'Save submissions as ', 'post-my-contact-form-7' ) ); ?>
@@ -113,7 +73,7 @@ $allowed_html = array(
 		<label class="post_type_labels" for="system-post-type"><?php echo esc_html( __( 'Select a Post', 'post-my-contact-form-7' ) ); ?></label>
 		<select id="system-post-type" class="select-hybrid" name="system_post_type" >
 			<?php
-			echo wp_kses( $factory->get_system_posts_options( $post_mapper->get( 'type' ) ), $allowed_html );
+			echo wp_kses( $factory->get_system_posts_options( $post_mapper->get( 'type' ) ), $factory::$allowed_html );
 			?>
 		</select>
 	</div>
@@ -167,8 +127,16 @@ $allowed_html = array(
 		</label>
 		<p>
 			<?php
-			/* translators: link to codex documentation */
-			echo wp_kses_post( sprintf( __( 'To understand how to parametrise your custom post, please read the WordPress post registration <a href="%s">documentation</a>.', 'post-my-contact-form-7' ), 'https://developer.wordpress.org/reference/functions/register_post_type/#parameter-detail-information' ) );
+			echo wp_kses(
+				sprintf(
+					/* translators: link to codex documentation */
+					__( 'To understand how to parametrise your custom post, please read the WordPress post registration <a href="%s">documentation</a>.', 'post-my-contact-form-7' ),
+					'https://developer.wordpress.org/reference/functions/register_post_type/#parameter-detail-information'
+				),
+				array(
+					'a' => array( 'href' => array() ),
+				)
+			);
 			?>
 		</p>
 	</div><!-- end post-type-select -->
@@ -177,20 +145,6 @@ $allowed_html = array(
 <div id="c2p-mapped-fields">
 	<ul id="c2p-default-post-fields">
 	<?php
-		$post_field_html = '
-		<li id="c2p-%2$s">
-			<div class="cf7-2-post-field">
-				<label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
-				<select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options select-hybrid">
-					<option class="default-option" value="">' . __( 'Select a form field', 'post-my-contact-form-7' ) . '</option>
-					<option class="filter-option" value="cf7_2_post_filter-%4$s-%2$s">' . __( 'Hook with a filter', 'post-my-contact-form-7' ) . '</option>
-				</select>
-			</div><span class="cf7-post-msg"></span>
-		</li>';
-		// %1 - Label.
-		// %2 - field id/name.
-		// %3 - mapped form field.
-		// %4 - mapped post type.
 		$post_fields = array(
 			'title'     => __( 'Post title', 'post-my-contact-form-7' ),
 			'editor'    => __( 'Post Content', 'post-my-contact-form-7' ),
@@ -201,11 +155,19 @@ $allowed_html = array(
 		);
 		foreach ( $post_fields as $fid => $l ) {
 			echo sprintf(
-				$post_field_html,
-				esc_html( $l ),
-				$fid,
-				esc_attr( $post_mapper->get_mapped_form_field( $fid ) ),
-				esc_attr( $mapped_post_type ),
+				'<li id="c2p-%2$s">
+					<div class="cf7-2-post-field">
+						<label class="cf7-2-post-map-labels" for="cf7-2-%2$s"><strong>%1$s</strong></label>
+						<select id="cf7-2-%2$s" value="%3$s" name="cf7_2_post_map-%2$s" class="field-options post-options select-hybrid">
+							<option class="default-option" value="">' . esc_html( __( 'Select a form field', 'post-my-contact-form-7' ) ) . '</option>
+							<option class="filter-option" value="cf7_2_post_filter-%4$s-%2$s">' . esc_html( __( 'Hook with a filter', 'post-my-contact-form-7' ) ) . '</option>
+						</select>
+					</div><span class="cf7-post-msg"></span>
+				</li>',
+				esc_html( $l ), // %1 - Label.
+				esc_attr( $fid ), // %2 - field id/name.
+				esc_attr( $post_mapper->get_mapped_form_field( $fid ) ), // %3 - mapped form field.
+				esc_attr( $mapped_post_type ), // %4 - mapped post type.
 			);
 		}
 		?>
@@ -214,7 +176,7 @@ $allowed_html = array(
 	<ul id="c2p-post-meta-fields">
 		<?php require_once 'cf7-2-post-field-metabox.php'; ?>
 	</ul>
-	<?php echo wp_kses( $factory->get_all_metafield_menus(), $allowed_html ); ?>
+	<?php echo wp_kses( $factory->get_all_metafield_menus(), $factory::$allowed_html ); ?>
 	<p>
 		<?php
 		echo wp_kses(

@@ -1,8 +1,18 @@
+<?php
+/**
+ * Print the front-end js script
+ *
+ * @since 5.3.0
+ * @package    Cf7_2_Post
+ * @subpackage Cf7_2_Post/includes/partials
+ */
+
+?>
 <script type="text/javascript">
 (function( $ ) {
 	'use strict';
-  $(document).ready(function() {
-    $('#adminmenu ul.wp-submenu li a[href="admin.php?page=cf7_post"]').parent().hide();
-  });
+	$(document).ready(function() {
+		$('#adminmenu ul.wp-submenu li a[href="admin.php?page=cf7_post"]').parent().hide();
+	});
 })( jQuery );
 </script>

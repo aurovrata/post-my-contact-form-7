@@ -13,9 +13,9 @@ wp_nonce_field( 'c2p_quickedit_nonce', 'c2p_nonce' );
 	<div class="inline-edit-col">
 		<div class="inline-edit-group wp-clearfix">
 			<label class="alignright display-none c2p-delete-mapping">
-				<span class="title"><input type="checkbox" name="delete_c2p_map" value="0"><?= __('Delete mapping:','post-my-cf7-form')?><span class="c2p-post-type"></span></span>
+				<span class="title"><input type="checkbox" name="delete_c2p_map" value="0"><?php echo esc_html( __( 'Delete mapping:', 'post-my-cf7-form' ) ); ?><span class="c2p-post-type"></span></span>
 				<div class="c2p-delete-warning display-none">
-					<em><?= __('This will reset the mapping')?></em>
+					<em><?php echo esc_html( __( 'This will reset the mapping', 'post-my-cf7-form' ) ); ?></em>
 					<div class="c2p-delete-data display-none"><a class="code" data-clipboard-text="
 add_filter('c2p_delete_all_submitted_posts','delete_all_submissions',10,3);
 /**
@@ -27,7 +27,7 @@ add_filter('c2p_delete_all_submitted_posts','delete_all_submissions',10,3);
 */
 function delete_all_submissions($delete_all, $post_type, $cf7_key){
 	if('${post_type}'!=$post_type) return $delete_all;
-  return true;
+	return true;
 }
 add_filter('c2p_delete_all_submitted_posts_query','delete_post_submissions',10,3);
 /**
@@ -40,11 +40,20 @@ add_filter('c2p_delete_all_submitted_posts_query','delete_post_submissions',10,3
 function delete_all_submissions($post_query, $post_type, $cf7_key){
 	if('${post_type}'!=$post_type) return $post_query;
 	//modify the query such as to delete posts by a certain author or a perticular date...
-  return $post_query;
-}" href="javascript:void(0);"></a><?= __('WARNING: this will also delete all saved submissions!  Use this <span>filter</span> in your <code>functions.php</code> file to control the deletion of saved submissions.','post-my-cf7-form')?><span class="popup display-none">Click to Copy!</span></div>
-
+	return $post_query;
+}" href="javascript:void(0);"></a>
+<?php
+echo wp_kses(
+	__( 'WARNING: this will also delete all saved submissions!  Use this <span>filter</span> in your <code>functions.php</code> file to control the deletion of saved submissions.', 'post-my-cf7-form' ),
+	array(
+		'span' => array(),
+		'code' => array(),
+	),
+);
+?>
+<span class="popup display-none">Click to Copy!</span></div>
 				</div>
 			</label>
-    </div>
-  </div>
+		</div>
+	</div>
 </fieldset>
