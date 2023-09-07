@@ -788,7 +788,7 @@ abstract class CF7_2_Post_Mapper {
 	 */
 	public function save_form_2_post( $submission ) {
 		// validate nonce.
-		if ( ! isset( $_POST['_c2p_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), $factory::NONCE_ACTION ) ) {
+		if ( ! isset( $_POST['_c2p_nonce'] ) || false === wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), self::$factory::NONCE_ACTION ) ) {
 			return false;
 		}
 		$cf7_form_data = $submission->get_posted_data();
@@ -921,27 +921,24 @@ abstract class CF7_2_Post_Mapper {
 							if ( ! file_exists( $path ) ) {
 								continue;
 							}
-							$movefile = wp_handle_upload( $filename, array() );
-							if ( $movefile && ! isset( $movefile['error'] ) ) {
-								$wp_filetype   = wp_check_filetype( $filename, null );
-								$attachment    = array(
-									'post_mime_type' => $wp_filetype['type'],
-									'post_parent'    => $post_id,
-									'post_title'     => preg_replace( '/\.[^.]+$/', '', $filename ),
-									'post_content'   => '',
-									'post_status'    => 'inherit',
-								);
-								$attachment_id = wp_insert_attachment( $attachment, $movefile['file'], $post_id );
-								if ( ! is_wp_error( $attachment_id ) ) {
-									require_once ABSPATH . 'wp-admin/includes/image.php';
-									$attachment_data = wp_generate_attachment_metadata( $attachment_id, $movefile['file'] );
-									wp_update_attachment_metadata( $attachment_id, $attachment_data );
-									set_post_thumbnail( $post_id, $attachment_id );
-								} else {
-									debug_msg( $attachment_id, 'error while attaching to post ' . $post_id . '... ' );
-								}
+							require_once ABSPATH . 'wp-admin/includes/media.php';
+							require_once ABSPATH . 'wp-admin/includes/file.php';
+							require_once ABSPATH . 'wp-admin/includes/image.php';
+
+							$attachment_id = media_handle_sideload(
+								array(
+									'name'     => $filename,
+									'tmp_name' => $path,
+								),
+								$post_id // post to attachm file to.
+							);
+							if ( ! is_wp_error( $attachment_id ) ) {
+								$path            = get_attached_file( $attachment_id, true );
+								$attachment_data = wp_generate_attachment_metadata( $attachment_id, $path );
+								wp_update_attachment_metadata( $attachment_id, $attachment_data );
+								set_post_thumbnail( $post_id, $attachment_id );
 							} else {
-								debug_msg( $movefile, 'error while uploading the file, ' . $filename . ' to the Media Gallery... ' );
+								debug_msg( $attachment_id, 'error while uploading the file, ' . $filename . ' to the Media Gallery... ' );
 							}
 							// at this point skip the rest of the loop as the file is saved.
 							$skip_loop = true;
@@ -961,7 +958,7 @@ abstract class CF7_2_Post_Mapper {
 			}
 
 			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
-				$post[ $post_key ] = apply_filters( $form_field, '', $post_id, $cf7_form_data );
+				$post[ $post_key ] = apply_filters( $form_field, '', $post_id, $cf7_form_data, $this->cf7_key );
 				$has_post_fields   = true;
 			} else {
 				if ( isset( $cf7_form_data[ $form_field ] ) ) {
@@ -1007,7 +1004,7 @@ abstract class CF7_2_Post_Mapper {
 
 		foreach ( $this->post_map_meta_fields as $form_field => $post_field ) {
 			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
-				$value = apply_filters( $form_field, '', $post_id, $cf7_form_data );
+				$value = apply_filters( $form_field, '', $post_id, $cf7_form_data, $this->cf7_key );
 				update_post_meta( $post_id, $post_field, $value );
 			} else {
 				/**
@@ -1040,14 +1037,32 @@ abstract class CF7_2_Post_Mapper {
 						if ( ! file_exists( $path ) ) {
 							continue;
 						}
-						$movefile = wp_handle_upload( $filename, false );
+						require_once ABSPATH . 'wp-admin/includes/media.php';
+						require_once ABSPATH . 'wp-admin/includes/file.php';
+						require_once ABSPATH . 'wp-admin/includes/image.php';
 
-						if ( $movefile && ! isset( $movefile['error'] ) ) {
-							$file_url[] = $movefile['url'];
+						$attachment_id = media_handle_sideload(
+							array(
+								'name'     => $filename,
+								'tmp_name' => $path,
+							),
+							0 // not attached to post.
+						);
+						if ( ! is_wp_error( $attachment_id ) ) {
+							$file_url[] = wp_get_attachment_url( $attachment_id );
 						} else {
 							debug_msg( $file, 'Unable to upload file ' . $filename . ': ' . $movefile['error'] );
 						}
 					}
+					$file_url = apply_filters(
+						'cf7_2_post_metafield_file',
+						$file_url, // default format is url path in an array.
+						$attachment_id, // file media attachment post id.
+						$post_id, // form submission mapped to post.
+						$post_field, // the meta post fields being saved.
+						$form_field, // the form field from which it was submitted.
+						$this->cf7_key // the current form being mapped.
+					);
 					update_post_meta( $post_id, $post_field, $file_url );
 				} else {
 					if ( isset( $cf7_form_data[ $form_field ] ) ) {
@@ -1076,7 +1091,7 @@ abstract class CF7_2_Post_Mapper {
 				$value[ $taxonomy ] = array();
 			}
 			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
-				$value[ $taxonomy ] = apply_filters( $form_field, $value[ $taxonomy ], $post_id, $cf7_form_data );
+				$value[ $taxonomy ] = apply_filters( $form_field, $value[ $taxonomy ], $post_id, $cf7_form_data, $this->cf7_key );
 			} elseif ( isset( $cf7_form_data[ $form_field ] ) ) {
 				if ( is_array( $cf7_form_data[ $form_field ] ) ) {
 					$value[ $taxonomy ] = array_merge( $value[ $taxonomy ], array_map( 'intval', $cf7_form_data[ $form_field ] ) );

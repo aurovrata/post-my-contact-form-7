@@ -454,9 +454,19 @@
   }
   function c2pFilterHelperCode(filter){
     if(this) this.querySelector('.cf7-post-msg').remove();
-    let field = filter.replace('cf7_2_post_filter-','').replace(/-/g,'_');
-    let helper = "add_filter('"+filter+"','filter_"+field+"',10,3);\n";
-    helper +="function filter_"+field+"($value, $post_id, $form_data){\n  //$value is the post field value to return, by default it is empty. If you are filtering a taxonomy you can return either slug/id/array.  in case of ids make sure to cast them as integers.(see https://codex.wordpress.org/Function_Reference/wp_set_object_terms for more information.)\n  //$post_id is the ID of the post to which the form values are being mapped to\n  // $form_data is the submitted form data as an array of field-name=>value pairs\n";
+    let field = filter.replace('cf7_2_post_filter-','').replace(/-/g,'_'),
+			formKey = $('input#c2p-cf7-key').val(),
+    	helper = "add_filter( '"+filter+"', 'filter_"+field+"', 10, 4 );\n";
+		helper += "/**\n * Filter the value stored in the "+field+".\n *\n";
+		helper += " * @param string $value is the post field value to filter/return, by default it is empty. You can return a combination of multiple form fields for example to store in the post content.\n";
+		helper += " * @param string $post_id the post ID to which the form submission is saved to.\n";
+		helper += " * @param Array $form_data is the submitted form data as an array of field-name=>value pairs.\n";
+		helper += " * @param string $cf7_key the unique key identifying your form (the form post slug).\n";
+		helper += " * @return mixed A string for most fields, or an array for meta-fields. If you are filtering a taxonomy you can return either slug/id/array.  in case of ids make sure to cast them as integers.(see https://codex.wordpress.org/Function_Reference/wp_set_object_terms for more information).\n */\n";
+    helper +="function filter_"+field+"( $value, $post_id, $form_data, $cf7_key ) {\n";
+		helper +="  if ( '"+formKey+"' === $cf7_key ) {// verify this is the correct form.\n";
+		helper +="  	// do something and populate the $value field.\n";
+		helper +="  }\n";
     helper +="  return $value;\n}";
     helper = 'filter:<a class="code" data-clipboard-text="'+helper+'" href="javascript:void(0);">'+filter+'</a><span class="popup">'+c2pLocal.copy+'<span>'+c2pLocal.paste+'</span></span>';
 

@@ -130,7 +130,7 @@ class CF72Post_Mapping_Factory {
 	 * @since 5.7.0
 	 * @return boolean true|false.
 	 */
-	public static function validate_nonce() {
+	public static function is_nonce_valid() {
 		return isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), self::NONCE_ACTION );
 	}
 	/**

@@ -460,6 +460,9 @@ class Cf7_2_Post_Public {
 		$hidden['_map_author'] = $author;
 		// create nonce for transient storage as well as validation.
 		$hidden['_c2p_nonce'] = CF72Post_Mapping_Factory::noncify();
+		if ( ! isset( $hidden['_wpnonce'] ) ) { /** NB @since 6.0.0 setup wp_rest nonce for user authentication. */
+			$hidden['_wpnonce'] = wp_create_nonce( 'wp_rest' );
+		}
 		return $hidden;
 	}
 	/**
