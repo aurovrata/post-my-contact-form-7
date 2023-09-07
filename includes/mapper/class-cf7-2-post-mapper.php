@@ -1049,14 +1049,14 @@ abstract class CF7_2_Post_Mapper {
 							0 // not attached to post.
 						);
 						if ( ! is_wp_error( $attachment_id ) ) {
-							$file_url[] = wp_get_attachment_url( $attachment_id );
+							$file_url = wp_get_attachment_url( $attachment_id );
 						} else {
-							debug_msg( $file, 'Unable to upload file ' . $filename . ': ' . $movefile['error'] );
+							debug_msg( $attachment_id, 'Unable to upload file ' . $filename . ': ' . $path );
 						}
 					}
 					$file_url = apply_filters(
 						'cf7_2_post_metafield_file',
-						$file_url, // default format is url path in an array.
+						$file_url, // default format is url path.
 						$attachment_id, // file media attachment post id.
 						$post_id, // form submission mapped to post.
 						$post_field, // the meta post fields being saved.

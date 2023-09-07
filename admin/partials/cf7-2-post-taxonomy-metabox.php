@@ -31,7 +31,7 @@ foreach ( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
 			<option class="default-option" selected="true" value="">
 				<?php echo esc_html( __( 'Select a form field', 'post-my-contact-form-7' ) ); ?>
 			</option>
-			<option class="filter-option" value="cf7_2_post_filter-<?php echoesc_attr( $post_taxonomy ); ?>">
+			<option class="filter-option" value="cf7_2_post_filter-<?php echo esc_attr( $post_taxonomy ); ?>">
 				<?php echo esc_html( __( 'Hook with a filter', 'post-my-contact-form-7' ) ); ?>
 			</option>
 			</select>
