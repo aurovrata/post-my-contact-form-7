@@ -211,6 +211,8 @@ class Cf7_2_Post {
 		*/
 		// show helper metabox.
 		$this->loader->add_action( 'add_meta_boxes_wpcf7_contact_form', $plugin_admin, 'add_helper_metabox' );
+		/** NB @since 5.6.1 Warn users on major verison plugin update page */
+		$this->loader->add_action( 'in_plugin_update_message-post-my-contact-form-7/cf7-2-post.php', $plugin_admin, 'add_helper_metabox' );
 	}
 
 	/**
