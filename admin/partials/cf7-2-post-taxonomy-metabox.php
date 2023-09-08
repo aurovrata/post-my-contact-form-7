@@ -47,7 +47,7 @@ foreach ( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
 			<label for="cf7_2_post_map_taxonomy_names-<?php echo esc_attr( $post_taxonomy ); ?>">
 			<strong><?php echo esc_html( __( 'Plural Name', 'post-my-contact-form-7' ) ); ?></strong>
 			</label>
-			<?php $readonly = ( 'system' === $taxonomy['source'] ) ? 'true' : 'false'; ?>
+			<?php $readonly = ( 'system' === $taxmy['source'] ) ? 'true' : 'false'; ?>
 			<input class="c2p-tax-labels plural-name" type="text" readonly="<?php echo esc_attr( $readonly ); ?>" name="cf7_2_post_map_taxonomy_names-<?php echo esc_attr( $post_taxonomy ); ?>" value="<?php echo esc_attr( $taxmy['name'] ); ?>" />
 			<label for="cf7_2_post_map_taxonomy_name-<?php echo esc_attr( $post_taxonomy ); ?>">
 			<strong><?php echo esc_html( __( 'Singular Name', 'post-my-contact-form-7' ) ); ?></strong>

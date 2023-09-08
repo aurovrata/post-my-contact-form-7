@@ -754,4 +754,30 @@ class Cf7_2_Post_Admin {
 		}
 		update_option( '_c2p_active_tab', $tab );
 	}
+	/**
+	 * Listen for plugin updates and warn users for major updates.
+	 * Hooked on 'in_plugin_update_message-{$file}'.
+	 *
+	 * @since 5.0.0
+	 * @param array  $plugin_data An array of plugin metadata.
+	 * @param object $response An object of metadata about the available plugin update.
+	 */
+	public function major_update_warning( $plugin_data, $response ) {
+		$major = explode( '.', $this->version );
+		if ( ! is_array( $major ) ) {
+			return; // nothing to compare.
+		}
+		$major     = $major[0];
+		$major_new = '';
+		if ( property_exists( $response, 'new_version' ) && isset( $response->new_version ) ) {
+			$major_new = explode( '.', $response->new_version );
+		}
+		if ( ! is_array( $major_new ) ) {
+			return; // nothing to compare.
+		}
+		$major_new = $major_new[0];
+		if ( version_compare( $major, $major_new, '<=' ) ) { // this is a major update.
+			include plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-update-warning.php';
+		}
+	}
 }

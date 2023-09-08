@@ -1,6 +1,6 @@
 <?php
 /**
- * Print the front-end js script
+ * Print the admin footer js script on all admin pages.
  *
  * @since 5.3.0
  * @package    Cf7_2_Post

@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			else if( 'undefined' != typeof window['<?php echo esc_attr( $nonce ); ?>'] ) data = window['<?php echo esc_attr( $nonce ); ?>'];
 			<?php /*@since 3.1.0 store form nonce for transient storage of post ID*/ ?>
 			fname = '<input type="hidden" name="_cf72post_nonce" value="<?php echo esc_attr( $nonce ); ?>" />';
-			$cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+			$cf7Form.find('input[name="_wpcf7"]').parent().append(fname);
 			if(0 === data.length){
 			$cf7Form.trigger("<?php echo esc_attr( $nonce ); ?>", data);
 			return false;
@@ -165,7 +165,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	?>
 	if(data.map_post_id !== undefined){
 		fname = '<input type="hidden" name="_map_post_id" id="cf2_2_post_id" value="' + data.map_post_id + '" />';
-		$cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+		$cf7Form.find('input[name="_wpcf7"]').parent().append(fname);
 	}
 	<?php
 	/** NB @since 5.0.0 init hybrid dropdown */
@@ -192,7 +192,7 @@ endif; // empty hdd.
 		$user = wp_get_current_user();
 		?>
 		fname = '<input type="hidden" name="_map_author" id="cf7_2_post_user" value="<?php echo esc_attr( $user->ID ); ?>" />';
-		$cf7Form.find('input[name=_wpcf7]').parent().append(fname);
+		$cf7Form.find('input[name="_wpcf7"]').parent().append(fname);
 <?php endif; ?>
 
 		/* trigger the formMapped event to let other scripts that the form is now ready */
@@ -223,7 +223,7 @@ endif; // empty hdd.
 						fieldName = 'checkbox'===fieldType ? `${fieldName}[]` : fieldName;
 						if(!Array.isArray(fieldValue)) fieldValue = new Array(fieldValue);
 						$.each(fieldValue , function(index, v){
-							$field = $form.find(`input[name=${fieldName}][value="${v}"]`).prop('checked',true).trigger('change');
+							$field = $form.find(`input[name="${fieldName}"][value="${v}"]`).prop('checked',true).trigger('change');
 						});
 						break;
 					case 'select':
@@ -234,7 +234,7 @@ endif; // empty hdd.
 						$field = $form.find(`textarea[name=${fieldName}]`).val(fieldValue).trigger("change");
 						break;
 					default:
-						$field = $form.find(`input[name=${fieldName}]`).val(fieldValue).trigger("change");
+						$field = $form.find(`input[name="${fieldName}"]`).val(fieldValue).trigger("change");
 						break;
 				}
 				$field.get(0).dispatchEvent(pe);
