@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 6.2.2
-Stable tag: 5.6.0
+Stable tag: 5.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

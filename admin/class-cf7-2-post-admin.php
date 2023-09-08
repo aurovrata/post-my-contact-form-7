@@ -776,7 +776,7 @@ class Cf7_2_Post_Admin {
 			return; // nothing to compare.
 		}
 		$major_new = $major_new[0];
-		if ( version_compare( $major, $major_new, '<=' ) ) { // this is a major update.
+		if ( version_compare( $major, $major_new, '<' ) ) { // this is a major update.
 			include plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-update-warning.php';
 		}
 	}
