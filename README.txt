@@ -453,8 +453,8 @@ function save_submitted_forms($allow, $cf7_key){
 8. 8.Helper metabox on the mapping admin screen gives you direct access to actions and filters to customise the way your form submissions are mapped to a post.  Easy click-to-copy functionality ready to paste into your functions.php file.
 9. 9.Follow the screenshot instructions to map a field to a taxonomy.
 10. 10.You can map a post field to a "Hook with a Filter" which allows you to map any value to it programmatically.  Simply click the provided link to copy the helper code and paste it in your `functions.php` file to customise the value to be saved.
-11. 11. When mapping a form, the mapping settings are saved in `draft` mode.  This allows you to map an existing published form that is accessible to the front-end and test the mapping to post.  Once the mapping works you can switch it to live to save all submissions to your mapped post type.  (See FAQ #28 for more info).
-12. 12. When mapping a field to a taxonomy, you can use the available filters to control what is listed in your dropdonw menu.
+11. 11.When mapping a form, the mapping settings are saved in `draft` mode.  This allows you to map an existing published form that is accessible to the front-end and test the mapping to post.  Once the mapping works you can switch it to live to save all submissions to your mapped post type.  (See FAQ #28 for more info).
+12. 12.When mapping a field to a taxonomy, you can use the available filters to control what is listed in your dropdonw menu.
 
 == Filters & Actions for Developers ==
 The following are hooks primarily aimed at developers.  More general hooks and filters are now documented inline in a helper metabox in the mapping edit page.
