@@ -364,7 +364,7 @@ class Cf7_2_Post_Public {
 	 * @return WPCF7_Validation  validation results.
 	 **/
 	public function save_skips_wpcf7_validate( $results, $tags ) {
-		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
 				return $results;
 			}
