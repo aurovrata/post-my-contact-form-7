@@ -126,11 +126,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		switch ( $field_type ) {
 			case 'select':
 				if ( $mapper->field_has_option( $form_field, 'multiple' ) ) {
-					$form_field = '"' . $form_field . '[]"';
+					$form_field = $form_field . '[]';
 				}
 				?>
 		fname = JSON.parse(data.<?php echo esc_attr( $js_field ); ?>);
-		$cf7Form.find('select[name=<?php echo esc_attr( $form_field ); ?>]').append(fname);
+		$cf7Form.find('select[name="<?php echo esc_attr( $form_field ); ?>"]').append(fname);
 		$('select.hybrid-select').not('.hybrid-no-init').each(function(){
 			new HybridDropdown(this,{});
 		})
