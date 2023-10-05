@@ -100,7 +100,7 @@ class Cf7_2_Post_Public {
 				* @param array $data array of submitted key=>value pairs.
 				* @param array $file array of submitted files if any.
 				*/
-				do_action( 'cf7_2_post_save_submission', get_cf7form_key( $cf7_post_id ), $submission->get_posted_data(), $submission->uploaded_files() );
+				do_action( 'cf7_2_post_save_submission', c2p_get_form_key( $cf7_post_id ), $submission->get_posted_data(), $submission->uploaded_files() );
 				return;
 			}
 			$mapper  = $factory->get_post_mapper( $cf7_post_id );
@@ -144,7 +144,7 @@ class Cf7_2_Post_Public {
 	 * @return     boolean    true to skip mails if this is adraft form being saved .
 	 **/
 	public function skip_cf7_mail( $skip_mail ) {
-		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
 				$skip_mail = true;
 			}
@@ -166,7 +166,7 @@ class Cf7_2_Post_Public {
 			return $output;
 		}
 		if ( ! isset( $attr['id'] ) ) {
-			debug_msg( $attr, 'Missing cf7 shortcode id attribute' );
+			wpg_debug( $attr, 'Missing cf7 shortcode id attribute' );
 			return $output;
 		}
 		$cf7_id = $attr['id'];
@@ -174,7 +174,7 @@ class Cf7_2_Post_Public {
 		$factory = c2p_get_factory();
 		if ( $factory->is_mapped( $cf7_id ) ) {
 			$cf7_2_post_id = '';
-			$cf7_key       = get_cf7form_key( $cf7_id );
+			$cf7_key       = c2p_get_form_key( $cf7_id );
 			if ( ! $factory->is_filter( $cf7_id ) ) {
 				$mapper = $factory->get_post_mapper( $cf7_id );
 				// let's ensure the page does not cache our values.
@@ -311,7 +311,7 @@ class Cf7_2_Post_Public {
 		$disabled = false;
 		$cf7_form = wpcf7_get_current_contact_form();
 		$factory  = c2p_get_factory();
-		$cf7_key  = get_cf7form_key( $cf7_form->id() );
+		$cf7_key  = c2p_get_form_key( $cf7_form->id() );
 
 		if ( ! $factory->is_live( $cf7_form->id() ) ) {
 			$disabled = true;
@@ -364,51 +364,54 @@ class Cf7_2_Post_Public {
 	 * @return WPCF7_Validation  validation results.
 	 **/
 	public function save_skips_wpcf7_validate( $results, $tags ) {
+		// check if this is a mapped form.
 		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+			// check if this submission is a draft being saved.
 			if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
 				return $results;
 			}
-		}
-		$cf7form  = WPCF7_ContactForm::get_current();
-		$cf7_id   = $cf7form->id();
-		$cf7_post = get_post( $cf7_id, ARRAY_A );
-		$cf7_key  = $cf7_post['post_name'];
-		/**
-		* Filter to skip validation if this form is being saved as a draft
-		*
-		* @since 2.0.0
-		* @param boolean $skip_validation  default to true.
-		* @param string $cf7_key  current form's unique key identifier.
-		*/
-		$skip_validation = true;
 
-		if ( apply_filters( 'cf7_2_post_draft_skips_validation', $skip_validation, $cf7_key ) ) {
-			$results = new WPCF7_Validation();
+			$cf7form  = WPCF7_ContactForm::get_current();
+			$cf7_id   = $cf7form->id();
+			$cf7_post = get_post( $cf7_id, ARRAY_A );
+			$cf7_key  = $cf7_post['post_name'];
+			/**
+			* Filter to skip validation if this form is being saved as a draft
+			*
+			* @since 2.0.0
+			* @param boolean $skip_validation  default to true.
+			* @param string $cf7_key  current form's unique key identifier.
+			*/
+			$skip_validation = true;
+
+			if ( apply_filters( 'cf7_2_post_draft_skips_validation', $skip_validation, $cf7_key ) ) {
+				$results = new WPCF7_Validation();
+			}
+			// skip mail by default.
+			$skip_mail = true;
+			/**
+			* Filter to skip mail sending if this form is being saved as a draft
+			*
+			* @since 2.0.0
+			* @param boolean $skip_mail  default to true.
+			* @param string $cf7_key  current form's unique key identifier.
+			*/
+			if ( apply_filters( 'cf7_2_post_draft_skips_mail', $skip_mail, $cf7_key ) ) {
+				add_filter(
+					'wpcf7_skip_mail',
+					function( $skip_mail, $contact_form ) use ( $cf7_id ) {
+						if ( $cf7_id === $contact_form->id() ) {
+							return true;
+						} else {
+							return $skip_mail;
+						}
+					},
+					10,
+					2
+				);
+			}
+			return $results;
 		}
-		// skip mail by default.
-		$skip_mail = true;
-		/**
-		* Filter to skip mail sending if this form is being saved as a draft
-		*
-		* @since 2.0.0
-		* @param boolean $skip_mail  default to true.
-		* @param string $cf7_key  current form's unique key identifier.
-		*/
-		if ( apply_filters( 'cf7_2_post_draft_skips_mail', $skip_mail, $cf7_key ) ) {
-			add_filter(
-				'wpcf7_skip_mail',
-				function( $skip_mail, $contact_form ) use ( $cf7_id ) {
-					if ( $cf7_id === $contact_form->id() ) {
-						return true;
-					} else {
-						return $skip_mail;
-					}
-				},
-				10,
-				2
-			);
-		}
-		return $results;
 	}
 	/**
 	 * Method to skip CF7 plugin calidation of file fields when saving draft form.
@@ -420,7 +423,7 @@ class Cf7_2_Post_Public {
 	 * @return WPCF7_Validation  validation results.
 	 */
 	public function save_skips_file_validation( $result, $tag ) {
-		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( ! isset( $_POST['save_cf7_2_post'] ) || 'false' === $_POST['save_cf7_2_post'] ) {
 				return $result;
 			}
@@ -475,7 +478,7 @@ class Cf7_2_Post_Public {
 	 * @return string text_description.
 	 */
 	public function draft_message( $message, $status ) {
-		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( 'mail_sent_ok' === $status && isset( $_POST['save_cf7_2_post'] ) && 'true' === $_POST['save_cf7_2_post'] ) {
 				$form = wpcf7_get_current_contact_form();
 				if ( ! empty( $form ) ) {
@@ -497,7 +500,7 @@ class Cf7_2_Post_Public {
 	 * @return string single value if original was single.
 	 */
 	public function array_to_single( $value, $org, $tag ) {
-		if ( isset( $_POST['_c2p_nonce'] ) && ! wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
+		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( is_array( $value ) && isset( $_POST[ $tag->name ] ) && ! is_array( $_POST[ $tag->name ] ) ) {
 				$value = sanitize_text_field( wp_unslash( $_POST[ $tag->name ] ) ); // keep the original value.
 			}

@@ -15,7 +15,7 @@
  * Plugin Name:       Post My CF7 Form
  * Plugin URI:        http://wordpress.syllogic.in
  * Description:       This plugin enables the mapping of your CF7 forms to custom posts.
- * Version:           6.0.0
+ * Version:           6.0.1
  * Author:            Aurovrata V.
  * Author URI:        http://www.we2ours2.in
  * License:           GPL-2.0+
@@ -28,14 +28,14 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-define( 'CF7_2_POST_VERSION', '6.0.0' );
+define( 'CF7_2_POST_VERSION', '6.0.1' );
 define( 'CF7_2_POST_MAJOR_UPDATE', true );
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-cf7-2-post-activator.php
  */
-function activate_cf7_2_post() {
+function cf7_2_post_activate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-cf7-2-post-activator.php';
 	Cf7_2_Post_Activator::activate();
 }
@@ -44,13 +44,13 @@ function activate_cf7_2_post() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-cf7-2-post-deactivator.php
  */
-function deactivate_cf7_2_post() {
+function cf7_2_post_deactivate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-cf7-2-post-deactivator.php';
 	Cf7_2_Post_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_cf7_2_post' );
-register_deactivation_hook( __FILE__, 'deactivate_cf7_2_post' );
+register_activation_hook( __FILE__, 'cf7_2_post_activate' );
+register_deactivation_hook( __FILE__, 'cf7_2_post_deactivate' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -67,10 +67,10 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-cf7-2-post.php';
  *
  * @since    1.0.0
  */
-function run_cf7_2_post() {
+function cf7_2_post_run() {
 
 	$plugin = new Cf7_2_Post( CF7_2_POST_VERSION );
 	$plugin->run();
 
 }
-run_cf7_2_post();
+cf7_2_post_run();

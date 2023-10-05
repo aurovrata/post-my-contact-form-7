@@ -7,6 +7,10 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 if ( ! empty( $mapped_fields ) ) {
 	foreach ( $mapped_fields as $cf7_field => $post_field ) {
 		?>
@@ -21,11 +25,11 @@ if ( ! empty( $mapped_fields ) ) {
 			$value = get_post_meta( $post->ID, $post_field, true );
 			if ( is_array( $value ) ) {
 				echo '<div>';
-				// debug_msg($value, $cf7_field).
-				output_cf72post_array_field( $value );
+				// wpg_debug($value, $cf7_field).
+				cf72post_output_array_field( $value );
 				echo '</div>';
 			} else {
-				output_cf72post_field( $value );
+				cf72post_output_field( $value );
 			}
 	endif;
 		?>
@@ -39,7 +43,7 @@ if ( ! empty( $mapped_fields ) ) {
  * @since 1.0.0
  * @param string $value field value.
  */
-function output_cf72post_field( $value ) {
+function cf72post_output_field( $value ) {
 	echo '<span class="field-value">' . esc_html( $value ) . '</span>';
 }
 /**
@@ -48,12 +52,12 @@ function output_cf72post_field( $value ) {
  * @since 1.0.0
  * @param mixed $value field value or array of values.
  */
-function output_cf72post_array_field( $value ) {
+function cf72post_output_array_field( $value ) {
 	if ( is_array( reset( $value ) ) ) {
 		foreach ( $value as $r => $row ) {
-			output_cf72post_array_field( $row, '</br>' );
+			cf72post_output_array_field( $row, '</br>' );
 		}
 	} else {
-		output_cf72post_field( implode( ',', $value ) );
+		cf72post_output_field( implode( ',', $value ) );
 	}
 }

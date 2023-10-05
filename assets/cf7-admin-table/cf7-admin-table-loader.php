@@ -10,6 +10,9 @@
  * @subpackage Cf7_2_Post/assets/cf7-admin-table
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 /**
  * Include the admin table class Cf7_WP_Post_Table
  */

@@ -9,6 +9,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 ?>
 <div id="c2p-helper-lists">
 	<p>

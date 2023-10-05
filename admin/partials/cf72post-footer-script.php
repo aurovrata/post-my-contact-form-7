@@ -7,6 +7,10 @@
  * @subpackage Cf7_2_Post/includes/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 ?>
 <script type="text/javascript">
 (function( $ ) {

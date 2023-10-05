@@ -7,6 +7,10 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 wp_nonce_field( 'c2p_quickedit_nonce', 'c2p_nonce' );
 ?>
 <fieldset class="inline-edit-col-right">

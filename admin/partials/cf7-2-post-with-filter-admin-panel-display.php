@@ -9,6 +9,10 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 $cf7_key_flat = str_replace( '-', '_', $cf7_key );
 ?>
 <h1><?php echo esc_html( __( 'Save submissions as ', 'post-my-contact-form-7' ) ); ?><span id="custom-post-title">filter</span></h1>

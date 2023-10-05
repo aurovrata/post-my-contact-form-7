@@ -87,7 +87,7 @@ class Cf7_2_Post_Admin {
 	 */
 	private function load_dependencies() {
 		// contact post table list.
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/cf7-post-admin-table.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/class-cf7-wp-post-table.php';
 	}
 	/**
 	 * Register the stylesheets for the admin area.
@@ -405,7 +405,7 @@ class Cf7_2_Post_Admin {
 	 * @param string $post_id post ID.
 	 */
 	public function save_post_mapping( $post_id ) {
-		// debug_msg($_POST, "save post ").
+		// wpg_debug($_POST, "save post ").
 		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
 			return;
 		}
@@ -419,7 +419,7 @@ class Cf7_2_Post_Admin {
 				case 'factory':
 					if ( ( isset( $_POST['mapped_post_default'] ) && sanitize_key( $_POST['mapped_post_default'] ) ) ||
 					( isset( $_POST['c2p_mapping_changes'] ) && sanitize_key( $_POST['c2p_mapping_changes'] ) ) ) {
-						// debug_msg('saving mapping....').
+						// wpg_debug('saving mapping....').
 						$factory = c2p_get_factory();
 						$factory->save( $post_id );
 					}
@@ -563,7 +563,7 @@ class Cf7_2_Post_Admin {
 		$submitted = get_post_meta( $post->ID, '_cf7_2_post_form_submitted', true );
 		$checked   = ' disabled';
 		$hidden    = ' disabled';
-		// debug_msg("post id: {$post->ID}, s $submitted").
+		// wpg_debug("post id: {$post->ID}, s $submitted").
 		switch ( $submitted ) {
 			case 'yes':
 				$checked = ' checked';
@@ -678,7 +678,7 @@ class Cf7_2_Post_Admin {
 	 * @return     string    $p2     .
 	 **/
 	public function email_tags( $mailtags ) {
-		// debug_msg($mailtags, 'mail tags ').
+		// wpg_debug($mailtags, 'mail tags ').
 		$cf7_form    = WPCF7_ContactForm::get_current();
 		$cf7_post_id = $cf7_form->id();
 		// is this form mapped yet?
@@ -717,7 +717,7 @@ class Cf7_2_Post_Admin {
 		$is_filter   = false;
 		if ( isset( $_GET['post'] ) ) {
 			$cf7_post_id = sanitize_key( $_GET['post'] );
-			$cf7_key     = get_cf7form_key( $cf7_post_id );
+			$cf7_key     = c2p_get_form_key( $cf7_post_id );
 			$is_filter   = ( $factory->is_filter( $cf7_post_id ) || apply_filters( 'cf7_2_post_save_with_filter', false, $cf7_key ) );
 		}
 

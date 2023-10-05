@@ -17,7 +17,7 @@
  *
  * @since 5.0.0
  */
-abstract class CF7_2_Post_Mapper {
+abstract class C2P_Post_Mapper {
 	/**
 	 * Reference to mapper factory.
 	 *
@@ -211,7 +211,7 @@ abstract class CF7_2_Post_Mapper {
 	 **/
 	protected function get_mapped_fields( $field_prefix ) {
 		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
-			debug_msg( 'ERROR saving mapping, invalid nonce' );
+			wpg_debug( 'ERROR saving mapping, invalid nonce' );
 			return array( 'error' => 'Invalid nonce' );
 		}
 		$prefix_length = strlen( $field_prefix );
@@ -797,7 +797,7 @@ abstract class CF7_2_Post_Mapper {
 			$is_submitted = false;
 		}
 		$this->load_form_fields(); // this loads the form fields and their type
-		// debug_msg($cf7_form_data, 'saving submission ');
+		// wpg_debug($cf7_form_data, 'saving submission ');
 		// check if this is a system post which are mapped using an action.
 		if ( has_action( 'cf7_2_post_save-' . $this->get( 'type' ) ) ) {
 			/**
@@ -924,13 +924,17 @@ abstract class CF7_2_Post_Mapper {
 							require_once ABSPATH . 'wp-admin/includes/media.php';
 							require_once ABSPATH . 'wp-admin/includes/file.php';
 							require_once ABSPATH . 'wp-admin/includes/image.php';
-
-							$attachment_id = media_handle_sideload(
+							$file_arr = array(
+								'name'     => $filename,
+								'tmp_name' => $path,
+							);
+							$attachment_id = wp_handle_sideload(
+								$file_arr,
 								array(
-									'name'     => $filename,
-									'tmp_name' => $path,
+									'action'    => 'copy',
+									'test_form' => false,
 								),
-								$post_id // post to attachm file to.
+								current_time( 'mysql' ) // timestamp.
 							);
 							if ( ! is_wp_error( $attachment_id ) ) {
 								$path            = get_attached_file( $attachment_id, true );
@@ -938,7 +942,16 @@ abstract class CF7_2_Post_Mapper {
 								wp_update_attachment_metadata( $attachment_id, $attachment_data );
 								set_post_thumbnail( $post_id, $attachment_id );
 							} else {
-								debug_msg( $attachment_id, 'error while uploading the file, ' . $filename . ' to the Media Gallery... ' );
+								if ( WP_DEBUG ) {
+									trigger_error(
+										sprintf(
+											/* translators: %s: Attachment file path. */
+											esc_html( __( 'Unable to upload file: %s', 'post-my-contact-form-7' ) ),
+											esc_url( $path )
+										) . '( ' . esc_html( $attachment_id ) . ' )',
+										E_USER_NOTICE
+									);
+								}
 							}
 							// at this point skip the rest of the loop as the file is saved.
 							$skip_loop = true;
@@ -953,7 +966,7 @@ abstract class CF7_2_Post_Mapper {
 			}
 
 			if ( empty( $post_key ) ) {
-				debug_msg( 'Unable to map form field=' . $form_field . ' to post field= ' . $post_field );
+				wpg_debug( 'Unable to map form field=' . $form_field . ' to post field= ' . $post_field );
 				continue;
 			}
 
@@ -1040,18 +1053,31 @@ abstract class CF7_2_Post_Mapper {
 						require_once ABSPATH . 'wp-admin/includes/media.php';
 						require_once ABSPATH . 'wp-admin/includes/file.php';
 						require_once ABSPATH . 'wp-admin/includes/image.php';
-
-						$attachment_id = media_handle_sideload(
+						$file_arr = array(
+							'name'     => $filename,
+							'tmp_name' => $path,
+						);
+						$attachment_id = wp_handle_sideload(
+							$file_arr,
 							array(
-								'name'     => $filename,
-								'tmp_name' => $path,
+								'action'    => 'copy',
+								'test_form' => false,
 							),
-							0 // not attached to post.
+							current_time( 'mysql' ) // timestamp.
 						);
 						if ( ! is_wp_error( $attachment_id ) ) {
 							$file_url = wp_get_attachment_url( $attachment_id );
 						} else {
-							debug_msg( $attachment_id, 'Unable to upload file ' . $filename . ': ' . $path );
+							if ( WP_DEBUG ) {
+								trigger_error(
+									sprintf(
+										/* translators: %s: Attachment file path. */
+										esc_html( __( 'Unable to upload file: %s', 'post-my-contact-form-7' ) ),
+										esc_url( $path )
+									) . '( ' . esc_html( $attachment_id ) . ' )',
+									E_USER_NOTICE
+								);
+							}
 						}
 					}
 					$file_url = apply_filters(
@@ -1103,8 +1129,8 @@ abstract class CF7_2_Post_Mapper {
 		foreach ( $value as $taxonomy => $terms ) {
 			$term_taxonomy_ids = wp_set_object_terms( $post_id, $terms, $taxonomy );
 			if ( is_wp_error( $term_taxonomy_ids ) ) {
-				debug_msg( $term_taxonomy_ids, ' Unable to set taxonomy (' . $taxonomy . ') terms' );
-				debug_msg( $value, 'Attempted to set these term values ' );
+				wpg_debug( $term_taxonomy_ids, ' Unable to set taxonomy (' . $taxonomy . ') terms' );
+				wpg_debug( $value, 'Attempted to set these term values ' );
 			}
 		}
 		/**

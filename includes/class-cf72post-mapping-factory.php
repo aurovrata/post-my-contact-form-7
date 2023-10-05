@@ -15,8 +15,8 @@
 /**
  * Include dependencies.
  */
-require_once plugin_dir_path( __FILE__ ) . 'mapper/class-cf7-2-custom-post-mapper.php';
-require_once plugin_dir_path( __FILE__ ) . 'mapper/class-cf7-2-system-post-mapper.php';
+require_once plugin_dir_path( __FILE__ ) . 'mapper/class-c2p-custom-post-mapper.php';
+require_once plugin_dir_path( __FILE__ ) . 'mapper/class-c2p-system-post-mapper.php';
 /**
  * Factory class for handling mapping functionality.
  *
@@ -34,11 +34,11 @@ class CF72Post_Mapping_Factory {
 	 */
 	const NONCE_ACTION = 'post_my_cf7_form';
 	/**
-	 * Cache of CF7_2_Post_Mapper objects for loaded forms.
+	 * Cache of C2P_Post_Mapper objects for loaded forms.
 	 *
 	 * @since    5.0.0
 	 * @access    protected
-	 * @var      array    $post_mappers    an array of CF7_2_Post_Mapper objects..
+	 * @var      array    $post_mappers    an array of C2P_Post_Mapper objects..
 	 */
 	protected $post_mappers;
 
@@ -207,11 +207,11 @@ class CF72Post_Mapping_Factory {
 	 *
 	 * @since    5.0.0
 	 * @param  int $cf7_post_id  cf7 post id.
-	 * @return CF7_2_Post_Mapper  a factory oject
+	 * @return C2P_Post_Mapper  a factory oject
 	 */
 	public function get_post_mapper( $cf7_post_id ) {
 		if ( 0 === $cf7_post_id ) {
-			$mapper = new CF7_2_Custom_Post_Mapper( $cf7_post_id, $this );
+			$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
 			$map    = $this->get_default_mapping();
 			$mapper->init_default( $map['type'], $map['name'], $map['names'] );
 			$mapper->init_default_mapping( $map );
@@ -238,7 +238,7 @@ class CF72Post_Mapping_Factory {
 				}
 				$slug = $form->post_name;
 			}
-			$mapper          = new CF7_2_Custom_Post_Mapper( $cf7_post_id, $this );
+			$mapper          = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
 			$mapper->cf7_key = $post_type;
 			$mapper->init_default( $slug, $singular_name, $plural_name );
 		} else {
@@ -249,10 +249,10 @@ class CF72Post_Mapping_Factory {
 			} else {
 				switch ( $post_type_source ) {
 					case 'system':
-						$mapper = new CF7_2_System_Post_Mapper( $cf7_post_id, $this );
+						$mapper = new C2P_System_Post_Mapper( $cf7_post_id, $this );
 						break;
 					case 'factory':
-						$mapper = new CF7_2_Custom_Post_Mapper( $cf7_post_id, $this );
+						$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
 				}
 				$mapper->load_post_mapping( $form->post_name ); // load DB values.
 				/** NB @since 3.2.0 get the form terms if any */
@@ -295,7 +295,7 @@ class CF72Post_Mapping_Factory {
 	 * Track mappers.
 	 *
 	 * @since 5.0.0
-	 * @param CF7_2_Post_Mapper $mapper mapper object.
+	 * @param C2P_Post_Mapper $mapper mapper object.
 	 */
 	public function register( $mapper ) {
 		$this->post_mappers[ $mapper->form_id() ] = $mapper;
@@ -323,7 +323,7 @@ class CF72Post_Mapping_Factory {
 	 */
 	public function save( $post_id ) {
 		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
-			debug_msg( 'ERROR saving mapping, invalid nonce' );
+			wpg_debug( 'ERROR saving mapping, invalid nonce' );
 			return false;
 		}
 		$mapped = false;
@@ -332,19 +332,19 @@ class CF72Post_Mapping_Factory {
 			$mapper = null;
 			switch ( $source ) {
 				case 'system':
-					$mapper = new CF7_2_System_Post_Mapper( $post_id, $this );
+					$mapper = new C2P_System_Post_Mapper( $post_id, $this );
 					break;
 				case 'factory':
-					$mapper = new CF7_2_Custom_Post_Mapper( $post_id, $this );
+					$mapper = new C2P_Custom_Post_Mapper( $post_id, $this );
 					break;
 			}
-			if ( isset( $mapper ) && is_a( $mapper, 'CF7_2_Post_Mapper' ) ) {
+			if ( isset( $mapper ) && is_a( $mapper, 'C2P_Post_Mapper' ) ) {
 				$mapped = $mapper->save_mapping();
 			} else {
-				debug_msg( 'CF&_2_POST ERROR: Unable to determine mapped_post_type_source while saving' );
+				wpg_debug( 'CF&_2_POST ERROR: Unable to determine mapped_post_type_source while saving' );
 			}
 		} else {
-			debug_msg( 'CF&_2_POST ERROR: mapped_post_type_source missing, unable to save.' );
+			wpg_debug( 'CF&_2_POST ERROR: mapped_post_type_source missing, unable to save.' );
 		}
 		return $mapped;
 	}
@@ -364,9 +364,9 @@ class CF72Post_Mapping_Factory {
 	 * Register Custom Post Type based on CF7 mapped properties
 	 *
 	 * @since 1.0.0
-	 * @param CF7_2_Post_Mapper $mapper mapper object.
+	 * @param C2P_Post_Mapper $mapper mapper object.
 	 */
-	protected function create_cf7_post_type( CF7_2_Post_Mapper $mapper ) {
+	protected function create_cf7_post_type( C2P_Post_Mapper $mapper ) {
 		// register any custom taxonomy.
 		if ( ! empty( $mapper->post_properties['taxonomy'] ) ) {
 			foreach ( $mapper->post_properties['taxonomy'] as $taxonomy_slug ) {
@@ -636,7 +636,7 @@ class CF72Post_Mapping_Factory {
 			case 'publish':
 				return true;
 			default:
-				$cf7_key = get_cf7form_key( $cf7_id );
+				$cf7_key = c2p_get_form_key( $cf7_post_id );
 				/** NB: @since 4. */
 				return apply_filters( 'cf7_2_post_save_draft_mapping', false, $cf7_key );
 		}
@@ -867,8 +867,8 @@ class CF72Post_Mapping_Factory {
 	 * Function to print jquery script for form field initialisation
 	 *
 	 * @since 1.3.0
-	 * @param string            $nonce nonce.
-	 * @param CF7_2_Post_Mapper $mapper mapping object.
+	 * @param string          $nonce nonce.
+	 * @param C2P_Post_Mapper $mapper mapping object.
 	 */
 	public function get_form_field_script( $nonce, $mapper ) {
 		ob_start();
@@ -883,11 +883,11 @@ class CF72Post_Mapping_Factory {
 	 * (https://aurovrata.github.io/hybrid-html-dropdown/)
 	 *
 	 * @since 5.0.0
-	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed             $branch  array of parent IDs for hierarchical taxonomies, else 0.
-	 * @param   String            $pslug parent slug.
-	 * @param   String            $field form field name for which this taxonomy is mapped to.
-	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
+	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Mixed           $branch  array of parent IDs for hierarchical taxonomies, else 0.
+	 * @param   String          $pslug parent slug.
+	 * @param   String          $field form field name for which this taxonomy is mapped to.
+	 * @param   C2P_Post_Mapper $mapper post mapping object.
 	 * @return  Array value->label pairs for hybrid dropdown..
 	 */
 	protected function build_hybrid_dropdown( $taxonomy, $branch, $pslug, $field, $mapper ) {
@@ -895,7 +895,7 @@ class CF72Post_Mapping_Factory {
 
 		$options = array();
 		if ( is_wp_error( $terms ) ) {
-			debug_msg( 'Taxonomy ' . $taxonomy . ' does not exist' );
+			wpg_debug( 'Taxonomy ' . $taxonomy . ' does not exist' );
 			return $options;
 		} elseif ( empty( $terms ) ) {
 			return $options;
@@ -923,10 +923,10 @@ class CF72Post_Mapping_Factory {
 	 * Method to filter the taxonomy query for mapped taxonomy fields.
 	 *
 	 * @since 5.0.0
-	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Array             $branch  the parent ID of child terms to fetch.
-	 * @param   String            $field form field name for which this taxonomy is mapped to.
-	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
+	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Array           $branch  the parent ID of child terms to fetch.
+	 * @param   String          $field form field name for which this taxonomy is mapped to.
+	 * @param   C2P_Post_Mapper $mapper post mapping object.
 	 * @return Array|WP_Error a collectoin of WP_Term objects or an error.
 	 */
 	protected function filter_taxonomy_query( $taxonomy, $branch, $field, $mapper ) {
@@ -955,13 +955,13 @@ class CF72Post_Mapping_Factory {
 	 * Request: public/
 	 *
 	 * @since 1.2.0
-	 * @param   String            $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed             $branch  array of parent IDs, else 0.
-	 * @param   Array             $post_terms an array of terms which a post has been tagged with.
-	 * @param   String            $field form field name for which this taxonomy is mapped to.
-	 * @param   String            $field_type the type of field in which the tersm are going to be listed.
-	 * @param   int               $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
-	 * @param   CF7_2_Post_Mapper $mapper post mapping object.
+	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
+	 * @param   Mixed           $branch  array of parent IDs, else 0.
+	 * @param   Array           $post_terms an array of terms which a post has been tagged with.
+	 * @param   String          $field form field name for which this taxonomy is mapped to.
+	 * @param   String          $field_type the type of field in which the tersm are going to be listed.
+	 * @param   int             $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
+	 * @param   C2P_Post_Mapper $mapper post mapping object.
 	 * @return  String a jquery code to be executed once the page is loaded.
 	 */
 	protected function get_taxonomy_terms( $taxonomy, $branch, $post_terms, $field, $field_type, $level, $mapper ) {
@@ -974,7 +974,7 @@ class CF72Post_Mapping_Factory {
 		}
 
 		if ( is_wp_error( $terms ) ) {
-			debug_msg( 'Taxonomy ' . $taxonomy . ' does not exist' );
+			wpg_debug( 'Taxonomy ' . $taxonomy . ' does not exist' );
 			return '';
 		} elseif ( empty( $terms ) ) {
 			return '';
@@ -1104,10 +1104,10 @@ class CF72Post_Mapping_Factory {
 	 * Regsiter a custom taxonomy
 	 *
 	 * @since 2.0.0
-	 * @param  Array             $taxonomy  a, array of taxonomy arguments.
-	 * @param  CF7_2_Post_Mapper $mapper mapper pbject.
+	 * @param  Array           $taxonomy  a, array of taxonomy arguments.
+	 * @param  C2P_Post_Mapper $mapper mapper pbject.
 	 */
-	protected function register_custom_taxonomy( array $taxonomy, CF7_2_Post_Mapper $mapper ) {
+	protected function register_custom_taxonomy( array $taxonomy, C2P_Post_Mapper $mapper ) {
 		$labels = array(
 			'name'                       => $taxonomy['name'],
 			'singular_name'              => $taxonomy['singular_name'],
@@ -1259,19 +1259,15 @@ class CF72Post_Mapping_Factory {
 		return $html;
 	}
 }
-if ( ! function_exists( 'c2p_get_factory' ) ) {
-	/**
-	 * Get object factory
-	 */
-	function c2p_get_factory() {
-		return CF72Post_Mapping_Factory::get_factory();
-	}
+/**
+ * Get object factory
+ */
+function c2p_get_factory() {
+	return CF72Post_Mapping_Factory::get_factory();
 }
-if ( ! function_exists( 'c2p_mapped_post_types' ) ) {
-	/**
-	 * Get mapped post types
-	 */
-	function c2p_mapped_post_types() {
-		return CF72Post_Mapping_Factory::get_mapped_post_types();
-	}
+/**
+ * Get mapped post types
+ */
+function c2p_mapped_post_types() {
+	return CF72Post_Mapping_Factory::get_mapped_post_types();
 }

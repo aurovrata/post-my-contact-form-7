@@ -15,14 +15,14 @@
 /**
  * Include dependencies.
  */
-require_once plugin_dir_path( __FILE__ ) . 'class-cf7-2-post-mapper.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-c2p-post-mapper.php';
 
 /**
  * Class to handle mapping form -> system post.
  *
  * @since 5.0.0
  */
-class CF7_2_System_Post_Mapper extends CF7_2_Post_Mapper {
+class C2P_System_Post_Mapper extends C2P_Post_Mapper {
 	/**
 	 * Class contructor.
 	 *

@@ -7,10 +7,13 @@
  * @package Cf7_2_Post
  */
 
-defined( 'WP_GURUS_DEBUG' ) || define( 'WP_GURUS_DEBUG', false );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+defined( 'WPGURUS_DEBUG' ) || define( 'WPGURUS_DEBUG', false );
 
-if ( ! function_exists( 'debug_msg' ) ) {
-	if ( true === WP_GURUS_DEBUG ) {
+if ( ! function_exists( 'wpg_debug' ) ) {
+	if ( true === WPGURUS_DEBUG ) {
 		$debug_msg_last_line = '';
 		$debug_msg_last_file = '';
 	}
@@ -23,8 +26,8 @@ if ( ! function_exists( 'debug_msg' ) ) {
 	 * @param string $prefix prefix msg.
 	 * @param int    $trace number of lines to display in trance.
 	 */
-	function debug_msg( $message, $prefix = '', $trace = 0 ) {
-		if ( true === WP_GURUS_DEBUG ) {
+	function wpg_debug( $message, $prefix = '', $trace = 0 ) {
+		if ( true === WPGURUS_DEBUG ) {
 			global $debug_msg_last_line,$debug_msg_last_file;
 			$backtrace = debug_backtrace();
 			$file      = $backtrace[0]['file'];

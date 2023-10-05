@@ -189,6 +189,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 * @since 1.1.3
 		 */
 		public static function is_cf7_admin_page() {
+			/** This is a core admin page request check, nonce validation handled by WP */
 			if ( ! isset( $_GET['post_type'] ) || false === strpos( $_GET['post_type'], WPCF7_ContactForm::post_type ) ) {
 				return false;
 			} else {
@@ -309,7 +310,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 * @param      Int    $post_id     row post id.
 		 */
 		public function populate_custom_column( $column, $post_id ) {
-			// debug_msg($column).
+			// wpg_debug($column).
 			$form = get_post( $post_id );
 			switch ( $column ) {
 				case 'title':
@@ -378,7 +379,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 				return $link;
 			}
 			$post = get_post( $post_id );
-			// debug_msg($link, 'link ').
+			// wpg_debug($link, 'link ').
 
 			if ( 'wpcf7_contact_form' == $post->post_type ) {
 				$link = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $post_id );
@@ -494,7 +495,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 			}
 		}
 	}//end class
-	if ( ! function_exists( 'get_cf7form_id' ) ) {
+	if ( ! function_exists( 'c2p_get_form_id' ) ) {
 		/**
 		 * Get form post id from slug.
 		 *
@@ -502,11 +503,11 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 * @param string $cf7_key slug.
 		 * @return string id.
 		 */
-		function get_cf7form_id( $cf7_key ) {
+		function c2p_get_form_id( $cf7_key ) {
 			return Cf7_WP_Post_Table::form_id( $cf7_key );
 		}
 	}
-	if ( ! function_exists( 'get_cf7form_key' ) ) {
+	if ( ! function_exists( 'c2p_get_form_key' ) ) {
 		/**
 		 * Get form slug from id
 		 *
@@ -514,7 +515,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 * @param string $cf7_id id.
 		 * @return string slug.
 		 */
-		function get_cf7form_key( $cf7_id ) {
+		function c2p_get_form_key( $cf7_id ) {
 			return CF7_WP_Post_Table::form_key( $cf7_id );
 		}
 	}

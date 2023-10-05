@@ -9,6 +9,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 // action.
 $is_new_mapping = true;
 switch ( $post_mapper->get( 'map' ) ) {

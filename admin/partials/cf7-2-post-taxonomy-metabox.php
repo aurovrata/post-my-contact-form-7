@@ -11,6 +11,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 $mapped_taxonomy = $post_mapper->get_mapped_taxonomy();
 foreach ( $mapped_taxonomy as $cf7_field => $post_taxonomy ) :
 	$taxmy = $post_mapper->get_taxonomy( $post_taxonomy );

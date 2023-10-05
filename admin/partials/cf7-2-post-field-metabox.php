@@ -9,6 +9,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 $mapped_fields = $post_mapper->get_mapped_meta_fields();
 foreach ( $mapped_fields as $cf7_field => $post_field ) :
 	?>

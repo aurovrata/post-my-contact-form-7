@@ -7,6 +7,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 ?>
 <fieldset class="inline-edit-col-left">
 	<div class="inline-edit-col">

@@ -1,4 +1,4 @@
-= Post My CF7 Form ===
+=== Post My CF7 Form ===
 Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TYFB6PQQB3HJC
 Tags: contact form 7, contact form 7 module, post, custom post, form to post, contact form 7 to post, contact form 7 extension

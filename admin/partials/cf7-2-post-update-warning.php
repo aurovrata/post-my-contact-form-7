@@ -11,6 +11,9 @@
  * @subpackage Cf7_2_Post/admin/partials
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 ?>
 <span id="c2p-update-warning">
 <span><?php echo esc_html( __( 'WARNING: This is a major update, please ensure you properly test your mapped forms on a local/staging server before updating your live site.', 'post-my-contact-form-7' ) ); ?></span>
