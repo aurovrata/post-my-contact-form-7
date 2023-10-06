@@ -551,10 +551,11 @@ class CF72Post_Mapping_Factory {
 	 */
 	public function register_cf7_post_maps() {
 		$cf7_post_ids = self::get_mapped_post_types();
-		foreach ( $cf7_post_ids as $post_id => $type ) {
-			$system    = true;
-			$post_type = key( $type );
-			$mapper    = $this->get_post_mapper( $post_id );
+		$unique_posts = array();
+		foreach ( $cf7_post_ids as $pid => $type ) {
+			$system                     = true;
+			$post_type                  = key( $type );
+			$mapper                     = $this->get_post_mapper( $pid );
 			switch ( $type[ $post_type ] ) {
 				case 'factory':
 					$this->create_cf7_post_type( $mapper );
@@ -565,14 +566,14 @@ class CF72Post_Mapping_Factory {
 					*/
 					if ( $mapper->flush_permalink_rules ) {
 						flush_rewrite_rules();
-						update_post_meta( $post_id, '_cf7_2_post_flush_rewrite_rules', false );
+						update_post_meta( $pid, '_cf7_2_post_flush_rewrite_rules', false );
 						$mapper->flush_permalink_rules = false;
 					}
 					$system = false;
 					break;
 				case 'system': /** NB @since 3.3.1 link system taxonomy*/
 					// link the taxonomy and the post.
-					$taxonomies = get_post_meta( $post_id, '_cf7_2_post-taxonomy', true );
+					$taxonomies = get_post_meta( $pid, '_cf7_2_post-taxonomy', true );
 					foreach ( $taxonomies as $taxonomy_slug ) {
 						register_taxonomy_for_object_type( $taxonomy_slug, $post_type );
 					}
@@ -582,28 +583,32 @@ class CF72Post_Mapping_Factory {
 			* Action to notify other plugins for mapped post creation
 			*
 			* @since 2.0.4
-			* @param string $post_type   the post type being mapped to
+			* @param string $post_type   the post type being mapped to.
 			* @param boolean $system   true if form is mapped to an existing post, false if it is being registered by this plugin.
-			* @param string $cf7_key   the form key value which is being mapped to the post type
-			* @param string $post_id   the form post ID value which is being mapped to the post type
+			* @param string $cf7_key   the form key value which is being mapped to the post type.
+			* @param string $pid   the form post ID value which is being mapped to the post type.
+			* @param boolean $is_duplicate true if this post type was previously regsitered.
 			*/
-			do_action( 'cf72post_register_mapped_post', $post_type, $system, $mapper->cf7_key, $post_id );
+			do_action( 'cf72post_register_mapped_post', $post_type, $system, $mapper->cf7_key, $pid, isset( $unique_posts[ $post_type ] ) );
 			// add a filter for newly saved posts of this type.
-			add_action(
-				'save_post_' . $post_type,
-				function( $post_id, $post, $update ) {
-					if ( $update ) {
+			if ( false === isset( $unique_posts[ $post_type ] ) ) {
+				add_action(
+					'save_post_' . $post_type,
+					function( $post_id, $post, $update ) {
+						if ( $update ) {
+							return $post_id;
+						}
+						$cf7_flag = get_post_meta( $post_id, '_cf7_2_post_form_submitted', true );
+						if ( empty( $cf7_flag ) ) { /** NB @since 4.1.9 default to yes */
+							update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' );
+						}
 						return $post_id;
-					}
-					$cf7_flag = get_post_meta( $post_id, '_cf7_2_post_form_submitted', true );
-					if ( empty( $cf7_flag ) ) { /** NB @since 4.1.9 default to yes */
-						update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' );
-					}
-					return $post_id;
-				},
-				10,
-				3
-			);
+					},
+					10,
+					3
+				);
+			}
+			$unique_posts[ $post_type ] = 1; // track posts types already registered.
 		}
 	}
 

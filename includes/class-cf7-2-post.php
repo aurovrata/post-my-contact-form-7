@@ -174,7 +174,7 @@ class Cf7_2_Post {
 
 		// hide mapping submenu page.
 		/** Add metabox to mapped posts @since 3.3.0 */
-		$this->loader->add_action( 'cf72post_register_mapped_post', $plugin_admin, 'cf72post_metabox' );
+		$this->loader->add_action( 'cf72post_register_mapped_post', $plugin_admin, 'cf72post_metabox', 10, 5 );
 		// CF7 Hooks.
 		// delete post.
 		$this->loader->add_action( 'wpcf7_post_delete', $plugin_admin, 'delete_cf7_post', 10, 1 );

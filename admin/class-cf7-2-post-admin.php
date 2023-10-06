@@ -135,46 +135,49 @@ class Cf7_2_Post_Admin {
 		}
 
 		$screen = get_current_screen();
-		if ( 'toplevel_page_wpcf7' == $hook || ( WPCF7_ContactForm::post_type === $screen->post_type && 'post' === $screen->base ) ) {
-			$plugin_dir = plugin_dir_url( __DIR__ );
-			/** NB @since 5.5.1 fix tag name scanning.*/
-			$tags = array();
-			if ( class_exists( 'WPCF7_FormTagsManager' ) ) {
-				$form_tags_manager = WPCF7_FormTagsManager::get_instance();
-				$tags              = $form_tags_manager->collect_tag_types(
+		switch ( true ) {
+			case ( 'toplevel_page_wpcf7' === $hook || ( WPCF7_ContactForm::post_type === $screen->post_type && 'post' === $screen->base ) ): // form editor.
+				$plugin_dir = plugin_dir_url( __DIR__ );
+				/** NB @since 5.5.1 fix tag name scanning.*/
+				$tags = array();
+				if ( class_exists( 'WPCF7_FormTagsManager' ) ) {
+					$form_tags_manager = WPCF7_FormTagsManager::get_instance();
+					$tags              = $form_tags_manager->collect_tag_types(
+						array(
+							'feature' => 'name-attr',
+						)
+					);
+					$tags              = array_filter(
+						$tags,
+						function( $t ) {
+							return ! strpos( $t, '*' );
+						}
+					);
+				}
+
+				wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox' ), $this->version, true );
+				wp_enqueue_script( 'jquery-toggles', $plugin_dir . 'assets/jquery-toggles/toggles.min.js', array( 'jquery' ), $this->version, true );
+				wp_enqueue_script( 'jquery-clibboard', $plugin_dir . 'assets/clipboard/clipboard.min.js', array( 'jquery' ), $this->version, true );
+				wp_localize_script(
+					$this->plugin_name,
+					'c2pLocal',
 					array(
-						'feature' => 'name-attr',
+						'warning'    => __( 'Warning: Field already selected!', 'post-my-contact-form-7' ),
+						'copy'       => __( 'Click to copy!', 'post-my-contact-form-7' ),
+						'paste'      => __( 'Paste helper code into your theme functions.php file.', 'post-my-contact-form-7' ),
+						'draft'      => __( 'draft', 'post-my-contact-form-7' ),
+						'live'       => __( 'live', 'post-my-contact-form-7' ),
+						'warn'       => __( 'CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.' ),
+						'wpcf7_tags' => $tags,
 					)
 				);
-				$tags              = array_filter(
-					$tags,
-					function( $t ) {
-						return ! strpos( $t, '*' );
-					}
-				);
-			}
-
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/c2p-edit-panel.js', array( 'jquery', 'postbox' ), $this->version, true );
-			wp_enqueue_script( 'jquery-toggles', $plugin_dir . 'assets/jquery-toggles/toggles.min.js', array( 'jquery' ), $this->version, true );
-			wp_enqueue_script( 'jquery-clibboard', $plugin_dir . 'assets/clipboard/clipboard.min.js', array( 'jquery' ), $this->version, true );
-			wp_localize_script(
-				$this->plugin_name,
-				'c2pLocal',
-				array(
-					'warning'    => __( 'Warning: Field already selected!', 'post-my-contact-form-7' ),
-					'copy'       => __( 'Click to copy!', 'post-my-contact-form-7' ),
-					'paste'      => __( 'Paste helper code into your theme functions.php file.', 'post-my-contact-form-7' ),
-					'draft'      => __( 'draft', 'post-my-contact-form-7' ),
-					'live'       => __( 'live', 'post-my-contact-form-7' ),
-					'warn'       => __( 'CF7 2 POST WARNING: Your form is live! Changing its fields and mapping may create inconsistent data entries.' ),
-					'wpcf7_tags' => $tags,
-				)
-			);
-			wp_enqueue_script( 'hybrid-select', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true );
-		} elseif ( WPCF7_ContactForm::post_type === $screen->post_type && 'edit' === $screen->base ) {
-			$plugin_dir = plugin_dir_url( __DIR__ );
-			wp_enqueue_script( 'jquery-clibboard', $plugin_dir . 'assets/clipboard/clipboard.min.js', array( 'jquery' ), $this->version, true );
-			wp_enqueue_script( 'quickedit-c2p-js', $plugin_dir . 'admin/js/cf7-2-post-quick-edit.js', array( 'jquery-clibboard' ), $this->version, true );
+				wp_enqueue_script( 'hybrid-select', $plugin_dir . 'assets/hybrid-html-dropdown/hybrid-dropdown.min.js', null, $this->version, true );
+				break;
+			case ( WPCF7_ContactForm::post_type === $screen->post_type && 'edit' === $screen->base ): // form post table.
+				$plugin_dir = plugin_dir_url( __DIR__ );
+				wp_enqueue_script( 'jquery-clibboard', $plugin_dir . 'assets/clipboard/clipboard.min.js', array( 'jquery' ), $this->version, true );
+				wp_enqueue_script( 'quickedit-c2p-js', $plugin_dir . 'admin/js/cf7-2-post-quick-edit.js', array( 'jquery-clibboard' ), $this->version, true );
+				break;
 		}
 		$factory = c2p_get_factory();
 		if ( false != $factory->is_mapped_post_types( $screen->post_type ) ) {
@@ -530,11 +533,29 @@ class Cf7_2_Post_Admin {
 	 * Hooked to 'cf72post_register_mapped_post'
 	 *
 	 * @since 3.3.0
-	 * @param string $post_type post type being mapped to.
+	 * @param String  $post_type post type being mapped to.
+	 * @param Boolean $system   true if form is mapped to an existing post, false if it is being registered by this plugin.
+	 * @param String  $cf7_key   the form key value which is being mapped to the post type.
+	 * @param String  $pid   the form post ID value which is being mapped to the post type.
+	 * @param Boolean $is_duplicate true if this post type was previously regsitered.
 	 */
-	public function cf72post_metabox( $post_type ) {
-		add_action( 'add_meta_boxes_' . $post_type, array( $this, 'add_cf72post_metabox' ) );
-		add_action( 'save_post_' . $post_type, array( $this, 'save_cf72post_metabox' ) );
+	public function cf72post_metabox( $post_type, $system, $cf7_key, $pid, $is_duplicate ) {
+		if ( ! $is_duplicate ) {
+			add_action( 'add_meta_boxes_' . $post_type, array( $this, 'add_cf72post_metabox' ) );
+			add_action( 'save_post_' . $post_type, array( $this, 'save_cf72post_metabox' ) );
+			// enqueue the required script.
+			add_action(
+				'admin_enqueue_scripts',
+				function( $hook ) use ( $post_type ) {
+					if ( 'post.php' === $hook ) {
+						$screen = get_current_screen();
+						if ( $post_type === $screen->post_type ) {
+							wp_enqueue_script( "{$this->plugin_name}-{$post_type}-js", plugin_dir_url( __FILE__ ) . 'js/c2p-mapped-post-edit.js', array( 'jquery' ), $this->version, true );
+						}
+					}
+				}
+			);
+		}
 	}
 	/**
 	 * Function to add metaboxes to enable the submitted flag to be reset.
@@ -581,19 +602,6 @@ class Cf7_2_Post_Admin {
 	<p><em>Uncheck to flag this submission as un-submitted.</em> This will reload this post into the form when the its author logs in again.</p>
 		<?php wp_nonce_field( "cf72post_metabox_{$post->ID}", '_cf72post_metabox_nonce' ); ?>
 	<input type="hidden" id="cf72post-submitted-hidden" name="cf7_2_post_submitted" value="<?php echo esc_attr( $submitted ); ?>" <?php echo esc_attr( $hidden ); ?>/>
-	<script type="text/javascript">
-	(function( $ ) {
-		$(document).ready(function(){
-			$('input.cf72post-submitted').on('change', function(){
-				if( $(this).is(':checked') ){
-				$('#cf72post-submitted-hidden').val('yes');
-				}else{
-				$('#cf72post-submitted-hidden').val('no');
-				}
-			});
-		});
-	})( jQuery );
-	</script>
 		<?php
 	}
 	/**

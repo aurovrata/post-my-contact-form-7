@@ -427,6 +427,26 @@ If you want to load your own intialisation script to customise the select2 dropd
 add_filter( 'cf7_2_post_filter_cf7_delay_select2_launch', '__return_true');
 `
 
+= 28. ACF plugin file meta-field is not recognised/saved properly =
+
+A number of users have complained that when mapping a form submission to a custom post/meta-fields created by the ACF plugin (or other similar plugins), the file form field is not saved in a format that allows the ACF plugin to identify the file.  By default the Post My CF7 Form plugin saves uploaded files to the wp uploads folder and inserts them into the Media section as a post `attachment`, it then saves the url of the file to the meta-field.  The ACF plugin and other similar plugins that automatically create these meta-fields do not recognise the URL value and expects another storage format (possibly the file attachment post ID).  You can remedy this issue by using the following filter and change the format your plugin expects.  If you are not sure what format that is, then please consult the plugin documentation that you are using and get the right format.
+
+`
+add_filter('cf7_2_post_metafield_file', 'change_meta_field_file_format', 10, 6);
+function change_meta_field_file_format( $file_format, $attachment_id, $post_id, $post_field, $form_field, $cf7_key ){
+  /*
+	* $file_format,  default format is url path.
+	* $attachment_id,  file media attachment post id.
+	*	$post_id,  form submission mapped to post.
+	*	$post_field,  the meta post fields being saved.
+	*	$form_field, the form field from which it was submitted.
+	*	$cf7_key the current form being mapped.
+	*/
+	$file_format = .... //set the expected format.
+	return $file_format;
+}
+`
+
 = Testing mapping of published forms =
 
 As of v5.7.0 you now have more control over the ability to save a submission from a form accessible to the public.  If you are developing your website and not concerned about who has access to it, then simply switch your form mapping to `live` (see screenshot #11).  However, if you are looking to map a form that is already accessible to the public on a live site, then you can test your mapping by leaving it the default `draft` mode and use the following filter to allow only certain users's submission to be saved to the mapped post,

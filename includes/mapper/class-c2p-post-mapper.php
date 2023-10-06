@@ -921,38 +921,11 @@ abstract class C2P_Post_Mapper {
 							if ( ! file_exists( $path ) ) {
 								continue;
 							}
-							require_once ABSPATH . 'wp-admin/includes/media.php';
-							require_once ABSPATH . 'wp-admin/includes/file.php';
-							require_once ABSPATH . 'wp-admin/includes/image.php';
-							$file_arr = array(
+							$file_arr     = array(
 								'name'     => $filename,
 								'tmp_name' => $path,
 							);
-							$attachment_id = wp_handle_sideload(
-								$file_arr,
-								array(
-									'action'    => 'copy',
-									'test_form' => false,
-								),
-								current_time( 'mysql' ) // timestamp.
-							);
-							if ( ! is_wp_error( $attachment_id ) ) {
-								$path            = get_attached_file( $attachment_id, true );
-								$attachment_data = wp_generate_attachment_metadata( $attachment_id, $path );
-								wp_update_attachment_metadata( $attachment_id, $attachment_data );
-								set_post_thumbnail( $post_id, $attachment_id );
-							} else {
-								if ( WP_DEBUG ) {
-									trigger_error(
-										sprintf(
-											/* translators: %s: Attachment file path. */
-											esc_html( __( 'Unable to upload file: %s', 'post-my-contact-form-7' ) ),
-											esc_url( $path )
-										) . '( ' . esc_html( $attachment_id ) . ' )',
-										E_USER_NOTICE
-									);
-								}
-							}
+							$this->save_file_as_attachment( $file_arr, $post_id, 'thumbnail' );
 							// at this point skip the rest of the loop as the file is saved.
 							$skip_loop = true;
 							// we need a special treatment.
@@ -1050,31 +1023,25 @@ abstract class C2P_Post_Mapper {
 						if ( ! file_exists( $path ) ) {
 							continue;
 						}
-						require_once ABSPATH . 'wp-admin/includes/media.php';
-						require_once ABSPATH . 'wp-admin/includes/file.php';
-						require_once ABSPATH . 'wp-admin/includes/image.php';
-						$file_arr = array(
+						$file_arr      = array(
 							'name'     => $filename,
 							'tmp_name' => $path,
 						);
-						$attachment_id = wp_handle_sideload(
-							$file_arr,
-							array(
-								'action'    => 'copy',
-								'test_form' => false,
-							),
-							current_time( 'mysql' ) // timestamp.
-						);
+						$attachment_id = $this->save_file_as_attachment( $file_arr, 0 );
+
 						if ( ! is_wp_error( $attachment_id ) ) {
 							$file_url = wp_get_attachment_url( $attachment_id );
 						} else {
 							if ( WP_DEBUG ) {
 								trigger_error(
-									sprintf(
-										/* translators: %s: Attachment file path. */
-										esc_html( __( 'Unable to upload file: %s', 'post-my-contact-form-7' ) ),
-										esc_url( $path )
-									) . '( ' . esc_html( $attachment_id ) . ' )',
+									esc_html(
+										sprintf(
+											/* translators: %s: file path. */
+											__( 'Unable to save Media attachment file: %s', 'post-my-contact-form-7' ),
+											'file',
+											$new_file
+										) . '( ' . $attachment_id . ' )'
+									),
 									E_USER_NOTICE
 								);
 							}
@@ -1165,6 +1132,101 @@ abstract class C2P_Post_Mapper {
 		}
 		/** NB @since 4.1.0 reutnr post id to handle post link mail tags in public class */
 		return $post_id;
+	}
+	/**
+	 * Private fuction to copy the cf7 unshipped file to the wp-uploads folder as media attachment post.
+	 *
+	 * @since 6.0.1
+	 * @param Array  $file_arr file array containing the filename and path.
+	 * @param String $post_id the parent post id to which to attach the media.
+	 */
+	private function save_file_as_attachment( $file_arr, $post_id ) {
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		// make use of wwp_handle_sideload() file validation functionality.
+		// shortcircuit the file move, and handle separately in order to copy rather than move so cf7 plugin still has access.
+		$action = 'c2p_file_copy';
+		// identify our file action.
+		add_filter(
+			"{$action}_prefilter",
+			function( $file ) {
+				// cancel the file move.
+				add_filter(
+					'pre_move_uploaded_file',
+					function( $move, $file, $new_file, $type ) {
+						// copy the file.
+						$move = @copy( $file['tmp_name'], $new_file );
+						if ( false === $move && WP_DEBUG ) {
+							trigger_error(
+								esc_html(
+									sprintf(
+										/* translators: %1$s: cf7 uploaded file path | %2$s: wp uploads folder path. */
+										__( 'Unable to move uploaded %1$s to %2$s', 'post-my-contact-form-7' ),
+										$path
+									)
+								),
+								E_USER_NOTICE
+							);
+						}
+						return $move; // either false or true, but not null.
+					},
+					10,
+					4
+				);
+				return $file;
+			},
+			10,
+			1
+		);
+		$new_file_arr = wp_handle_sideload(
+			$file_arr,
+			array(
+				'action'    => $action,
+				'test_form' => false,
+			),
+			current_time( 'mysql' ) // timestamp.
+		);
+
+		if ( isset( $new_file_arr['error'] ) ) {
+			return new WP_Error( 'upload_error', $new_file_arr['error'] );
+		}
+		$url      = $new_file_arr['url'];
+		$type     = $new_file_arr['type'];
+		$new_file = $new_file_arr['file'];
+		$title    = preg_replace( '/\.[^.]+$/', '', wp_basename( $new_file ) );
+		$content  = '';
+		// Use image exif/iptc data for title and caption defaults if possible.
+		$image_meta = wp_read_image_metadata( $new_file );
+
+		if ( $image_meta ) {
+			if ( trim( $image_meta['title'] ) && ! is_numeric( sanitize_title( $image_meta['title'] ) ) ) {
+				$title = $image_meta['title'];
+			}
+
+			if ( trim( $image_meta['caption'] ) ) {
+				$content = $image_meta['caption'];
+			}
+		}
+
+		if ( isset( $desc ) ) {
+			$title = $desc;
+		}
+		// Construct the attachment array.
+		$attachment = array(
+			'post_mime_type' => $type,
+			'guid'           => $url,
+			'post_parent'    => $post_id,
+			'post_title'     => $title,
+			'post_content'   => $content,
+		);
+		// Save the attachment metadata.
+		$attachment_id = wp_insert_attachment( $attachment, $new_file, $post_id, true );
+
+		if ( ! is_wp_error( $attachment_id ) ) {
+			wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $new_file ) );
+		}
+		return $attachment_id;
 	}
 	/**
 	 * Delete a post mapping
