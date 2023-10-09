@@ -266,7 +266,7 @@ class Cf7_2_Post_Public {
 					if ( ! empty( $cf7_id ) ) {
 						$cf7_forms[] = $cf7_id[1];
 					} elseif ( ! empty( $cf7_key ) ) {
-						$cf7_forms[] = Cf7_WP_Post_Table::form_id( $cf7_key[1] );
+						$cf7_forms[] = c2p_get_form_id( $cf7_key[1] );
 					}
 				}
 			}

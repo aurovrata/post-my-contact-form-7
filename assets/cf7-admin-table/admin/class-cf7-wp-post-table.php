@@ -15,7 +15,7 @@
  *
  * Check if the class exists.
  */
-if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
+if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 	/**
 	 * The admin-specific functionality of the plugin.
 	 *
@@ -26,13 +26,13 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 	 * @subpackage Cf7_Polylang/admin
 	 * @author     Aurovrata V. <vrata@syllogic.in>
 	 */
-	class Cf7_WP_Post_Table {
+	class CF7_WP_Post_Table {
 		/**
 		 * A CF7 list table object.
 		 *
 		 * @since    1.1.0
 		 * @access   private
-		 * @var      Cf7_WP_Post_Table    $singleton   cf7 admin list table object.
+		 * @var      CF7_WP_Post_Table    $singleton   cf7 admin list table object.
 		 */
 		private static $singleton;
 		/**
@@ -90,7 +90,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 */
 		public function enqueue_styles() {
 			$screen = get_current_screen();
-			if ( 'wpcf7_contact_form' != $screen->post_type ) {
+			if ( 'wpcf7_contact_form' !== $screen->post_type ) {
 				return;
 			}
 
@@ -207,10 +207,6 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 			if ( ! isset( $_GET['page'] ) || false === strpos( $_GET['page'], 'wpcf7' ) ) {
 				return false;
 			} else {
-				if ( isset( $_GET['post'] ) ) {
-					global $post_ID; // need to set the global post ID to make sure it is available for polylang.
-					$post_ID = $_GET['post'];
-				}
 				if ( function_exists( 'get_current_screen' ) ) {
 					$screen = get_current_screen(); // use screen option after intial basic check else it may throw fatal error.
 					return ( ! empty( $screen ) && 'contact_page_wpcf7-new' === $screen->base || 'toplevel_page_wpcf7' === $screen->base );
@@ -504,7 +500,7 @@ if ( ! class_exists( 'Cf7_WP_Post_Table' ) ) {
 		 * @return string id.
 		 */
 		function c2p_get_form_id( $cf7_key ) {
-			return Cf7_WP_Post_Table::form_id( $cf7_key );
+			return CF7_WP_Post_Table::form_id( $cf7_key );
 		}
 	}
 	if ( ! function_exists( 'c2p_get_form_key' ) ) {
