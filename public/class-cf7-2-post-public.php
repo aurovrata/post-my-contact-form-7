@@ -410,8 +410,8 @@ class Cf7_2_Post_Public {
 					2
 				);
 			}
-			return $results;
 		}
+		return $results;
 	}
 	/**
 	 * Method to skip CF7 plugin calidation of file fields when saving draft form.
