@@ -316,7 +316,6 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 					. ' onfocus="this.select();" readonly="readonly"'
 					. ' value="' . esc_attr( '[cf7form cf7key="' . esc_html( $form->post_name ) . '"]' ) . '"'
 					. ' class="large-text code" /></span>';
-
 					break;
 				case 'cf7_key':
 					$update = '';

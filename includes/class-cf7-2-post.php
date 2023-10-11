@@ -101,7 +101,7 @@ class Cf7_2_Post {
 		*/
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf72post-mapping-factory.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cf7-2-post-loader.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/wordpress-gurus-debug-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/wpgurus-debug-api.php';
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
