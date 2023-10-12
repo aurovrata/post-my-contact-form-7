@@ -233,11 +233,13 @@ endif; // empty hdd.
 					case 'textarea':
 						$field = $form.find(`textarea[name=${fieldName}]`).val(fieldValue).trigger("change");
 						break;
+					case 'file':
+						break;
 					default:
 						$field = $form.find(`input[name="${fieldName}"]`).val(fieldValue).trigger("change");
 						break;
 				}
-				$field.get(0).dispatchEvent(pe);
+				if($field) $field.get(0).dispatchEvent(pe);
 			}
 			return $form;
 		}

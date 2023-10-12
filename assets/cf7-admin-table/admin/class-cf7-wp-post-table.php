@@ -190,7 +190,7 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 */
 		public static function is_cf7_admin_page() {
 			/** This is a core admin page request check, nonce validation handled by WP */
-			if ( ! isset( $_GET['post_type'] ) || false === strpos( $_GET['post_type'], WPCF7_ContactForm::post_type ) ) {
+			if ( ! isset( $_GET['post_type'] ) || false === strpos( sanitize_key( $_GET['post_type'] ), WPCF7_ContactForm::post_type ) ) {
 				return false;
 			} else {
 				$screen = get_current_screen();
@@ -204,12 +204,12 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 * @return    bool    true is this is the edit page
 		 */
 		public static function is_cf7_edit_page() {
-			if ( ! isset( $_GET['page'] ) || false === strpos( $_GET['page'], 'wpcf7' ) ) {
+			if ( ! isset( $_GET['page'] ) || false === strpos( sanitize_key( $_GET['page'] ), 'wpcf7' ) ) {
 				return false;
 			} else {
 				if ( function_exists( 'get_current_screen' ) ) {
 					$screen = get_current_screen(); // use screen option after intial basic check else it may throw fatal error.
-					return ( ! empty( $screen ) && 'contact_page_wpcf7-new' === $screen->base || 'toplevel_page_wpcf7' === $screen->base );
+					return ( isset( $screen ) && 'contact_page_wpcf7-new' === $screen->base || 'toplevel_page_wpcf7' === $screen->base );
 				} else {
 					return false;
 				}
