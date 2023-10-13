@@ -15,7 +15,7 @@
  *
  * Check if the class exists.
  */
-if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
+if ( ! class_exists( 'CF7SG_WP_Post_Table' ) ) {
 	/**
 	 * The admin-specific functionality of the plugin.
 	 *
@@ -26,13 +26,13 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 	 * @subpackage Cf7_Polylang/admin
 	 * @author     Aurovrata V. <vrata@syllogic.in>
 	 */
-	class CF7_WP_Post_Table {
+	class CF7SG_WP_Post_Table {
 		/**
 		 * A CF7 list table object.
 		 *
 		 * @since    1.1.0
 		 * @access   private
-		 * @var      CF7_WP_Post_Table    $singleton   cf7 admin list table object.
+		 * @var      CF7SG_WP_Post_Table    $singleton   cf7 admin list table object.
 		 */
 		private static $singleton;
 		/**
@@ -110,7 +110,7 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 */
 		public function enqueue_script() {
 			$screen = get_current_screen();
-			if ( 'wpcf7_contact_form' != $screen->post_type ) {
+			if ( 'wpcf7_contact_form' !== $screen->post_type ) {
 				return;
 			}
 
@@ -306,7 +306,6 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 * @param      Int    $post_id     row post id.
 		 */
 		public function populate_custom_column( $column, $post_id ) {
-			// wpg_debug($column).
 			$form = get_post( $post_id );
 			switch ( $column ) {
 				case 'title':
@@ -374,9 +373,8 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 				return $link;
 			}
 			$post = get_post( $post_id );
-			// wpg_debug($link, 'link ').
 
-			if ( 'wpcf7_contact_form' == $post->post_type ) {
+			if ( 'wpcf7_contact_form' === $post->post_type ) {
 				$link = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $post_id );
 			}
 			return $link;
@@ -393,7 +391,7 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 */
 		public function modify_cf7_list_row_actions( $actions, $post ) {
 			// check for your post type.
-			if ( 'trash' == $post->post_status ) {
+			if ( 'trash' === $post->post_status ) {
 				return array();
 			}
 
@@ -499,7 +497,7 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 * @return string id.
 		 */
 		function c2p_get_form_id( $cf7_key ) {
-			return CF7_WP_Post_Table::form_id( $cf7_key );
+			return CF7SG_WP_Post_Table::form_id( $cf7_key );
 		}
 	}
 	if ( ! function_exists( 'c2p_get_form_key' ) ) {
@@ -511,7 +509,7 @@ if ( ! class_exists( 'CF7_WP_Post_Table' ) ) {
 		 * @return string slug.
 		 */
 		function c2p_get_form_key( $cf7_id ) {
-			return CF7_WP_Post_Table::form_key( $cf7_id );
+			return CF7SG_WP_Post_Table::form_key( $cf7_id );
 		}
 	}
 }

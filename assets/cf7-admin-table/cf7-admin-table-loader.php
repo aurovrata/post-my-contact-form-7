@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 /**
- * Include the admin table class CF7_WP_Post_Table
+ * Include the admin table class CF7SG_WP_Post_Table
  */
-require_once plugin_dir_path( __FILE__ ) . 'admin/class-cf7-wp-post-table.php';
+require_once plugin_dir_path( __FILE__ ) . 'admin/class-cf7sg-wp-post-table.php';
 // reset the cf7 admin table.
-$cf7_admin = CF7_WP_Post_Table::set_table();
+$cf7_admin = CF7SG_WP_Post_Table::set_table();
 if ( ! $cf7_admin->hooks() ) {
 	add_action( 'admin_enqueue_scripts', array( $cf7_admin, 'enqueue_styles' ) );
 	add_action( 'admin_enqueue_scripts', array( $cf7_admin, 'enqueue_script' ) );

@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 6.2.2
-Stable tag: 5.6.1
+Stable tag: 6.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -580,6 +580,12 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 6.0.2 =
+* fix lib class name clash.
+= 6.0.1 =
+* fixed email not sending on non-mapped forms.
+* fixed file attachments in mail notifications
+* improved code to match WordPress coding stds.
 = 6.0.0 =
 * clean up code for WordPress code std compatibility.
 * added `'cf7_2_post_save_draft_mapping'` filter to allow finer control on testing draft mode mappings.
