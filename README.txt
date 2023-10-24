@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 6.2.2
-Stable tag: 6.0.1
+Stable tag: 6.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -580,6 +580,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 6.0.3 =
+* fix admin require lib loading error.
 = 6.0.2 =
 * fix lib class name clash.
 = 6.0.1 =

@@ -87,7 +87,7 @@ class Cf7_2_Post_Admin {
 	 */
 	private function load_dependencies() {
 		// contact post table list.
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/class-cf7-wp-post-table.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'assets/cf7-admin-table/admin/class-cf7sg-wp-post-table.php';
 	}
 	/**
 	 * Register the stylesheets for the admin area.
