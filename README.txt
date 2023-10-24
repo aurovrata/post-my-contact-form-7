@@ -580,6 +580,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 6.0.4 =
+* fixed thumbnail mapping.
 = 6.0.3 =
 * fix admin require lib loading error.
 = 6.0.2 =

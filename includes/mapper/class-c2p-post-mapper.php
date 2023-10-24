@@ -915,17 +915,33 @@ abstract class C2P_Post_Mapper {
 							$file = array( $_FILES[ $form_field ]['name'] => $file ); // file name.
 						}
 					}
-
 					if ( ! empty( $file ) ) {
 						foreach ( $file as $filename => $path ) {
 							if ( ! file_exists( $path ) ) {
 								continue;
 							}
-							$file_arr     = array(
+							$file_arr = array(
 								'name'     => $filename,
 								'tmp_name' => $path,
 							);
-							$this->save_file_as_attachment( $file_arr, $post_id, 'thumbnail' );
+							$attachment_id = $this->save_file_as_attachment( $file_arr, $post_id );
+							if ( ! is_wp_error( $attachment_id ) ) {
+								set_post_thumbnail( $post_id, $attachment_id );
+							} else {
+								if ( WP_DEBUG ) {
+									trigger_error(
+										esc_html(
+											sprintf(
+												/* translators: %s: file path. */
+												__( 'Unable to save Media attachment file: %s', 'post-my-contact-form-7' ),
+												'file',
+												$new_file
+											) . '( ' . $attachment_id . ' )'
+										),
+										E_USER_NOTICE
+									);
+								}
+							}
 							// at this point skip the rest of the loop as the file is saved.
 							$skip_loop = true;
 							// we need a special treatment.
