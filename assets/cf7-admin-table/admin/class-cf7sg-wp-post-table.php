@@ -224,8 +224,31 @@ if ( ! class_exists( 'CF7SG_WP_Post_Table' ) ) {
 		public function modify_cf7_post_type() {
 			if ( class_exists( 'WPCF7_ContactForm' ) && post_type_exists( WPCF7_ContactForm::post_type ) ) {
 				global $wp_post_types;
-				$wp_post_types[ WPCF7_ContactForm::post_type ]->public  = true;
-				$wp_post_types[ WPCF7_ContactForm::post_type ]->show_ui = true;
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->public                           = true;
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->show_ui                          = true;
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->add_new                  = __( 'Add a New Form', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->add_new_item             = __( 'Add a New Form', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->edit_item                = __( 'Edit Form', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->new_item                 = __( 'New Form', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->view_item                = __( 'View Form', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->view_items               = __( 'View Forms', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->search_items             = __( 'Search Forms', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->not_found                = __( 'No forms found.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->not_found_in_trash       = __( 'No forms found in Bin.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->attributes               = __( 'Form Attributes', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->insert_into_item         = __( 'Insert into post', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->uploaded_to_this_item    = __( 'Uploaded to this post', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->filter_items_list        = __( 'Filter posts list', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->items_list_navigation    = __( 'Forms list navigation', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->items_list               = __( 'Forms list', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_published           = __( 'Form published.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_published_privately = __( 'Form published privately.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_reverted_to_draft   = __( 'Form reverted to draft.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_trashed             = __( 'Form binned.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_scheduled           = __( 'Form scheduled.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_updated             = __( 'Form updated.', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_link                = __( 'Form Link', 'post-my-contact-form-7' );
+				$wp_post_types[ WPCF7_ContactForm::post_type ]->labels->item_link_description    = __( 'A link to a post.', 'post-my-contact-form-7' );
 			}
 		}
 
