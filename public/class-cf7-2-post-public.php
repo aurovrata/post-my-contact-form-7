@@ -502,7 +502,7 @@ class Cf7_2_Post_Public {
 	public function array_to_single( $value, $org, $tag ) {
 		if ( isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), CF72Post_Mapping_Factory::NONCE_ACTION ) ) {
 			if ( is_array( $value ) && isset( $_POST[ $tag->name ] ) && ! is_array( $_POST[ $tag->name ] ) ) {
-				$value = sanitize_key( $_POST[ $tag->name ] ); // keep the original value.
+				$value = sanitize_text_field( wp_unslash( $_POST[ $tag->name ] ) ); // keep the original value.
 			}
 		}
 		return $value;
