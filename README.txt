@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 module, post, custom post, form to post, co
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 6.4.2
-Stable tag: 6.0.6
+Stable tag: 6.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -581,6 +581,8 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 6.0.7 =
+* upgrade select2 plugin to v4.0.13
 = 6.0.6 =
 * fix santisation of CF7 fields converted to arrays.
 = 6.0.5 =

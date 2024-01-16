@@ -1,3 +1,4 @@
+- include form shortcode in form editor page.
 - improve loading of resources by validating form being loaded.
 
 
@@ -20,3 +21,4 @@ DONE
 
 PHPCS refactor.
 - use '_cf72post_nonce' for transient as well as nonce validation
+
