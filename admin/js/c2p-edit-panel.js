@@ -84,7 +84,7 @@
     //pickup all selected values.
     for(let i=0;i<$menu.length;i++ ){
       let $m = $menu.eq(i), v='';
-      if(init) v= $m.attr('value');
+      if(init) v= $m.attr('data-c2p-ff');
       else v = $m[0].selectedIndex>0 ? $m[0].selectedOptions[0].value:'';
       $m.children().remove(':not(.filter-option):not(.default-option)');
       $option = $m.find('option.filter-option');
@@ -348,13 +348,20 @@
         // ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
         ffMenu.querySelector('.filter-option').value = 'cf7_2_post_filter-'+postType+'-'+fv;
         ffMenu.classList.add('autofill-field-name');
-        if(ffMenu._hybriddd) ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
+        if(ffMenu._hybriddd) { 
+          ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv}); //refresh hybrid select.
+        }
         break;
       case field.classList.contains('cf7-2-post-map-labels'): //update form field name.
       case field.classList.contains('cf7-2-post-map-label-custom'): //update form field name.
         // ffMenu.setAttribute('name','cf7_2_post_map_meta_value-'+fv);
+        let optFilter = 'cf7_2_post_filter-'+postType+'-'+fv;
+        ffMenu.querySelector('.filter-option').value = optFilter;
         if(ffMenu._hybriddd){ //refresh hybrid select.
           ffMenu._hybriddd.refresh({'fieldName':'cf7_2_post_map_meta_value-'+fv});
+        }
+        if(optFilter === ffMenu.value ){ //update filter.
+          c2pFilterHelperCode.call(fc, optFilter);
         }
         break;
       case field.classList.contains('field-options'): //check if field already used.
@@ -387,8 +394,10 @@
           }
           ffMenu.parentNode.classList.remove('hooked');
         }else{ //filter option selelected, display helper code.
-           c2pFilterHelperCode.call(fc,fv);
-           ffMenu.parentNode.classList.add('hooked');
+          // fv = ffMenu.getAttribute('name');
+
+          c2pFilterHelperCode.call(fc,fv);
+          ffMenu.parentNode.classList.add('hooked');
         }
 
         break;
@@ -440,7 +449,18 @@
     }
     if(update) c2pUpdateMapping();
   });
-
+  //setup clipboard
+  document.querySelector('#c2p-mapped-fields').addEventListener('click', async (e) => {
+    let trigger = e.target;
+    if(trigger.matches('.cf7-post-msg a.code')){
+      e.preventDefault(); 
+      try {	
+        await navigator.clipboard.writeText(trigger.dataset.clipboardText);
+      } catch (err) {
+        console.error('Failed to copy helper text: ', err);
+      }
+    }
+  });
   function c2pEditTaxonomy(show){
     let fc = this.closest('li');
     if(show){
@@ -468,11 +488,10 @@
 		helper +="  	// do something and populate the $value field.\n";
 		helper +="  }\n";
     helper +="  return $value;\n}";
-    helper = 'filter:<a class="code" data-clipboard-text="'+helper+'" href="javascript:void(0);">'+filter+'</a><span class="popup">'+c2pLocal.copy+'<span>'+c2pLocal.paste+'</span></span>';
+    helper = 'filter:<a class="code" data-clipboard-text="'+helper+'" href="#">'+filter+'</a><span class="popup">'+c2pLocal.copy+'<span>'+c2pLocal.paste+'</span></span>';
 
     if(this){
       $(this).append('<span class="cf7-post-msg animate-color">'+helper+'</span>');
-      new Clipboard(this.querySelector('.cf7-post-msg a.code'));
     }else{
       return helper;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * The file that defines the core plugin class
+ * The file that defines the core plugin class.
  *
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
@@ -12,11 +12,10 @@
  * @subpackage Cf7_2_Post/includes
  */
 
-/**
- * Include dependencies.
- */
+// Include dependencies with conditional loading.
 require_once plugin_dir_path( __FILE__ ) . 'mapper/class-c2p-custom-post-mapper.php';
 require_once plugin_dir_path( __FILE__ ) . 'mapper/class-c2p-system-post-mapper.php';
+
 /**
  * Factory class for handling mapping functionality.
  *
@@ -26,44 +25,44 @@ require_once plugin_dir_path( __FILE__ ) . 'mapper/class-c2p-system-post-mapper.
  * @author     Aurovrata V. <vrata@syllogic.in>
  */
 class CF72Post_Mapping_Factory {
+
 	/**
 	 * Constant for nonce action string.
 	 *
 	 * @since 5.7.0
-	 * @access public
+	 * @var string
 	 */
 	const NONCE_ACTION = 'post_my_cf7_form';
+
 	/**
 	 * Cache of C2P_Post_Mapper objects for loaded forms.
 	 *
-	 * @since    5.0.0
-	 * @access    protected
-	 * @var      array    $post_mappers    an array of C2P_Post_Mapper objects..
+	 * @since 5.0.0
+	 * @var array
 	 */
 	protected $post_mappers;
 
 	/**
 	 * Track post types mapped to create and add dashboard functionality.
 	 *
-	 * @since    5.0.0
-	 * @access    protected
-	 * @var      array    $mapped_post_types    an array of fomr IDs=>post types..
+	 * @since 5.0.0
+	 * @var array
 	 */
 	protected static $mapped_post_types;
+
 	/**
-	 * Factory object.
+	 * Factory object instance.
 	 *
-	 * @since    1.0.0
-	 * @access    protected
-	 * @var      CF72Post_Mapping_Factory  $factory object instance of this class.
+	 * @since 1.0.0
+	 * @var CF72Post_Mapping_Factory
 	 */
 	protected static $factory;
+
 	/**
 	 * Allowed HTML for wp_kses function validation.
 	 *
 	 * @since 5.7.0
-	 * @access public
-	 * @var Array $allowed_html HTML elements and attributes.
+	 * @var array
 	 */
 	public static $allowed_html = array(
 		'input'  => array(
@@ -90,53 +89,46 @@ class CF72Post_Mapping_Factory {
 			'id'    => array(),
 			'class' => array(),
 		),
-		// 'span'   => array(.
-		// 'class' => array(),
-		// ),
-		// 'label'  => array(
-		// 'id'    => array(),
-		// 'for'   => array(),
-		// 'class' => array(),
-		// ),
-		// 'li'     => array(
-		// 'id'    => array(),
-		// 'class' => array(),
-		// ),
 	);
+
 	/**
-	 * Default Construct a Cf7_2_Post_Factory object.
+	 * Constructor - protected for singleton pattern.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	protected function __construct() {
 		$this->post_mappers = array();
 		if ( is_admin() ) {
-			$this->get_system_posts(); // only used in dashboard.
+			$this->get_system_posts(); // Only used in dashboard.
 		}
-
 	}
+
 	/**
-	 * Add nonce to mapped forms for validation at submission.
+	 * Create a nonce for mapped forms.
 	 *
 	 * @since 5.7.0
-	 * @return string nonce value.
+	 * @return string Nonce value.
 	 */
 	public static function noncify() {
 		return wp_create_nonce( self::NONCE_ACTION );
 	}
+
 	/**
 	 * Check nonce at submission.
 	 *
 	 * @since 5.7.0
-	 * @return boolean true|false.
+	 * @return bool True if nonce is valid.
 	 */
 	public static function is_nonce_valid() {
-		return isset( $_POST['_c2p_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), self::NONCE_ACTION );
+		return isset( $_POST['_c2p_nonce'] ) && 
+			wp_verify_nonce( sanitize_key( $_POST['_c2p_nonce'] ), self::NONCE_ACTION );
 	}
+
 	/**
 	 * Factory singleton object getter.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
+	 * @return CF72Post_Mapping_Factory
 	 */
 	public static function get_factory() {
 		if ( ! isset( self::$factory ) ) {
@@ -144,49 +136,48 @@ class CF72Post_Mapping_Factory {
 		}
 		return self::$factory;
 	}
+
 	/**
-	 * Set system posts
+	 * Get system posts for admin display.
 	 *
 	 * @since 5.0.0
-	 * @return Array associative array of system post_types=>post label.
+	 * @return array|bool Associative array of system post_types => post label.
 	 */
 	protected function get_system_posts() {
 		if ( ! is_admin() ) {
 			return false;
 		}
 
-		$args       = array(
-			'show_ui' => true,
-		);
+		$args       = array( 'show_ui' => true );
 		$post_types = get_post_types( $args, 'objects', 'and' );
-		$html       = '';
 		$display    = array();
+
+		$excluded_post_types = array( 'wp_block', 'wpcf7_contact_form' );
+
 		foreach ( $post_types as $post_type ) {
-			switch ( $post_type->name ) {
-				case 'wp_block':
-				case 'wpcf7_contact_form':
-					break;
-				default:
-					$display[ $post_type->name ] = $post_type->label;
-					break;
+			if ( in_array( $post_type->name, $excluded_post_types, true ) ) {
+				continue;
 			}
+			$display[ $post_type->name ] = $post_type->label;
 		}
+
 		/**
-		* Add/remove system posts to which to map forms to. By defualt the plugin only lists system posts which are visible in the dashboard
-		*
-		* @since 2.0.0
-		* @param array $display  list of system post picked up by the plugin to display
-		* @return array an array of post-types=>post-label key value pairs to display
-		*/
+		 * Add/remove system posts to which to map forms.
+		 *
+		 * @since 2.0.0
+		 * @param array $display List of system posts to display.
+		 * @return array Post-type => label key value pairs.
+		 */
 		return apply_filters( 'cf7_2_post_display_system_posts', $display );
 	}
+
 	/**
-	 * Get a list of available system post_types as <option> elements
+	 * Get system post types as <option> elements.
 	 *
 	 * @since 1.3.0
-	 * @param string $selected post type.
-	 * @return string  html list of <option> elements with existing post_types in the DB
-	 **/
+	 * @param string $selected Selected post type.
+	 * @return string HTML list of <option> elements.
+	 */
 	public function get_system_posts_options( $selected ) {
 		$system_pt = $this->get_system_posts();
 		if ( ! isset( $system_pt[ $selected ] ) ) {
@@ -195,80 +186,124 @@ class CF72Post_Mapping_Factory {
 
 		$html = '';
 		foreach ( $system_pt as $post_type => $post_label ) {
-			$select = ( $selected === $post_type ) ? ' selected="true"' : '';
-			$html  .= '<option value="' . $post_type . '"' . $select . '>';
-			$html  .= $post_label . ' (' . $post_type . ')';
-			$html  .= '</option>' . PHP_EOL;
+			$select = selected( $selected, $post_type, false );
+			$html  .= sprintf(
+				'<option value="%s"%s>%s (%s)</option>',
+				esc_attr( $post_type ),
+				$select,
+				esc_html( $post_label ),
+				esc_html( $post_type )
+			);
+			$html  .= PHP_EOL;
 		}
 		return $html;
 	}
+
 	/**
-	 * Get a factory object for a CF7 form.
+	 * Get a mapper object for a CF7 form.
 	 *
-	 * @since    5.0.0
-	 * @param  int $cf7_post_id  cf7 post id.
-	 * @return C2P_Post_Mapper  a factory oject
+	 * @since 5.0.0
+	 * @param int $cf7_post_id CF7 post ID.
+	 * @return C2P_Post_Mapper A mapper object.
 	 */
 	public function get_post_mapper( $cf7_post_id ) {
+		// Handle new form (ID = 0).
 		if ( 0 === $cf7_post_id ) {
-			$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
-			$map    = $this->get_default_mapping();
-			$mapper->init_default( $map['type'], $map['name'], $map['names'] );
-			$mapper->init_default_mapping( $map );
-			return $mapper;
+			return $this->create_default_mapper();
 		}
-		// if mapper exists, return it.
+
+		// Return cached mapper if exists.
 		if ( isset( $this->post_mappers[ $cf7_post_id ] ) ) {
 			return $this->post_mappers[ $cf7_post_id ];
 		}
-		// check if the cf7 form already has a mapping.
-		$post_type        = get_post_meta( $cf7_post_id, '_cf7_2_post-type', true );
-		$post_type_source = 'factory';
-		$mapper           = null;
-		$form             = get_post( $cf7_post_id );
-		if ( empty( $post_type ) ) { // let's create a new one.
-			$plural_name   = 'Undefined';
-			$singular_name = 'Undefined';
-			$slug          = 'undefined';
-			if ( isset( $form ) ) {
-				$plural_name   = $form->post_title;
-				$singular_name = $plural_name;
-				if ( 's' !== substr( $plural_name, -1 ) ) {
-					$plural_name .= 's';
-				}
-				$slug = $form->post_name;
-			}
-			$mapper          = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
-			$mapper->cf7_key = $post_type;
-			$mapper->init_default( $slug, $singular_name, $plural_name );
-		} else {
-			$post_type_source = get_post_meta( $cf7_post_id, '_cf7_2_post-type_source', true );
-			$map              = get_post_meta( $cf7_post_id, '_cf7_2_post-map', true );
-			if ( isset( $this->post_mappers[ $cf7_post_id ] ) ) {
-				$mapper = $this->post_mappers[ $cf7_post_id ];
-			} else {
-				switch ( $post_type_source ) {
-					case 'system':
-						$mapper = new C2P_System_Post_Mapper( $cf7_post_id, $this );
-						break;
-					case 'factory':
-						$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
-				}
-				$mapper->load_post_mapping( $form->post_name ); // load DB values.
-				/** NB @since 3.2.0 get the form terms if any */
-				$terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array( 'fields' => 'id=>slug' ) );
-				if ( ! is_wp_error( $terms ) ) {
-					$mapper->form_terms = $terms;
-				}
-			}
+
+		// Check if CF7 form already has a mapping.
+		$post_type = get_post_meta( $cf7_post_id, '_cf7_2_post-type', true );
+		
+		if ( empty( $post_type ) ) {
+			return $this->create_new_mapper( $cf7_post_id );
 		}
+
+		return $this->load_existing_mapper( $cf7_post_id, $post_type );
+	}
+
+	/**
+	 * Create a default mapper for new forms.
+	 *
+	 * @since 5.3.0
+	 * @return C2P_Custom_Post_Mapper
+	 */
+	private function create_default_mapper() {
+		$map   = $this->get_default_mapping();
+		$mapper = new C2P_Custom_Post_Mapper( 0, $this );
+		$mapper->init_default( $map['type'], $map['name'], $map['names'] );
+		$mapper->init_default_mapping( $map );
 		return $mapper;
 	}
+
 	/**
-	 * Setup a default mapping for new post mappers.
+	 * Create a new mapper for a form without mapping.
+	 *
+	 * @since 5.3.0
+	 * @param int $cf7_post_id CF7 post ID.
+	 * @return C2P_Custom_Post_Mapper
+	 */
+	private function create_new_mapper( $cf7_post_id ) {
+		$form = get_post( $cf7_post_id );
+		
+		$plural_name   = isset( $form ) ? $form->post_title : 'Undefined';
+		$singular_name = $plural_name;
+		if ( 's' !== substr( $plural_name, -1 ) ) {
+			$plural_name .= 's';
+		}
+		$slug = isset( $form ) ? $form->post_name : 'undefined';
+
+		$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
+		$mapper->cf7_key = $post_type;
+		$mapper->init_default( $slug, $singular_name, $plural_name );
+		
+		return $mapper;
+	}
+
+	/**
+	 * Load an existing mapper from database.
+	 *
+	 * @since 5.3.0
+	 * @param int    $cf7_post_id CF7 post ID.
+	 * @param string $post_type   Post type.
+	 * @return C2P_Post_Mapper
+	 */
+	private function load_existing_mapper( $cf7_post_id, $post_type ) {
+		$post_type_source = get_post_meta( $cf7_post_id, '_cf7_2_post-type_source', true );
+		
+		// Determine mapper type.
+		switch ( $post_type_source ) {
+			case 'system':
+				$mapper = new C2P_System_Post_Mapper( $cf7_post_id, $this );
+				break;
+			case 'factory':
+			default:
+				$mapper = new C2P_Custom_Post_Mapper( $cf7_post_id, $this );
+				break;
+		}
+
+		$form = get_post( $cf7_post_id );
+		$mapper->load_post_mapping( $form->post_name );
+
+		// Load form terms if available.
+		$terms = wp_get_post_terms( $cf7_post_id, 'wpcf7_type', array( 'fields' => 'id=>slug' ) );
+		if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+			$mapper->form_terms = $terms;
+		}
+
+		return $mapper;
+	}
+
+	/**
+	 * Get default mapping configuration.
 	 *
 	 * @since 5.0.0
-	 * @return Array array of mapping arguments.
+	 * @return array Mapping arguments.
 	 */
 	protected function get_default_mapping() {
 		return array(
@@ -291,143 +326,175 @@ class CF72Post_Mapping_Factory {
 			),
 		);
 	}
+
 	/**
-	 * Track mappers.
+	 * Track mappers in cache.
 	 *
 	 * @since 5.0.0
-	 * @param C2P_Post_Mapper $mapper mapper object.
+	 * @param C2P_Post_Mapper $mapper Mapper object.
 	 */
 	public function register( $mapper ) {
 		$this->post_mappers[ $mapper->form_id() ] = $mapper;
 	}
-	/**
-	 * Enqueue the localised script
-	 * This function is called by the hook in the
-	 *
-	 * @since 1.3.0
-	 * @param string $handle  script handle.
-	 * @param array  $field_and_values   values to localise.
-	 **/
-	public function enqueue_localised_script( $handle, $field_and_values = array() ) {
-		$values = array_diff( $field_and_values, $this->localise_values );
-		wp_localize_script( $handle, 'cf7_2_post_local', $values );
-	}
 
 	/**
-	 * Store the mapping in the CF7 post & create the custom post mapping.
-	 * This method is used on the admin side only.
+	 * Store the mapping in the CF7 post.
 	 *
-	 * @since    5.0.0
-	 * @param string $post_id post ID.
-	 * @return  boolean   true if successful
+	 * @since 5.0.0
+	 * @param int $post_id Post ID.
+	 * @return bool True if successful.
 	 */
 	public function save( $post_id ) {
-		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
+		// Verify nonce.
+		if ( ! isset( $_POST['cf7_2_post_nonce'] ) || 
+			 ! wp_verify_nonce( sanitize_key( $_POST['cf7_2_post_nonce'] ), 'cf7_2_post_mapping' ) ) {
 			wpg_debug( 'ERROR saving mapping, invalid nonce' );
 			return false;
 		}
-		$mapped = false;
-		if ( isset( $_POST['mapped_post_type_source'] ) ) {
-			$source = sanitize_key( $_POST['mapped_post_type_source'] );
-			$mapper = null;
-			switch ( $source ) {
-				case 'system':
-					$mapper = new C2P_System_Post_Mapper( $post_id, $this );
-					break;
-				case 'factory':
-					$mapper = new C2P_Custom_Post_Mapper( $post_id, $this );
-					break;
-			}
-			if ( isset( $mapper ) && is_a( $mapper, 'C2P_Post_Mapper' ) ) {
-				$mapped = $mapper->save_mapping();
-			} else {
-				wpg_debug( 'CF&_2_POST ERROR: Unable to determine mapped_post_type_source while saving' );
-			}
-		} else {
-			wpg_debug( 'CF&_2_POST ERROR: mapped_post_type_source missing, unable to save.' );
+
+		// Verify user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wpg_debug( 'ERROR saving mapping, insufficient permissions' );
+			return false;
 		}
-		return $mapped;
+
+		if ( ! isset( $_POST['mapped_post_type_source'] ) ) {
+			wpg_debug( 'ERROR: mapped_post_type_source missing, unable to save.' );
+			return false;
+		}
+
+		$source = sanitize_key( $_POST['mapped_post_type_source'] );
+		$mapper = $this->create_mapper_by_source( $post_id, $source );
+
+		if ( ! $mapper || ! $mapper instanceof C2P_Post_Mapper ) {
+			wpg_debug( 'ERROR: Unable to determine mapped_post_type_source while saving' );
+			return false;
+		}
+
+		return $mapper->save_mapping();
 	}
 
+	/**
+	 * Create mapper by source type.
+	 *
+	 * @since 5.3.0
+	 * @param int    $post_id Post ID.
+	 * @param string $source  Source type.
+	 * @return C2P_Post_Mapper|null
+	 */
+	private function create_mapper_by_source( $post_id, $source ) {
+		switch ( $source ) {
+			case 'system':
+				return new C2P_System_Post_Mapper( $post_id, $this );
+			case 'factory':
+				return new C2P_Custom_Post_Mapper( $post_id, $this );
+			default:
+				return null;
+		}
+	}
 
 	/**
-	 * Get the CF7 post id.
+	 * Get the CF7 post ID.
 	 *
-	 * @since    1.0.0
-	 * @return int the cf7 form post ID
+	 * @since 1.0.0
+	 * @return int CF7 form post ID.
 	 */
 	public function get_cf7_post_id() {
 		return $this->cf7_post_id;
 	}
 
 	/**
-	 * Register Custom Post Type based on CF7 mapped properties
+	 * Register Custom Post Type based on CF7 mapped properties.
 	 *
 	 * @since 1.0.0
-	 * @param C2P_Post_Mapper $mapper mapper object.
+	 * @param C2P_Post_Mapper $mapper Mapper object.
 	 */
 	protected function create_cf7_post_type( C2P_Post_Mapper $mapper ) {
-		// register any custom taxonomy.
-		if ( ! empty( $mapper->post_properties['taxonomy'] ) ) {
-			foreach ( $mapper->post_properties['taxonomy'] as $taxonomy_slug ) {
-				if ( 'system' === $mapper->taxonomy_properties[ $taxonomy_slug ]['source'] ) {
-					continue;
-				}
-				$taxonomy          = array(
-					'hierarchical'       => true,
-					'public'             => true,
-					'show_ui'            => true,
-					'show_admin_column'  => true,
-					'show_in_nav_menus'  => true,
-					'show_tagcloud'      => true,
-					'show_in_quick_edit' => true,
-					'menu_name'          => $mapper->taxonomy_properties[ $taxonomy_slug ]['name'],
-					'description'        => '',
-				);
-				$taxonomy          = array_merge( $mapper->taxonomy_properties[ $taxonomy_slug ], $taxonomy );
-				$taxonomy_filtered = apply_filters( 'cf7_2_post_filter_taxonomy_registration-' . $taxonomy_slug, $taxonomy );
-				// ensure we have all the key defined.
-				$taxonomy = $taxonomy_filtered + $taxonomy; // this will give precedence to filtered keys, but ensure we have all required keys.
-				$this->register_custom_taxonomy( $taxonomy, $mapper );
-			}
+		// Register custom taxonomy.
+		$this->register_custom_taxonomies( $mapper );
+
+		// Register custom post type.
+		$args = $this->build_post_type_args( $mapper );
+		register_post_type( $mapper->post_properties['type'], $args );
+
+		// Link taxonomy and post.
+		$this->link_taxonomies_to_post( $mapper );
+	}
+
+	/**
+	 * Register custom taxonomies for mapper.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 */
+	private function register_custom_taxonomies( C2P_Post_Mapper $mapper ) {
+		if ( empty( $mapper->post_properties['taxonomy'] ) ) {
+			return;
 		}
-		$labels = array(
-			'name'                  => $mapper->post_properties['plural_name'],
-			'singular_name'         => $mapper->post_properties['singular_name'],
-			'menu_name'             => $mapper->post_properties['plural_name'],
-			'name_admin_bar'        => $mapper->post_properties['singular_name'],
-			'archives'              => $mapper->post_properties['singular_name'] . ' Archives',
-			'parent_item_colon'     => 'Parent ' . $mapper->post_properties['singular_name'] . ':',
-			'all_items'             => 'All ' . $mapper->post_properties['plural_name'],
-			'add_new_item'          => 'Add New ' . $mapper->post_properties['singular_name'],
-			'add_new'               => 'Add New',
-			'new_item'              => 'New ' . $mapper->post_properties['singular_name'],
-			'edit_item'             => 'Edit ' . $mapper->post_properties['singular_name'],
-			'update_item'           => 'Update ' . $mapper->post_properties['singular_name'],
-			'view_item'             => 'View ' . $mapper->post_properties['singular_name'],
-			'search_items'          => 'Search ' . $mapper->post_properties['singular_name'],
-			'not_found'             => 'Not found',
-			'not_found_in_trash'    => 'Not found in Trash',
-			'featured_image'        => 'Featured Image',
-			'set_featured_image'    => 'Set featured image',
-			'remove_featured_image' => 'Remove featured image',
-			'use_featured_image'    => 'Use as featured image',
-			'insert_into_item'      => 'Insert into ' . $mapper->post_properties['singular_name'],
-			'uploaded_to_this_item' => 'Uploaded to this ' . $mapper->post_properties['singular_name'],
-			'items_list'            => $mapper->post_properties['plural_name'] . ' list',
-			'items_list_navigation' => $mapper->post_properties['plural_name'] . ' list navigation',
-			'filter_items_list'     => 'Filter ' . $mapper->post_properties['plural_name'] . ' list',
+
+		foreach ( $mapper->post_properties['taxonomy'] as $taxonomy_slug ) {
+			if ( 'system' === $mapper->taxonomy_properties[ $taxonomy_slug ]['source'] ) {
+				continue;
+			}
+
+			$taxonomy = $this->build_taxonomy_args( $mapper, $taxonomy_slug );
+			$this->register_custom_taxonomy( $taxonomy, $mapper );
+		}
+	}
+
+	/**
+	 * Build taxonomy arguments.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper        Mapper object.
+	 * @param string          $taxonomy_slug Taxonomy slug.
+	 * @return array Taxonomy arguments.
+	 */
+	private function build_taxonomy_args( C2P_Post_Mapper $mapper, $taxonomy_slug ) {
+		$taxonomy = array_merge(
+			array(
+				'hierarchical'       => true,
+				'public'             => true,
+				'show_ui'            => true,
+				'show_admin_column'  => true,
+				'show_in_nav_menus'  => true,
+				'show_tagcloud'      => true,
+				'show_in_quick_edit' => true,
+				'menu_name'          => $mapper->taxonomy_properties[ $taxonomy_slug ]['name'],
+				'description'        => '',
+			),
+			$mapper->taxonomy_properties[ $taxonomy_slug ]
 		);
-		// labels can be modified post taxonomy registratipn.
-		// ensure author is supported.
-		if ( ! isset( $mapper->post_properties['supports']['author'] ) ) {
+
+		return apply_filters(
+			'cf7_2_post_filter_taxonomy_registration-' . $taxonomy_slug,
+			$taxonomy
+		);
+	}
+
+	/**
+	 * Build post type arguments.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 * @return array Post type arguments.
+	 */
+	private function build_post_type_args( C2P_Post_Mapper $mapper ) {
+		$labels = $this->build_post_type_labels( $mapper );
+		
+		// Ensure author is supported.
+		if ( ! in_array( 'author', $mapper->post_properties['supports'], true ) ) {
 			$mapper->post_properties['supports'][] = 'author';
 		}
-		$args         = array(
+
+		$args = array(
 			'label'               => $mapper->post_properties['singular_name'],
 			'description'         => 'Post for CF7 Form ' . $mapper->post_properties['cf7_title'],
 			'labels'              => $labels,
-			'supports'            => apply_filters( 'cf7_2_post_supports_' . $mapper->post_properties['type'], $mapper->post_properties['supports'] ),
+			'supports'            => apply_filters( 
+				'cf7_2_post_supports_' . $mapper->post_properties['type'], 
+				$mapper->post_properties['supports'] 
+			),
 			'taxonomies'          => $mapper->post_properties['taxonomy'],
 			'hierarchical'        => ! empty( $mapper->post_properties['hierarchical'] ),
 			'public'              => ! empty( $mapper->post_properties['public'] ),
@@ -441,7 +508,68 @@ class CF72Post_Mapping_Factory {
 			'exclude_from_search' => ! empty( $mapper->post_properties['exclude_from_search'] ),
 			'publicly_queryable'  => ! empty( $mapper->post_properties['publicly_queryable'] ),
 		);
-		$reference    = array(
+
+		// Add capabilities if available.
+		$capabilities = $this->get_post_capabilities( $mapper );
+		if ( ! empty( $capabilities ) ) {
+			$args['capabilities'] = $capabilities;
+			$args['map_meta_cap'] = true;
+		} else {
+			$args['capability_type'] = 'post';
+		}
+
+		return apply_filters( 'cf7_2_post_register_post_' . $mapper->post_properties['type'], $args );
+	}
+
+	/**
+	 * Build post type labels.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 * @return array Labels.
+	 */
+	private function build_post_type_labels( C2P_Post_Mapper $mapper ) {
+		$singular = $mapper->post_properties['singular_name'];
+		$plural   = $mapper->post_properties['plural_name'];
+
+		return array(
+			'name'                  => $plural,
+			'singular_name'         => $singular,
+			'menu_name'             => $plural,
+			'name_admin_bar'        => $singular,
+			'archives'              => $singular . ' Archives',
+			'parent_item_colon'     => 'Parent ' . $singular . ':',
+			'all_items'             => 'All ' . $plural,
+			'add_new_item'          => 'Add New ' . $singular,
+			'add_new'               => 'Add New',
+			'new_item'              => 'New ' . $singular,
+			'edit_item'             => 'Edit ' . $singular,
+			'update_item'           => 'Update ' . $singular,
+			'view_item'             => 'View ' . $singular,
+			'search_items'          => 'Search ' . $singular,
+			'not_found'             => 'Not found',
+			'not_found_in_trash'    => 'Not found in Trash',
+			'featured_image'        => 'Featured Image',
+			'set_featured_image'    => 'Set featured image',
+			'remove_featured_image' => 'Remove featured image',
+			'use_featured_image'    => 'Use as featured image',
+			'insert_into_item'      => 'Insert into ' . $singular,
+			'uploaded_to_this_item' => 'Uploaded to this ' . $singular,
+			'items_list'            => $plural . ' list',
+			'items_list_navigation' => $plural . ' list navigation',
+			'filter_items_list'     => 'Filter ' . $plural . ' list',
+		);
+	}
+
+	/**
+	 * Get post capabilities.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 * @return array Capabilities.
+	 */
+	private function get_post_capabilities( C2P_Post_Mapper $mapper ) {
+		$reference = array(
 			'edit_post'          => '',
 			'edit_posts'         => '',
 			'edit_others_posts'  => '',
@@ -450,81 +578,99 @@ class CF72Post_Mapping_Factory {
 			'read_private_posts' => '',
 			'delete_post'        => '',
 		);
-		$capabilities = array_filter( apply_filters( 'cf7_2_post_capabilities_' . $mapper->post_properties['type'], $reference ) );
-		$diff         = array_diff_key( $reference, $capabilities );
-		if ( empty( $diff ) ) {
-			$args['capabilities'] = $capabilities;
-			$args['map_meta_cap'] = true;
-		} else { // some keys are not set, so capabilities will not work.
-			// set to defaul post capabilities.
-			$args['capability_type'] = 'post';
-		}
 
-		// allow additional settings.
-		$args = apply_filters( 'cf7_2_post_register_post_' . $mapper->post_properties['type'], $args );
-		register_post_type( $mapper->post_properties['type'], $args );
-		// link the taxonomy and the post.
+		$capabilities = array_filter(
+			apply_filters( 'cf7_2_post_capabilities_' . $mapper->post_properties['type'], $reference )
+		);
+
+		$diff = array_diff_key( $reference, $capabilities );
+		return empty( $diff ) ? $capabilities : array();
+	}
+
+	/**
+	 * Link taxonomies to post type.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 */
+	private function link_taxonomies_to_post( C2P_Post_Mapper $mapper ) {
 		foreach ( $mapper->post_properties['taxonomy'] as $taxonomy_slug ) {
 			register_taxonomy_for_object_type( $taxonomy_slug, $mapper->post_properties['type'] );
 		}
 	}
+
 	/**
-	 * Return the post_types to which forms are mapped
+	 * Get mapped post types.
 	 *
 	 * @since 3.4.0
-	 * @return array $cf7_post_id=>array($psot_type=>[factory|system|filter]) key value pairs
+	 * @return array $cf7_post_id => array($post_type => [factory|system|filter]).
 	 */
 	public static function get_mapped_post_types() {
 		if ( isset( self::$mapped_post_types ) ) {
 			return self::$mapped_post_types;
 		}
+
 		global $wpdb;
-		$cf7_posts               = $wpdb->get_results(
-			"SELECT pm.post_id AS ID, pm.meta_value AS origin, pt.meta_value as type FROM $wpdb->postmeta pm
-        INNER JOIN $wpdb->postmeta pt ON pt.post_id = pm.post_id INNER JOIN $wpdb->posts p ON p.ID=pm.post_id
-        WHERE pm.meta_key='_cf7_2_post-type_source'
-        AND pt.meta_key='_cf7_2_post-type'
-        AND p.post_status like 'publish'"
+		
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT pm.post_id AS ID, pm.meta_value AS origin, pt.meta_value as type 
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->postmeta} pt ON pt.post_id = pm.post_id 
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				WHERE pm.meta_key = %s
+				AND pt.meta_key = %s
+				AND p.post_status = %s",
+				'_cf7_2_post-type_source',
+				'_cf7_2_post-type',
+				'publish'
+			)
 		);
-		self::$mapped_post_types = array(); // cache the post types for subsequent calls.
-		foreach ( $cf7_posts as $post ) {
+
+		self::$mapped_post_types = array();
+		foreach ( $results as $post ) {
 			if ( 'filter' === $post->origin ) {
-				continue; // skip as not mapped by plugin.
+				continue;
 			}
 			self::$mapped_post_types[ $post->ID ] = array( $post->type => $post->origin );
 		}
+
 		return self::$mapped_post_types;
 	}
+
 	/**
-	 * Function to check post types to which forms have been mapped.
+	 * Check if a post type is mapped.
 	 *
 	 * @since 3.4.0
-	 * @param string $post_type post type to check.
-	 * @param string $source origin of post, default is 'factory', ie the origin is this class.
-	 * @return mixed form post_ID or false is not mapped.
+	 * @param string $post_type Post type to check.
+	 * @param string $source    Optional source filter.
+	 * @return int|bool Form post ID or false.
 	 */
 	public function is_mapped_post_types( $post_type, $source = null ) {
-		$is_mapped = false;
-		if ( isset( self::$mapped_post_types ) ) {
-			foreach ( self::$mapped_post_types as $post_id => $type ) {
-				$ptype = key( $type );
-				if ( $post_type === $ptype ) {
-					if ( empty( $source ) ) {
-						$is_mapped = $post_id;
-					} elseif ( $source === $type[ $ptype ] ) {
-						$is_mapped = $post_id;
-					}
-				}
+		if ( ! isset( self::$mapped_post_types ) ) {
+			self::get_mapped_post_types();
+		}
+
+		foreach ( self::$mapped_post_types as $post_id => $type_data ) {
+			$ptype = key( $type_data );
+			if ( $post_type !== $ptype ) {
+				continue;
+			}
+
+			if ( empty( $source ) || $source === $type_data[ $ptype ] ) {
+				return $post_id;
 			}
 		}
-		return $is_mapped;
+
+		return false;
 	}
+
 	/**
-	 * Update the mapped post types when their status change.
+	 * Update mapped post types when status changes.
 	 *
-	 * @since 3.4.0.
-	 * @param string $cf7_post_id form post id.
-	 * @param string $status mapping status, publish|draft|delete, defaults to delete.
+	 * @since 3.4.0
+	 * @param int    $cf7_post_id Form post ID.
+	 * @param string $status      Mapping status.
 	 */
 	public static function update_mapped_post_types( $cf7_post_id, $status = 'delete' ) {
 		switch ( $status ) {
@@ -533,8 +679,8 @@ class CF72Post_Mapping_Factory {
 				break;
 			case 'publish':
 				update_post_meta( $cf7_post_id, '_cf7_2_post-map', $status );
-				$type                                    = get_post_meta( $cf7_post_id, '_cf7_2_post-type', true );
-				$source                                  = get_post_meta( $cf7_post_id, '_cf7_2_post-type_source', true );
+				$type   = get_post_meta( $cf7_post_id, '_cf7_2_post-type', true );
+				$source = get_post_meta( $cf7_post_id, '_cf7_2_post-type_source', true );
 				self::$mapped_post_types[ $cf7_post_id ] = array( $type, $source );
 				break;
 			case 'draft':
@@ -543,8 +689,9 @@ class CF72Post_Mapping_Factory {
 				break;
 		}
 	}
+
 	/**
-	 * Dynamically registers new custom post.
+	 * Dynamically register custom posts.
 	 * Hooks 'init' action.
 	 *
 	 * @since 1.0.0
@@ -552,138 +699,201 @@ class CF72Post_Mapping_Factory {
 	public function register_cf7_post_maps() {
 		$cf7_post_ids = self::get_mapped_post_types();
 		$unique_posts = array();
+
 		foreach ( $cf7_post_ids as $pid => $type ) {
-			$system                     = true;
-			$post_type                  = key( $type );
-			$mapper                     = $this->get_post_mapper( $pid );
-			switch ( $type[ $post_type ] ) {
-				case 'factory':
-					$this->create_cf7_post_type( $mapper );
-					/**
-					* Flush the permalink rules to ensure the public posts are visible on the front-end.
-				 *
-					* @since 3.8.2.
-					*/
-					if ( $mapper->flush_permalink_rules ) {
-						flush_rewrite_rules();
-						update_post_meta( $pid, '_cf7_2_post_flush_rewrite_rules', false );
-						$mapper->flush_permalink_rules = false;
-					}
-					$system = false;
-					break;
-				case 'system': /** NB @since 3.3.1 link system taxonomy*/
-					// link the taxonomy and the post.
-					$taxonomies = get_post_meta( $pid, '_cf7_2_post-taxonomy', true );
-					foreach ( $taxonomies as $taxonomy_slug ) {
-						register_taxonomy_for_object_type( $taxonomy_slug, $post_type );
-					}
-					break;
+			$post_type = key( $type );
+			$mapper    = $this->get_post_mapper( $pid );
+
+			$is_system = $this->register_mapped_post( $mapper, $post_type, $type );
+			
+			// Notify other plugins.
+			do_action(
+				'cf72post_register_mapped_post',
+				$post_type,
+				$is_system,
+				$mapper->cf7_key,
+				$pid,
+				isset( $unique_posts[ $post_type ] )
+			);
+
+			// Add save filter for new post types.
+			if ( ! isset( $unique_posts[ $post_type ] ) ) {
+				$this->add_save_post_filter( $post_type );
 			}
-			/**
-			* Action to notify other plugins for mapped post creation
-			*
-			* @since 2.0.4
-			* @param string $post_type   the post type being mapped to.
-			* @param boolean $system   true if form is mapped to an existing post, false if it is being registered by this plugin.
-			* @param string $cf7_key   the form key value which is being mapped to the post type.
-			* @param string $pid   the form post ID value which is being mapped to the post type.
-			* @param boolean $is_duplicate true if this post type was previously regsitered.
-			*/
-			do_action( 'cf72post_register_mapped_post', $post_type, $system, $mapper->cf7_key, $pid, isset( $unique_posts[ $post_type ] ) );
-			// add a filter for newly saved posts of this type.
-			if ( false === isset( $unique_posts[ $post_type ] ) ) {
-				add_action(
-					'save_post_' . $post_type,
-					function( $post_id, $post, $update ) {
-						if ( $update ) {
-							return $post_id;
-						}
-						$cf7_flag = get_post_meta( $post_id, '_cf7_2_post_form_submitted', true );
-						if ( empty( $cf7_flag ) ) { /** NB @since 4.1.9 default to yes */
-							update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' );
-						}
-						return $post_id;
-					},
-					10,
-					3
-				);
-			}
-			$unique_posts[ $post_type ] = 1; // track posts types already registered.
+
+			$unique_posts[ $post_type ] = 1;
 		}
 	}
 
 	/**
-	 * Checks if a form mapping is published
+	 * Register a mapped post type.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper    Mapper object.
+	 * @param string          $post_type Post type.
+	 * @param array           $type_data Type data.
+	 * @return bool True if system post.
+	 */
+	private function register_mapped_post( C2P_Post_Mapper $mapper, $post_type, $type_data ) {
+		$is_system = true;
+
+		switch ( $type_data[ $post_type ] ) {
+			case 'factory':
+				$this->create_cf7_post_type( $mapper );
+				
+				// Flush permalink rules if needed.
+				if ( $mapper->flush_permalink_rules ) {
+					flush_rewrite_rules();
+					update_post_meta( $mapper->form_id(), '_cf7_2_post_flush_rewrite_rules', false );
+					$mapper->flush_permalink_rules = false;
+				}
+				$is_system = false;
+				break;
+
+			case 'system':
+				// Link system taxonomy.
+				$taxonomies = get_post_meta( $mapper->form_id(), '_cf7_2_post-taxonomy', true );
+				if ( ! empty( $taxonomies ) && is_array( $taxonomies ) ) {
+					foreach ( $taxonomies as $taxonomy_slug ) {
+						register_taxonomy_for_object_type( $taxonomy_slug, $post_type );
+					}
+				}
+				break;
+		}
+
+		return $is_system;
+	}
+
+	/**
+	 * Add save post filter for new post types.
+	 *
+	 * @since 5.3.0
+	 * @param string $post_type Post type.
+	 */
+	private function add_save_post_filter( $post_type ) {
+		add_action(
+			'save_post_' . $post_type,
+			function( $post_id, $post, $update ) {
+				if ( $update ) {
+					return $post_id;
+				}
+				$cf7_flag = get_post_meta( $post_id, '_cf7_2_post_form_submitted', true );
+				if ( empty( $cf7_flag ) ) {
+					update_post_meta( $post_id, '_cf7_2_post_form_submitted', 'yes' );
+				}
+				return $post_id;
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Check if a form mapping is published.
 	 *
 	 * @since 2.0.0
-	 * @param string $cf7_post_id post id.
+	 * @param int $cf7_post_id Form post ID.
+	 * @return bool True if mapped.
 	 */
 	public function is_mapped( $cf7_post_id ) {
 		$map = get_post_meta( $cf7_post_id, '_cf7_2_post-map', true );
-		switch ( $map ) {
-			case 'draft':
-			case 'publish':
-				return true;
-			default:
-				return false;
-		}
+		return in_array( $map, array( 'draft', 'publish' ), true );
 	}
+
 	/**
-	 * Checks if a form mapping is published
+	 * Check if a form mapping is live.
 	 *
 	 * @since 2.0.0
-	 * @param int $cf7_post_id form ID.
-	 * @return boolean true if mapping is live and accpeting submissions.
+	 * @param int $cf7_post_id Form ID.
+	 * @return bool True if mapping is live and accepting submissions.
 	 */
 	public function is_live( $cf7_post_id ) {
 		$map = get_post_meta( $cf7_post_id, '_cf7_2_post-map', true );
-		switch ( $map ) {
-			case 'publish':
-				return true;
-			default:
-				$cf7_key = c2p_get_form_key( $cf7_post_id );
-				/** NB: @since 4. */
-				return apply_filters( 'cf7_2_post_save_draft_mapping', false, $cf7_key );
+		
+		if ( 'publish' === $map ) {
+			return true;
 		}
+
+		$cf7_key = cf7sg_get_form_key( $cf7_post_id );
+		return apply_filters( 'cf7_2_post_save_draft_mapping', false, $cf7_key );
 	}
+
 	/**
-	 * Backward compatibility for filtered mappings.
+	 * Check if mapping uses a filter.
 	 *
 	 * @since 5.4.3
-	 * @param int $cf7_post_id form ID.
-	 * @return boolean true if mapped using a filter.
+	 * @param int $cf7_post_id Form ID.
+	 * @return bool True if mapped using a filter.
 	 */
 	public function is_filter( $cf7_post_id ) {
 		return 'filter' === get_post_meta( $cf7_post_id, '_cf7_2_post-type_source', true );
 	}
+
 	/**
-	 * Builds a set of field=>value pairs to pre-populate a mapped form
-	 * Called by Cf7_2_Post_Public::load_cf7_script()
+	 * Get form values for pre-filling.
 	 *
 	 * @since 1.3.0
-	 * @param   int $form_id  form id.
-	 * @param   int $cf7_2_post_id   a specific post to which this form submission is mapped/saved.
-	 * @return    Array  cf7 form field=>value pairs.
+	 * @param int    $form_id        Form ID.
+	 * @param int    $cf7_2_post_id  Specific post ID.
+	 * @return array Form field => value pairs.
 	 */
 	public function get_form_values( $form_id, $cf7_2_post_id = '' ) {
-		// is user logged in?
-		$load_saved_values = false;
-		$post              = null;
-		$mapper            = $this->get_post_mapper( $form_id );
-		$field_and_values  = array();
-		$unmapped_fields   = array();
-		$mapper->load_form_fields(); // this loads the cf7 form fields and their type.
+		$mapper = $this->get_post_mapper( $form_id );
+		$mapper->load_form_fields();
 
-		// find out if this user has a post already created/saved.
+		$post = $this->get_user_post( $mapper, $cf7_2_post_id );
+		$load_saved_values = ! empty( $post );
+
+		$field_and_values = $this->load_post_field_values( $mapper, $post, $load_saved_values );
+		$field_and_values = $this->load_meta_field_values( $mapper, $post, $load_saved_values, $field_and_values );
+		$field_and_values = $this->load_taxonomy_values( $mapper, $post, $load_saved_values, $field_and_values );
+		$field_and_values = $this->load_unmapped_field_values( $mapper, $field_and_values );
+
+		/**
+		 * Filter form values.
+		 *
+		 * @since 1.3.0
+		 * @param array  $field_and_values Field values.
+		 * @param int    $cf7_post_id      Form ID.
+		 * @param string $post_type        Post type.
+		 * @param string $cf7_key          Form key.
+		 * @param object $post             Post object.
+		 * @param array  $cf7_form_fields  Form fields.
+		 * @return array Filtered field values.
+		 */
+		$field_and_values = apply_filters(
+			'cf7_2_post_form_values',
+			$field_and_values,
+			$mapper->cf7_post_id,
+			$mapper->post_properties['type'],
+			$mapper->cf7_key,
+			$post,
+			$mapper->get_cf7_form_fields()
+		);
+
+		return $field_and_values;
+	}
+
+	/**
+	 * Get user post for form pre-filling.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper         Mapper object.
+	 * @param int             $cf7_2_post_id  Specific post ID.
+	 * @return object|null Post object.
+	 */
+	private function get_user_post( $mapper, $cf7_2_post_id ) {
 		$args = array(
 			'posts_per_page' => 1,
 			'post_type'      => $mapper->post_properties['type'],
 			'post_status'    => 'any',
 		);
-		if ( ! empty( $cf7_2_post_id ) ) { // search for the sepcific mapped/saved post.
+
+		if ( ! empty( $cf7_2_post_id ) ) {
 			$args['post__in'] = array( $cf7_2_post_id );
 		}
-		// filter by submission value for newer version so as not to break older version.
+
+		// Filter by submission value for newer versions.
 		if ( version_compare( CF7_2_POST_VERSION, $mapper->post_properties['version'], '>=' ) ) {
 			$args['meta_query'] = array(
 				array(
@@ -693,283 +903,502 @@ class CF72Post_Mapping_Factory {
 				),
 			);
 		}
-		if ( is_user_logged_in() ) { // let's see if this form is already mapped for this user.
-			$user           = wp_get_current_user();
+
+		if ( is_user_logged_in() ) {
+			$user = wp_get_current_user();
 			$args['author'] = $user->ID;
 		} else {
 			$args = array();
 		}
 
-		$args = apply_filters( 'cf7_2_post_filter_user_draft_form_query', $args, $mapper->post_properties['type'], $mapper->cf7_key );
+		$args = apply_filters(
+			'cf7_2_post_filter_user_draft_form_query',
+			$args,
+			$mapper->post_properties['type'],
+			$mapper->cf7_key
+		);
 
-		if ( ! empty( $args ) ) {
-			$posts_array = get_posts( $args );
-			if ( ! empty( $posts_array ) ) {
-				$post                            = $posts_array[0];
-				$load_saved_values               = true;
-				$field_and_values['map_post_id'] = $post->ID;
-				wp_reset_postdata();
-			}
+		if ( empty( $args ) ) {
+			return null;
 		}
 
-		// we now need to load the save meta field values.
+		$posts = get_posts( $args );
+		return ! empty( $posts ) ? $posts[0] : null;
+	}
+
+	/**
+	 * Load post field values.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper            Mapper object.
+	 * @param object|null     $post              Post object.
+	 * @param bool            $load_saved_values Whether to load saved values.
+	 * @return array Field values.
+	 */
+	private function load_post_field_values( $mapper, $post, $load_saved_values ) {
+		$field_and_values = array();
+
+		if ( $load_saved_values && $post ) {
+			/** @since  */
+			$transient = wp_hash('cf7_2_post_' . $post->ID, 'nonce'); // setup a unique key as a transient.
+			set_transient( $transient, $post->ID, DAY_IN_SECONDS ); // store the post ID for 24 hours.
+			$field_and_values['map_post_id'] = $transient; //pass the transient key to the form.
+			wp_reset_postdata();
+		}
+
+		$field_map = array(
+			'title'   => 'post_title',
+			'author'  => 'post_author',
+			'excerpt' => 'post_excerpt',
+			'editor'  => 'post_content',
+			'slug'    => 'post_name',
+		);
+
 		foreach ( $mapper->get_post_map_fields() as $form_field => $post_field ) {
-			$post_key   = '';
-			$post_value = '';
-			$skip_loop  = false;
-			// if the value was filtered, let's skip it.
-			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
+			if ( $this->is_filtered_field( $form_field ) ) {
 				continue;
 			}
 
-			switch ( $post_field ) {
-				case 'title':
-				case 'author':
-				case 'excerpt':
-					$post_key = 'post_' . $post_field;
-					break;
-				case 'editor':
-					$post_key = 'post_content';
-					break;
-				case 'slug':
-					$post_key = 'post_name';
-					break;
-				case 'thumbnail':
-					break;
-			}
-			if ( $load_saved_values && ! empty( $post_key ) ) {
+			$post_value = '';
+			$post_key   = isset( $field_map[ $post_field ] ) ? $field_map[ $post_field ] : '';
+
+			if ( $load_saved_values && ! empty( $post_key ) && $post ) {
 				$post_value = $post->{$post_key};
 			} else {
-				$post_value = apply_filters( 'cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_id, $form_field, $mapper->cf7_key, $mapper->form_terms );
+				$post_value = apply_filters(
+					'cf7_2_post_filter_cf7_field_value',
+					$post_value,
+					$mapper->cf7_post_id,
+					$form_field,
+					$mapper->cf7_key,
+					$mapper->form_terms
+				);
 			}
 
 			if ( ! empty( $post_value ) ) {
 				$field_and_values[ $form_field ] = $post_value;
 			}
 		}
-		// ----------- meta fields.
-		$cf7_form_fields = $mapper->get_cf7_form_fields();
+
+		return $field_and_values;
+	}
+
+	/**
+	 * Load meta field values.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper            Mapper object.
+	 * @param object|null     $post              Post object.
+	 * @param bool            $load_saved_values Whether to load saved values.
+	 * @param array           $field_and_values  Existing field values.
+	 * @return array Updated field values.
+	 */
+	private function load_meta_field_values( $mapper, $post, $load_saved_values, $field_and_values ) {
 		foreach ( $mapper->get_post_map_meta_fields() as $form_field => $post_field ) {
-			$post_value = '';
-			// if the value was filtered, let's skip it.
-			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
+			if ( $this->is_filtered_field( $form_field ) ) {
 				continue;
 			}
-			// get the meta value.
-			if ( $load_saved_values ) {
+
+			$post_value = '';
+
+			if ( $load_saved_values && $post ) {
 				$post_value = get_post_meta( $post->ID, $post_field, true );
 			} else {
-				$post_value = apply_filters( 'cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_id, $form_field, $mapper->cf7_key, $mapper->form_terms );
+				$post_value = apply_filters(
+					'cf7_2_post_filter_cf7_field_value',
+					$post_value,
+					$mapper->cf7_post_id,
+					$form_field,
+					$mapper->cf7_key,
+					$mapper->form_terms
+				);
 			}
+
 			if ( ! empty( $post_value ) ) {
 				$field_and_values[ $form_field ] = $post_value;
 			}
 		}
-		// Finally let's also allow a user to load values for unammaped fields.
 
-		$unmapped_fields = array_diff_key( $cf7_form_fields, $mapper->get_post_map_meta_fields(), $mapper->get_post_map_fields(), $mapper->get_post_map_taxonomy() );
+		return $field_and_values;
+	}
+
+	/**
+	 * Load unmapped field values.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper           Mapper object.
+	 * @param array           $field_and_values Existing field values.
+	 * @return array Updated field values.
+	 */
+	private function load_unmapped_field_values( $mapper, $field_and_values ) {
+		$cf7_form_fields = $mapper->get_cf7_form_fields();
+		
+		$unmapped_fields = array_diff_key(
+			$cf7_form_fields,
+			$mapper->get_post_map_meta_fields(),
+			$mapper->get_post_map_fields(),
+			$mapper->get_post_map_taxonomy()
+		);
+
 		foreach ( $unmapped_fields as $form_field => $type ) {
 			if ( 'submit' === $type ) {
 				continue;
 			}
-			$post_value = '';
-			$post_value = apply_filters( 'cf7_2_post_filter_cf7_field_value', $post_value, $mapper->cf7_post_id, $form_field, $mapper->cf7_key, $mapper->form_terms );
+
+			$post_value = apply_filters(
+				'cf7_2_post_filter_cf7_field_value',
+				'',
+				$mapper->cf7_post_id,
+				$form_field,
+				$mapper->cf7_key,
+				$mapper->form_terms
+			);
+
 			if ( ! empty( $post_value ) ) {
 				$field_and_values[ $form_field ] = $post_value;
 			}
 		}
-		// ------------ taxonomy fields.
-		$load_chosen_script = false;
+
+		return $field_and_values;
+	}
+
+	/**
+	 * Load taxonomy values.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper            Mapper object.
+	 * @param object|null     $post              Post object.
+	 * @param bool            $load_saved_values Whether to load saved values.
+	 * @param array           $field_and_values  Existing field values.
+	 * @return array Updated field values.
+	 */
+	private function load_taxonomy_values( $mapper, $post, $load_saved_values, $field_and_values ) {
+		$cf7_form_fields = $mapper->get_cf7_form_fields();
+
 		foreach ( $mapper->get_post_map_taxonomy() as $form_field => $taxonomy ) {
-			// if the value was filtered, let's skip it.
-			if ( 0 === strpos( $form_field, 'cf7_2_post_filter-' ) ) {
+			if ( $this->is_filtered_field( $form_field ) ) {
 				continue;
 			}
+
 			$terms_id = array();
-			if ( $load_saved_values ) {
+
+			if ( $load_saved_values && $post ) {
 				$terms = get_the_terms( $post, $taxonomy );
-				if ( empty( $terms ) ) {
-					$terms = array();
-				}
-				$terms_id = wp_list_pluck( $terms, 'term_id' );
+				$terms_id = ! empty( $terms ) ? wp_list_pluck( $terms, 'term_id' ) : array();
 			} else {
-				$terms_id = apply_filters( 'cf7_2_post_filter_cf7_taxonomy_terms', $terms_id, $mapper->cf7_post_id, $form_field, $mapper->cf7_key );
+				$terms_id = apply_filters(
+					'cf7_2_post_filter_cf7_taxonomy_terms',
+					$terms_id,
+					$mapper->cf7_post_id,
+					$form_field,
+					$mapper->cf7_key
+				);
 				if ( is_string( $terms_id ) ) {
 					$terms_id = array( $terms_id );
 				}
 			}
-			// load the list of terms.
-			$field_type = $cf7_form_fields[ $form_field ];
-			/** NB @since 5.0 allow hybrid dropdown fields */
-			$is_hybrid = $mapper->field_has_class( $form_field, 'hybrid-select' );
-			if ( $is_hybrid ) {
-				wp_enqueue_script( 'hybriddd-js' ); // previously registered.
-				wp_enqueue_style( 'hybriddd-style' );
-			}
-			/** NB @since 5.1.1 track branch for taxonomy filter */
-			$branch = 0;
-			if ( is_taxonomy_hierarchical( $taxonomy ) ) {
-				$branch = array( 0 );
-			}
 
-			if ( $is_hybrid && 'select' !== $field_type ) {
-				$limit = ( 'checkbox' === $field_type ) ? -1 : 1;
-				$hdd   = array(
-					'limitSelection' => $limit,
-					'fieldName'      => $form_field,
-					'selectedValues' => $terms_id,
-					'dataSet'        => array( '' => __( 'Select an item', 'post-my-contact-form-7' ) ),
-				);
-				$hdd   = (array) apply_filters( 'cf72post_filter_hybriddd_options', $hdd, $form_field, $mapper->cf7_key );
-
-				$hdd['dataSet'] = $hdd['dataSet'] + $this->build_hybrid_dropdown( $taxonomy, $branch, '', $form_field, $mapper );
-				$options        = $hdd;
-			} else {
-				$options = $this->get_taxonomy_terms( $taxonomy, $branch, $terms_id, $form_field, $field_type, 0, $mapper );
-				$options = wp_json_encode( $options );
-				switch ( $field_type ) {
-					case 'checkbox':
-					case 'radio':
-						wp_enqueue_style( 'c2p-css', plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/cf7-2-post-styling.css', array(), CF7_2_POST_VERSION );
-						break;
-					case 'select':
-				}
-				// for legacy purpose.
-				$apply_jquery_select = apply_filters( 'cf7_2_post_filter_cf7_taxonomy_chosen_select', true, $mapper->cf7_post_id, $form_field, $mapper->cf7_key ) && apply_filters( 'cf7_2_post_filter_cf7_taxonomy_select2', true, $mapper->cf7_post_id, $form_field, $mapper->cf7_key );
-				if ( $apply_jquery_select ) {
-					wp_enqueue_script( 'jquery-select2', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/js/select2.min.js', array( 'jquery' ), CF7_2_POST_VERSION, true );
-					wp_enqueue_style( 'jquery-select2', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/select2/css/select2.min.css', array(), CF7_2_POST_VERSION );
-				}
-			}
-			$field_and_values[ $form_field ] = $options;
+			$field_and_values[ $form_field ] = $this->get_taxonomy_options(
+				$mapper,
+				$form_field,
+				$taxonomy,
+				$terms_id,
+				$cf7_form_fields
+			);
 		}
-		// filter the values.
-		/**
-		 * This filter is specifically for plugin authors who want to extend this plugin to map/prefill their custom cf7 fields.
-		 *
-		 * @since
-		 * @var Array $field_and_values an array of field-names => values that are being prefilled.
-		 * @var String $cf7_post_ID the post ID to which the submission is mapped
-		 * @var String $cf7_post_type the post type to which the submission is mapped
-		 * @var String $cf7_key the current form's unique key
-		 * @var WP_Post $cf7_post the post object to which the submission is mapped
-		 * @var Array $cf7_form_fields an array of form field-names => field-types
-		 * @return Array of field-names => values to prefill, ideally with the custom fields removed to be handled by another plugin.
-		 */
-		$field_and_values = apply_filters( 'cf7_2_post_form_values', $field_and_values, $mapper->cf7_post_id, $mapper->post_properties['type'], $mapper->cf7_key, $post, $cf7_form_fields );
-		// make sure the field names are with underscores.
+
+		return $field_and_values;
+	}
+
+	/**
+	 * Get taxonomy options for form field.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper         Mapper object.
+	 * @param string          $form_field     Form field name.
+	 * @param string          $taxonomy       Taxonomy slug.
+	 * @param array           $terms_id       Selected term IDs.
+	 * @param array           $cf7_form_fields All form fields.
+	 * @return array|string Taxonomy options.
+	 */
+	private function get_taxonomy_options( $mapper, $form_field, $taxonomy, $terms_id, $cf7_form_fields ) {
+		$field_type = $cf7_form_fields[ $form_field ];
+		$is_hybrid  = $mapper->field_has_class( $form_field, 'hybrid-select' );
+
+		if ( $is_hybrid ) {
+			wp_enqueue_script( 'hybriddd-js' );
+			wp_enqueue_style( 'hybriddd-style' );
+		}
+
+		$branch = 0;
+		if ( is_taxonomy_hierarchical( $taxonomy ) ) {
+			$branch = array( 0 );
+		}
+
+		if ( $is_hybrid && 'select' !== $field_type ) {
+			return $this->get_hybrid_dropdown_options( $mapper, $taxonomy, $branch, $form_field, $terms_id );
+		}
+
+		return $this->get_standard_taxonomy_options( $mapper, $taxonomy, $branch, $terms_id, $form_field, $field_type );
+	}
+
+	/**
+	 * Get hybrid dropdown options.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper     Mapper object.
+	 * @param string          $taxonomy   Taxonomy slug.
+	 * @param array|int       $branch     Branch data.
+	 * @param string          $form_field Form field name.
+	 * @param array           $terms_id   Selected term IDs.
+	 * @return array Hybrid dropdown options.
+	 */
+	private function get_hybrid_dropdown_options( $mapper, $taxonomy, $branch, $form_field, $terms_id ) {
+		$limit = ( 'checkbox' === $mapper->get_cf7_form_fields()[ $form_field ] ) ? -1 : 1;
+		
+		$hdd = array(
+			'limitSelection' => $limit,
+			'fieldName'      => $form_field,
+			'selectedValues' => $terms_id,
+			'dataSet'        => array( '' => __( 'Select an item', 'post-my-contact-form-7' ) ),
+		);
+
+		$hdd = (array) apply_filters(
+			'cf72post_filter_hybriddd_options',
+			$hdd,
+			$form_field,
+			$mapper->cf7_key
+		);
+
+		$hdd['dataSet'] = $hdd['dataSet'] + $this->build_hybrid_dropdown(
+			$taxonomy,
+			$branch,
+			'',
+			$form_field,
+			$mapper
+		);
+
+		return $hdd;
+	}
+
+	/**
+	 * Get standard taxonomy options.
+	 *
+	 * @since 5.3.0
+	 * @param C2P_Post_Mapper $mapper     Mapper object.
+	 * @param string          $taxonomy   Taxonomy slug.
+	 * @param array|int       $branch     Branch data.
+	 * @param array           $terms_id   Selected term IDs.
+	 * @param string          $form_field Form field name.
+	 * @param string          $field_type Field type.
+	 * @return string Taxonomy options HTML.
+	 */
+	private function get_standard_taxonomy_options( $mapper, $taxonomy, $branch, $terms_id, $form_field, $field_type ) {
+		$options = $this->get_taxonomy_terms(
+			$taxonomy,
+			$branch,
+			$terms_id,
+			$form_field,
+			$field_type,
+			0,
+			$mapper
+		);
+
+		// Enqueue select2 if applicable.
+		if ( 'select' === $field_type ) {
+			$apply_select = apply_filters(
+				'cf7_2_post_filter_cf7_taxonomy_chosen_select',
+				true,
+				$mapper->cf7_post_id,
+				$form_field,
+				$mapper->cf7_key
+			) && apply_filters(
+				'cf7_2_post_filter_cf7_taxonomy_select2',
+				true,
+				$mapper->cf7_post_id,
+				$form_field,
+				$mapper->cf7_key
+			);
+
+			if ( $apply_select ) {
+				$plugin_url = plugin_dir_url( dirname( __FILE__ ) );
+				wp_enqueue_script(
+					'jquery-select2',
+					$plugin_url . 'assets/select2/js/select2.min.js',
+					array( 'jquery' ),
+					CF7_2_POST_VERSION,
+					true
+				);
+				wp_enqueue_style(
+					'jquery-select2',
+					$plugin_url . 'assets/select2/css/select2.min.css',
+					array(),
+					CF7_2_POST_VERSION
+				);
+			}
+		}
+
+		return wp_json_encode( $options );
+	}
+
+	/**
+	 * Check if a field is filtered.
+	 *
+	 * @since 5.3.0
+	 * @param string $form_field Form field name.
+	 * @return bool True if filtered.
+	 */
+	private function is_filtered_field( $form_field ) {
+		return 0 === strpos( $form_field, 'cf7_2_post_filter-' );
+	}
+
+	/**
+	 * Normalize field names.
+	 *
+	 * @since 5.3.0
+	 * @param array $field_and_values Field values.
+	 * @return array Normalized field values.
+	 */
+	public function encode_field_names( $field_and_values ) {
 		$return_values = array();
 		foreach ( $field_and_values as $field => $value ) {
-			$f                   = str_replace( '-', '_', $field );
-			$return_values[ $f ] = $value;
+			$normalized = str_replace( '-', '_', $field );
+			$return_values[ $normalized ] = $value;
 		}
 		return $return_values;
 	}
 
 	/**
-	 * Function to print jquery script for form field initialisation
+	 * Get form field script.
 	 *
 	 * @since 1.3.0
-	 * @param string          $nonce nonce.
-	 * @param C2P_Post_Mapper $mapper mapping object.
+	 * @param string          $nonce  Nonce string.
+	 * @param C2P_Post_Mapper $mapper Mapper object.
+	 * @return string Script content.
 	 */
 	public function get_form_field_script( $nonce, $mapper ) {
 		ob_start();
-		$factory = $this;
 		include plugin_dir_path( __FILE__ ) . '/partials/cf7-2-post-script.php';
 		$script = ob_get_contents();
 		ob_end_clean();
 		return $script;
 	}
+
 	/**
-	 * Method to return an array of value=>labels for constructing a hybrid dropdown.
-	 * (https://aurovrata.github.io/hybrid-html-dropdown/)
+	 * Build hybrid dropdown options.
 	 *
 	 * @since 5.0.0
-	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed           $branch  array of parent IDs for hierarchical taxonomies, else 0.
-	 * @param   String          $pslug parent slug.
-	 * @param   String          $field form field name for which this taxonomy is mapped to.
-	 * @param   C2P_Post_Mapper $mapper post mapping object.
-	 * @return  Array value->label pairs for hybrid dropdown..
+	 * @param string          $taxonomy Taxonomy slug.
+	 * @param mixed           $branch   Parent IDs for hierarchical taxonomies.
+	 * @param string          $pslug    Parent slug.
+	 * @param string          $field    Form field name.
+	 * @param C2P_Post_Mapper $mapper   Mapper object.
+	 * @return array Value->label pairs for hybrid dropdown.
 	 */
 	protected function build_hybrid_dropdown( $taxonomy, $branch, $pslug, $field, $mapper ) {
 		$terms = $this->filter_taxonomy_query( $taxonomy, $branch, $field, $mapper );
 
-		$options = array();
-		if ( is_wp_error( $terms ) ) {
-			wpg_debug( 'Taxonomy ' . $taxonomy . ' does not exist' );
-			return $options;
-		} elseif ( empty( $terms ) ) {
-			return $options;
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return array();
 		}
-		foreach ( $terms as $t ) {
-			$id    = $t->term_id;
-			$label = apply_filters( 'cf72post_filter_hybriddd_term_attributes', array(), $t, $field, $mapper->cf7_key );
-			if ( ! is_array( $label ) ) {
-				$label = array();
-			}
-			$classes = 'term-' . $id . ' slug-' . $t->slug;
+
+		$options = array();
+		foreach ( $terms as $term ) {
+			$id    = $term->term_id;
+			$label = apply_filters(
+				'cf72post_filter_hybriddd_term_attributes',
+				array(),
+				$term,
+				$field,
+				$mapper->cf7_key
+			);
+
+			$classes = 'term-' . $id . ' slug-' . $term->slug;
 			$kids    = array();
+
 			if ( is_array( $branch ) ) {
 				array_pop( $branch );
-				$branch[] = $t->parent;
-				$classes .= ( $t->parent > 0 ? ' parent-slug-' . $pslug . ' parent-term-' . $t->parent : '' );
-				$kids     = $this->build_hybrid_dropdown( $taxonomy, array_merge( $branch, array( $id ) ), $t->slug, $field, $mapper );
+				$branch[] = $term->parent;
+				$classes .= ( $term->parent > 0 ? ' parent-slug-' . $pslug . ' parent-term-' . $term->parent : '' );
+				$kids = $this->build_hybrid_dropdown(
+					$taxonomy,
+					array_merge( $branch, array( $id ) ),
+					$term->slug,
+					$field,
+					$mapper
+				);
 			}
-			$options[ $id ] = array( 'label' => ( array( $t->name, $classes ) + $label ) ) + $kids;
+
+			$options[ $id ] = array_merge(
+				array( 'label' => array( $term->name, $classes ) + $label ),
+				$kids
+			);
 		}
+
 		return $options;
 	}
 
 	/**
-	 * Method to filter the taxonomy query for mapped taxonomy fields.
-	 * NB @since 6.1.0 - made public for access from public class of this plugin.
+	 * Filter taxonomy query for mapped taxonomy fields.
 	 *
 	 * @since 5.0.0
-	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Array           $branch  the parent ID of child terms to fetch.
-	 * @param   String          $field form field name for which this taxonomy is mapped to.
-	 * @param   C2P_Post_Mapper $mapper post mapping object.
-	 * @return Array|WP_Error a collectoin of WP_Term objects or an error.
+	 * @param string          $taxonomy Taxonomy slug.
+	 * @param array           $branch  Parent ID of child terms.
+	 * @param string          $field   Form field name.
+	 * @param C2P_Post_Mapper $mapper  Mapper object.
+	 * @return array|string Terms or empty string.
 	 */
 	public function filter_taxonomy_query( $taxonomy, $branch, $field, $mapper ) {
 		$args = array( 'hide_empty' => 0 );
-		// for hierarchical taxonomy...
+
 		if ( is_array( $branch ) ) {
 			$args['parent'] = end( $branch );
 		}
-		$args = apply_filters( 'cf7_2_post_filter_taxonomy_query', $args, $mapper->cf7_post_id, $taxonomy, $field, $mapper->cf7_key, $branch );
-		/** NB @since 3.5.0 allows for more felxibility in filtering taxonomy options */
+
+		$args = apply_filters(
+			'cf7_2_post_filter_taxonomy_query',
+			$args,
+			$mapper->cf7_post_id,
+			$taxonomy,
+			$field,
+			$mapper->cf7_key,
+			$branch
+		);
+
 		if ( empty( $args ) ) {
 			return '';
 		}
-		// check the WP version.
+
 		global $wp_version;
 		if ( $wp_version >= 4.5 ) {
 			$args['taxonomy'] = $taxonomy;
-			$terms            = get_terms( $args ); // WP>= 4.5 the get_terms does not take a taxonomy slug field.
+			$terms = get_terms( $args );
 		} else {
 			$terms = get_terms( $taxonomy, $args );
 		}
+
 		return $terms;
 	}
+
 	/**
-	 * Function to retrieve jquery script for form field taxonomy capture
-	 * Request: public/
+	 * Get taxonomy terms for form field.
 	 *
 	 * @since 1.2.0
-	 * @param   String          $taxonomy  the taxonomy slug for which to return the list of terms.
-	 * @param   Mixed           $branch  array of parent IDs, else 0.
-	 * @param   Array           $post_terms an array of terms which a post has been tagged with.
-	 * @param   String          $field form field name for which this taxonomy is mapped to.
-	 * @param   String          $field_type the type of field in which the tersm are going to be listed.
-	 * @param   int             $level a 0-based integer to denote the child-nesting level of the hierarchy terms being collected.
-	 * @param   C2P_Post_Mapper $mapper post mapping object.
-	 * @return  String a jquery code to be executed once the page is loaded.
+	 * @param string          $taxonomy   Taxonomy slug.
+	 * @param mixed           $branch     Parent IDs or 0.
+	 * @param array           $post_terms Terms assigned to post.
+	 * @param string          $field      Form field name.
+	 * @param string          $field_type Field type.
+	 * @param int             $level      Nesting level.
+	 * @param C2P_Post_Mapper $mapper     Mapper object.
+	 * @return string HTML for taxonomy terms.
 	 */
 	protected function get_taxonomy_terms( $taxonomy, $branch, $post_terms, $field, $field_type, $level, $mapper ) {
 		$terms = $this->filter_taxonomy_query( $taxonomy, $branch, $field, $mapper );
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return '';
+		}
 
 		if ( is_array( $branch ) ) {
 			$parent = end( $branch );
@@ -977,164 +1406,204 @@ class CF72Post_Mapping_Factory {
 			$parent = $branch;
 		}
 
-		if ( is_wp_error( $terms ) ) {
-			wpg_debug( 'Taxonomy ' . $taxonomy . ' does not exist' );
-			return '';
-		} elseif ( empty( $terms ) ) {
-			return '';
-		}
-		// build the list.
 		$script     = '';
-		$term_class = ''; // html text to insert into field.
-		// if conventional checkbox or radio field, wrap it in a fieldset.
+		$term_class = '';
+
+		// Wrap checkbox/radio fields in fieldset.
 		if ( 'select' !== $field_type ) {
 			$term_class = 'cf72post-' . $taxonomy;
-			$nl         = '';
-			$script     = '<fieldset class="c2p-top-level ' . $term_class . '">';
+			$script = '<fieldset class="c2p-top-level ' . $term_class . '">';
 			if ( $parent > 0 ) {
-				$script      = '<fieldset class="cf72post-child-terms parent-term-' . $parent . '">';
+				$script = '<fieldset class="cf72post-child-terms parent-term-' . $parent . '">';
 				$term_class .= ' cf72post-child-term';
 			}
 		}
 
-		// loop over all terms.
 		foreach ( $terms as $term ) {
-			$term_id           = $term->term_id;
-			$is_optgroup       = false;
-			$custom_classes    = array();
-			$custom_attributes = array();
-			$custom_class      = $term_class;
-			/**
-			* Filter classes for terms to allow addition of custom classes.
-			*
-			* @param Array $custom_classes an array of strings.
-			* @param WP_Term $term current term object being setup.
-			* @param int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being.
-			* @param $field string form field being mapped.
-			* @param $formKey string unique key of form being mapped.
-			* @return Array an array of strings.
-			* @since 3.8.0
-			*/
-			$custom_classes = apply_filters( 'cf72post_filter_taxonomy_term_class', $custom_classes, $term, $level, $field, $mapper->cf7_key );
-
-			if ( $custom_classes && is_array( $custom_classes ) ) {
-				$custom_class .= ' ' . implode( ' ', $custom_classes );
-			}
-			/**
-			* Filter attributes for terms <input/> or <option> elemets to allow addition of custom attributes.
-			*
-			* @param Array $custom_attributes an array of $attribute=>$value pairs.
-			* @param WP_Term $term current term object being setup.
-			* @param int $level a 0-based integer to denote the child-nesting level of the hierarchy terms being.
-			* @param $field string form field being mapped.
-			* @param $formKey string unique key of form being mapped.
-			* @return Array an array of $attribute=>$value pairs.
-			* @since 3.8.0
-			*/
-			$custom_attributes = apply_filters( 'cf72post_filter_taxonomy_term_attributes', $custom_attributes, $term, $level, $field, $mapper->cf7_key );
-			$attributes        = '';
-			if ( $custom_attributes && is_array( $custom_attributes ) ) {
-				foreach ( $custom_attributes as $attr => $value ) {
-					$attributes .= ' ' . $attr . '="' . (string) $value . '"';
-				}
-			}
-			switch ( $field_type ) {
-				case 'select':
-					// check if we group these terms.
-					if ( 0 === $parent ) {
-						// do we group top level temrs as <optgroup/> ?
-						$group_options = false;
-						$children      = get_term_children( $term_id, $taxonomy );
-						if ( $children ) {
-							$group_options = true;
-						}
-						// let's filter this choice.
-						$group_options = apply_filters( 'cf7_2_post_filter_cf7_taxonomy_select_optgroup', $group_options, $mapper->cf7_post_id, $field, $term, $mapper->cf7_key );
-
-						if ( $group_options ) {
-							$script     .= '<optgroup label="' . $term->name . '">';
-							$is_optgroup = true;
-						}
-					}
-					if ( ! $is_optgroup ) {
-						if ( in_array( $term_id, $post_terms, true ) ) {
-							$script .= '<option' . $attributes . ' class="' . $custom_class . '" value="' . $term_id . '" selected="selected">' . $term->name . '</option>';
-						} else {
-							$script .= '<option' . $attributes . ' class="' . $custom_class . '" value="' . $term_id . '" >' . $term->name . '</option>';
-						}
-					}
-					break;
-				case 'radio':
-					$check = '';
-					if ( in_array( $term_id, $post_terms, true ) ) {
-						$check = 'checked';
-					}
-					$script .= '<div id="' . $term->slug . '" class="radio-term"><label><input' . $attributes . ' type="radio" name="' . $field . '" value="' . $term_id . '" class="' . $custom_class . '" ' . $check . '/>';
-					$script .= $term->name . '</label></div>' . $nl;
-					break;
-				case 'checkbox':
-					$check = '';
-					if ( in_array( $term_id, $post_terms, true ) ) {
-						$check = 'checked';
-					}
-					$field_name = $field;
-					if ( ! $mapper->field_has_option( $field, 'exclusive' ) ) {
-						$field_name = $field . '[]';
-					}
-					$script .= '<div id="' . $term->slug . '" class="checkbox-term"><label><input' . $attributes . ' type="checkbox" name="' . $field_name . '" value="' . $term_id . '" class="' . $custom_class . '" ' . $check . '/>';
-					$script .= $term->name . '</label></div>' . $nl;
-					break;
-				default:
-					return ''; // nothing more to do here.
-			}
-			if ( is_array( $branch ) ) {
-				array_pop( $branch ); // in case it was reset in the query filter.
-				$branch[] = $term->parent;
-				// get children.
-				$parent_level = $level;
-				$script      .= $this->get_taxonomy_terms( $taxonomy, array_merge( $branch, array( $term_id ) ), $post_terms, $field, $field_type, $level + 1, $mapper );
-			}
-			if ( $is_optgroup ) {
-				$script .= '</optgroup>';
-			}
+			$script .= $this->render_term( $term, $field, $field_type, $post_terms, $term_class, $level, $mapper, $taxonomy, $branch );
 		}
+
 		if ( 'select' !== $field_type ) {
 			$script .= '</fieldset>';
 		}
 
 		return $script;
 	}
+
 	/**
-	 * Regsiter a custom taxonomy
+	 * Render a single term.
+	 *
+	 * @since 5.3.0
+	 * @param WP_Term         $term       Term object.
+	 * @param string          $field      Form field name.
+	 * @param string          $field_type Field type.
+	 * @param array           $post_terms Post terms.
+	 * @param string          $term_class Term class.
+	 * @param int             $level      Nesting level.
+	 * @param C2P_Post_Mapper $mapper     Mapper object.
+	 * @param string          $taxonomy   Taxonomy slug.
+	 * @param mixed           $branch     Branch data.
+	 * @return string Term HTML.
+	 */
+	private function render_term( $term, $field, $field_type, $post_terms, $term_class, $level, $mapper, $taxonomy, $branch ) {
+		$term_id = $term->term_id;
+		$script = '';
+
+		// Apply filters for custom classes and attributes.
+		$custom_classes = apply_filters(
+			'cf72post_filter_taxonomy_term_class',
+			array(),
+			$term,
+			$level,
+			$field,
+			$mapper->cf7_key
+		);
+
+		if ( ! empty( $custom_classes ) && is_array( $custom_classes ) ) {
+			$term_class .= ' ' . implode( ' ', $custom_classes );
+		}
+
+		$custom_attributes = apply_filters(
+			'cf72post_filter_taxonomy_term_attributes',
+			array(),
+			$term,
+			$level,
+			$field,
+			$mapper->cf7_key
+		);
+
+		$attributes = '';
+		if ( ! empty( $custom_attributes ) && is_array( $custom_attributes ) ) {
+			foreach ( $custom_attributes as $attr => $value ) {
+				$attributes .= ' ' . $attr . '="' . esc_attr( (string) $value ) . '"';
+			}
+		}
+
+		$is_selected = in_array( $term_id, $post_terms, true );
+
+		switch ( $field_type ) {
+			case 'select':
+				$script .= $this->render_select_term( $term, $term_id, $term_class, $attributes, $is_selected );
+				break;
+			case 'radio':
+				$script .= $this->render_radio_term( $term, $term_id, $field, $term_class, $attributes, $is_selected );
+				break;
+			case 'checkbox':
+				$script .= $this->render_checkbox_term( $term, $term_id, $field, $term_class, $attributes, $is_selected, $mapper );
+				break;
+			default:
+				return '';
+		}
+
+		// Render children for hierarchical taxonomies.
+		if ( is_array( $branch ) ) {
+			array_pop( $branch );
+			$branch[] = $term->parent;
+			$script .= $this->get_taxonomy_terms(
+				$taxonomy,
+				array_merge( $branch, array( $term_id ) ),
+				$post_terms,
+				$field,
+				$field_type,
+				$level + 1,
+				$mapper
+			);
+		}
+
+		return $script;
+	}
+
+	/**
+	 * Render select option term.
+	 *
+	 * @since 5.3.0
+	 * @param WP_Term $term       Term object.
+	 * @param int     $term_id    Term ID.
+	 * @param string  $term_class Term class.
+	 * @param string  $attributes Custom attributes.
+	 * @param bool    $is_selected Whether term is selected.
+	 * @return string HTML.
+	 */
+	private function render_select_term( $term, $term_id, $term_class, $attributes, $is_selected ) {
+		$selected = $is_selected ? ' selected="selected"' : '';
+		return sprintf(
+			'<option%s class="%s" value="%s"%s>%s</option>',
+			$attributes,
+			esc_attr( $term_class ),
+			esc_attr( $term_id ),
+			$selected,
+			esc_html( $term->name )
+		);
+	}
+
+	/**
+	 * Render radio term.
+	 *
+	 * @since 5.3.0
+	 * @param WP_Term $term       Term object.
+	 * @param int     $term_id    Term ID.
+	 * @param string  $field      Field name.
+	 * @param string  $term_class Term class.
+	 * @param string  $attributes Custom attributes.
+	 * @param bool    $is_selected Whether term is selected.
+	 * @return string HTML.
+	 */
+	private function render_radio_term( $term, $term_id, $field, $term_class, $attributes, $is_selected ) {
+		$checked = $is_selected ? ' checked' : '';
+		return sprintf(
+			'<div id="%s" class="radio-term"><label><input%s type="radio" name="%s" value="%s" class="%s"%s/>%s</label></div>',
+			esc_attr( $term->slug ),
+			$attributes,
+			esc_attr( $field ),
+			esc_attr( $term_id ),
+			esc_attr( $term_class ),
+			$checked,
+			esc_html( $term->name )
+		);
+	}
+
+	/**
+	 * Render checkbox term.
+	 *
+	 * @since 5.3.0
+	 * @param WP_Term         $term       Term object.
+	 * @param int             $term_id    Term ID.
+	 * @param string          $field      Field name.
+	 * @param string          $term_class Term class.
+	 * @param string          $attributes Custom attributes.
+	 * @param bool            $is_selected Whether term is selected.
+	 * @param C2P_Post_Mapper $mapper     Mapper object.
+	 * @return string HTML.
+	 */
+	private function render_checkbox_term( $term, $term_id, $field, $term_class, $attributes, $is_selected, $mapper ) {
+		$checked = $is_selected ? ' checked' : '';
+		$field_name = $field;
+		if ( ! $mapper->field_has_option( $field, 'exclusive' ) ) {
+			$field_name = $field . '[]';
+		}
+
+		return sprintf(
+			'<div id="%s" class="checkbox-term"><label><input%s type="checkbox" name="%s" value="%s" class="%s"%s/>%s</label></div>',
+			esc_attr( $term->slug ),
+			$attributes,
+			esc_attr( $field_name ),
+			esc_attr( $term_id ),
+			esc_attr( $term_class ),
+			$checked,
+			esc_html( $term->name )
+		);
+	}
+
+	/**
+	 * Register a custom taxonomy.
 	 *
 	 * @since 2.0.0
-	 * @param  Array           $taxonomy  a, array of taxonomy arguments.
-	 * @param  C2P_Post_Mapper $mapper mapper pbject.
+	 * @param array           $taxonomy Taxonomy arguments.
+	 * @param C2P_Post_Mapper $mapper   Mapper object.
 	 */
 	protected function register_custom_taxonomy( array $taxonomy, C2P_Post_Mapper $mapper ) {
-		$labels = array(
-			'name'                       => $taxonomy['name'],
-			'singular_name'              => $taxonomy['singular_name'],
-			'menu_name'                  => $taxonomy['menu_name'],
-			'all_items'                  => 'All ' . $taxonomy['name'],
-			'parent_item'                => 'Parent ' . $taxonomy['singular_name'],
-			'parent_item_colon'          => 'Parent ' . $taxonomy['singular_name'] . ':',
-			'new_item_name'              => 'New ' . $taxonomy['singular_name'] . ' Name',
-			'add_new_item'               => 'Add New ' . $taxonomy['singular_name'],
-			'edit_item'                  => 'Edit ' . $taxonomy['singular_name'],
-			'update_item'                => 'Update ' . $taxonomy['singular_name'],
-			'view_item'                  => 'View ' . $taxonomy['singular_name'],
-			'separate_items_with_commas' => 'Separate ' . $taxonomy['name'] . ' with commas',
-			'add_or_remove_items'        => 'Add or remove ' . $taxonomy['name'],
-			'choose_from_most_used'      => 'Choose from the most used',
-			'popular_items'              => 'Popular ' . $taxonomy['name'],
-			'search_items'               => 'Search ' . $taxonomy['name'],
-			'not_found'                  => 'Not Found',
-			'no_terms'                   => 'No ' . $taxonomy['name'],
-			'items_list'                 => $taxonomy['name'] . ' list',
-			'items_list_navigation'      => $taxonomy['name'] . ' list navigation',
-		);
-		// labels can be modified post registration.
+		$labels = $this->build_taxonomy_labels( $taxonomy );
+		
 		$args = array(
 			'labels'             => $labels,
 			'hierarchical'       => $taxonomy['hierarchical'],
@@ -1146,6 +1615,8 @@ class CF72Post_Mapping_Factory {
 			'show_in_quick_edit' => $taxonomy['show_in_quick_edit'],
 			'description'        => $taxonomy['description'],
 		);
+
+		// Optional arguments.
 		if ( isset( $taxonomy['meta_box_cb'] ) ) {
 			$args['meta_box_cb'] = $taxonomy['meta_box_cb'];
 		}
@@ -1155,38 +1626,79 @@ class CF72Post_Mapping_Factory {
 		if ( isset( $taxonomy['capabilities'] ) ) {
 			$args['capabilities'] = $taxonomy['capabilities'];
 		}
-		$post_types = apply_filters( 'cf7_2_post_filter_taxonomy_register_post_type', array( $mapper->post_properties['type'] ), $taxonomy['slug'] );
-		register_taxonomy( $taxonomy['slug'], $post_types, $args );
 
+		$post_types = apply_filters(
+			'cf7_2_post_filter_taxonomy_register_post_type',
+			array( $mapper->post_properties['type'] ),
+			$taxonomy['slug']
+		);
+
+		register_taxonomy( $taxonomy['slug'], $post_types, $args );
 	}
 
 	/**
-	 *  Retrieves select dropdpwn fields populated with existing emta fields
-	 * for each system post visible in the form mapping admin page.
+	 * Build taxonomy labels.
+	 *
+	 * @since 5.3.0
+	 * @param array $taxonomy Taxonomy arguments.
+	 * @return array Labels.
+	 */
+	private function build_taxonomy_labels( $taxonomy ) {
+		$singular = $taxonomy['singular_name'];
+		$plural   = $taxonomy['name'];
+
+		return array(
+			'name'                       => $plural,
+			'singular_name'              => $singular,
+			'menu_name'                  => $taxonomy['menu_name'],
+			'all_items'                  => 'All ' . $plural,
+			'parent_item'                => 'Parent ' . $singular,
+			'parent_item_colon'          => 'Parent ' . $singular . ':',
+			'new_item_name'              => 'New ' . $singular . ' Name',
+			'add_new_item'               => 'Add New ' . $singular,
+			'edit_item'                  => 'Edit ' . $singular,
+			'update_item'                => 'Update ' . $singular,
+			'view_item'                  => 'View ' . $singular,
+			'separate_items_with_commas' => 'Separate ' . $plural . ' with commas',
+			'add_or_remove_items'        => 'Add or remove ' . $plural,
+			'choose_from_most_used'      => 'Choose from the most used',
+			'popular_items'              => 'Popular ' . $plural,
+			'search_items'               => 'Search ' . $plural,
+			'not_found'                  => 'Not Found',
+			'no_terms'                   => 'No ' . $plural,
+			'items_list'                 => $plural . ' list',
+			'items_list_navigation'      => $plural . ' list navigation',
+		);
+	}
+
+	/**
+	 * Get all meta field menus for system posts.
 	 *
 	 * @since 5.0.0
-	 * @return string text_description.
+	 * @return string HTML.
 	 */
 	public static function get_all_metafield_menus() {
 		$factory = self::get_factory();
 		$html    = '<div class="system-posts-metafields display-none">' . PHP_EOL;
+
 		foreach ( $factory->get_system_posts() as $post_type => $label ) {
-			$html .= '<div id="c2p-' . $post_type . '" class="system-post-metafield">' . PHP_EOL;
+			$html .= '<div id="c2p-' . esc_attr( $post_type ) . '" class="system-post-metafield">' . PHP_EOL;
 			$html .= $factory->get_metafield_menu( $post_type, '' );
 			$html .= '</div>' . PHP_EOL;
 		}
+
 		$html .= '</div>' . PHP_EOL;
 		return $html;
 	}
 
 	/**
-	 * Get a list of meta fields for the requested post_type
+	 * Get meta field menu for a post type.
 	 *
 	 * @since 5.0.0
-	 * @param      String $post_type     post_type for which meta fields are requested.
-	 * @param      String $selected_field    field.
-	 * @return     String    a list of option elements for each existing meta field in the DB.
-	 **/
+	 * @param string $post_type      Post type.
+	 * @param string $selected_field Selected field.
+	 * @return string HTML.
+	 */
 	public function get_metafield_menu( $post_type, $selected_field ) {
 		$cache_key = "c2p_metafield_menu_{$post_type}";
 		$metas     = wp_cache_get( $cache_key );
@@ -1196,18 +1708,21 @@ class CF72Post_Mapping_Factory {
 			$metas = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT DISTINCT meta_key
-				FROM {$wpdb->postmeta} as wpm, {$wpdb->posts} as wp
-				WHERE wpm.post_id = wp.ID AND wp.post_type = %s",
+					FROM {$wpdb->postmeta} as pm
+					INNER JOIN {$wpdb->posts} as p ON pm.post_id = p.ID
+					WHERE p.post_type = %s
+					AND pm.meta_key != ''",
 					$post_type
 				)
 			);
 			wp_cache_set( $cache_key, $metas );
 		}
+
 		$has_fields     = false;
 		$found_existing = false;
 		$disabled       = '';
 		$html           = '';
-		$display        = '';
+		$display        = ' display-none';
 		$display_select = ' select-hybrid';
 		$input          = 'custom_meta_key';
 
@@ -1216,61 +1731,92 @@ class CF72Post_Mapping_Factory {
 		}
 
 		if ( false !== $metas ) {
-			$html   = '';
-			$select = '<option value="">' . __( 'Select a field', 'post-my-contact-form-7' ) . '</option>' . PHP_EOL;
+			$select = '<option value="">' . esc_html__( 'Select a field', 'post-my-contact-form-7' ) . '</option>' . PHP_EOL;
+			
 			foreach ( $metas as $row ) {
 				if ( empty( trim( $row->meta_key ) ) ) {
-					continue; /** NB @since 5.4.6 */
-				}         if ( 0 === strpos( $row->meta_key, '_' ) &&
-				/**
-				* Filter plugin specific (internal) meta fields starting with '_'. By defaults these are skiupped by this plugin.
-				*
-				* @since 2.0.0
-				* @param boolean $skip true by default
-				* @param string $post_type post type under consideration
-				* @param string $meta_key meta field name
-				*/
-				apply_filters( 'cf7_2_post_skip_system_metakey', true, $post_type, $row->meta_key ) ) {
-					// skip _meta_keys, assuming system fields.
 					continue;
-				}//end if.
-				$selected = '';
+				}
+
+				if ( $this->should_skip_meta_key( $row->meta_key, $post_type ) ) {
+					continue;
+				}
+
+				$selected = selected( $selected_field, $row->meta_key, false );
 				if ( $selected_field === $row->meta_key ) {
-					$selected       = ' selected="true"';
-					$disabled       = '';
 					$found_existing = true;
 				}
-				$select    .= '<option value="' . $row->meta_key . '"' . $selected . '>' . $row->meta_key . '</option>' . PHP_EOL;
+
+				$select .= '<option value="' . esc_attr( $row->meta_key ) . '"' . $selected . '>' . 
+					esc_html( $row->meta_key ) . '</option>' . PHP_EOL;
 				$has_fields = true;
 			}
+
 			if ( $has_fields ) {
 				$display = ' display-none';
 				$input   = 'custom_meta_key';
+				
 				if ( ! empty( $selected_field ) && ! $found_existing ) {
-					$input          = $selected_field;
-					$disabled       = ' disabled="true"';
+					$input = $selected_field;
+					$disabled = ' disabled="true"';
 					$display_select = ' display-none';
-					$display        = '';
+					$display = '';
 				}
-				$select  = '<select' . $disabled . ' class="existing-fields' . $display_select . '">' . PHP_EOL . $select;
-				$select .= '<option value="cf72post-custom-meta-field">' . __( 'Custom field', 'post-my-contact-form-7' ) . '</option>' . PHP_EOL;
-				$select .= '</select>' . PHP_EOL;
-				$html   .= $select;
 
+				$select .= '<option value="cf72post-custom-meta-field">' . 
+					esc_html__( 'Custom field', 'post-my-contact-form-7' ) . '</option>' . PHP_EOL;
+				$select = '<select' . $disabled . ' class="existing-fields' . $display_select . '">' . 
+					PHP_EOL . $select . '</select>' . PHP_EOL;
+				$html .= $select;
 			}
-			$html .= '<input class="cf7-2-post-map-label-custom' . $display . '" type="text" value="' . $input . '" ' . ( empty( $display ) ? '' : 'disabled ' ) . '/>' . PHP_EOL;
+
+			$html .= '<input class="cf7-2-post-map-label-custom' . $display . '" type="text" value="' . 
+				esc_attr( $input ) . '" ' . ( empty( $display ) ? '' : 'disabled ' ) . '/>' . PHP_EOL;
 		}
+
 		return $html;
 	}
+
+	/**
+	 * Check if a meta key should be skipped.
+	 *
+	 * @since 5.3.0
+	 * @param string $meta_key  Meta key.
+	 * @param string $post_type Post type.
+	 * @return bool True if should skip.
+	 */
+	private function should_skip_meta_key( $meta_key, $post_type ) {
+		if ( 0 !== strpos( $meta_key, '_' ) ) {
+			return false;
+		}
+
+		/**
+		 * Filter plugin specific (internal) meta fields starting with '_'.
+		 *
+		 * @since 2.0.0
+		 * @param bool   $skip      True by default.
+		 * @param string $post_type Post type.
+		 * @param string $meta_key  Meta field name.
+		 */
+		return apply_filters( 'cf7_2_post_skip_system_metakey', true, $post_type, $meta_key );
+	}
 }
+
 /**
- * Get object factory
+ * Get object factory.
+ *
+ * @since 1.0.0
+ * @return CF72Post_Mapping_Factory
  */
 function c2p_get_factory() {
 	return CF72Post_Mapping_Factory::get_factory();
 }
+
 /**
- * Get mapped post types
+ * Get mapped post types.
+ *
+ * @since 3.4.0
+ * @return array
  */
 function c2p_mapped_post_types() {
 	return CF72Post_Mapping_Factory::get_mapped_post_types();

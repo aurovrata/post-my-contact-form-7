@@ -1,24 +1,17 @@
-- include form shortcode in form editor page.
-- improve loading of resources by validating form being loaded.
+- map checkboxes to taxonomies not working
+https://wordpress.org/support/topic/checkbox-value-correctly-sent-via-email-but-not-stored-in-post-db/
 
+- gutenberg block theme jquery clash
+https://wordpress.org/support/topic/no-categories-appearing-when-mapping-cf7-form-fields-to-post-taxonomies/
 
-- factory class, update function has a TODO on line 402
-- set menu_icon in post mapping page (http://codex.wordpress.org/Function_Reference/register_post_type)
-DONE
-- add filter for meta capabilities in factory class (http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types)
-- check that cf7 is installed, bail out otherwise
-- meta fields created need to have spaces replaced with underscore + msg flashed
-- when post_type is changed on form, if system post, re-load form, else we need to keep track of all the filters in use on the select and modify their values.
-- map to an existing post type. Need to by pass post factory and check that the post exists, then map all the properties and taxonomies
-- store all mapping post type settings directly into the cf7 post
-- skip mail setting in post creation page
-- hook on post_type wpcf7_contact_form delete and delete the corresponding post_type for that Form
-  + add mapped post id the cf7 post meta fields
-- post editor / user profile editor on front-end.  Not just edit drafts. see this question )
-- add edit button for saved mappings in map edit page
+- post ID as mail tag
+ changed the class-cf7-2-post-public.php and class-cf7-2-post-admin.php files to add a [cf7_2_post-ID] mail tag.
 
-- DONE check compatibility with googlemap plugin v1.8
+ - draft save file fields, overwrite any previous value.
+ https://wordpress.org/support/topic/media-uploads-saved-to-draft-but-missing-at-later-visit/#post-16033768
 
-PHPCS refactor.
-- use '_cf72post_nonce' for transient as well as nonce validation
+ - test page refresh on draft form saving
+ https://wordpress.org/support/topic/how-to-trigger-a-page-refreah-after-save/#post-16168728
 
+ - check if mapped post author IDs are being saved as authors on post
+ https://wordpress.org/support/topic/post-author-not-working-as-expected/

@@ -197,10 +197,10 @@
           var value = $this.attr('value');
           var helper = filterHelper(value);
 
-          var filter = $('<a class="code" data-clipboard-text="'+helper+'" href="javascript:void(0);">'+$this.attr('value')+'</a>').appendTo(msgBox);
+          var filter = $('<a class="code" data-clipboard-text="'+helper+'" href="#">'+$this.attr('value')+'</a>').appendTo(msgBox);
           msgBox.prepend('filter:');
           msgBox.append('<span class="popup">Click to Copy!</span>')
-          new Clipboard(filter[0]);
+          // new Clipboard(filter[0]);
           if(highlight) msgBox.addClass('animate-color');
         });
         return this;
@@ -313,7 +313,7 @@
         var filter = $('<a class="code" data-clipboard-text="'+ helper +'" href="javascript:void(0);">'+ value +'</a>').appendTo(msgBox);
         msgBox.prepend('filter:');
         msgBox.append('<span class="popup">Click to Copy!</span>');
-        new Clipboard(filter[0]);
+        // new Clipboard(filter[0]);
       }
     }
     function filterHelper(filter){
@@ -353,7 +353,7 @@
         msgBox.prepend('filter:');
         msgBox.append('<span class="popup">Click to Copy!</span>');
         msgBox.addClass('animate-color');
-        new Clipboard(filter[0]);
+        // new Clipboard(filter[0]);
       }
     }
     //change in slug of taxonomy

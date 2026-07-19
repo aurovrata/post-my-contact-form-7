@@ -1,4 +1,28 @@
 == Change Log ==
+= 6.2.0 = 
+* fix mapping editor: HTML select fields no longer accept `value` attributes.
+= 6.1.0 = 
+* Mapped select fields to taxonomy now conform to Schema-Woven Validation API.
+= 6.0.7 =
+* upgrade select2 plugin to v4.0.13
+= 6.0.6 =
+* fix santisation of CF7 fields converted to arrays.
+= 6.0.5 =
+* modify wpcf7_contact_form post registration labels to refelct cf7 changes.
+= 6.0.4 =
+* fixed thumbnail mapping.
+= 6.0.3 =
+* fix admin require lib loading error.
+= 6.0.2 =
+* fix lib class name clash.
+= 6.0.1 =
+* fixed email not sending on non-mapped forms.
+* fixed file attachments in mail notifications
+* improved code to match WordPress coding stds.
+= 6.0.0 =
+* clean up code for WordPress code std compatibility.
+* added `'cf7_2_post_save_draft_mapping'` filter to allow finer control on testing draft mode mappings.
+* added `'cf7_2_post_metafield_file'` filter to change file upload format to post emta fields.
 = 5.6.0 =
 * enable ck7 key (slug) quick edit.
 = 5.5.1 =

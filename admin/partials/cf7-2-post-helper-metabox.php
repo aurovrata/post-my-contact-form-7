@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 		echo wp_kses(
 			__( 'Click on a link to copy the helper snippet code and paste it in your <em>functions.php</em> file.', 'post-my-contact-form-7' ),
-			array( 'em' => array() ),
+			array( 'em' => array() )
 		);
 		?>
 	</p>
@@ -26,7 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="postbox-header">
 		<h4><?php esc_html_e( 'Admin hooks', 'post-my-contact-form-7' ); ?></h4>
 		<div class="handle-actions hide-if-no-js">
-		<button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Helper', 'post-my-contact-form-7' ); ?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+		<button type="button" class="handlediv button-link" aria-expanded="false">
+			<span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Helper', 'post-my-contact-form-7' ); ?></span>
+			<span class="toggle-indicator" aria-hidden="true"></span>
+		</button>
 		</div>
 	</div>
 	<div class="inside">
@@ -45,14 +48,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function set_supports($supports){
 	$default_supports[]='comments';
 	return $default_supports;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Post Supports Filter', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Post Supports Filter', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 		echo wp_kses(
 			__( 'custom post <code>supports</code> attributes (<a href="https://codex.wordpress.org/Function_Reference/register_post_type#supports">documentation</a>).', 'post-my-contact-form-7' ),
 			array(
 				'code' => array(),
 				'a'    => array( 'href' => array() ),
-			),
+			)
 		);
 		?>
 		</li>
@@ -68,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function cf7_2_modified_custom_post_type($post_args){
 	$post_args['rewrite']['slug'] = 'my-custom-slug'; //post slug for url front access
 	return $post_args;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Custom Post Registration Filter', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Custom Post Registration Filter', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 	echo wp_kses(
 		__( 'to further customise custom post registration arguments(<a href="https://codex.wordpress.org/Function_Reference/register_post_type#Arguments">documentation</a>).', 'post-my-contact-form-7' ),
@@ -98,14 +101,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	);
 	/*All capabilities must be set, else the plugin will default back to default `post` capabilities.  Also, make sure you assign each of these capabilities to the admin role (or other roles/users) else you won't be able to access your custom post.*/
 	return $capabilities;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Post Access Filter', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Post Access Filter', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 	echo wp_kses(
 		__( 'custom post access <code>capabilities</code> (<a href="http://wordpress.stackexchange.com/questions/108338/capabilities-and-custom-post-types">documentation</a>).', 'post-my-contact-form-7' ),
 		array(
 			'code' => array(),
 			'a'    => array( 'href' => array() ),
-		),
+		)
 	);
 	?>
 		</li>
@@ -121,13 +124,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function register_custom_tags($taxonomy_arg){
 	$taxonomy_arg['hierarchical'] = false;
 	return $taxonomy_arg;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Taxonomy Registration Filter', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Taxonomy Registration Filter', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 	echo wp_kses(
 		__( 'to change custom taxonomy like tags (<a href="https://codex.wordpress.org/Function_Reference/register_taxonomy#Arguments">documentation</a>).', 'post-my-contact-form-7' ),
 		array(
 			'a' => array( 'href' => array() ),
-		),
+		)
 	);
 	?>
 		</li>
@@ -148,7 +151,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$skip = false;
 	}
 	return $skip;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Internal Meta Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to show system post internal meta-fields.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Internal Meta Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to show system post internal meta-fields.', 'post-my-contact-form-7' ); ?>
 		</li>
 		<li class="system-hook">1.6
 			<a class="helper" data-cf72post="add_filter('cf7_2_post_display_system_posts', 'filter_posts');
@@ -163,7 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	//add an existing post type and label,
 	$displayed_posts['some_post'] = 'Some Post';
 	return $displayed_posts;
-	}" href="javascript:void(0);"><?php esc_html_e( 'System Post Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to show hidden system post for mapping.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'System Post Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to show hidden system post for mapping.', 'post-my-contact-form-7' ); ?>
 		</li>
 		<li class="system-hook">1.7
 			<a class="helper" data-cf72post="add_filter('cf7_2_post_filter_user_draft_form_query', 'filter_user_post_for_prefill', 10, 3);
@@ -182,7 +185,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	//if a form is submitted or saved as a draft. No for drafts, Yes for submitted.
 	$query_args['meta_query']['value']='yes';
 	return $query_args;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'user post query for form prefill.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'user post query for form prefill.', 'post-my-contact-form-7' ); ?>
 		</li>
 		<li class="system-hook factory-hook">1.7
 			<a class="helper" data-cf72post="add_filter('cf7_2_post_delete_submitted_posts', 'delete_posts_on_delete_form',10, 3);
@@ -198,7 +201,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	//you can check by post type or form key.
 	if('{$form_key}'==$form_key) $delete_posts = true;
 	return $delete_posts;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'flag delete posts on delete form.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'flag delete posts on delete form.', 'post-my-contact-form-7' ); ?>
 		</li>
 		</ul>
 	</div>
@@ -207,7 +210,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div id="loading-hooks" class="postbox<?php echo esc_attr( $closed ); ?>">
 	<div class="postbox-header">
 		<h4><?php esc_html_e( 'Form loading hooks', 'post-my-contact-form-7' ); ?></h4>
-		<button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Loading Hooks', 'post-my-contact-form-7' ); ?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+		<button type="button" class="handlediv button-link" aria-expanded="false">
+			<span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Loading Hooks', 'post-my-contact-form-7' ); ?></span>
+			<span class="toggle-indicator" aria-hidden="true"></span>
+		</button>
 	</div>
 	<div class="inside">
 		<p>
@@ -249,7 +255,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		ob_end_clean();
 	}
 	return $script;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Custom javascript', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'appended at the end of your form.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Custom javascript', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'appended at the end of your form.', 'post-my-contact-form-7' ); ?>
 			</li>
 			<li>2.2)
 			<a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_cf7_field_value', 'field_default_value',10,5);
@@ -277,7 +283,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		break;
 	}
 	return $value;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Default Values Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'default field value when form is displayed.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Default Values Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'default field value when form is displayed.', 'post-my-contact-form-7' ); ?>
 			</li>
 			<li  class="display-none c2p-taxonomy">
 			<a class="helper" data-cf72post="add_filter('cf7_2_post_filter_cf7_taxonomy_terms', 'modify_my_terms',10,4);
@@ -299,7 +305,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$terms_id[] = $term->term_id;
 	}
 	return $terms_id;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Filter default selected', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'taxonomy terms in dropdown/radio/checkbox.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Filter default selected', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'taxonomy terms in dropdown/radio/checkbox.', 'post-my-contact-form-7' ); ?>
 			</li>
 			<li class="display-none c2p-taxonomy">
 			<a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_taxonomy_query', 'filter_taxonomy_terms',10, 6);
@@ -336,7 +342,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 	}
 	return $query;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Filter term list', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'in mapped taxonomy field.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Filter term list', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'in mapped taxonomy field.', 'post-my-contact-form-7' ); ?>
 		</li>
 			<li>2.3)
 			<a class="helper" data-cf72post="add_filter( 'cf7_2_post_print_page_nocache_metas','disable_page_cache_metas',10);
@@ -352,7 +358,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	//or you can check if perticular page template is used.
 	if(is_page_template( 'page-contact.php')) $print_on_page = false;
 	return $print_on_page;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Page Cache Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to remove nocache meta tags in &lt;head&gt;.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Page Cache Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to remove nocache meta tags in &lt;head&gt;.', 'post-my-contact-form-7' ); ?>
 		</li>
 		<li>2.4)
 			<a class="helper" data-cf72post="add_filter( 'cf7_2_post_filter_user_draft_form_query','filter_posts_query_prefill_{$form_key_f}',10,3);
@@ -367,8 +373,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function filter_posts_query_prefill_{$form_key_f}($args, $post_type, $cf7_key){
 	if('{$form_key}'!=$cf7_key) return $args;
 	//modify the $args to target the post to prefill the form for this user.
-	rturn $args
-	}" href="javascript:void(0);"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'prefill post query.', 'post-my-contact-form-7' ); ?>
+	return $args;
+	}" href="#"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'prefill post query.', 'post-my-contact-form-7' ); ?>
 		</li>
 		</ul>
 	</div>
@@ -376,7 +382,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div id="submit-hooks" class="postbox<?php echo esc_attr( $closed ); ?>">
 	<div class="postbox-header">
 		<h4><?php esc_html_e( 'Form submitted hooks', 'post-my-contact-form-7' ); ?></h4>
-		<button type="button" class="handlediv button-link" aria-expanded="false"><span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Submitted hooks', 'post-my-contact-form-7' ); ?></span><span class="toggle-indicator" aria-hidden="true"></span></button>
+		<button type="button" class="handlediv button-link" aria-expanded="false">
+			<span class="screen-reader-text"><?php esc_html_e( 'Toggle panel: Submitted hooks', 'post-my-contact-form-7' ); ?></span>
+			<span class="toggle-indicator" aria-hidden="true"></span>
+		</button>
 	</div>
 	<div class="inside">
 		<p>
@@ -398,7 +407,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function set_{$post_type_f}_author($author_id, $cf7_id, $submitted_data, $cf7_key){
 	//... do something here and set a new author ID with a valid user id which exists in the user table.
 	return $author_id;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Author Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'the author of the submitted post .', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Author Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'the author of the submitted post .', 'post-my-contact-form-7' ); ?>
 			</li>
 			<li>3.2)
 			<a class="helper" data-cf72post="add_filter( 'cf7_2_post_status_{$post_type}', 'publish_new_{$post_type_f}',10,3);
@@ -412,16 +421,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function publish_new_{$post_type_f}($status, $ckf7_key, $submitted_data){
 	/*The default behaviour is to save post to 'draft' status.  If you wish to change this, you can use this filter and return a valid post status: 'publish'|'draft'|'pending'|'trash'*/
 	return 'publish';
-	}" href="javascript:void(0);"><?php esc_html_e( 'Post Status Filter', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Post Status Filter', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 	echo wp_kses(
 		__( 'to automatically publish submitted post (<a href="https://codex.wordpress.org/Function_Reference/get_post_status#Return_Values">documentation</a>).', 'post-my-contact-form-7' ),
-		array( 'a' => array( 'href' => array() ) ),
+		array( 
+			'a' => array( 'href' => array() ),
+		)
 	);
 	?>
 			</li>
 			<li>3.3)
-			<a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_validation', 'force_validation', 10, 2);
+			<a class="helper" data-cf72post="add_filter('cf7_2_post_draft_skips_validation', 'force_validation', 10, 2);
 	/**
 	* Function to force field validation when draft form is saved.
 	* @param boolean $skip_validation true by default.
@@ -433,27 +444,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	if('{$form_key}' == $cf7_key){
 		$skip_validation = false;
 	}
-	return skip_validation;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Draft Validation Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to enable field validation on draft form saved.', 'post-my-contact-form-7' ); ?>
+	return $skip_validation;
+	}" href="#"><?php esc_html_e( 'Draft Validation Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to enable field validation on draft form saved.', 'post-my-contact-form-7' ); ?>
 			</li>
 			<li>3.4)
-			<a class="helper" data-cf72post="add_fitler('cf7_2_post_transient_submission_expiration', 'keep_transient',10,2);
+			<a class="helper" data-cf72post="add_filter('cf7_2_post_transient_submission_expiration', 'keep_transient',10,2);
 	/**
 	* Function change the expiration of transient saved post ID after a submission.
 	* @param int $time value in seconds, default is 300 = 5 mins.
 	* @param string $cf7_key unique key to identify your form.
 	* @return int time in seconds to expiration of the transient post ID.
 	*/
-	function force_notification($time, $cf7_key){
+	function keep_transient($time, $cf7_key){
 	/*The post ID to which a submission is saved to is stored as a transient value in the WordPress database cache.  This is helpful is you want to redirect your form submission to another page and display the results.  You can access the saved post ID on the redirected page. This transient value is cached for 5 minutes, but you may need to keep this value in the cache for a longer period if you expect your users to visit the redirected page at a later state. */
 	if('{$form_key}' == $cf7_key){
 		$time = 60*60*1; //this is 1 hour.
 	}
 	return $time;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Cache Time Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'period to track anonymous submissions.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Cache Time Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'period to track anonymous submissions.', 'post-my-contact-form-7' ); ?>
 		</li>
 			<li>3.5)
-			<a class="helper" data-cf72post="add_fitler('cf7_2_post_draft_skips_mail', 'force_notification');
+			<a class="helper" data-cf72post="add_filter('cf7_2_post_draft_skips_mail', 'force_notification');
 	/**
 	* Function to force mail sending for draft form saving.
 	* @param boolean $skip_mail true by default.
@@ -463,10 +474,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function force_notification($skip_mail, $cf7_key){
 	/*For forms which have a save button, the mail sending of draft forms is skipped by default. This filter allows you to force mail notification of draft forms. */
 	if('{$form_key}' == $cf7_key){
-		skip_mail = false;
+		$skip_mail = false;
 	}
-	return skip_mail;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Draft Mail Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to send cf7 mail for draft form saved.', 'post-my-contact-form-7' ); ?>
+	return $skip_mail;
+	}" href="#"><?php esc_html_e( 'Draft Mail Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'to send cf7 mail for draft form saved.', 'post-my-contact-form-7' ); ?>
 		</li>
 		<li>3.6)
 			<a class="helper" data-cf72post="add_action('cf7_2_post_form_submitted_to_{$post_type}', 'new_{$post_type_f}_mapped',10,4);
@@ -479,11 +490,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	*/
 	function new_{$post_type_f}_mapped($post_id, $cf7_form_data, $cf7form_key, $submitted_files){
 	//do something.
-	}" href="javascript:void(0);"><?php esc_html_e( 'Action', 'post-my-contact-form-7' ); ?></a> 
+	}" href="#"><?php esc_html_e( 'Action', 'post-my-contact-form-7' ); ?></a> 
 	<?php
 		echo wp_kses(
 			__( 'after <em>submitted</em> form is saved to post.', 'post-my-contact-form-7' ),
-			array( 'em' => array() ),
+			array( 
+				'em' => array(),
+			)
 		);
 		?>
 		</li>
@@ -499,7 +512,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	function set_default_title($post_title, $post_type, $cf7_key){
 	//set the default title for the post to which the form sibmission is saved to.
 	return $post_title;
-	}" href="javascript:void(0);"><?php esc_html_e( 'Default title Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'the default title of the submitted post.', 'post-my-contact-form-7' ); ?>
+	}" href="#"><?php esc_html_e( 'Default title Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'the default title of the submitted post.', 'post-my-contact-form-7' ); ?>
 		</li>
 		</ul>
 	</div>
@@ -507,50 +520,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<script type="text/javascript">
 	(function($){
 		$(document).ready( function(){
-		var $source = $('#post_type_source');
-		$.fn.updateHelper = function(){
-		switch($(this).val()){
-			case 'factory':
-			$('li.system-hook', 'ul.helper-list').hide();
-			$('li.factory-hook', 'ul.helper-list').show();
-			break;
-			case 'system':
-			$('li.system-hook', 'ul.helper-list').show();
-			$('li.factory-hook', 'ul.helper-list').hide();
-			break;
-		}
-		//setup clipboard
-		$('#admin-hooks .helper-list li a, #loading-hooks .helper-list li a, #submit-hooks .helper-list li a').each(function(){
-			new Clipboard($(this)[0], {
-			text: function(trigger) {
-				let $target = $(trigger),
-				text = $target.data('cf72post'),
-				postType = $('#mapped-post-type').val(),
-				formKey = $('#c2p-cf7-key').val(),
-				f = trigger.closest('ul');
-				/** @since 4.1.2 fix post types in function names. */
-				text = text.replace(/\{\$post_type\}/gi, postType);
-				postType = postType.replace(/-/g,'_');
-				text = text.replace(/\{\$post_type_f\}/gi, postType);
-				text = text.replace(/\{\$form_key\}/gi, formKey);
-				formKey = formKey.replace(/-/g,'_');
-				text = text.replace(/\{\$form_key_f\}/gi, formKey);
-				if(f && f.dataset.field){
-				text = text.replace(/\{\$field\}/gi, f.dataset.field);
+			var $source = $('#post_type_source');
+			$.fn.updateHelper = function(){
+				switch($(this).val()){
+					case 'factory':
+					$('li.system-hook', 'ul.helper-list').hide();
+					$('li.factory-hook', 'ul.helper-list').show();
+					break;
+					case 'system':
+					$('li.system-hook', 'ul.helper-list').show();
+					$('li.factory-hook', 'ul.helper-list').hide();
+					break;
 				}
-				return text;
+				//setup clipboard
+				document.querySelector('#c2p-hook-helper').addEventListener('click', async (e) => {
+					let trigger = e.target;
+					if(trigger.matches('a.helper')){
+						e.preventDefault(); 
+						let textToCopy = e.target.dataset.cf72post,
+							postType   = document.querySelector('#mapped-post-type').value,
+							formKey    = document.querySelector('#c2p-cf7-key').value,
+							f          = e.target.closest('ul');
+						/** @since 4.1.2 fix post types in function names. */
+						textToCopy = textToCopy.replace(/\{\$post_type\}/gi, postType);
+						postType = postType.replace(/-/g,'_');
+						textToCopy = textToCopy.replace(/\{\$post_type_f\}/gi, postType);
+						textToCopy = textToCopy.replace(/\{\$form_key\}/gi, formKey);
+						formKey = formKey.replace(/-/g,'_');
+						textToCopy = textToCopy.replace(/\{\$form_key_f\}/gi, formKey);
+						if(f && f.dataset.field){
+							textToCopy = textToCopy.replace(/\{\$field\}/gi, f.dataset.field);
+						}
+						try {	
+							await navigator.clipboard.writeText(textToCopy);
+						} catch (err) {
+							console.error('Failed to copy helper text: ', err);
+						}
+					}
+				});
 			}
+			$source.change(function(){
+				$(this).updateHelper();
 			});
+			//initialise
+			$source.updateHelper();
 		});
-		}
-		$source.change(function(){
-		$(this).updateHelper();
-		});
-		//initialise
-		$source.updateHelper();
-		//button accordion
-		//$('#helperdiv .helper-list li .button-link')
-	});
 	})(jQuery)
 	</script>
 	<style>

@@ -9,7 +9,7 @@
 
 // prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
-	wp_die();
+	exit;
 }
 ?>
 (function( $ ) {
@@ -197,11 +197,11 @@ endif; // empty hdd.
 
 		/* trigger the formMapped event to let other scripts that the form is now ready */
 		if( $cf7Form.is('.cf7-smart-grid .wpcf7-form') && !$cf7Form.is('.cf7sg-ready') ){
-		$cf7Form.on('cf7SmartGridReady', function(){
-			$cf7Form.trigger("<?php echo esc_html( $nonce ); ?>", data)
-		})
+			$cf7Form.on('cf7SmartGridReady', function(){
+				$cf7Form.trigger("<?php echo esc_html( $nonce ); ?>", data)
+			})
 		}else{
-		$cf7Form.trigger("<?php echo esc_html( $nonce ); ?>", data);
+			$cf7Form.trigger("<?php echo esc_html( $nonce ); ?>", data);
 		}
 		//console.log('<?php echo esc_html( $nonce ); ?> form ready');
 	}//end preloadForm()

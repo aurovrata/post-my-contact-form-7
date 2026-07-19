@@ -511,7 +511,7 @@ if ( ! class_exists( 'CF7SG_WP_Post_Table' ) ) {
 			}
 		}
 	}//end class
-	if ( ! function_exists( 'c2p_get_form_id' ) ) {
+	if ( ! function_exists( 'cf7sg_get_form_id' ) ) {
 		/**
 		 * Get form post id from slug.
 		 *
@@ -519,11 +519,11 @@ if ( ! class_exists( 'CF7SG_WP_Post_Table' ) ) {
 		 * @param string $cf7_key slug.
 		 * @return string id.
 		 */
-		function c2p_get_form_id( $cf7_key ) {
+		function cf7sg_get_form_id( $cf7_key ) {
 			return CF7SG_WP_Post_Table::form_id( $cf7_key );
 		}
 	}
-	if ( ! function_exists( 'c2p_get_form_key' ) ) {
+	if ( ! function_exists( 'cf7sg_get_form_key' ) ) {
 		/**
 		 * Get form slug from id
 		 *
@@ -531,7 +531,7 @@ if ( ! class_exists( 'CF7SG_WP_Post_Table' ) ) {
 		 * @param string $cf7_id id.
 		 * @return string slug.
 		 */
-		function c2p_get_form_key( $cf7_id ) {
+		function cf7sg_get_form_key( $cf7_id ) {
 			return CF7SG_WP_Post_Table::form_key( $cf7_id );
 		}
 	}

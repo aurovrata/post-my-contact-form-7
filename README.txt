@@ -1,11 +1,11 @@
 === Post My CF7 Form ===
 Contributors: aurovrata
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TYFB6PQQB3HJC
-Tags: contact form 7, contact form 7 extension, form to post, save form submissions 
+Tags: contact form 7, contact form 7 extension, form to post, contact form 7 module 
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 6.5.2
-Stable tag: 6.1.1
+Tested up to: 7.0.1
+Stable tag: 7.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -590,27 +590,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
-= 6.1.1 =
-* included SWV validation fix for mapped checkbox/radio fields. 
-= 6.1.0 = 
-* Mapped select fields to taxonomy now conform to Schema-Woven Validation API.
-= 6.0.7 =
-* upgrade select2 plugin to v4.0.13
-= 6.0.6 =
-* fix santisation of CF7 fields converted to arrays.
-= 6.0.5 =
-* modify wpcf7_contact_form post registration labels to refelct cf7 changes.
-= 6.0.4 =
-* fixed thumbnail mapping.
-= 6.0.3 =
-* fix admin require lib loading error.
-= 6.0.2 =
-* fix lib class name clash.
-= 6.0.1 =
-* fixed email not sending on non-mapped forms.
-* fixed file attachments in mail notifications
-* improved code to match WordPress coding stds.
-= 6.0.0 =
-* clean up code for WordPress code std compatibility.
-* added `'cf7_2_post_save_draft_mapping'` filter to allow finer control on testing draft mode mappings.
-* added `'cf7_2_post_metafield_file'` filter to change file upload format to post emta fields.
+= 7.0.0 =
+* code ravamp and cleanup aimed to meet WP coding stds.
+* use of CF7 Smart Grid form prefill functionality which allows for setting table and tabbed field.
+* fix major issue Insecure Direct Object References reported by patchstack.com.
+* fix bug with post-meta field mapping using filter options.
+* replace clipboard.js plugin with HTML Clipboard API.

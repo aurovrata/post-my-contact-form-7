@@ -1,8 +1,9 @@
 <?php
 /**
- * Display quickedit options in table of wpcf7 form posts.
+ * Display quick edit options for CF7 to Post mapping in the post table.
  *
- * @since 5.3.0
+ * @link       https://profiles.wordpress.org/aurovrata/
+ * @since      5.3.0
  * @package    Cf7_2_Post
  * @subpackage Cf7_2_Post/admin/partials
  */
@@ -11,7 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+// Verify user capabilities.
+$capability = apply_filters( 'cf7_2_post_mapping_capability', 'manage_options' );
+if ( ! current_user_can( $capability ) ) {
+	return;
+}
+
+// Add nonce for security.
 wp_nonce_field( 'c2p_quickedit_nonce', 'c2p_nonce' );
+
 ?>
 <fieldset class="inline-edit-col-right">
 	<div class="inline-edit-col">
@@ -45,14 +54,14 @@ function delete_all_submissions($post_query, $post_type, $cf7_key){
 	if('${post_type}'!=$post_type) return $post_query;
 	//modify the query such as to delete posts by a certain author or a perticular date...
 	return $post_query;
-}" href="javascript:void(0);"></a>
+}" href="#"></a>
 <?php
 echo wp_kses(
-	__( 'WARNING: this will also delete all saved submissions!  Use this <span>filter</span> in your <code>functions.php</code> file to control the deletion of saved submissions.', 'post-my-cf7-form' ),
+	__( 'WARNING: this will also delete all saved submissions!  Use this <span>filter</span> in your <code>functions.php</code> file to control the deletion of saved submissions.', 'post-my-contact-form-7' ),
 	array(
 		'span' => array(),
 		'code' => array(),
-	),
+	)
 );
 ?>
 <span class="popup display-none">Click to Copy!</span></div>
