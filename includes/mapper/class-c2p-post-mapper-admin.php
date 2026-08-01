@@ -251,7 +251,18 @@ abstract class C2P_Post_Mapper_Admin {
 		}
 		return $this->cf7_form_fields;
 	}
-
+	/**
+	 * Get the form input field type from the name.
+	 * @since 7.1.0
+	 * @param string $field_name.
+	 * @return string an HTML input field type attribute. 
+	 */
+	public function get_form_field_type( string $field_name ) {
+		$fields = $this->get_form_fields();
+		$type = false;
+		if( isset($field_name) ) $type = $fields[$field_name];
+		return $type;
+	}
 	/**
 	 * Get the mapping of CF7 form fields to post meta fields.
 	 *

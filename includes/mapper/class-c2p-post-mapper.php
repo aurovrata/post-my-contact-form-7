@@ -41,7 +41,17 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 		$this->cf7_post_id = absint( $cf7_id );
 		self::$factory     = $factory;
 	}
-
+	/**
+	 * Get form key
+	 * @since 7.1.0
+	 * @return string form post slug/key.
+	 */
+	public function get_cf7_key(){
+		if( !isset( $this->cf7_key) || empty($this->cf7_key) ){
+			$this->cf7_key = cf7sg_get_form_id($this->cf7_post_id);
+		}
+		return $this->cf7_key;
+	}
 	/* ==========================================================================
 	 * SAVE FORM TO POST - CORE METHOD
 	 * ========================================================================== */
@@ -371,27 +381,17 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 	private function process_thumbnail_field( &$post, $form_field, $submission ) {
 		$files = array();
 		$cf7_files = $submission->uploaded_files();
-
-		if ( defined( 'CF7_GRID_VERSION' ) && version_compare( CF7_GRID_VERSION, '4.9.0', '>=' ) ) {
-			$cf7_form_data = $submission->get_posted_data();
-			if ( isset( $cf7_form_data[ $form_field ] ) && ! empty( $cf7_form_data[ $form_field ] ) ) {
-				if ( function_exists( 'cf7sg_extract_submitted_files' ) ) {
-					$files = cf7sg_extract_submitted_files( $cf7_form_data[ $form_field ] );
-				}
-			}
-		} elseif ( ! empty( $cf7_files[ $form_field ] ) ) {
-			$file_path = $cf7_files[ $form_field ][0];
-			$files = array( $_FILES[ $form_field ]['name'] => $file_path );
+		if( isset( $cf7_files[$form_field] ) ){
+			$files = $cf7_files[$form_field];
 		}
 
-		if ( empty( $files ) ) {
-			return false;
-		}
-
-		foreach ( $files as $filename => $path ) {
+		$file_url = array();
+		foreach ( $files as $path ) {
 			if ( ! file_exists( $path ) ) {
 				continue;
 			}
+			$filename = explode( '/', $path );
+			$filename = $filename[ count( $filename ) - 1 ];
 			$file_arr = array(
 				'name'     => $filename,
 				'tmp_name' => $path,
@@ -472,23 +472,17 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 	private function process_file_meta_field( $post_id, $form_field, $post_field, $cf7_form_data, $submission ) {
 		$files = array();
 		$cf7_files = $submission->uploaded_files();
-
-		if ( defined( 'CF7_GRID_VERSION' ) && version_compare( CF7_GRID_VERSION, '4.9.0', '>=' ) ) {
-			if ( isset( $cf7_form_data[ $form_field ] ) && ! empty( $cf7_form_data[ $form_field ] ) ) {
-				if ( function_exists( 'cf7sg_extract_submitted_files' ) ) {
-					$files = cf7sg_extract_submitted_files( $cf7_form_data[ $form_field ] );
-				}
-			}
-		} elseif ( ! empty( $cf7_files[ $form_field ] ) ) {
-			$file_path = $cf7_files[ $form_field ][0];
-			$files = array( $_FILES[ $form_field ]['name'] => $file_path );
+		if(  isset( $cf7_form_data[ $form_field ] ) && ! empty( $cf7_form_data[ $form_field ] )  && isset( $cf7_files[$form_field] ) ){
+			$files = $cf7_files[$form_field];
 		}
 
-		$file_url = '';
-		foreach ( $files as $filename => $path ) {
+		$file_url = array();
+		foreach ( $files as $path ) {
 			if ( ! file_exists( $path ) ) {
 				continue;
 			}
+			$filename = explode( '/', $path );
+			$filename = $filename[ count( $filename ) - 1 ];
 			$file_arr = array(
 				'name'     => $filename,
 				'tmp_name' => $path,
@@ -499,33 +493,34 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 			} else {
 				$this->log_error( 'Unable to save Media attachment file: ' . $filename );
 			}
+		
+		
+			/**
+			 * Filter the file URL for meta fields.
+			 *
+			 * @since 5.3.0
+			 * @param string $file_url      The file URL.
+			 * @param int    $attachment_id The attachment ID.
+			 * @param int    $post_id       The post ID.
+			 * @param string $post_field    The meta field name.
+			 * @param string $form_field    The form field name.
+			 * @param string $cf7_key       The form key.
+			 * @return string The filtered file URL.
+			 */
+			$file_url = apply_filters(
+				'cf7_2_post_metafield_file',
+				$file_url,
+				$attachment_id ?? 0,
+				$post_id,
+				$post_field,
+				$form_field,
+				$this->cf7_key
+			);
+
+			update_post_meta( $post_id, $post_field, $file_url );
 		}
-
-		/**
-		 * Filter the file URL for meta fields.
-		 *
-		 * @since 5.3.0
-		 * @param string $file_url      The file URL.
-		 * @param int    $attachment_id The attachment ID.
-		 * @param int    $post_id       The post ID.
-		 * @param string $post_field    The meta field name.
-		 * @param string $form_field    The form field name.
-		 * @param string $cf7_key       The form key.
-		 * @return string The filtered file URL.
-		 */
-		$file_url = apply_filters(
-			'cf7_2_post_metafield_file',
-			$file_url,
-			$attachment_id ?? 0,
-			$post_id,
-			$post_field,
-			$form_field,
-			$this->cf7_key
-		);
-
-		update_post_meta( $post_id, $post_field, $file_url );
 	}
-
+	
 	/**
 	 * Process taxonomy fields mapping.
 	 *
@@ -573,11 +568,6 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 	 * @return void
 	 */
 	private function trigger_submission_actions( $post_id, $cf7_form_data, $submission, $is_submitted ) {
-		/**
-		 * Action to notify submission is mapped to post.
-		 */
-		do_action( 'cf7_2_post_form_mapped_to_' . $this->post_properties['type'], $post_id, $cf7_form_data, $this->cf7_key );
-
 		/**
 		 * General action for other plugins to hook custom functionality.
 		 *
@@ -655,6 +645,7 @@ abstract class C2P_Post_Mapper extends C2P_Post_Mapper_Admin {
 	 * @return int|WP_Error Attachment ID or WP_Error on failure.
 	 */
 	private function save_file_as_attachment( $file_arr, $post_id ) {
+		
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';

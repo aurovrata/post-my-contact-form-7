@@ -174,7 +174,7 @@ class Cf7_2_Post_Admin {
 				break;
 			case ( WPCF7_ContactForm::post_type === $screen->post_type && 'edit' === $screen->base ): // form post table.
 				$plugin_dir = plugin_dir_url( __DIR__ );
-				wp_enqueue_script( 'quickedit-c2p-js', $plugin_dir . 'admin/js/cf7-2-post-quick-edit.js', array( 'jquery-clibboard' ), $this->version, true );
+				wp_enqueue_script( 'quickedit-c2p-js', $plugin_dir . 'admin/js/cf7-2-post-quick-edit.js', array(), $this->version, true );
 				break;
 		}
 		$factory = c2p_get_factory();

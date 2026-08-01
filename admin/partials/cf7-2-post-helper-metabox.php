@@ -376,6 +376,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return $args;
 	}" href="#"><?php esc_html_e( 'Filter', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'prefill post query.', 'post-my-contact-form-7' ); ?>
 		</li>
+		<li>2.5)
+			<a class="helper" data-cf72post="add_filter( 'c2p_prefill_form_file_field','{$form_key_f}_enable_file_prefill',10,3);
+/**
+* Function to enable loading of file fields saved values onto the frontend. 
+* However, the js script will not attempt to prefill the value into the HTML file field as this is not possible.  
+* If you loading this value in order to display to the user the previously submitted document, you will need to handle this
+* with your own script on the frontend.  If you are using the Smart Grid plugin, the value is in the window.cf7sg variable.
+* @param bool $enable false by default.
+* @param string $field_name name of the file field.
+* @param string $cf7_key unique key identifying your form.
+* @return boolean true to load the saved value.
+*/
+function {$form_key_f}_enable_file_prefill($enable, $field_name, $cf7_key){
+	if('{$form_key}'!=$cf7_key) return $enable;
+	$enable = true;
+	return $enable;
+}" href="#"><?php esc_html_e( 'Enable', 'post-my-contact-form-7' ); ?></a> <?php esc_html_e( 'loading of saved file field values.', 'post-my-contact-form-7' ); ?>
+		</li>
 		</ul>
 	</div>
 	</div>

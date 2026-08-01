@@ -998,8 +998,12 @@ class CF72Post_Mapping_Factory {
 			if ( $this->is_filtered_field( $form_field ) ) {
 				continue;
 			}
-
 			$post_value = '';
+			if( $mapper->get_form_field_type($form_field) === 'file' ) {
+				if( false === apply_filters( 'c2p_prefill_form_file_field', false, $form_field, $mapper->get_cf7_key() ) ) {
+					continue; //don't prefill file fields by default.
+				}
+			}
 
 			if ( $load_saved_values && $post ) {
 				$post_value = get_post_meta( $post->ID, $post_field, true );
@@ -1033,7 +1037,7 @@ class CF72Post_Mapping_Factory {
 	private function load_unmapped_field_values( $mapper, $field_and_values ) {
 		$cf7_form_fields = $mapper->get_cf7_form_fields();
 		
-		$unmapped_fields = array_diff_key(
+		$unmapped_fields = array_diff_key( //remove mapped fields.
 			$cf7_form_fields,
 			$mapper->get_post_map_meta_fields(),
 			$mapper->get_post_map_fields(),

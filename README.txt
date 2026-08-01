@@ -5,7 +5,7 @@ Tags: contact form 7, contact form 7 extension, form to post, contact form 7 mod
 Requires at least: 4.7
 Requires PHP: 5.6
 Tested up to: 7.0.1
-Stable tag: 7.0.0
+Stable tag: 7.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -590,6 +590,9 @@ The following have contributed to bug fixes, documentation, and/or translations 
 As of now there is no special upgrade notes, simply  follow the normal plugin update process.
 
 == Change Log ==
+= 7.1.0 =
+* skip prefill of file fields.
+* introduction of filter `c2p_prefill_form_file_field` for users to circumvent default behaviour.
 = 7.0.0 =
 * code ravamp and cleanup aimed to meet WP coding stds.
 * use of CF7 Smart Grid form prefill functionality which allows for setting table and tabbed field.

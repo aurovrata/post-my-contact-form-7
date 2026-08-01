@@ -3,7 +3,7 @@
  * Plugin Name:       Post My CF7 Form
  * Plugin URI:        https://digital-tiff.in
  * Description:       Map Contact Form 7 forms to custom posts.
- * Version:           7.0.0
+ * Version:           7.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Aurovrata V.
